@@ -449,9 +449,9 @@ export class ScoreboardQuestionScreen {
         const overlay = document.createElement('div');
         overlay.className = 'goal-banner-anim';
         overlay.style.position = 'absolute';
-        overlay.style.top = '18%';
+        overlay.style.bottom = '15%';
         overlay.style.left = '50%';
-        overlay.style.transform = 'translate(-50%, -50%)';
+        overlay.style.transform = 'translate(-50%, 0)';
         overlay.style.fontSize = '44px';
         overlay.style.fontWeight = '900';
         overlay.style.color = '#FFD700';
@@ -472,9 +472,9 @@ export class ScoreboardQuestionScreen {
         const overlay = document.createElement('div');
         overlay.className = 'goal-banner-anim';
         overlay.style.position = 'absolute';
-        overlay.style.top = '18%';
+        overlay.style.bottom = '15%';
         overlay.style.left = '50%';
-        overlay.style.transform = 'translate(-50%, -50%)';
+        overlay.style.transform = 'translate(-50%, 0)';
         overlay.style.fontSize = '40px';
         overlay.style.fontWeight = '900';
         overlay.style.color = '#EF4444';
