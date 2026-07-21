@@ -6,3 +6,5 @@ dist/
 .env
 .env.*
 !.env.example
+*.sublime-project
+*.sublime-workspace
