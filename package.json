@@ -18,7 +18,6 @@
     "vitest": "^3.2.1"
   },
   "dependencies": {
-    "@babylonjs/core": "^7.1.0",
     "@supabase/supabase-js": "^2.49.9"
   }
 }

@@ -12,7 +12,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          babylon: ['@babylonjs/core'],
           supabase: ['@supabase/supabase-js']
         }
       }

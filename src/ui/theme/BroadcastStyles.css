@@ -56,14 +56,46 @@
   --radius-lg: 20px;
 }
 
-/* Base Viewport & Clean Stadium Backdrop (No Scanlines, No Texture Noise) */
+/* The Premium Gameshow Studio Background */
+.studio-background {
+  background: radial-gradient(circle at 50% 0%, #0c2045 0%, #050b17 50%, #010308 100%);
+  background-attachment: fixed;
+  position: relative;
+}
+.studio-background::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url('data:image/svg+xml;utf8,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M20 0l20 11.5v23L20 46 0 34.5v-23z" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1"/></svg>');
+  background-size: 60px 60px;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: -1;
+}
+.studio-background::after {
+  content: '';
+  position: absolute;
+  top: -20%; left: -20%; width: 140%; height: 140%;
+  background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+  animation: studioSpotlight 15s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes studioSpotlight {
+  0% { transform: scale(1) translate(0%, 0%); }
+  100% { transform: scale(1.2) translate(5%, 10%); }
+}
+
+/* Base Viewport Container */
 .stadium-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 50% 20%, rgba(15, 23, 42, 0.6) 0%, rgba(9, 13, 22, 0.8) 55%, rgba(2, 6, 23, 0.95) 100%);
+  /* No opaque background - let the studio-background show through */
+  background: transparent;
   overflow-y: auto;
   overflow-x: hidden;
   font-family: var(--tv-font);
@@ -72,7 +104,7 @@
   user-select: none;
   contain: layout style;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: calc(env(safe-area-inset-bottom) + 64px); /* 64px for bottom nav */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 64px);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
@@ -121,14 +153,26 @@
 
 /* Enterprise Glassmorphism Card Component */
 .glass-card {
-  background: var(--tv-bg-surface);
+  background: rgba(15, 23, 42, 0.7);
   border: 1px solid var(--tv-glass-border);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(16px);
   border-radius: var(--radius-lg);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+
+  /* Added Locked-in State for Premium Quiz Buttons */
   transition: background 180ms ease-out, border-color 180ms ease-out;
   position: relative;
   overflow: hidden;
+}
+.locked-in {
+  border-color: var(--tv-gold-primary) !important;
+  background: rgba(255, 215, 0, 0.1) !important;
+  box-shadow: 0 0 15px var(--tv-gold-glow) !important;
+  animation: lockPulse 1s infinite alternate;
+}
+@keyframes lockPulse {
+  0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+  100% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
 }
 
 .glass-card:hover {

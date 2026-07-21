@@ -356,8 +356,22 @@ export class ScoreboardQuestionScreen {
         options.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.currentTarget as HTMLButtonElement;
-                const chosenIdx = parseInt(target.getAttribute('data-index') || '0');
-                this._onOptionSelected(chosenIdx, target);
+                
+                // Stop timer immediately
+                this._stopTimer();
+                
+                // Lock in animation
+                target.classList.add('locked-in');
+                
+                // Disable all buttons to prevent multiple clicks
+                const buttons = document.querySelectorAll('.option-btn');
+                buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
+
+                // Wait 1.2s for dramatic tension, then reveal
+                setTimeout(() => {
+                    const chosenIdx = parseInt(target.getAttribute('data-index') || '0');
+                    this._onOptionSelected(chosenIdx, target);
+                }, 1200);
             });
         });
     }
@@ -366,13 +380,13 @@ export class ScoreboardQuestionScreen {
      * 3. Correct Answer (GOAL) and 4. Wrong Answer (GOAL SAVED) Animations
      */
     private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement): void {
-        this._stopTimer();
+        targetBtn.classList.remove('locked-in');
+        
         const responseTimeSec = parseFloat(((performance.now() - this._startTimeMs) / 1000).toFixed(1));
         const q = this._questions[this._currentIndex];
         const result = this._quizEngine.recordAnswer(chosenIndex === q.correctIndex, responseTimeSec);
 
         const buttons = document.querySelectorAll('.option-btn');
-        buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
 
         if (result.isGoal) {
             targetBtn.style.background = 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)';

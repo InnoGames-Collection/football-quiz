@@ -4,7 +4,7 @@ import { bootstrapFootballLeague } from './core/engine/Bootstrap';
 
 async function bootstrap() {
     try {
-        await bootstrapFootballLeague('renderCanvas');
+        await bootstrapFootballLeague();
     } catch (err: any) {
         console.error(err);
         const errorDiv = document.createElement('div');

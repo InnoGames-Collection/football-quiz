@@ -60,7 +60,7 @@ export class ProfileScreen {
         const unlockedCount = this._achievements.filter(a => a.unlocked).length;
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; background: radial-gradient(circle at 50% 10%, rgba(11, 25, 44, 0.6) 0%, rgba(5, 10, 19, 0.9) 80%);">
+            <div class="stadium-container" style="pointer-events: auto;">
 
                 <div class="tv-broadcast-header" style="border-bottom: 2px solid var(--fds-gold-primary);">
                     ${DesignSystem.Flex(`
