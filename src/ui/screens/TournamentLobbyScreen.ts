@@ -89,7 +89,12 @@ export class TournamentLobbyScreen {
                 const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
                 if (id) {
                     await TournamentManager.getInstance().registerForTournament(id, 'local-user');
-                    alert('✅ Registered for tournament successfully!');
+                    const btn = document.getElementById('btn-register');
+                    if (btn) {
+                        btn.innerHTML = '✅ REGISTERED SUCCESSFULLY';
+                        btn.style.background = 'var(--tv-pitch-green)';
+                        btn.setAttribute('disabled', 'true');
+                    }
                 }
             });
         });
