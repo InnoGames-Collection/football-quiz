@@ -26,6 +26,10 @@ export class ScoreboardQuestionScreen {
     private _timerInterval: any = null;
     private _timeLeftSec: number = 30;
     private _startTimeMs: number = 0;
+    private _hasKickedOff: boolean = false;
+
+    // Match minute mapping for 10 questions (1st Half: 12', 24', 32', 39', 45' | 2nd Half: 53', 64', 75', 84', 90'+2')
+    private _matchMinutes: string[] = ["12'", "24'", "32'", "39'", "45'", "53'", "64'", "75'", "84'", "90'+2'"];
 
     constructor(
         uiManager: UIManager,
@@ -46,10 +50,90 @@ export class ScoreboardQuestionScreen {
     public startMatch(): void {
         this._quizEngine.reset();
         this._currentIndex = 0;
-        this._renderQuestion();
+        this._hasKickedOff = false;
+        this._renderKickOffScreen();
     }
 
+    /**
+     * 1. Animated Kick Off Screen (Before Question 1)
+     */
+    private _renderKickOffScreen(): void {
+        const root = this._uiManager.container;
+        const playerName = localStorage.getItem('ETHIO_FOOTBALL_USERNAME') || 'Walia Striker';
+        const difficultyText = '⭐⭐⭐ NATIONAL LEAGUE DIFFICULTY';
+
+        root.innerHTML = `
+            <div class="stadium-container" style="pointer-events: auto;">
+                <div class="floodlight floodlight-left"></div>
+                <div class="floodlight floodlight-right"></div>
+
+                <div class="glass-card" style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 90%;
+                    max-width: 520px;
+                    padding: 36px 28px;
+                    text-align: center;
+                    border-color: var(--gold-primary);
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+                ">
+                    <!-- Competition Badge & Name -->
+                    <div style="font-size: 54px; margin-bottom: 8px;">${this._competition.badge}</div>
+                    <span style="font-size: 11px; font-weight: 900; color: var(--gold-primary); letter-spacing: 3px; text-transform: uppercase;">
+                        ${this._competition.name}
+                    </span>
+                    
+                    <h1 style="font-size: 32px; font-weight: 900; color: white; margin: 10px 0 6px 0;">
+                        ⚽ TODAY'S MATCHDAY
+                    </h1>
+                    <div style="font-size: 13px; color: var(--pitch-green); font-weight: bold; margin-bottom: 24px;">
+                        ${difficultyText}
+                    </div>
+
+                    <!-- Match Info Card -->
+                    <div class="glass-card" style="padding: 16px; margin-bottom: 28px; background: rgba(2, 6, 23, 0.6); text-align: left;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: var(--text-muted); font-size: 12px;">PLAYER:</span>
+                            <span style="color: white; font-size: 13px; font-weight: bold;">👤 ${playerName}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: var(--text-muted); font-size: 12px;">MATCH TYPE:</span>
+                            <span style="color: #60A5FA; font-size: 13px; font-weight: bold;">⚔️ LEAGUE FIXTURE (10 QUESTIONS)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: var(--text-muted); font-size: 12px;">REFEREE:</span>
+                            <span style="color: var(--gold-primary); font-size: 13px; font-weight: bold;">
+                                <span class="whistle-anim">🎷</span> FIFA CERTIFIED
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Kick Off Button -->
+                    <button id="kick-off-btn" class="broadcast-btn broadcast-btn-gold" style="width: 100%; font-size: 18px; padding: 18px;">
+                        ⚡ KICK OFF MATCH
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('kick-off-btn')?.addEventListener('click', () => {
+            this._audioManager.playWhistle();
+            this._hasKickedOff = true;
+            this._renderQuestion();
+        });
+    }
+
+    /**
+     * 2. Question Flow with Football Match Progression
+     */
     private _renderQuestion(): void {
+        if (!this._hasKickedOff) {
+            this._renderKickOffScreen();
+            return;
+        }
+
         if (this._currentIndex >= this._questions.length) {
             this._stopTimer();
             this._callbacks.onMatchComplete();
@@ -57,13 +141,14 @@ export class ScoreboardQuestionScreen {
         }
 
         // Half Time Check (After question 5 of 10)
-        if (this._currentIndex === 5 && this._questions.length === 10) {
+        if (this._currentIndex === 5 && this._questions.length === 10 && !this._hasSeenHalfTime) {
             this._renderHalfTimeSummary();
             return;
         }
 
         const q = this._questions[this._currentIndex];
-        const matchMinute = Math.min(Math.round(((this._currentIndex + 1) / this._questions.length) * 90), 90);
+        const halfName = this._currentIndex < 5 ? "FIRST HALF" : "SECOND HALF";
+        const matchMinute = this._matchMinutes[this._currentIndex] || `${Math.min(Math.round(((this._currentIndex + 1) / this._questions.length) * 90), 90)}'`;
 
         const root = this._uiManager.container;
         root.innerHTML = `
@@ -72,21 +157,25 @@ export class ScoreboardQuestionScreen {
                 <div class="floodlight floodlight-right"></div>
 
                 <!-- Top Scoreboard Bar -->
-                <div class="scoreboard-header">
+                <div class="scoreboard-header" id="scoreboard-bar">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="font-size: 24px;">${this._competition.badge}</span>
                         <div>
-                            <div style="font-weight: 800; font-size: 15px; text-transform: uppercase; color: var(--gold-primary);">${this._competition.name}</div>
-                            <div style="font-size: 12px; color: var(--text-muted);">MATCH MINUTE: <strong style="color: white;">${matchMinute}'</strong></div>
+                            <div style="font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--gold-primary);">${this._competition.name}</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">
+                                <strong style="color: #60A5FA;">${halfName}</strong> • MINUTE: <strong style="color: white; font-size: 14px;">${matchMinute}</strong>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Match Score & Question Counter -->
                     <div style="text-align: center;">
-                        <div style="font-size: 24px; font-weight: 900; letter-spacing: 2px;">
-                            GOALS: <span id="sb-goals" style="color: var(--pitch-green);">${this._quizEngine.calculateFinalStats().goals}</span>
+                        <div style="font-size: 22px; font-weight: 900; letter-spacing: 2px;">
+                            GOALS: <span id="sb-goals" style="color: var(--pitch-green); transition: all 0.3s;">${this._quizEngine.calculateFinalStats().goals}</span>
                         </div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Q ${this._currentIndex + 1} OF ${this._questions.length}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;">
+                            QUESTION ${this._currentIndex + 1} OF ${this._questions.length}
+                        </div>
                     </div>
 
                     <!-- Countdown Timer -->
@@ -96,7 +185,7 @@ export class ScoreboardQuestionScreen {
                     </div>
                 </div>
 
-                <!-- Center Question Card -->
+                <!-- Center Question Card Container -->
                 <div style="
                     position: absolute;
                     top: 52%;
@@ -104,11 +193,11 @@ export class ScoreboardQuestionScreen {
                     transform: translate(-50%, -50%);
                     width: 90%;
                     max-width: 580px;
-                ">
+                " id="question-card-wrapper">
                     <!-- Glassmorphism Card -->
                     <div class="glass-card" style="padding: 30px; text-align: center; margin-bottom: 20px;" id="question-card-container">
-                        <div style="font-size: 13px; font-weight: 800; color: var(--pitch-green); letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;">
-                            CHALLENGE QUESTION
+                        <div style="font-size: 12px; font-weight: 800; color: var(--pitch-green); letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;">
+                            ⚽ MATCH ATTACK • ${halfName} (${matchMinute})
                         </div>
                         <div style="font-size: 22px; font-weight: 800; line-height: 1.4; color: #F8FAFC;">
                             ${q.prompt}
@@ -122,9 +211,10 @@ export class ScoreboardQuestionScreen {
                                 text-align: left;
                                 justify-content: flex-start;
                                 padding: 16px 20px;
-                                font-size: 16px;
+                                font-size: 15px;
                                 color: white;
                                 border: 1px solid var(--glass-border);
+                                position: relative;
                             ">
                                 <span style="
                                     width: 28px;
@@ -137,6 +227,7 @@ export class ScoreboardQuestionScreen {
                                     font-size: 13px;
                                     font-weight: bold;
                                     color: var(--gold-primary);
+                                    margin-right: 8px;
                                 ">${String.fromCharCode(65 + i)}</span>
                                 ${opt}
                             </button>
@@ -162,6 +253,61 @@ export class ScoreboardQuestionScreen {
         this._bindOptionButtons();
     }
 
+    private _hasSeenHalfTime: boolean = false;
+
+    private _renderHalfTimeSummary(): void {
+        this._hasSeenHalfTime = true;
+        const root = this._uiManager.container;
+        const stats = this._quizEngine.calculateFinalStats();
+
+        root.innerHTML = `
+            <div class="stadium-container" style="pointer-events: auto;">
+                <div class="floodlight floodlight-left"></div>
+                <div class="floodlight floodlight-right"></div>
+
+                <div class="glass-card" style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 90%;
+                    max-width: 480px;
+                    padding: 36px 28px;
+                    text-align: center;
+                    border-color: #60A5FA;
+                ">
+                    <div style="font-size: 48px; margin-bottom: 8px;">⏸️</div>
+                    <span style="font-size: 11px; font-weight: 900; color: #60A5FA; letter-spacing: 3px;">
+                        FIRST HALF COMPLETED (QUESTIONS 1–5)
+                    </span>
+                    <h2 style="font-size: 36px; font-weight: 900; color: white; margin: 10px 0 20px 0;">HALF TIME</h2>
+
+                    <!-- Summary Stats Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; text-align: left;">
+                        <div class="glass-card" style="padding: 14px; background: rgba(2,6,23,0.6);">
+                            <div style="font-size: 11px; color: var(--text-muted);">1ST HALF GOALS</div>
+                            <div style="font-size: 24px; font-weight: 900; color: var(--pitch-green);">⚽ ${stats.goals}</div>
+                        </div>
+                        <div class="glass-card" style="padding: 14px; background: rgba(2,6,23,0.6);">
+                            <div style="font-size: 11px; color: var(--text-muted);">ACCURACY</div>
+                            <div style="font-size: 24px; font-weight: 900; color: #60A5FA;">🎯 ${stats.accuracy}%</div>
+                        </div>
+                    </div>
+
+                    <button id="continue-2nd-half-btn" class="broadcast-btn broadcast-btn-green" style="width: 100%; font-size: 18px; padding: 16px;">
+                        ⚡ KICK OFF SECOND HALF ➡️
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('continue-2nd-half-btn')?.addEventListener('click', () => {
+            this._audioManager.playWhistle();
+            this._currentIndex++;
+            this._renderQuestion();
+        });
+    }
+
     private _startTimer(): void {
         this._stopTimer();
         this._timeLeftSec = 30;
@@ -176,7 +322,7 @@ export class ScoreboardQuestionScreen {
             if (timerEl) {
                 timerEl.innerText = `${this._timeLeftSec}s`;
                 if (this._timeLeftSec <= 5) {
-                    timerEl.style.color = '#EF4444'; // Red alert countdown
+                    timerEl.style.color = '#EF4444';
                 }
             }
 
@@ -210,30 +356,47 @@ export class ScoreboardQuestionScreen {
         });
     }
 
+    /**
+     * 3. Correct Answer (GOAL) and 4. Wrong Answer (GOAL SAVED) Animations
+     */
     private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement): void {
         this._stopTimer();
         const responseTimeSec = parseFloat(((performance.now() - this._startTimeMs) / 1000).toFixed(1));
         const q = this._questions[this._currentIndex];
         const result = this._quizEngine.recordAnswer(chosenIndex === q.correctIndex, responseTimeSec);
 
-        // Disable options
         const buttons = document.querySelectorAll('.option-btn');
         buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
 
         if (result.isGoal) {
             targetBtn.style.background = 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)';
             targetBtn.style.borderColor = '#22C55E';
+            targetBtn.style.boxShadow = '0 0 25px rgba(34, 197, 94, 0.8)';
+
+            // Scoreboard flash
+            const sb = document.getElementById('scoreboard-bar');
+            if (sb) sb.classList.add('scoreboard-flash');
+
+            // Floating XP text
+            this._spawnFloatingXp(targetBtn, `+${result.xp} XP`);
+            this._spawnConfetti();
+
             this._audioManager.playGoalCheer();
             this._showGoalOverlay();
         } else {
             targetBtn.style.background = 'linear-gradient(135deg, #EF4444 0%, #991B1B 100%)';
-            targetBtn.style.borderColor = '#EF4444';
+            targetBtn.classList.add('red-flash-border');
             this._audioManager.playWhistle();
+
+            // Camera shake on question card
+            const wrapper = document.getElementById('question-card-wrapper');
+            if (wrapper) wrapper.classList.add('camera-shake');
 
             // Highlight correct option
             const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
             if (correctBtn) {
                 correctBtn.style.background = 'linear-gradient(135deg, #22C55E 0%, #15803D 100%)';
+                correctBtn.style.borderColor = '#22C55E';
             }
             this._showMissOverlay();
         }
@@ -241,7 +404,7 @@ export class ScoreboardQuestionScreen {
         setTimeout(() => {
             this._currentIndex++;
             this._renderQuestion();
-        }, 1500);
+        }, 1600);
     }
 
     private _handleTimeOut(): void {
@@ -252,93 +415,75 @@ export class ScoreboardQuestionScreen {
         setTimeout(() => {
             this._currentIndex++;
             this._renderQuestion();
-        }, 1500);
+        }, 1600);
+    }
+
+    private _spawnFloatingXp(anchorEl: HTMLElement, text: string): void {
+        const xpEl = document.createElement('div');
+        xpEl.className = 'floating-xp';
+        xpEl.innerText = text;
+        const rect = anchorEl.getBoundingClientRect();
+        xpEl.style.left = `${rect.left + rect.width / 2 - 30}px`;
+        xpEl.style.top = `${rect.top - 20}px`;
+        document.body.appendChild(xpEl);
+        setTimeout(() => xpEl.remove(), 1200);
+    }
+
+    private _spawnConfetti(): void {
+        const colors = ['#FFD700', '#22C55E', '#60A5FA', '#F59E0B', '#FFFFFF'];
+        for (let i = 0; i < 20; i++) {
+            const p = document.createElement('div');
+            p.className = 'confetti-particle';
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.left = `${Math.random() * 100}vw`;
+            p.style.top = `${Math.random() * 30 + 10}vh`;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1500);
+        }
     }
 
     private _showGoalOverlay(): void {
         const overlay = document.createElement('div');
+        overlay.className = 'goal-banner-anim';
         overlay.style.position = 'absolute';
-        overlay.style.top = '24%';
+        overlay.style.top = '28%';
         overlay.style.left = '50%';
-        overlay.style.transform = 'translate(-50%, -50%) scale(1.1)';
-        overlay.style.fontSize = '38px';
+        overlay.style.fontSize = '44px';
         overlay.style.fontWeight = '900';
         overlay.style.color = '#FFD700';
-        overlay.style.background = 'rgba(15, 23, 42, 0.9)';
-        overlay.style.border = '2px solid #FFD700';
-        overlay.style.padding = '10px 30px';
-        overlay.style.borderRadius = '30px';
-        overlay.style.boxShadow = '0 0 30px rgba(255,215,0,0.6)';
+        overlay.style.background = 'rgba(15, 23, 42, 0.95)';
+        overlay.style.border = '3px solid #22C55E';
+        overlay.style.padding = '14px 40px';
+        overlay.style.borderRadius = '40px';
         overlay.style.zIndex = '100';
         overlay.style.pointerEvents = 'none';
         overlay.style.whiteSpace = 'nowrap';
-        overlay.innerText = '⚽ GOAL!!!!!';
+        overlay.innerHTML = '⚽ GOAL!!!!!';
 
         document.body.appendChild(overlay);
-        setTimeout(() => overlay.remove(), 1200);
+        setTimeout(() => overlay.remove(), 1400);
     }
 
-    private _showMissOverlay(text: string = '🧤 SAVED!'): void {
+    private _showMissOverlay(text: string = '🧤 GOAL SAVED!'): void {
         const overlay = document.createElement('div');
+        overlay.className = 'goal-banner-anim';
         overlay.style.position = 'absolute';
-        overlay.style.top = '24%';
+        overlay.style.top = '28%';
         overlay.style.left = '50%';
-        overlay.style.transform = 'translate(-50%, -50%) scale(1.1)';
-        overlay.style.fontSize = '36px';
+        overlay.style.fontSize = '40px';
         overlay.style.fontWeight = '900';
         overlay.style.color = '#EF4444';
-        overlay.style.background = 'rgba(15, 23, 42, 0.9)';
-        overlay.style.border = '2px solid #EF4444';
-        overlay.style.padding = '10px 30px';
-        overlay.style.borderRadius = '30px';
-        overlay.style.boxShadow = '0 0 30px rgba(239,68,68,0.6)';
+        overlay.style.background = 'rgba(15, 23, 42, 0.95)';
+        overlay.style.border = '3px solid #EF4444';
+        overlay.style.padding = '14px 40px';
+        overlay.style.borderRadius = '40px';
         overlay.style.zIndex = '100';
         overlay.style.pointerEvents = 'none';
         overlay.style.whiteSpace = 'nowrap';
-        overlay.innerText = text;
+        overlay.innerHTML = text;
 
         document.body.appendChild(overlay);
-        setTimeout(() => overlay.remove(), 1200);
-    }
-
-    private _renderHalfTimeSummary(): void {
-        const root = this._uiManager.container;
-        const stats = this._quizEngine.calculateFinalStats();
-
-        root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
-                <div class="floodlight floodlight-left"></div>
-                <div class="floodlight floodlight-right"></div>
-
-                <div class="glass-card" style="
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 90%;
-                    max-width: 450px;
-                    padding: 30px;
-                    text-align: center;
-                ">
-                    <h2 style="font-size: 32px; color: var(--gold-primary); margin: 0 0 10px 0;">⏸️ HALF TIME</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">FIRST HALF SUMMARY</p>
-
-                    <div style="font-size: 40px; font-weight: 900; margin-bottom: 20px; color: white;">
-                        GOALS: ${stats.goals}
-                    </div>
-
-                    <button id="continue-2nd-half-btn" class="broadcast-btn broadcast-btn-gold" style="width: 100%;">
-                        START SECOND HALF ➡️
-                    </button>
-                </div>
-            </div>
-        `;
-
-        document.getElementById('continue-2nd-half-btn')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            this._currentIndex++;
-            this._renderQuestion();
-        });
+        setTimeout(() => overlay.remove(), 1400);
     }
 
     public destroy(): void {
