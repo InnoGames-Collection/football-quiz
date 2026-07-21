@@ -1,0 +1,148 @@
+/* Football Quiz League - UEFA Champions League Broadcast Styling */
+
+:root {
+  --stadium-bg-start: #060b19;
+  --stadium-bg-end: #02040a;
+  --pitch-green: #22c55e;
+  --pitch-green-glow: rgba(34, 197, 94, 0.4);
+  --gold-primary: #ffd700;
+  --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff9900 100%);
+  --gold-glow: rgba(255, 215, 0, 0.35);
+  --glass-bg: rgba(15, 23, 42, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-hover: rgba(30, 41, 59, 0.85);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --ucl-blue: #1e3a8a;
+}
+
+/* Stadium Animated Floodlights Background */
+.stadium-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 20%, #1e293b 0%, #020617 80%);
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+
+.floodlight {
+  position: absolute;
+  width: 300px;
+  height: 600px;
+  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.15) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 80%);
+  transform-origin: top center;
+  pointer-events: none;
+}
+
+.floodlight-left {
+  top: 0;
+  left: 10%;
+  transform: rotate(-25deg);
+  animation: sweepLightLeft 12s ease-in-out infinite alternate;
+}
+
+.floodlight-right {
+  top: 0;
+  right: 10%;
+  transform: rotate(25deg);
+  animation: sweepLightRight 14s ease-in-out infinite alternate;
+}
+
+@keyframes sweepLightLeft {
+  0% { transform: rotate(-30deg); opacity: 0.6; }
+  100% { transform: rotate(-15deg); opacity: 0.9; }
+}
+
+@keyframes sweepLightRight {
+  0% { transform: rotate(30deg); opacity: 0.6; }
+  100% { transform: rotate(15deg); opacity: 0.9; }
+}
+
+/* Glassmorphism Card Component */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: var(--glass-hover);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 20px var(--gold-glow);
+}
+
+/* UEFA Broadcast Banner Button */
+.broadcast-btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.broadcast-btn-gold {
+  background: var(--gold-gradient);
+  color: #020617;
+  box-shadow: 0 4px 20px var(--gold-glow);
+}
+
+.broadcast-btn-gold:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 28px rgba(255, 215, 0, 0.6);
+}
+
+.broadcast-btn-green {
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+  color: white;
+  box-shadow: 0 4px 20px var(--pitch-green-glow);
+}
+
+.broadcast-btn-green:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 28px rgba(34, 197, 94, 0.6);
+}
+
+/* Scoreboard Styling */
+.scoreboard-header {
+  background: rgba(2, 6, 23, 0.85);
+  border-bottom: 2px solid var(--gold-primary);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Football Rank Badge */
+.rank-badge {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rank-bronze { background: rgba(180, 83, 9, 0.25); color: #fbbf24; border: 1px solid #d97706; }
+.rank-silver { background: rgba(148, 163, 184, 0.25); color: #e2e8f0; border: 1px solid #94a3b8; }
+.rank-gold { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid #eab308; }
+.rank-elite { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid #a855f7; }
+.rank-legend { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid #ef4444; }
+.rank-hall-of-fame { background: var(--gold-gradient); color: #020617; border: 1px solid #ffd700; box-shadow: 0 0 10px var(--gold-glow); }
