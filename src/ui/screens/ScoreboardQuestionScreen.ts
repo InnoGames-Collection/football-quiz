@@ -63,16 +63,12 @@ export class ScoreboardQuestionScreen {
         const difficultyText = '⭐⭐⭐ NATIONAL LEAGUE DIFFICULTY';
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
                 <div class="floodlight floodlight-left"></div>
                 <div class="floodlight floodlight-right"></div>
 
                 <div class="glass-card" style="
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 90%;
+                    width: 100%;
                     max-width: 520px;
                     padding: 36px 28px;
                     text-align: center;
@@ -269,16 +265,12 @@ export class ScoreboardQuestionScreen {
         const stats = this._quizEngine.calculateFinalStats();
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
                 <div class="floodlight floodlight-left"></div>
                 <div class="floodlight floodlight-right"></div>
 
                 <div class="glass-card" style="
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 90%;
+                    width: 100%;
                     max-width: 480px;
                     padding: 36px 28px;
                     text-align: center;
