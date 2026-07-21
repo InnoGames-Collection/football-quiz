@@ -1,10 +1,11 @@
-/* Football Quiz League - Premium TV Broadcast Styling (UEFA Champions League & Premier League HD Theme) */
+/* Football Quiz League - Premium Unified Football Television Broadcast Design System */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap');
 
 :root {
+  /* Unified Color Tokens */
   --tv-bg-dark: #020617;
-  --tv-bg-surface: rgba(15, 23, 42, 0.82);
+  --tv-bg-surface: rgba(15, 23, 42, 0.88);
   --tv-pitch-green: #22c55e;
   --tv-pitch-glow: rgba(34, 197, 94, 0.45);
   --tv-gold-primary: #ffd700;
@@ -14,15 +15,29 @@
   --tv-blue-glow: rgba(59, 130, 246, 0.4);
   --tv-red-live: #ef4444;
   --tv-red-glow: rgba(239, 68, 68, 0.6);
-  --tv-glass-border: rgba(255, 255, 255, 0.14);
-  --tv-text-main: #f8fafc;
-  --tv-text-muted: #94a3b8;
-  --tv-text-dim: #64748b;
+  --tv-glass-border: rgba(255, 255, 255, 0.16);
+  
+  --tv-text-main: #ffffff;
+  --tv-text-muted: #cbd5e1;
+  --tv-text-dim: #94a3b8;
+  
   --tv-font: 'Inter', system-ui, -apple-system, sans-serif;
   --tv-mono: 'JetBrains Mono', monospace, sans-serif;
+
+  /* Unified Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 36px;
+
+  /* Unified Border Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
 }
 
-/* Base Viewport & Animated Floodlights Stadium Background */
+/* Base Viewport & Stadium Background */
 .stadium-container {
   position: absolute;
   top: 0;
@@ -35,9 +50,10 @@
   color: var(--tv-text-main);
   box-sizing: border-box;
   user-select: none;
+  contain: layout style;
 }
 
-/* TV Scanline & Mesh Texture Overlay */
+/* TV Scanline Overlay */
 .stadium-container::before {
   content: "";
   position: absolute;
@@ -45,13 +61,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.14) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
   background-size: 100% 3px, 6px 100%;
   pointer-events: none;
   z-index: 2;
 }
 
-/* Animated Sweeping Stadium Floodlight Beams */
+/* Sweeping Floodlight Beams */
 .floodlight {
   position: absolute;
   width: 380px;
@@ -86,11 +102,11 @@
   100% { transform: rotate(14deg); opacity: 0.95; }
 }
 
-/* TV Broadcast Header Bar & Ticker */
+/* TV Broadcast Header Bar */
 .tv-broadcast-header {
-  background: rgba(2, 6, 23, 0.92);
+  background: rgba(2, 6, 23, 0.94);
   border-bottom: 2px solid var(--tv-gold-primary);
-  padding: 10px 24px;
+  padding: 12px var(--space-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -98,20 +114,21 @@
   position: relative;
   z-index: 20;
   backdrop-filter: blur(16px);
+  min-height: 52px;
 }
 
-/* TV Live HD Badge */
+/* Live Badge */
 .tv-live-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.18);
   border: 1px solid var(--tv-red-live);
-  color: var(--tv-red-live);
+  color: #fca5a5;
   font-size: 11px;
   font-weight: 900;
-  padding: 3px 10px;
-  border-radius: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   box-shadow: 0 0 12px var(--tv-red-glow);
@@ -132,7 +149,7 @@
   100% { opacity: 0.3; transform: scale(0.8); }
 }
 
-/* TV Channel Logo Watermark */
+/* Channel Logo Watermark */
 .tv-channel-logo {
   display: flex;
   align-items: center;
@@ -149,14 +166,14 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* TV Glassmorphism Card Component (Card Pop-In: 250ms <= 500ms) */
+/* Glassmorphism Card Component */
 .glass-card {
   background: var(--tv-bg-surface);
   border: 1px solid var(--tv-glass-border);
   backdrop-filter: blur(20px);
-  border-radius: 18px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
-  transition: transform 0.18s ease-out, background 0.18s ease-out, border-color 0.18s ease-out, box-shadow 0.18s ease-out;
+  transition: transform 180ms ease-out, background 180ms ease-out, border-color 180ms ease-out;
   position: relative;
   overflow: hidden;
   will-change: transform, opacity;
@@ -169,17 +186,18 @@
 }
 
 .glass-card:hover {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(255, 215, 0, 0.35);
+  background: rgba(30, 41, 59, 0.94);
+  border-color: rgba(255, 215, 0, 0.4);
   transform: translate3d(0, -2px, 0);
   box-shadow: 0 20px 56px rgba(0, 0, 0, 0.85), 0 0 24px var(--tv-gold-glow);
 }
 
-/* TV Broadcast Button Base (Button Micro-Bounce: 180ms <= 500ms, Gloss Sweep: 350ms <= 500ms) */
+/* TV Broadcast Buttons */
 .broadcast-btn {
-  padding: 14px 24px;
-  border-radius: 12px;
-  font-weight: 800;
+  min-height: 48px;
+  padding: 14px var(--space-lg);
+  border-radius: var(--radius-md);
+  font-weight: 900;
   font-size: 15px;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -195,6 +213,14 @@
   overflow: hidden;
   box-sizing: border-box;
   will-change: transform;
+}
+
+.broadcast-btn:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--tv-gold-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 16px var(--tv-gold-glow) !important;
 }
 
 .broadcast-btn:active {
@@ -230,8 +256,8 @@
 }
 
 .broadcast-btn-green {
-  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
-  color: white;
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  color: #ffffff;
   box-shadow: 0 6px 24px var(--tv-pitch-glow);
   border: 1px solid #4ade80;
 }
@@ -241,13 +267,7 @@
   box-shadow: 0 8px 32px rgba(34, 197, 94, 0.75);
 }
 
-/* TV Progress Bar Animation (Progress Fill: 300ms <= 500ms) */
-.tv-progress-fill {
-  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: width;
-}
-
-/* TV Match Minute Badge */
+/* TV Minute Badge */
 .tv-minute-badge {
   font-family: var(--tv-mono);
   font-weight: 800;
@@ -260,12 +280,12 @@
   letter-spacing: 1px;
 }
 
-/* TV Telemetry Stat Widget */
+/* Telemetry Stat Widget */
 .tv-stat-widget {
-  background: rgba(2, 6, 23, 0.75);
+  background: rgba(2, 6, 23, 0.85);
   border: 1px solid var(--tv-glass-border);
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
   position: relative;
   will-change: transform;
 }
@@ -295,16 +315,38 @@
   letter-spacing: 1.5px;
 }
 
-.rank-bronze { background: rgba(180, 83, 9, 0.25); color: #fbbf24; border: 1px solid #d97706; }
-.rank-silver { background: rgba(148, 163, 184, 0.25); color: #e2e8f0; border: 1px solid #94a3b8; }
-.rank-gold { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid #eab308; }
-.rank-elite { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid #a855f7; }
-.rank-legend { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid #ef4444; }
+.rank-bronze { background: rgba(180, 83, 9, 0.3); color: #fef08a; border: 1px solid #d97706; }
+.rank-silver { background: rgba(148, 163, 184, 0.3); color: #ffffff; border: 1px solid #94a3b8; }
+.rank-gold { background: rgba(234, 179, 8, 0.3); color: #fef08a; border: 1px solid #eab308; }
+.rank-elite { background: rgba(168, 85, 247, 0.3); color: #e9d5ff; border: 1px solid #a855f7; }
+.rank-legend { background: rgba(239, 68, 68, 0.3); color: #fecaca; border: 1px solid #ef4444; }
 .rank-hall-of-fame { background: var(--tv-gold-gradient); color: #020617; border: 1px solid #ffd700; box-shadow: 0 0 12px var(--tv-gold-glow); }
 
-/* --- HIGH PERFORMANCE CSS KEYFRAMES (STRICTLY <= 500ms) --- */
+/* --- MOBILE LANDSCAPE OVERRIDES --- */
 
-/* Question Slide-In Transition (200ms <= 500ms) */
+@media (max-height: 520px) and (orientation: landscape) {
+  .stadium-container {
+    overflow-y: auto !important;
+  }
+  .tv-broadcast-header {
+    padding: 6px var(--space-md);
+    min-height: 40px;
+  }
+  .glass-card {
+    padding: var(--space-md) !important;
+  }
+  h1 {
+    font-size: 26px !important;
+  }
+  .broadcast-btn {
+    min-height: 44px !important;
+    padding: 8px var(--space-md) !important;
+    font-size: 13px !important;
+  }
+}
+
+/* --- ANIMATION KEYFRAMES (<= 500ms) --- */
+
 .question-transition-in {
   animation: questionSlideIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
@@ -314,7 +356,6 @@
   100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-/* Result Screen Broadcast Reveal (300ms <= 500ms) */
 .result-transition-in {
   animation: resultFadeIn 300ms ease-out forwards;
   will-change: transform, opacity;
@@ -324,7 +365,6 @@
   100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
-/* XP Floating Rise (450ms <= 500ms) */
 .floating-xp {
   position: absolute;
   font-size: 20px;
@@ -340,7 +380,6 @@
   100% { opacity: 0; transform: translate3d(0, -40px, 0) scale(1.25); }
 }
 
-/* Achievement Badge Unlock Pulse (350ms <= 500ms) */
 .achievement-unlock-anim {
   animation: achievementUnlock 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   will-change: transform, opacity;
@@ -351,7 +390,6 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Whistle pulse (400ms <= 500ms) */
 .whistle-anim {
   display: inline-block;
   animation: whistlePulse 400ms infinite ease-in-out alternate;
@@ -362,7 +400,6 @@
   100% { transform: scale(1) rotate(10deg); }
 }
 
-/* Goal Banner Pop (350ms <= 500ms) */
 .goal-banner-anim {
   animation: goalPop 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   will-change: transform, opacity;
@@ -373,7 +410,6 @@
   100% { transform: translate3d(-50%, -50%, 0) scale(1); opacity: 1; }
 }
 
-/* Scoreboard Flash FX (300ms <= 500ms) */
 .scoreboard-flash {
   animation: sbFlash 300ms ease-out;
 }
@@ -382,7 +418,6 @@
   100% { background-color: transparent; }
 }
 
-/* Camera Shake (350ms <= 500ms) */
 .camera-shake {
   animation: shake 350ms cubic-bezier(.36,.07,.19,.97) both;
 }
@@ -393,7 +428,6 @@
   40%, 60% { transform: translate3d(5px, 0, 0); }
 }
 
-/* Red Flash Border (300ms <= 500ms) */
 .red-flash-border {
   border-color: #EF4444 !important;
   box-shadow: 0 0 30px rgba(239, 68, 68, 0.8) !important;
@@ -404,7 +438,6 @@
   100% { background: var(--tv-bg-surface); }
 }
 
-/* Confetti Particle Fall (450ms <= 500ms) */
 .confetti-particle {
   position: absolute;
   width: 7px;
