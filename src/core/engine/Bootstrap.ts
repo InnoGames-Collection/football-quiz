@@ -12,10 +12,11 @@ import { AchievementScreen } from '../../ui/screens/AchievementScreen';
 import { MatchmakingScreen } from '../../ui/screens/MatchmakingScreen';
 import { LiveMatchScreen } from '../../ui/screens/LiveMatchScreen';
 import { QuestionBank } from '../quiz/QuestionBank';
+import { BottomNav, TabId } from '../../ui/components/BottomNav';
 
 /**
  * Bootstraps the Football Quiz League platform.
- * Initializes the ambient 3D background scene and mounts the quiz UI hub.
+ * Initializes the ambient 3D background scene and mounts the quiz UI hub with persistent 5-tab Bottom Navigation.
  */
 export async function bootstrapFootballLeague(canvasElementId: string): Promise<Game> {
     const game = new Game(canvasElementId);
@@ -40,8 +41,61 @@ export async function bootstrapFootballLeague(canvasElementId: string): Promise<
     winAny.ethioSave = game.saveManager;
     winAny.ethioAuth = authManager;
 
+    const renderTab = async (tabId: TabId) => {
+        BottomNav.setActiveTab(tabId);
+        switch (tabId) {
+            case 'home':
+                renderHome();
+                break;
+            case 'play':
+                const dcScreen = new DailyChallengeScreen(
+                    game.uiManager,
+                    game.audioManager,
+                    async (challengeInfo) => {
+                        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                        quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
+                        await registry.launchGame('football-quiz');
+                    },
+                    () => renderHome()
+                );
+                await dcScreen.render();
+                break;
+            case 'league':
+                const browser = new CompetitionBrowserScreen(
+                    game.uiManager,
+                    game.audioManager,
+                    async (comp) => {
+                        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                        quizMode.setCompetition(comp.id);
+                        await registry.launchGame('football-quiz');
+                    },
+                    () => renderHome()
+                );
+                browser.render();
+                break;
+            case 'rankings':
+                const lbScreen = new LeaderboardScreen(
+                    game.uiManager,
+                    game.audioManager,
+                    () => renderHome()
+                );
+                await lbScreen.render();
+                break;
+            case 'profile':
+                const achScreen = new AchievementScreen(
+                    game.uiManager,
+                    game.audioManager,
+                    game.saveManager,
+                    () => renderHome()
+                );
+                achScreen.render();
+                break;
+        }
+    };
+
     // Render the main hub screen
     const renderHome = () => {
+        BottomNav.setActiveTab('home');
         const homeScreen = new FootballLeagueHome(
             game.saveManager,
             game.audioManager,
@@ -75,47 +129,16 @@ export async function bootstrapFootballLeague(canvasElementId: string): Promise<
                     await mmScreen.render();
                 },
                 onDailyChallenge: async () => {
-                    const dcScreen = new DailyChallengeScreen(
-                        game.uiManager,
-                        game.audioManager,
-                        async (challengeInfo) => {
-                            const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-                            quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
-                            await registry.launchGame('football-quiz');
-                        },
-                        () => renderHome()
-                    );
-                    await dcScreen.render();
+                    renderTab('play');
                 },
                 onCompetitions: () => {
-                    const browser = new CompetitionBrowserScreen(
-                        game.uiManager,
-                        game.audioManager,
-                        async (comp) => {
-                            const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-                            quizMode.setCompetition(comp.id);
-                            await registry.launchGame('football-quiz');
-                        },
-                        () => renderHome()
-                    );
-                    browser.render();
+                    renderTab('league');
                 },
                 onLeaderboard: async () => {
-                    const lbScreen = new LeaderboardScreen(
-                        game.uiManager,
-                        game.audioManager,
-                        () => renderHome()
-                    );
-                    await lbScreen.render();
+                    renderTab('rankings');
                 },
                 onAchievements: () => {
-                    const achScreen = new AchievementScreen(
-                        game.uiManager,
-                        game.audioManager,
-                        game.saveManager,
-                        () => renderHome()
-                    );
-                    achScreen.render();
+                    renderTab('profile');
                 },
                 onAdminPanel: () => {
                     const admin = new AdminPanelScreen(game.uiManager, game.audioManager, () => renderHome());
@@ -127,16 +150,21 @@ export async function bootstrapFootballLeague(canvasElementId: string): Promise<
     };
 
     winAny.ethioReloadHome = renderHome;
+
+    // Render persistent bottom navigation bar
+    BottomNav.render((tabId) => {
+        renderTab(tabId);
+    });
+
     renderHome();
 
-    console.log('[Bootstrap] ⚽ Football Quiz League Hub initialized successfully.');
+    console.log('[Bootstrap] ⚽ Football Quiz League Persistent 5-Tab Navigation initialized.');
 
     return game;
 }
 
 /**
  * Configures the ambient 3D scene with a camera and soft lighting.
- * This creates the dark, atmospheric stadium backdrop behind the quiz UI.
  */
 function configureAmbientScene(scene: Scene, canvasElementId: string): void {
     const camera = new FreeCamera('ambientCamera', new Vector3(0, 2.5, -6), scene);
@@ -147,10 +175,8 @@ function configureAmbientScene(scene: Scene, canvasElementId: string): void {
         throw new Error(`[Bootstrap] Canvas '${canvasElementId}' was not found.`);
     }
 
-    // Disable camera interaction — ambient background only
     camera.detachControl();
 
-    // Soft ambient lighting for the dark stadium feel
     const light = new HemisphericLight('ambientLight', new Vector3(0, 1, 0), scene);
     light.intensity = 0.4;
 }

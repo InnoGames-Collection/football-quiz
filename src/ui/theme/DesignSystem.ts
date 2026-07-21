@@ -68,15 +68,15 @@ export class DesignSystem {
      */
     public static Button(props: ButtonProps): string {
         const variantClass = props.variant === 'gold' 
-            ? 'fds-btn-gold' 
+            ? 'broadcast-btn-gold' 
             : props.variant === 'green' 
-            ? 'fds-btn-green' 
-            : 'glass-card';
+            ? 'broadcast-btn-green' 
+            : 'glass-card'; // glass-card is a valid button variant too
         const widthStyle = props.fullWidth ? 'width: 100%;' : '';
         const idAttr = props.id ? `id="${props.id}"` : '';
 
         return `
-            <button ${idAttr} class="fds-btn ${variantClass} ${props.className || ''}" style="${widthStyle}">
+            <button ${idAttr} class="broadcast-btn ${variantClass} ${props.className || ''}" style="${widthStyle}">
                 ${props.icon ? `<span>${props.icon}</span>` : ''}
                 ${props.text}
             </button>
@@ -114,7 +114,7 @@ export class DesignSystem {
         }
 
         return `
-            <span class="fds-badge" style="background: rgba(255, 215, 0, 0.12); border: 1px solid #FFD700; color: #FFD700;">
+            <span class="fds-badge" style="background: rgba(255, 215, 0, 0.12); border: 1px solid var(--fds-gold-primary); color: var(--fds-gold-primary); padding: 4px 10px; border-radius: var(--radius-sm); font-size: var(--fds-font-xs); font-weight: 800;">
                 ${props.icon ? `${props.icon} ` : ''}${props.text}
             </span>
         `;
@@ -183,6 +183,43 @@ export class DesignSystem {
                 <div class="tv-progress-fill" style="width: ${Math.min(Math.max(percent, 0), 100)}%; height: 100%; background: ${color};"></div>
             </div>
         `;
+    }
+
+    /**
+     * Reusable FDS Text Component
+     */
+    public static Text(text: string, options?: { size?: string, weight?: string, color?: string, margin?: string, align?: string, family?: string }): string {
+        const sizeStyle = options?.size ? `font-size: ${options.size};` : '';
+        const weightStyle = options?.weight ? `font-weight: ${options.weight};` : '';
+        const colorStyle = options?.color ? `color: ${options.color};` : '';
+        const marginStyle = options?.margin ? `margin: ${options.margin};` : '';
+        const alignStyle = options?.align ? `text-align: ${options.align};` : '';
+        const familyStyle = options?.family ? `font-family: ${options.family};` : '';
+        
+        return `<div style="${sizeStyle} ${weightStyle} ${colorStyle} ${marginStyle} ${alignStyle} ${familyStyle}">${text}</div>`;
+    }
+
+    /**
+     * Reusable FDS Flex Container
+     */
+    public static Flex(content: string, options?: { direction?: 'row'|'column', gap?: string, align?: string, justify?: string, wrap?: boolean, margin?: string }): string {
+        const dir = options?.direction === 'column' ? 'flex-direction: column;' : 'flex-direction: row;';
+        const gap = options?.gap ? `gap: ${options.gap};` : '';
+        const align = options?.align ? `align-items: ${options.align};` : 'align-items: center;';
+        const justify = options?.justify ? `justify-content: ${options.justify};` : '';
+        const wrap = options?.wrap ? 'flex-wrap: wrap;' : '';
+        const margin = options?.margin ? `margin: ${options.margin};` : '';
+        return `<div style="display: flex; ${dir} ${gap} ${align} ${justify} ${wrap} ${margin}">${content}</div>`;
+    }
+
+    /**
+     * Reusable FDS Grid Container
+     */
+    public static Grid(content: string, options?: { minWidth?: string, gap?: string, margin?: string }): string {
+        const minWidth = options?.minWidth || '280px';
+        const gap = options?.gap ? `gap: ${options.gap};` : 'gap: var(--fds-space-16);';
+        const margin = options?.margin ? `margin: ${options.margin};` : '';
+        return `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(${minWidth}, 1fr)); ${gap} ${margin}">${content}</div>`;
     }
 
     /**

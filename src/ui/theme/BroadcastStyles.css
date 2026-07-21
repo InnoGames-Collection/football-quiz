@@ -24,13 +24,32 @@
   --tv-font: 'Inter', system-ui, -apple-system, sans-serif;
   --tv-mono: 'JetBrains Mono', monospace, sans-serif;
 
-  /* Standard 8-Point Spacing Scale */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 36px;
+  /* Standard 8-Point Spacing Scale (FDS Unified) */
+  --fds-space-4: 4px;
+  --fds-space-8: 8px;
+  --fds-space-12: 12px;
+  --fds-space-16: 16px;
+  --fds-space-20: 20px;
+  --fds-space-24: 24px;
+  --fds-space-32: 32px;
+  --fds-space-48: 48px;
+  --fds-space-64: 64px;
 
+  /* Typography Scale */
+  --fds-font-xs: 12px;
+  --fds-font-sm: 14px;
+  --fds-font-md: 16px;
+  --fds-font-lg: 18px;
+  --fds-font-xl: 24px;
+  --fds-font-2xl: 32px;
+
+  /* FDS Tokens (Aliased to TV Broadcast Theme) */
+  --fds-gold-primary: var(--tv-gold-primary);
+  --fds-gold-gradient: var(--tv-gold-gradient);
+  --fds-gold-glow: var(--tv-gold-glow);
+  --fds-font-mono: var(--tv-mono);
+  --fds-font-main: var(--tv-font);
+  
   /* Border Radii */
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -45,12 +64,17 @@
   width: 100%;
   height: 100%;
   background: radial-gradient(circle at 50% 20%, #0f172a 0%, #090d16 55%, #020617 100%);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   font-family: var(--tv-font);
   color: var(--tv-text-main);
   box-sizing: border-box;
   user-select: none;
   contain: layout style;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 64px); /* 64px for bottom nav */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 /* Sweeping Floodlight Beams */

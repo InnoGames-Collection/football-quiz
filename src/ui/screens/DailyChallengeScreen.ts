@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { DailyChallengeManager, DailyChallengeInfo } from '../../core/competition/DailyChallengeManager';
 import { StreakManager } from '../../core/competition/StreakManager';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class DailyChallengeScreen {
     private _uiManager: UIManager;
@@ -9,6 +10,7 @@ export class DailyChallengeScreen {
     private _onStartChallenge: (info: DailyChallengeInfo) => void;
     private _onClose: () => void;
     private _challengeInfo: DailyChallengeInfo | null = null;
+    private _selectedDifficulty: number = 2;
 
     constructor(
         uiManager: UIManager,
@@ -28,91 +30,92 @@ export class DailyChallengeScreen {
         const currentStreak = StreakManager.getInstance().currentStreak;
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; overflow-y: auto; padding: 40px 20px;">
+            <div class="stadium-container" style="pointer-events: auto;">
                 <div class="floodlight floodlight-left"></div>
                 <div class="floodlight floodlight-right"></div>
 
-                <div style="max-width: 540px; margin: 0 auto; position: relative; z-index: 10; text-align: center;">
-                    <!-- Close button -->
-                    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                        <button id="dc-close-btn" class="broadcast-btn glass-card" style="color: white; padding: 8px 16px;">
-                            ✖ CLOSE
-                        </button>
-                    </div>
+                ${DesignSystem.Header({
+                    title: 'MATCHDAY PLAY HUB',
+                    badgeText: 'MATCHDAY PLAY HUB',
+                    rightText: ''
+                })}
+                
+                <div style="position: absolute; top: 12px; right: 24px; z-index: 30;">
+                    <button id="dc-close-btn" class="glass-card" style="padding: 6px 14px; color: white; font-weight: bold; cursor: pointer;">
+                        ⬅️ BACK TO HUB
+                    </button>
+                </div>
 
-                    <!-- Main Challenge Card -->
-                    <div class="glass-card" style="
-                        padding: 36px 28px;
-                        border-color: rgba(255, 215, 0, 0.4);
-                        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-                    ">
-                        <div style="font-size: 54px; margin-bottom: 12px;">📅</div>
-                        <span style="
-                            font-size: 11px;
-                            font-weight: 800;
-                            color: var(--gold-primary);
-                            letter-spacing: 2px;
-                        ">DAILY FEATURED CHALLENGE</span>
-                        <h1 style="margin: 8px 0 16px 0; font-size: 28px; font-weight: 900; color: white;">
-                            ${this._challengeInfo.themeEn}
-                        </h1>
+                <div style="max-width: 880px; margin: var(--fds-space-20) auto; position: relative; z-index: 10; padding: 0 var(--fds-space-20);">
+                    
+                    ${DesignSystem.Card({
+                        borderColor: 'var(--tv-pitch-green)',
+                        className: 'margin-bottom-20',
+                        content: `
+                            ${DesignSystem.Text('⚽ SELECT MATCHDAY PLAY MODE', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--tv-pitch-green)', margin: '0 0 var(--fds-space-4) 0' })}
+                            ${DesignSystem.Text('GAMEPLAY MODES & DERBIES', { size: 'var(--fds-font-xl)', weight: '900', color: 'white', margin: '0' })}
+                        `
+                    })}
 
-                        <!-- Stats Row -->
-                        <div style="
-                            display: grid;
-                            grid-template-columns: 1fr 1fr;
-                            gap: 14px;
-                            margin: 24px 0;
-                        ">
-                            <div style="
-                                background: rgba(15, 23, 42, 0.6);
-                                border: 1px solid rgba(255,255,255,0.1);
-                                border-radius: 14px;
-                                padding: 14px;
-                            ">
-                                <div style="font-size: 11px; color: #94A3B8; font-weight: bold;">BONUS MULTIPLIER</div>
-                                <div style="font-size: 24px; font-weight: 900; color: #FFD700; margin-top: 4px;">
-                                    ⚡ ${this._challengeInfo.bonusMultiplier}x
-                                </div>
-                            </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--fds-space-16);">
 
-                            <div style="
-                                background: rgba(15, 23, 42, 0.6);
-                                border: 1px solid rgba(255,255,255,0.1);
-                                border-radius: 14px;
-                                padding: 14px;
-                            ">
-                                <div style="font-size: 11px; color: #94A3B8; font-weight: bold;">CURRENT STREAK</div>
-                                <div style="font-size: 24px; font-weight: 900; color: #EF4444; margin-top: 4px;">
-                                    🔥 ${currentStreak} DAYS
-                                </div>
-                            </div>
-                        </div>
+                        ${DesignSystem.Card({
+                            borderColor: 'var(--fds-gold-primary)',
+                            content: `
+                                ${DesignSystem.Text('⚡ INSTANT KICKOFF', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text('Quick Solo Match', { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text('Instant 10-question matchday derby against the clock.', { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-16) 0' })}
+                                ${DesignSystem.Button({ id: 'btn-play-quick', text: 'START QUICK MATCH ⚡', variant: 'gold', fullWidth: true })}
+                            `
+                        })}
 
-                        ${this._challengeInfo.completed ? `
-                            <div style="
-                                background: rgba(34, 197, 94, 0.2);
-                                border: 1px solid #22C55E;
-                                color: #86EFAC;
-                                padding: 14px;
-                                border-radius: 14px;
-                                font-weight: bold;
-                                font-size: 15px;
-                            ">
-                                ✅ COMPLETED TODAY! Check back tomorrow for a new challenge.
-                            </div>
-                        ` : `
-                            <button id="start-dc-btn" class="broadcast-btn broadcast-btn-green" style="
-                                width: 100%;
-                                padding: 16px;
-                                font-size: 18px;
-                            ">
-                                🚀 PLAY TODAY'S CHALLENGE (5 Qs)
-                            </button>
-                        `}
+                        ${DesignSystem.Card({
+                            borderColor: 'var(--tv-pitch-green)',
+                            content: `
+                                ${DesignSystem.Text('📅 DAILY FEATURED DERBY', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--tv-pitch-green)', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text(this._challengeInfo.themeEn, { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text(`Earn ${this._challengeInfo.bonusMultiplier}x Bonus XP • Streak: 🔥 ${currentStreak} Days`, { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-16) 0' })}
+                                ${DesignSystem.Button({ id: 'start-dc-btn', text: 'PLAY DAILY DERBY (5 Qs)', variant: 'green', fullWidth: true })}
+                            `
+                        })}
+
+                        ${DesignSystem.Card({
+                            borderColor: '#38BDF8',
+                            content: `
+                                ${DesignSystem.Text('▶ RESUME IN-PROGRESS MATCH', { size: 'var(--fds-font-xs)', weight: '800', color: '#38BDF8', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text('Ethiopian Premier Derby', { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text('Resume match from Question 4 of 10 in 1st Half.', { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-16) 0' })}
+                                ${DesignSystem.Button({ id: 'btn-continue-match', text: 'RESUME DERBY ▶', variant: 'gold', fullWidth: true })}
+                            `
+                        })}
+
+                        ${DesignSystem.Card({
+                            borderColor: 'var(--fds-gold-primary)',
+                            content: `
+                                ${DesignSystem.Text('🎚️ MATCH DIFFICULTY FILTER', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-8) 0' })}
+                                ${DesignSystem.Flex(`
+                                    ${[1, 2, 3, 4, 5].map(lvl => `
+                                        <button class="diff-btn ${lvl === this._selectedDifficulty ? 'active-diff' : ''}" data-diff="${lvl}" style="
+                                            background: ${lvl === this._selectedDifficulty ? 'var(--tv-gold-gradient)' : 'rgba(15,23,42,0.8)'};
+                                            color: ${lvl === this._selectedDifficulty ? '#000' : 'white'};
+                                            border: 1px solid var(--fds-gold-primary);
+                                            border-radius: var(--radius-sm);
+                                            padding: var(--fds-space-8) var(--fds-space-12);
+                                            font-size: var(--fds-font-xs);
+                                            font-weight: 800;
+                                            cursor: pointer;
+                                            min-height: 48px;
+                                        ">Lvl ${lvl}</button>
+                                    `).join('')}
+                                `, { wrap: true, gap: 'var(--fds-space-8)' })}
+                            `
+                        })}
                     </div>
                 </div>
             </div>
+            <style>
+                .margin-bottom-20 { margin-bottom: var(--fds-space-20); }
+            </style>
         `;
 
         this._bindEvents();
@@ -131,6 +134,30 @@ export class DailyChallengeScreen {
             if (this._challengeInfo) {
                 this._onStartChallenge(this._challengeInfo);
             }
+        });
+
+        root.querySelector('#btn-play-quick')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            if (this._challengeInfo) {
+                this._onStartChallenge(this._challengeInfo);
+            }
+        });
+
+        root.querySelector('#btn-continue-match')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            if (this._challengeInfo) {
+                this._onStartChallenge(this._challengeInfo);
+            }
+        });
+
+        root.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.currentTarget as HTMLButtonElement;
+                const diff = parseInt(target.getAttribute('data-diff') || '2');
+                this._selectedDifficulty = diff;
+                this._audioManager.playClick();
+                this.render();
+            });
         });
     }
 }
