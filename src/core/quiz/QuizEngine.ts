@@ -1,3 +1,5 @@
+import type { AnswerSubmissionItem } from '../../networking/api/MatchSubmissionService';
+
 export interface MatchStats {
     goals: number;
     correctAnswers: number;
@@ -20,6 +22,7 @@ export class QuizEngine {
     private _currentCombo: number = 0;
     private _maxCombo: number = 0;
     private _responseTimes: number[] = [];
+    private _answerSubmissions: AnswerSubmissionItem[] = [];
 
     public reset(): void {
         this._goals = 0;
@@ -29,11 +32,25 @@ export class QuizEngine {
         this._currentCombo = 0;
         this._maxCombo = 0;
         this._responseTimes = [];
+        this._answerSubmissions = [];
     }
 
-    public recordAnswer(isCorrect: boolean, responseTimeSec: number): { isGoal: boolean; coins: number; xp: number } {
+    public recordAnswer(
+        isCorrect: boolean,
+        responseTimeSec: number,
+        questionId?: string,
+        selectedIndex?: number
+    ): { isGoal: boolean; coins: number; xp: number } {
         this._total++;
         this._responseTimes.push(responseTimeSec);
+
+        if (questionId && selectedIndex !== undefined) {
+            this._answerSubmissions.push({
+                questionId,
+                selectedIndex,
+                responseTimeMs: Math.round(responseTimeSec * 1000)
+            });
+        }
 
         if (isCorrect) {
             this._goals++;
@@ -54,6 +71,10 @@ export class QuizEngine {
             this._currentCombo = 0;
             return { isGoal: false, coins: 0, xp: 0 };
         }
+    }
+
+    public get answerSubmissions(): AnswerSubmissionItem[] {
+        return this._answerSubmissions;
     }
 
     public calculateFinalStats(): MatchStats {

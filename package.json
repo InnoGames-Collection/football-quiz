@@ -1,21 +1,24 @@
 {
-  "name": "ethio-football",
+  "name": "ethio-football-quiz-league",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Enterprise-grade Football Quiz League platform — Ethio Telecom VAS",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "typescript": "^5.2.2",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "vitest": "^3.2.1"
   },
   "dependencies": {
     "@babylonjs/core": "^7.1.0",
-    "@babylonjs/gui": "^7.1.0",
-    "@babylonjs/havok": "^1.3.0",
-    "@babylonjs/loaders": "^7.1.0"
+    "@supabase/supabase-js": "^2.49.9"
   }
 }

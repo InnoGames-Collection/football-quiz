@@ -1,15 +1,12 @@
-import { Scene } from '@babylonjs/core';
 import { IGameMode } from '../interfaces/IGameMode';
 import { UIManager } from './UIManager';
 
 export class GameRegistry {
     private _games: Map<string, IGameMode> = new Map();
     private _activeGame: IGameMode | null = null;
-    private _scene: Scene;
     private _uiManager: UIManager;
 
-    constructor(scene: Scene, uiManager: UIManager) {
-        this._scene = scene;
+    constructor(uiManager: UIManager) {
         this._uiManager = uiManager;
     }
 
@@ -35,8 +32,8 @@ export class GameRegistry {
         }
 
         console.log(`[GameRegistry] Initializing game: ${game.metadata.name}`);
-        await game.initialize(this._scene, this._uiManager);
-        
+        await game.initialize(this._uiManager);
+
         this._activeGame = game;
         game.start();
     }

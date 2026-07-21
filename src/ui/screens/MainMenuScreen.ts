@@ -82,11 +82,11 @@ export class MainMenuScreen {
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
                         text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-                    ">ETHIO FOOTBALL</h1>
-                    <p style="color: #94A3B8; margin-top: 8px; font-size: 16px;">ARCADE PLATFORM HUB</p>
+                    ">FOOTBALL QUIZ LEAGUE</h1>
+                    <p style="color: #94A3B8; margin-top: 8px; font-size: 16px;">ETHIO TELECOM VAS PLATFORM</p>
                 </div>
 
-                <!-- Mini-Games Grid -->
+                <!-- Quiz Games Grid -->
                 <div style="
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -114,10 +114,10 @@ export class MainMenuScreen {
                                             font-weight: bold;
                                             padding: 4px 10px;
                                             border-radius: 20px;
-                                            background: ${game.metadata.is3D ? 'rgba(59, 130, 246, 0.2)' : 'rgba(168, 85, 247, 0.2)'};
-                                            color: ${game.metadata.is3D ? '#60A5FA' : '#C084FC'};
-                                            border: 1px solid ${game.metadata.is3D ? '#3B82F6' : '#A855F7'};
-                                        ">${game.metadata.is3D ? '3D GAME' : '2D GAME'}</span>
+                                            background: rgba(168, 85, 247, 0.2);
+                                            color: #C084FC;
+                                            border: 1px solid #A855F7;
+                                        ">QUIZ</span>
                                         <span style="font-size: 13px; color: #FFD700; font-weight: bold;">BEST: ${highScore} PTS</span>
                                     </div>
                                     <h3 style="margin: 0 0 8px 0; font-size: 22px; font-weight: bold; color: #F8FAFC;">${game.metadata.name}</h3>
@@ -135,7 +135,7 @@ export class MainMenuScreen {
                                     font-weight: bold;
                                     font-size: 16px;
                                     cursor: pointer;
-                                ">PLAY GAME</button>
+                                ">PLAY</button>
                             </div>
                         `;
                     }).join('')}

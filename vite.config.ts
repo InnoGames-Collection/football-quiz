@@ -7,9 +7,15 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    emptyOutDir: true
-  },
-  optimizeDeps: {
-    exclude: ['@babylonjs/havok']
+    emptyOutDir: true,
+    target: 'es2022',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          babylon: ['@babylonjs/core'],
+          supabase: ['@supabase/supabase-js']
+        }
+      }
+    }
   }
 });

@@ -5,6 +5,7 @@ import { ProgressionManager } from '../../core/managers/ProgressionManager';
 
 export interface FootballHomeCallbacks {
     onKickOff: () => void;
+    onLiveMatch: () => void;
     onDailyChallenge: () => void;
     onCompetitions: () => void;
     onLeaderboard: () => void;
@@ -83,8 +84,8 @@ export class FootballLeagueHome {
                         <div class="glass-card" style="padding: 10px 16px; font-weight: bold; color: var(--gold-primary); font-size: 15px;">
                             🪙 ${profile.coins} COINS
                         </div>
-                        <div class="glass-card" style="padding: 10px 16px; font-weight: bold; color: #22C55E; font-size: 15px;">
-                            🔥 3 DAY STREAK
+                        <div class="glass-card" style="padding: 10px 16px; font-weight: bold; color: #EF4444; font-size: 15px;">
+                            🔥 ${profile.streakCount || 0} DAY STREAK
                         </div>
                         <button id="home-audio-btn" class="glass-card" style="
                             padding: 10px 16px;
@@ -134,13 +135,18 @@ export class FootballLeagueHome {
                     </div>
 
                     <!-- Main Actions -->
-                    <div style="width: 100%; display: flex; flex-direction: column; gap: 14px;">
-                        <button id="btn-kickoff" class="broadcast-btn broadcast-btn-gold" style="font-size: 20px; padding: 18px;">
-                            ⚡ KICK OFF (MATCH)
-                        </button>
+                    <div style="width: 100%; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <button id="btn-kickoff" class="broadcast-btn broadcast-btn-gold" style="font-size: 16px; padding: 16px;">
+                                ⚽ SOLO MATCH
+                            </button>
+                            <button id="btn-livematch" class="broadcast-btn broadcast-btn-green" style="font-size: 16px; padding: 16px;">
+                                ⚡ LIVE 1v1 MATCH
+                            </button>
+                        </div>
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                            <button id="btn-daily" class="broadcast-btn broadcast-btn-green">
+                            <button id="btn-daily" class="broadcast-btn glass-card" style="color: white;">
                                 📅 DAILY CHALLENGE
                             </button>
                             <button id="btn-competitions" class="broadcast-btn glass-card" style="color: white;">
@@ -176,6 +182,11 @@ export class FootballLeagueHome {
         document.getElementById('btn-kickoff')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._callbacks.onKickOff();
+        });
+
+        document.getElementById('btn-livematch')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._callbacks.onLiveMatch();
         });
 
         document.getElementById('btn-daily')?.addEventListener('click', () => {
