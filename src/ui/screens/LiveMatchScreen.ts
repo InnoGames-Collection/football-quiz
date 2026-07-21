@@ -57,6 +57,9 @@ export class LiveMatchScreen {
     }
 
     public render(): void {
+        if ((window as any).ethioMoveCamera) {
+            (window as any).ethioMoveCamera('play');
+        }
         const root = this._uiManager.container;
         const myProfile = this._saveManager.profile;
         const q = this._questions[this._currentIndex];

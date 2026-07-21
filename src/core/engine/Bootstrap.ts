@@ -11,7 +11,8 @@ import {
     Animation,
     CubicEase,
     EasingFunction,
-    Color4
+    Color4,
+    DynamicTexture
 } from '@babylonjs/core';
 import { Game } from './Game';
 import { GameRegistry } from '../managers/GameRegistry';
@@ -170,8 +171,9 @@ export async function bootstrapFootballLeague(canvasElementId: string): Promise<
 
     winAny.ethioReloadHome = renderHome;
     
-    // Expose 3D Goal Animation trigger
-    winAny.triggerGoalAnimation = () => triggerGoalAnimation(scene);
+    // Expose for external hooks (e.g. gameplay triggers)
+    (window as any).ethioTriggerGoal = () => triggerGoalAnimation(scene);
+    (window as any).ethioMoveCamera = (tabId: 'home' | 'play' | 'profile' | 'rankings') => animateCameraToTab(scene, tabId);
 
     // Render persistent bottom navigation bar
     BottomNav.render((tabId) => {
@@ -211,10 +213,22 @@ function configureAmbientScene(scene: Scene, canvasElementId: string): void {
     const shadowGen = new ShadowGenerator(1024, spotLight);
     shadowGen.useBlurExponentialShadowMap = true;
 
-    // 3. Procedural Pitch (Grass)
+    // 3. Procedural Pitch (Grass with Stripes)
     const pitch = MeshBuilder.CreateGround("pitch", { width: 50, height: 75 }, scene);
     const pitchMat = new StandardMaterial("pitchMat", scene);
-    pitchMat.diffuseColor = new Color3(0.1, 0.4, 0.15); // Deep green
+    
+    // Create mowed grass stripes using DynamicTexture
+    const dt = new DynamicTexture("pitchDT", 512, scene);
+    const ctx = dt.getContext();
+    ctx.fillStyle = "#1b4d24"; // Darker green
+    ctx.fillRect(0, 0, 512, 512);
+    ctx.fillStyle = "#225e2c"; // Lighter green
+    for(let i=0; i<8; i++) {
+        ctx.fillRect(0, i * 64, 512, 32); // Horizontal stripes
+    }
+    dt.update();
+    
+    pitchMat.diffuseTexture = dt;
     pitchMat.specularColor = new Color3(0.05, 0.05, 0.05);
     pitch.material = pitchMat;
     pitch.receiveShadows = true;
@@ -231,16 +245,28 @@ function configureAmbientScene(scene: Scene, canvasElementId: string): void {
     halfWayLine.position.y = 0.01;
     halfWayLine.material = chalkMat;
 
+    // 4.5 Goalposts
+    const goalLeftPost = MeshBuilder.CreateCylinder("gl", { height: 3, diameter: 0.15 }, scene);
+    goalLeftPost.position = new Vector3(-4, 1.5, 30);
+    goalLeftPost.material = chalkMat;
+    const goalRightPost = MeshBuilder.CreateCylinder("gr", { height: 3, diameter: 0.15 }, scene);
+    goalRightPost.position = new Vector3(4, 1.5, 30);
+    goalRightPost.material = chalkMat;
+    const goalCrossbar = MeshBuilder.CreateCylinder("gc", { height: 8, diameter: 0.15 }, scene);
+    goalCrossbar.rotation.z = Math.PI / 2;
+    goalCrossbar.position = new Vector3(0, 3, 30);
+    goalCrossbar.material = chalkMat;
+
     // 5. Procedural Stadium Stands (Low Poly Blocks)
     const standsMat = new StandardMaterial("standsMat", scene);
     standsMat.diffuseColor = new Color3(0.05, 0.05, 0.1);
     
     const leftStand = MeshBuilder.CreateBox("leftStand", { width: 10, height: 15, depth: 75 }, scene);
-    leftStand.position = new Vector3(-30, 5, 0);
+    leftStand.position = new Vector3(-25, 5, 0); // Moved closer
     leftStand.material = standsMat;
 
     const rightStand = MeshBuilder.CreateBox("rightStand", { width: 10, height: 15, depth: 75 }, scene);
-    rightStand.position = new Vector3(30, 5, 0);
+    rightStand.position = new Vector3(25, 5, 0); // Moved closer
     rightStand.material = standsMat;
 
     // 6. Hidden 3D Football (for goal animation)

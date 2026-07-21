@@ -130,6 +130,11 @@ export class ScoreboardQuestionScreen {
             return;
         }
 
+        // Trigger cinematic camera move to pitch level for the match
+        if ((window as any).ethioMoveCamera) {
+            (window as any).ethioMoveCamera('play');
+        }
+
         if (this._currentIndex >= this._questions.length) {
             this._stopTimer();
             this._callbacks.onMatchComplete();

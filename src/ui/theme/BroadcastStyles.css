@@ -350,9 +350,9 @@ input:focus-visible {
   will-change: transform, opacity;
 }
 @keyframes goalPop {
-  0% { transform: translate3d(-50%, -50%, 0) scale(0.4); opacity: 0; }
-  80% { transform: translate3d(-50%, -50%, 0) scale(1.1); opacity: 1; }
-  100% { transform: translate3d(-50%, -50%, 0) scale(1); opacity: 1; }
+  0% { transform: translate3d(-50%, 0, 0) scale(0.4); opacity: 0; }
+  80% { transform: translate3d(-50%, 0, 0) scale(1.1); opacity: 1; }
+  100% { transform: translate3d(-50%, 0, 0) scale(1); opacity: 1; }
 }
 
 .scoreboard-flash {
