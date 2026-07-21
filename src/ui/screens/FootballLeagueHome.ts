@@ -47,7 +47,7 @@ export class FootballLeagueHome {
         `, { gap: 'var(--fds-space-8)' });
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; background: radial-gradient(circle at 50% 10%, #0B192C 0%, #050A13 80%);">
+            <div class="stadium-container" style="pointer-events: auto; background: radial-gradient(circle at 50% 10%, rgba(11, 25, 44, 0.6) 0%, rgba(5, 10, 19, 0.9) 80%);">
                 
                 <div class="tv-broadcast-header" style="border-bottom: 2px solid var(--tv-pitch-green);">
                     <div style="display: flex; align-items: center; gap: var(--fds-space-12);">
