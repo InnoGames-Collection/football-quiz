@@ -10,7 +10,7 @@ export class DailyChallengeScreen {
     private _onStartChallenge: (info: DailyChallengeInfo) => void;
     private _onClose: () => void;
     private _challengeInfo: DailyChallengeInfo | null = null;
-    private _selectedDifficulty: number = 2;
+    private _selectedMode: string = 'daily';
 
     constructor(
         uiManager: UIManager,
@@ -29,135 +29,162 @@ export class DailyChallengeScreen {
         this._challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
         const currentStreak = StreakManager.getInstance().currentStreak;
 
+        const modes = [
+            { id: 'quick', icon: '⚡', title: 'Quick Match', color: 'var(--tv-pitch-green)' },
+            { id: 'daily', icon: '📅', title: 'Daily Challenge', color: 'var(--tv-gold-primary)' },
+            { id: 'league', icon: '🏆', title: 'League Match', color: '#38BDF8' },
+            { id: 'tournament', icon: '🏅', title: 'Tournament', color: '#A78BFA' },
+            { id: 'guess', icon: '👤', title: 'Guess The Player', color: '#F472B6' },
+            { id: 'penalty', icon: '🥅', title: 'Penalty Shootout', color: '#F87171' },
+            { id: 'iq', icon: '🧠', title: 'Football IQ', color: '#FB923C' }
+        ];
+
+        // Horizontal Slider HTML
+        const modesHtml = modes.map(mode => `
+            <div class="mode-card glass-card ${this._selectedMode === mode.id ? 'active-mode' : ''}" data-mode="${mode.id}" style="
+                flex: 0 0 140px; 
+                padding: 16px 12px; 
+                text-align: center; 
+                cursor: pointer; 
+                border-color: ${this._selectedMode === mode.id ? mode.color : 'rgba(255,255,255,0.1)'};
+                background: ${this._selectedMode === mode.id ? `linear-gradient(135deg, ${mode.color}22 0%, rgba(15,23,42,0.8) 100%)` : 'rgba(15,23,42,0.6)'};
+                box-shadow: ${this._selectedMode === mode.id ? `0 0 15px ${mode.color}44` : 'none'};
+                transition: all 0.2s ease;
+            ">
+                <div style="font-size: 28px; margin-bottom: 8px;">${mode.icon}</div>
+                <div style="font-size: 13px; font-weight: 800; color: ${this._selectedMode === mode.id ? mode.color : 'white'};">${mode.title}</div>
+            </div>
+        `).join('');
+
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                <div class="floodlight floodlight-left"></div>
-                <div class="floodlight floodlight-right"></div>
-
-                ${DesignSystem.Header({
-                    title: 'MATCHDAY PLAY HUB',
-                    badgeText: 'MATCHDAY PLAY HUB',
-                    rightText: ''
-                })}
                 
-                <div style="position: absolute; top: 12px; right: 24px; z-index: 30;">
-                    <button id="dc-close-btn" class="glass-card" style="padding: 6px 14px; color: white; font-weight: bold; cursor: pointer;">
-                        ⬅️ BACK TO HUB
-                    </button>
+                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
+                    <div style="font-weight: 900; font-size: 18px; letter-spacing: 1px;">PLAY MODES</div>
+                    <button id="dc-close-btn" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">⬅️ BACK</button>
                 </div>
 
-                <div style="max-width: 880px; margin: var(--fds-space-20) auto; position: relative; z-index: 10; padding: 0 var(--fds-space-20);">
+                <div style="max-width: 960px; margin: 0 auto; padding: 16px 0 100px 0;">
                     
-                    ${DesignSystem.Card({
-                        borderColor: 'var(--tv-pitch-green)',
-                        className: 'margin-bottom-20',
-                        content: `
-                            ${DesignSystem.Text('⚽ SELECT MATCHDAY PLAY MODE', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--tv-pitch-green)', margin: '0 0 var(--fds-space-4) 0' })}
-                            ${DesignSystem.Text('GAMEPLAY MODES & DERBIES', { size: 'var(--fds-font-xl)', weight: '900', color: 'white', margin: '0' })}
-                        `
-                    })}
+                    <!-- Horizontal Mode Selector -->
+                    <div style="padding: 0 16px; margin-bottom: 24px;">
+                        <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 12px; text-transform: uppercase;">Select Mode</div>
+                        <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; -ms-overflow-style: none;" id="modes-container">
+                            ${modesHtml}
+                        </div>
+                    </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--fds-space-16);">
+                    <div style="padding: 0 16px;">
+                        
+                        <!-- Main Action Area based on selection -->
+                        <div id="active-mode-content" style="margin-bottom: 24px;">
+                            ${this._renderActiveModeContent(currentStreak)}
+                        </div>
 
-                        ${DesignSystem.Card({
-                            borderColor: 'var(--fds-gold-primary)',
-                            content: `
-                                ${DesignSystem.Text('⚡ INSTANT KICKOFF', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Quick Solo Match', { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Instant 10-question matchday derby against the clock.', { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-16) 0' })}
-                                ${DesignSystem.Button({ id: 'btn-play-quick', text: 'START QUICK MATCH ⚡', variant: 'gold', fullWidth: true })}
-                            `
-                        })}
+                        <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 12px; text-transform: uppercase;">Recent Game</div>
+                        
+                        <!-- Continue Last Match -->
+                        <div class="glass-card" style="padding: 16px; border-color: #38BDF8; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                            <div>
+                                <div style="font-size: 11px; font-weight: 800; color: #38BDF8; margin-bottom: 4px;">▶ RESUME IN-PROGRESS MATCH</div>
+                                <div style="font-size: 16px; font-weight: 900; color: white;">Ethiopian Premier Derby</div>
+                                <div style="font-size: 12px; color: #94A3B8; margin-top: 4px;">Question 4 of 10</div>
+                            </div>
+                            <div style="font-size: 24px;">▶️</div>
+                        </div>
 
-                        ${DesignSystem.Card({
-                            borderColor: 'var(--tv-pitch-green)',
-                            content: `
-                                ${DesignSystem.Text('📅 DAILY FEATURED DERBY', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--tv-pitch-green)', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text(this._challengeInfo.themeEn, { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text(`Earn ${this._challengeInfo.bonusMultiplier}x Bonus XP • Streak: 🔥 ${currentStreak} Days`, { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-16) 0' })}
-                                ${DesignSystem.Button({ id: 'start-dc-btn', text: 'PLAY DAILY DERBY (5 Qs)', variant: 'green', fullWidth: true })}
-                            `
-                        })}
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                            <!-- Suggested Quiz -->
+                            <div class="glass-card" style="padding: 16px;">
+                                <div style="font-size: 11px; font-weight: 800; color: #A78BFA; margin-bottom: 8px;">💡 SUGGESTED QUIZ</div>
+                                <div style="font-size: 16px; font-weight: 900; color: white; margin-bottom: 4px;">AFCON History</div>
+                                <div style="font-size: 12px; color: #94A3B8; margin-bottom: 12px;">Trending • 20 Questions</div>
+                                ${DesignSystem.Button({ id: 'btn-suggested', text: 'PLAY NOW', variant: 'glass' })}
+                            </div>
 
-                        ${DesignSystem.Card({
-                            borderColor: '#38BDF8',
-                            content: `
-                                ${DesignSystem.Text('▶ RESUME IN-PROGRESS MATCH', { size: 'var(--fds-font-xs)', weight: '800', color: '#38BDF8', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Ethiopian Premier Derby', { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Resume match from Question 4 of 10 in 1st Half.', { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-16) 0' })}
-                                ${DesignSystem.Button({ id: 'btn-continue-match', text: 'RESUME DERBY ▶', variant: 'gold', fullWidth: true })}
-                            `
-                        })}
+                            <!-- Recent Results -->
+                            <div class="glass-card" style="padding: 16px;">
+                                <div style="font-size: 11px; font-weight: 800; color: #F472B6; margin-bottom: 8px;">📊 RECENT RESULTS</div>
+                                <div style="font-size: 16px; font-weight: 900; color: white; margin-bottom: 4px;">Weekly League Qualifier</div>
+                                <div style="display: flex; gap: 12px; margin-top: 12px;">
+                                    <div>
+                                        <div style="font-size: 10px; color: #94A3B8;">SCORE</div>
+                                        <div style="font-size: 14px; font-weight: 800; color: white;">8/10</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 10px; color: #94A3B8;">TIME</div>
+                                        <div style="font-size: 14px; font-weight: 800; color: white;">1m 42s</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                        ${DesignSystem.Card({
-                            borderColor: 'var(--fds-gold-primary)',
-                            content: `
-                                ${DesignSystem.Text('🎚️ MATCH DIFFICULTY FILTER', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-8) 0' })}
-                                ${DesignSystem.Flex(`
-                                    ${[1, 2, 3, 4, 5].map(lvl => `
-                                        <button class="diff-btn ${lvl === this._selectedDifficulty ? 'active-diff' : ''}" data-diff="${lvl}" style="
-                                            background: ${lvl === this._selectedDifficulty ? 'var(--tv-gold-gradient)' : 'rgba(15,23,42,0.8)'};
-                                            color: ${lvl === this._selectedDifficulty ? '#000' : 'white'};
-                                            border: 1px solid var(--fds-gold-primary);
-                                            border-radius: var(--radius-sm);
-                                            padding: var(--fds-space-8) var(--fds-space-12);
-                                            font-size: var(--fds-font-xs);
-                                            font-weight: 800;
-                                            cursor: pointer;
-                                            min-height: 48px;
-                                        ">Lvl ${lvl}</button>
-                                    `).join('')}
-                                `, { wrap: true, gap: 'var(--fds-space-8)' })}
-                            `
-                        })}
                     </div>
                 </div>
             </div>
             <style>
-                .margin-bottom-20 { margin-bottom: var(--fds-space-20); }
+                #modes-container::-webkit-scrollbar { display: none; }
+                .mode-card:active { transform: scale(0.95); }
             </style>
         `;
 
         this._bindEvents();
     }
 
-    private _bindEvents(): void {
-        const root = this._uiManager.container;
+    private _renderActiveModeContent(currentStreak: number): string {
+        if (this._selectedMode === 'daily') {
+            return `
+                <div class="glass-card" style="border-color: var(--tv-gold-primary); background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(15,23,42,0.8) 100%); padding: 24px; text-align: center;">
+                    <div style="font-size: 40px; margin-bottom: 8px;">📅</div>
+                    <div style="font-size: 24px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 8px;">DAILY CHALLENGE</div>
+                    <div style="font-size: 14px; color: white; font-weight: 700; margin-bottom: 4px;">${this._challengeInfo!.themeEn}</div>
+                    <div style="font-size: 12px; color: #CBD5E1; margin-bottom: 16px;">Earn ${this._challengeInfo!.bonusMultiplier}x Bonus XP • Streak: 🔥 ${currentStreak} Days</div>
+                    ${DesignSystem.Button({ id: 'btn-start-active', text: 'PLAY DAILY CHALLENGE (+500 XP)', variant: 'gold', fullWidth: true })}
+                </div>
+            `;
+        } else if (this._selectedMode === 'quick') {
+            return `
+                <div class="glass-card" style="border-color: var(--tv-pitch-green); background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(15,23,42,0.8) 100%); padding: 24px; text-align: center;">
+                    <div style="font-size: 40px; margin-bottom: 8px;">⚡</div>
+                    <div style="font-size: 24px; font-weight: 900; color: var(--tv-pitch-green); margin-bottom: 8px;">QUICK MATCH</div>
+                    <div style="font-size: 14px; color: white; font-weight: 700; margin-bottom: 4px;">Random 10 Questions</div>
+                    <div style="font-size: 12px; color: #CBD5E1; margin-bottom: 16px;">Jump straight into the action against the clock.</div>
+                    ${DesignSystem.Button({ id: 'btn-start-active', text: 'START QUICK MATCH ⚽', variant: 'green', fullWidth: true })}
+                </div>
+            `;
+        }
+        // Fallback for others
+        return `
+            <div class="glass-card" style="border-color: #64748B; background: rgba(15,23,42,0.8); padding: 24px; text-align: center;">
+                <div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 8px;">MODE LOCKED</div>
+                <div style="font-size: 13px; color: #94A3B8;">This mode is currently unavailable.</div>
+            </div>
+        `;
+    }
 
-        root.querySelector('#dc-close-btn')?.addEventListener('click', () => {
+    private _bindEvents(): void {
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const target = e.currentTarget as HTMLElement;
+                const modeId = target.getAttribute('data-mode');
+                if (modeId && modeId !== this._selectedMode) {
+                    this._audioManager.playClick();
+                    this._selectedMode = modeId;
+                    this.render();
+                }
+            });
+        });
+
+        document.getElementById('btn-start-active')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            if ((this._selectedMode === 'daily' || this._selectedMode === 'quick') && this._challengeInfo) {
+                this._onStartChallenge(this._challengeInfo);
+            }
+        });
+
+        document.getElementById('dc-close-btn')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._onClose();
-        });
-
-        root.querySelector('#start-dc-btn')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            if (this._challengeInfo) {
-                this._onStartChallenge(this._challengeInfo);
-            }
-        });
-
-        root.querySelector('#btn-play-quick')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            if (this._challengeInfo) {
-                this._onStartChallenge(this._challengeInfo);
-            }
-        });
-
-        root.querySelector('#btn-continue-match')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            if (this._challengeInfo) {
-                this._onStartChallenge(this._challengeInfo);
-            }
-        });
-
-        root.querySelectorAll('.diff-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const target = e.currentTarget as HTMLButtonElement;
-                const diff = parseInt(target.getAttribute('data-diff') || '2');
-                this._selectedDifficulty = diff;
-                this._audioManager.playClick();
-                this.render();
-            });
         });
     }
 }
