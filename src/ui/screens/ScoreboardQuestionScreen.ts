@@ -93,19 +93,19 @@ export class ScoreboardQuestionScreen {
                     </div>
 
                     <!-- Match Info Card -->
-                    <div class="glass-card" style="padding: 16px; margin-bottom: 28px; background: rgba(2, 6, 23, 0.6); text-align: left;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: var(--text-muted); font-size: 12px;">PLAYER:</span>
-                            <span style="color: white; font-size: 13px; font-weight: bold;">👤 ${playerName}</span>
+                    <div class="glass-card" style="padding: 18px 22px; margin-bottom: 24px; background: rgba(2, 6, 23, 0.85); text-align: left; border-color: rgba(255, 215, 0, 0.3);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="color: #94A3B8; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">Player Name</span>
+                            <span style="color: #FFFFFF; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">👤 ${playerName}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: var(--text-muted); font-size: 12px;">MATCH TYPE:</span>
-                            <span style="color: #60A5FA; font-size: 13px; font-weight: bold;">⚔️ LEAGUE FIXTURE (10 QUESTIONS)</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="color: #94A3B8; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">Match Type</span>
+                            <span style="color: #60A5FA; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">⚔️ League Fixture (10 Questions)</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: var(--text-muted); font-size: 12px;">REFEREE:</span>
-                            <span style="color: var(--gold-primary); font-size: 13px; font-weight: bold;">
-                                <span class="whistle-anim">🎷</span> FIFA CERTIFIED
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #94A3B8; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">Referee Official</span>
+                            <span style="color: #FFD700; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                <span class="whistle-anim">🎷</span> FIFA Certified
                             </span>
                         </div>
                     </div>

@@ -10,6 +10,7 @@ export interface UserProfile {
     phone?: string;
     eloRating?: number;
     streakCount?: number;
+    role?: 'admin' | 'player';
 }
 
 export class SaveManager {
@@ -117,5 +118,9 @@ export class SaveManager {
     public updateStreak(count: number): void {
         this._profile.streakCount = count;
         this.save();
+    }
+
+    public isAdmin(): boolean {
+        return this._profile.role === 'admin';
     }
 }
