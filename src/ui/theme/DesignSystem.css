@@ -1,0 +1,107 @@
+/* Football Quiz League - Reusable Football Design System (FDS) Tokens & Utilities */
+
+:root {
+  /* Design System Colors */
+  --fds-gold-primary: #ffd700;
+  --fds-gold-dark: #ff8c00;
+  --fds-gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  --fds-gold-glow: rgba(255, 215, 0, 0.4);
+
+  --fds-green-pitch: #22c55e;
+  --fds-green-dark: #15803d;
+  --fds-green-gradient: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+  --fds-green-glow: rgba(34, 197, 94, 0.45);
+
+  --fds-blue-accent: #3b82f6;
+  --fds-blue-glow: rgba(59, 130, 246, 0.4);
+
+  --fds-red-live: #ef4444;
+  --fds-red-glow: rgba(239, 68, 68, 0.6);
+
+  --fds-bg-dark: #020617;
+  --fds-bg-surface: rgba(15, 23, 42, 0.82);
+  --fds-border-glass: rgba(255, 255, 255, 0.14);
+
+  --fds-text-main: #f8fafc;
+  --fds-text-muted: #94a3b8;
+  --fds-text-dim: #64748b;
+
+  /* Typography */
+  --fds-font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --fds-font-mono: 'JetBrains Mono', monospace, sans-serif;
+
+  /* Spacing Scale */
+  --fds-space-xs: 4px;
+  --fds-space-sm: 8px;
+  --fds-space-md: 16px;
+  --fds-space-lg: 24px;
+  --fds-space-xl: 36px;
+
+  /* Border Radius */
+  --fds-radius-sm: 8px;
+  --fds-radius-md: 14px;
+  --fds-radius-lg: 20px;
+  --fds-radius-full: 9999px;
+}
+
+/* Base Design System Component Classes */
+.fds-card {
+  background: var(--fds-bg-surface);
+  border: 1px solid var(--fds-border-glass);
+  backdrop-filter: blur(20px);
+  border-radius: var(--fds-radius-md);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+  transition: transform 180ms ease-out, background 180ms ease-out, border-color 180ms ease-out;
+  position: relative;
+  overflow: hidden;
+  will-change: transform, opacity;
+  animation: cardPopIn 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.fds-btn {
+  padding: 14px 24px;
+  border-radius: var(--fds-radius-sm);
+  font-weight: 800;
+  font-size: 15px;
+  font-family: var(--fds-font-main);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.fds-btn:active {
+  transform: scale(0.96);
+}
+
+.fds-btn-gold {
+  background: var(--fds-gold-gradient);
+  color: #020617;
+  box-shadow: 0 6px 24px var(--fds-gold-glow);
+  border: 1px solid #ffe866;
+}
+
+.fds-btn-green {
+  background: var(--fds-green-gradient);
+  color: white;
+  box-shadow: 0 6px 24px var(--fds-green-glow);
+  border: 1px solid #4ade80;
+}
+
+.fds-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: var(--fds-radius-full);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: var(--fds-font-main);
+}
