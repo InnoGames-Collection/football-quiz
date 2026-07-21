@@ -13,6 +13,7 @@ import { MatchmakingScreen } from '../../ui/screens/MatchmakingScreen';
 import { LiveMatchScreen } from '../../ui/screens/LiveMatchScreen';
 import { QuestionBank } from '../quiz/QuestionBank';
 import { BottomNav, TabId } from '../../ui/components/BottomNav';
+import { SettingsScreen } from '../../ui/screens/SettingsScreen';
 
 /**
  * Bootstraps the Football Quiz League platform.
@@ -138,6 +139,15 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 onAdminPanel: () => {
                     const admin = new AdminPanelScreen(game.uiManager, game.audioManager, () => renderHome());
                     admin.render();
+                },
+                onSettings: () => {
+                    const settings = new SettingsScreen(
+                        game.uiManager,
+                        game.saveManager,
+                        game.audioManager,
+                        () => renderHome()
+                    );
+                    settings.render();
                 }
             }
         );
