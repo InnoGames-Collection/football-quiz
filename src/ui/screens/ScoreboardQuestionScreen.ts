@@ -152,20 +152,20 @@ export class ScoreboardQuestionScreen {
 
         const root = this._uiManager.container;
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container" style="pointer-events: auto; overflow-y: auto;">
                 <div class="floodlight floodlight-left"></div>
                 <div class="floodlight floodlight-right"></div>
 
                 <!-- Top Scoreboard Bar -->
                 <div class="scoreboard-header" id="scoreboard-bar">
-                    <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
                         <span class="tv-live-badge">
                             <span class="tv-live-dot"></span> LIVE HD
                         </span>
-                        <span style="font-size: 24px;">${this._competition.badge}</span>
+                        <span style="font-size: 22px;">${this._competition.badge}</span>
                         <div>
-                            <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; color: var(--tv-gold-primary); letter-spacing: 1px;">${this._competition.name}</div>
-                            <div style="font-size: 12px; color: var(--tv-text-muted);">
+                            <div style="font-weight: 800; font-size: 13px; text-transform: uppercase; color: var(--tv-gold-primary); letter-spacing: 0.5px;">${this._competition.name}</div>
+                            <div style="font-size: 11px; color: var(--tv-text-muted); font-weight: 600;">
                                 <strong style="color: #60A5FA;">${halfName}</strong> • MINUTE: <span class="tv-minute-badge">${matchMinute}</span>
                             </div>
                         </div>
@@ -173,82 +173,87 @@ export class ScoreboardQuestionScreen {
 
                     <!-- Match Score & Question Counter -->
                     <div style="text-align: center;">
-                        <div style="font-size: 22px; font-weight: 900; letter-spacing: 2px; font-family: var(--tv-mono);">
+                        <div style="font-size: 20px; font-weight: 900; letter-spacing: 1px; font-family: var(--tv-mono);">
                             GOALS: <span id="sb-goals" style="color: var(--tv-pitch-green); transition: all 0.3s;">${this._quizEngine.calculateFinalStats().goals}</span>
                         </div>
-                        <div style="font-size: 11px; color: var(--tv-text-muted); font-weight: 800; letter-spacing: 1px;">
+                        <div style="font-size: 11px; color: var(--tv-text-muted); font-weight: 700; letter-spacing: 0.5px;">
                             MATCH PROGRESSION (${this._currentIndex + 1}/${this._questions.length})
                         </div>
                     </div>
 
                     <!-- Countdown Timer -->
-                    <div class="glass-card" style="padding: 6px 16px; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 18px;">⏱️</span>
-                        <span id="sb-timer" style="font-size: 22px; font-weight: 900; color: var(--tv-gold-primary); font-family: var(--tv-mono);">30s</span>
+                    <div class="glass-card" style="padding: 6px 14px; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">⏱️</span>
+                        <span id="sb-timer" style="font-size: 20px; font-weight: 900; color: var(--tv-gold-primary); font-family: var(--tv-mono);">30s</span>
                     </div>
                 </div>
 
-                <!-- Center Question Card Container -->
+                <!-- Center Question Card Wrapper Container -->
                 <div class="question-transition-in" style="
-                    position: absolute;
-                    top: 52%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 90%;
-                    max-width: 580px;
+                    max-width: 640px;
+                    margin: 30px auto 40px auto;
+                    position: relative;
+                    z-index: 10;
+                    padding: 0 20px;
                 " id="question-card-wrapper">
                     <!-- Glassmorphism Card -->
-                    <div class="glass-card" style="padding: 30px; text-align: center; margin-bottom: 20px;" id="question-card-container">
-                        <div style="font-size: 12px; font-weight: 800; color: var(--pitch-green); letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;">
+                    <div class="glass-card" style="padding: 28px 24px; text-align: center; margin-bottom: 20px; border-color: rgba(255, 215, 0, 0.3);" id="question-card-container">
+                        <div style="font-size: 11px; font-weight: 800; color: var(--tv-pitch-green); letter-spacing: 1.5px; margin-bottom: 12px; text-transform: uppercase;">
                             ⚽ MATCH ATTACK • ${halfName} (${matchMinute})
                         </div>
-                        <div style="font-size: 22px; font-weight: 800; line-height: 1.4; color: #F8FAFC;">
+                        <div style="font-size: 20px; font-weight: 700; line-height: 1.5; color: #FFFFFF; text-transform: none;">
                             ${q.prompt}
                         </div>
                     </div>
 
-                    <!-- Answer Options -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;" id="answer-grid">
+                    <!-- Answer Options Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="answer-grid">
                         ${q.options.map((opt, i) => `
                             <button class="broadcast-btn glass-card option-btn" data-index="${i}" style="
                                 text-align: left;
                                 justify-content: flex-start;
-                                padding: 16px 20px;
+                                padding: 14px 18px;
                                 font-size: 15px;
-                                color: white;
-                                border: 1px solid var(--glass-border);
+                                font-weight: 600;
+                                color: #FFFFFF;
+                                text-transform: none;
+                                border: 1px solid var(--tv-glass-border);
                                 position: relative;
                             ">
                                 <span style="
                                     width: 28px;
                                     height: 28px;
                                     border-radius: 50%;
-                                    background: rgba(255,255,255,0.1);
+                                    background: rgba(255, 215, 0, 0.15);
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
                                     font-size: 13px;
-                                    font-weight: bold;
-                                    color: var(--gold-primary);
-                                    margin-right: 8px;
+                                    font-weight: 800;
+                                    color: var(--tv-gold-primary);
+                                    margin-right: 10px;
+                                    flex-shrink: 0;
                                 ">${String.fromCharCode(65 + i)}</span>
                                 ${opt}
                             </button>
                         `).join('')}
                     </div>
-                </div>
 
-                <!-- Exit Match Button -->
-                <button id="match-exit-btn" class="glass-card" style="
-                    position: absolute;
-                    bottom: 20px;
-                    left: 20px;
-                    padding: 8px 16px;
-                    color: var(--text-muted);
-                    font-size: 13px;
-                    font-weight: bold;
-                    cursor: pointer;
-                ">🚪 EXIT MATCH</button>
+                    <!-- Exit Match Button Footer -->
+                    <div style="margin-top: 24px; text-align: center;">
+                        <button id="match-exit-btn" class="glass-card" style="
+                            padding: 10px 20px;
+                            color: var(--tv-text-muted);
+                            font-size: 13px;
+                            font-weight: 700;
+                            cursor: pointer;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                            border-color: rgba(255,255,255,0.12);
+                        ">🚪 EXIT MATCH</button>
+                    </div>
+                </div>
             </div>
         `;
 

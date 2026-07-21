@@ -1,11 +1,11 @@
-/* Football Quiz League - Premium Unified Football Television Broadcast Design System */
+/* Football Quiz League - Enterprise Football Broadcast & Telemetry Styling */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap');
 
 :root {
-  /* Unified Color Tokens */
+  /* Enterprise Dark Slate & Stadium Color Tokens */
   --tv-bg-dark: #020617;
-  --tv-bg-surface: rgba(15, 23, 42, 0.88);
+  --tv-bg-surface: rgba(15, 23, 42, 0.92);
   --tv-pitch-green: #22c55e;
   --tv-pitch-glow: rgba(34, 197, 94, 0.45);
   --tv-gold-primary: #ffd700;
@@ -24,27 +24,27 @@
   --tv-font: 'Inter', system-ui, -apple-system, sans-serif;
   --tv-mono: 'JetBrains Mono', monospace, sans-serif;
 
-  /* Unified Spacing Scale */
+  /* Standard 8-Point Spacing Scale */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 36px;
 
-  /* Unified Border Radii */
+  /* Border Radii */
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
 }
 
-/* Base Viewport & Stadium Background */
+/* Base Viewport & Clean Stadium Backdrop (No Scanlines, No Texture Noise) */
 .stadium-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 50% 15%, #1e293b 0%, #090d16 55%, #020617 100%);
+  background: radial-gradient(circle at 50% 20%, #0f172a 0%, #090d16 55%, #020617 100%);
   overflow: hidden;
   font-family: var(--tv-font);
   color: var(--tv-text-main);
@@ -53,26 +53,12 @@
   contain: layout style;
 }
 
-/* TV Scanline Overlay */
-.stadium-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.14) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-  background-size: 100% 3px, 6px 100%;
-  pointer-events: none;
-  z-index: 2;
-}
-
 /* Sweeping Floodlight Beams */
 .floodlight {
   position: absolute;
   width: 380px;
   height: 750px;
-  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.18) 0%, rgba(59, 130, 246, 0.08) 45%, transparent 80%);
+  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.14) 0%, rgba(59, 130, 246, 0.06) 45%, transparent 80%);
   transform-origin: top center;
   pointer-events: none;
   z-index: 1;
@@ -93,20 +79,21 @@
 }
 
 @keyframes sweepLightLeft {
-  0% { transform: rotate(-28deg); opacity: 0.6; }
-  100% { transform: rotate(-14deg); opacity: 0.95; }
+  0% { transform: rotate(-28deg); opacity: 0.5; }
+  100% { transform: rotate(-14deg); opacity: 0.85; }
 }
 
 @keyframes sweepLightRight {
-  0% { transform: rotate(28deg); opacity: 0.6; }
-  100% { transform: rotate(14deg); opacity: 0.95; }
+  0% { transform: rotate(28deg); opacity: 0.5; }
+  100% { transform: rotate(14deg); opacity: 0.85; }
 }
 
-/* TV Broadcast Header Bar */
+/* Enterprise Scoreboard Header Bar */
+.scoreboard-header,
 .tv-broadcast-header {
-  background: rgba(2, 6, 23, 0.94);
+  background: rgba(2, 6, 23, 0.95);
   border-bottom: 2px solid var(--tv-gold-primary);
-  padding: 12px var(--space-lg);
+  padding: 12px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -114,7 +101,7 @@
   position: relative;
   z-index: 20;
   backdrop-filter: blur(16px);
-  min-height: 52px;
+  min-height: 54px;
 }
 
 /* Live Badge */
@@ -149,24 +136,7 @@
   100% { opacity: 0.3; transform: scale(0.8); }
 }
 
-/* Channel Logo Watermark */
-.tv-channel-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 900;
-  font-size: 13px;
-  letter-spacing: 1px;
-  color: white;
-}
-
-.tv-channel-logo span {
-  background: var(--tv-gold-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Glassmorphism Card Component */
+/* Enterprise Glassmorphism Card Component */
 .glass-card {
   background: var(--tv-bg-surface);
   border: 1px solid var(--tv-glass-border);
@@ -186,21 +156,22 @@
 }
 
 .glass-card:hover {
-  background: rgba(30, 41, 59, 0.94);
+  background: rgba(30, 41, 59, 0.95);
   border-color: rgba(255, 215, 0, 0.4);
   transform: translate3d(0, -2px, 0);
   box-shadow: 0 20px 56px rgba(0, 0, 0, 0.85), 0 0 24px var(--tv-gold-glow);
 }
 
-/* TV Broadcast Buttons */
+/* Enterprise Broadcast Buttons */
 .broadcast-btn {
   min-height: 48px;
   padding: 14px var(--space-lg);
   border-radius: var(--radius-md);
-  font-weight: 900;
+  font-weight: 700;
   font-size: 15px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-family: var(--tv-font);
+  letter-spacing: 0.3px;
+  text-transform: none;
   border: none;
   cursor: pointer;
   display: flex;
@@ -224,28 +195,13 @@ input:focus-visible {
 }
 
 .broadcast-btn:active {
-  transform: scale(0.96) !important;
-}
-
-.broadcast-btn::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: skewX(-20deg);
-  transition: left 350ms ease-in-out;
-}
-
-.broadcast-btn:hover::after {
-  left: 140%;
+  transform: scale(0.97) !important;
 }
 
 .broadcast-btn-gold {
   background: var(--tv-gold-gradient);
   color: #020617;
+  font-weight: 800;
   box-shadow: 0 6px 24px var(--tv-gold-glow);
   border: 1px solid #ffe866;
 }
@@ -258,6 +214,7 @@ input:focus-visible {
 .broadcast-btn-green {
   background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   color: #ffffff;
+  font-weight: 800;
   box-shadow: 0 6px 24px var(--tv-pitch-glow);
   border: 1px solid #4ade80;
 }
@@ -267,17 +224,38 @@ input:focus-visible {
   box-shadow: 0 8px 32px rgba(34, 197, 94, 0.75);
 }
 
-/* TV Minute Badge */
+/* Match Minute Badge */
 .tv-minute-badge {
   font-family: var(--tv-mono);
   font-weight: 800;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--tv-gold-primary);
   background: rgba(255, 215, 0, 0.12);
   border: 1px solid var(--tv-gold-primary);
-  padding: 4px 10px;
-  border-radius: 8px;
-  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* Option Button Styling */
+.option-btn {
+  text-align: left;
+  justify-content: flex-start;
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  border: 1px solid var(--tv-glass-border);
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: var(--radius-md);
+  transition: all 180ms ease-out;
+  line-height: 1.4;
+}
+
+.option-btn:hover {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 215, 0, 0.4);
+  transform: translate3d(0, -2px, 0);
 }
 
 /* Telemetry Stat Widget */
@@ -305,7 +283,7 @@ input:focus-visible {
   font-family: var(--tv-mono);
 }
 
-/* Football Rank Badge */
+/* Rank Badges */
 .rank-badge {
   font-size: 11px;
   font-weight: 800;
@@ -322,21 +300,21 @@ input:focus-visible {
 .rank-legend { background: rgba(239, 68, 68, 0.3); color: #fecaca; border: 1px solid #ef4444; }
 .rank-hall-of-fame { background: var(--tv-gold-gradient); color: #020617; border: 1px solid #ffd700; box-shadow: 0 0 12px var(--tv-gold-glow); }
 
-/* --- MOBILE LANDSCAPE OVERRIDES --- */
-
+/* Mobile Landscape Overrides */
 @media (max-height: 520px) and (orientation: landscape) {
   .stadium-container {
     overflow-y: auto !important;
   }
+  .scoreboard-header,
   .tv-broadcast-header {
     padding: 6px var(--space-md);
-    min-height: 40px;
+    min-height: 44px;
   }
   .glass-card {
     padding: var(--space-md) !important;
   }
   h1 {
-    font-size: 26px !important;
+    font-size: 24px !important;
   }
   .broadcast-btn {
     min-height: 44px !important;
@@ -345,8 +323,7 @@ input:focus-visible {
   }
 }
 
-/* --- ANIMATION KEYFRAMES (<= 500ms) --- */
-
+/* Animations (<= 500ms) */
 .question-transition-in {
   animation: questionSlideIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
