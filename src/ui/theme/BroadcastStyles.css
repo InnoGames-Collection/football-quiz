@@ -1,143 +1,279 @@
-/* Football Quiz League - UEFA Champions League Broadcast Styling */
+/* Football Quiz League - Premium TV Broadcast Styling (UEFA Champions League & Premier League HD Theme) */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap');
 
 :root {
-  --stadium-bg-start: #060b19;
-  --stadium-bg-end: #02040a;
-  --pitch-green: #22c55e;
-  --pitch-green-glow: rgba(34, 197, 94, 0.4);
-  --gold-primary: #ffd700;
-  --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff9900 100%);
-  --gold-glow: rgba(255, 215, 0, 0.35);
-  --glass-bg: rgba(15, 23, 42, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-hover: rgba(30, 41, 59, 0.85);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --ucl-blue: #1e3a8a;
+  --tv-bg-dark: #020617;
+  --tv-bg-surface: rgba(15, 23, 42, 0.82);
+  --tv-pitch-green: #22c55e;
+  --tv-pitch-glow: rgba(34, 197, 94, 0.45);
+  --tv-gold-primary: #ffd700;
+  --tv-gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  --tv-gold-glow: rgba(255, 215, 0, 0.4);
+  --tv-blue-accent: #3b82f6;
+  --tv-blue-glow: rgba(59, 130, 246, 0.4);
+  --tv-red-live: #ef4444;
+  --tv-red-glow: rgba(239, 68, 68, 0.6);
+  --tv-glass-border: rgba(255, 255, 255, 0.14);
+  --tv-text-main: #f8fafc;
+  --tv-text-muted: #94a3b8;
+  --tv-text-dim: #64748b;
+  --tv-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --tv-mono: 'JetBrains Mono', monospace, sans-serif;
 }
 
-/* Stadium Animated Floodlights Background */
+/* Base Viewport & Animated Floodlights Stadium Background */
 .stadium-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 50% 20%, #1e293b 0%, #020617 80%);
+  background: radial-gradient(circle at 50% 15%, #1e293b 0%, #090d16 55%, #020617 100%);
   overflow: hidden;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: var(--text-main);
+  font-family: var(--tv-font);
+  color: var(--tv-text-main);
   box-sizing: border-box;
+  user-select: none;
 }
 
+/* TV Scanline & Mesh Texture Overlay */
+.stadium-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Animated Sweeping Stadium Floodlight Beams */
 .floodlight {
   position: absolute;
-  width: 300px;
-  height: 600px;
-  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.15) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 80%);
+  width: 380px;
+  height: 750px;
+  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.18) 0%, rgba(59, 130, 246, 0.08) 45%, transparent 80%);
   transform-origin: top center;
   pointer-events: none;
+  z-index: 1;
 }
 
 .floodlight-left {
-  top: 0;
-  left: 10%;
-  transform: rotate(-25deg);
-  animation: sweepLightLeft 12s ease-in-out infinite alternate;
+  top: -50px;
+  left: 8%;
+  transform: rotate(-24deg);
+  animation: sweepLightLeft 14s ease-in-out infinite alternate;
 }
 
 .floodlight-right {
-  top: 0;
-  right: 10%;
-  transform: rotate(25deg);
-  animation: sweepLightRight 14s ease-in-out infinite alternate;
+  top: -50px;
+  right: 8%;
+  transform: rotate(24deg);
+  animation: sweepLightRight 16s ease-in-out infinite alternate;
 }
 
 @keyframes sweepLightLeft {
-  0% { transform: rotate(-30deg); opacity: 0.6; }
-  100% { transform: rotate(-15deg); opacity: 0.9; }
+  0% { transform: rotate(-28deg); opacity: 0.6; }
+  100% { transform: rotate(-14deg); opacity: 0.95; }
 }
 
 @keyframes sweepLightRight {
-  0% { transform: rotate(30deg); opacity: 0.6; }
-  100% { transform: rotate(15deg); opacity: 0.9; }
+  0% { transform: rotate(28deg); opacity: 0.6; }
+  100% { transform: rotate(14deg); opacity: 0.95; }
 }
 
-/* Glassmorphism Card Component */
-.glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+/* TV Broadcast Header Bar & Ticker */
+.tv-broadcast-header {
+  background: rgba(2, 6, 23, 0.92);
+  border-bottom: 2px solid var(--tv-gold-primary);
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85);
+  position: relative;
+  z-index: 20;
   backdrop-filter: blur(16px);
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* TV Live HD Badge */
+.tv-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--tv-red-live);
+  color: var(--tv-red-live);
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 10px;
+  border-radius: 6px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: 0 0 12px var(--tv-red-glow);
+}
+
+.tv-live-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--tv-red-live);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--tv-red-live);
+  animation: livePulse 1.2s infinite ease-in-out;
+}
+
+@keyframes livePulse {
+  0% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0.3; transform: scale(0.8); }
+}
+
+/* TV Channel Logo Watermark */
+.tv-channel-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: white;
+}
+
+.tv-channel-logo span {
+  background: var(--tv-gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* TV Glassmorphism Card Component */
+.glass-card {
+  background: var(--tv-bg-surface);
+  border: 1px solid var(--tv-glass-border);
+  backdrop-filter: blur(20px);
+  border-radius: 18px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .glass-card:hover {
-  background: var(--glass-hover);
-  border-color: rgba(255, 215, 0, 0.3);
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 215, 0, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 20px var(--gold-glow);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.85), 0 0 24px var(--tv-gold-glow);
 }
 
-/* UEFA Broadcast Banner Button */
+/* TV Broadcast Button Base */
 .broadcast-btn {
   padding: 14px 24px;
   border-radius: 12px;
   font-weight: 800;
-  font-size: 16px;
-  letter-spacing: 0.5px;
+  font-size: 15px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: all 0.2s ease;
+  transition: all 0.22s ease;
   pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.broadcast-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-20deg);
+  transition: 0.5s;
+}
+
+.broadcast-btn:hover::after {
+  left: 140%;
 }
 
 .broadcast-btn-gold {
-  background: var(--gold-gradient);
+  background: var(--tv-gold-gradient);
   color: #020617;
-  box-shadow: 0 4px 20px var(--gold-glow);
+  box-shadow: 0 6px 24px var(--tv-gold-glow);
+  border: 1px solid #ffe866;
 }
 
 .broadcast-btn-gold:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 28px rgba(255, 215, 0, 0.6);
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.75);
 }
 
 .broadcast-btn-green {
   background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
   color: white;
-  box-shadow: 0 4px 20px var(--pitch-green-glow);
+  box-shadow: 0 6px 24px var(--tv-pitch-glow);
+  border: 1px solid #4ade80;
 }
 
 .broadcast-btn-green:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 28px rgba(34, 197, 94, 0.6);
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.75);
 }
 
-/* Scoreboard Styling */
-.scoreboard-header {
-  background: rgba(2, 6, 23, 0.85);
-  border-bottom: 2px solid var(--gold-primary);
-  padding: 12px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+/* TV Match Minute Badge */
+.tv-minute-badge {
+  font-family: var(--tv-mono);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--tv-gold-primary);
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid var(--tv-gold-primary);
+  padding: 4px 10px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+}
+
+/* TV Telemetry Stat Widget */
+.tv-stat-widget {
+  background: rgba(2, 6, 23, 0.75);
+  border: 1px solid var(--tv-glass-border);
+  border-radius: 14px;
+  padding: 16px;
+  position: relative;
+}
+
+.tv-stat-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--tv-text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.tv-stat-val {
+  font-size: 26px;
+  font-weight: 900;
+  font-family: var(--tv-mono);
 }
 
 /* Football Rank Badge */
 .rank-badge {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   padding: 4px 12px;
   border-radius: 20px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
 
 .rank-bronze { background: rgba(180, 83, 9, 0.25); color: #fbbf24; border: 1px solid #d97706; }
@@ -145,11 +281,10 @@
 .rank-gold { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid #eab308; }
 .rank-elite { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid #a855f7; }
 .rank-legend { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid #ef4444; }
-.rank-hall-of-fame { background: var(--gold-gradient); color: #020617; border: 1px solid #ffd700; box-shadow: 0 0 10px var(--gold-glow); }
+.rank-hall-of-fame { background: var(--tv-gold-gradient); color: #020617; border: 1px solid #ffd700; box-shadow: 0 0 12px var(--tv-gold-glow); }
 
 /* --- REAL FOOTBALL MATCH ANIMATIONS --- */
 
-/* Whistle pulse */
 .whistle-anim {
   display: inline-block;
   animation: whistlePulse 0.8s infinite ease-in-out alternate;
@@ -160,7 +295,6 @@
   100% { transform: scale(1) rotate(15deg); }
 }
 
-/* Goal Overlay Banner Pulse */
 .goal-banner-anim {
   animation: goalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, goalGlow 1.2s infinite alternate;
 }
@@ -174,7 +308,6 @@
   100% { box-shadow: 0 0 50px rgba(34, 197, 94, 0.9), 0 0 80px rgba(255, 215, 0, 0.8); }
 }
 
-/* Floating XP text */
 .floating-xp {
   position: absolute;
   font-size: 20px;
@@ -189,7 +322,6 @@
   100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
 }
 
-/* Scoreboard Flash FX */
 .scoreboard-flash {
   animation: sbFlash 0.6s ease-out;
 }
@@ -198,7 +330,6 @@
   100% { background-color: transparent; }
 }
 
-/* Camera Shake for Missed Goal */
 .camera-shake {
   animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
 }
@@ -209,7 +340,6 @@
   40%, 60% { transform: translate3d(6px, 0, 0); }
 }
 
-/* Red Flash Border */
 .red-flash-border {
   border-color: #EF4444 !important;
   box-shadow: 0 0 30px rgba(239, 68, 68, 0.8) !important;
@@ -217,10 +347,9 @@
 }
 @keyframes redFlash {
   0% { background: rgba(239, 68, 68, 0.4); }
-  100% { background: var(--glass-bg); }
+  100% { background: var(--tv-bg-surface); }
 }
 
-/* Subtle Confetti Particles */
 .confetti-particle {
   position: absolute;
   width: 8px;

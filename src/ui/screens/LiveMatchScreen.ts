@@ -67,11 +67,25 @@ export class LiveMatchScreen {
         }
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; overflow-y: auto; padding: 20px;">
+            <div class="stadium-container" style="pointer-events: auto; overflow-y: auto;">
                 <div class="floodlight floodlight-left"></div>
                 <div class="floodlight floodlight-right"></div>
 
-                <div style="max-width: 680px; margin: 0 auto; position: relative; z-index: 10;">
+                <!-- Top TV Broadcast Header Banner -->
+                <div class="tv-broadcast-header" style="margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="tv-live-badge">
+                            <span class="tv-live-dot"></span> LIVE 1v1 BROADCAST
+                        </span>
+                        <span class="tv-channel-logo">ETHIO TELECOM <span>SPORTS HD</span></span>
+                    </div>
+
+                    <div style="font-family: var(--tv-mono); font-weight: 800; font-size: 13px; color: var(--tv-gold-primary);">
+                        ROUND ${this._currentIndex + 1} / ${this._questions.length}
+                    </div>
+                </div>
+
+                <div style="max-width: 680px; margin: 0 auto; position: relative; z-index: 10; padding: 0 20px;">
                     <!-- Split-Screen Scoreboard Header -->
                     <div class="glass-card" style="
                         padding: 16px 20px;

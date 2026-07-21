@@ -158,30 +158,33 @@ export class ScoreboardQuestionScreen {
 
                 <!-- Top Scoreboard Bar -->
                 <div class="scoreboard-header" id="scoreboard-bar">
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <span class="tv-live-badge">
+                            <span class="tv-live-dot"></span> LIVE HD
+                        </span>
                         <span style="font-size: 24px;">${this._competition.badge}</span>
                         <div>
-                            <div style="font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--gold-primary);">${this._competition.name}</div>
-                            <div style="font-size: 12px; color: var(--text-muted);">
-                                <strong style="color: #60A5FA;">${halfName}</strong> • MINUTE: <strong style="color: white; font-size: 14px;">${matchMinute}</strong>
+                            <div style="font-weight: 900; font-size: 14px; text-transform: uppercase; color: var(--tv-gold-primary); letter-spacing: 1px;">${this._competition.name}</div>
+                            <div style="font-size: 12px; color: var(--tv-text-muted);">
+                                <strong style="color: #60A5FA;">${halfName}</strong> • MINUTE: <span class="tv-minute-badge">${matchMinute}</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Match Score & Question Counter -->
                     <div style="text-align: center;">
-                        <div style="font-size: 22px; font-weight: 900; letter-spacing: 2px;">
-                            GOALS: <span id="sb-goals" style="color: var(--pitch-green); transition: all 0.3s;">${this._quizEngine.calculateFinalStats().goals}</span>
+                        <div style="font-size: 22px; font-weight: 900; letter-spacing: 2px; font-family: var(--tv-mono);">
+                            GOALS: <span id="sb-goals" style="color: var(--tv-pitch-green); transition: all 0.3s;">${this._quizEngine.calculateFinalStats().goals}</span>
                         </div>
-                        <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;">
-                            QUESTION ${this._currentIndex + 1} OF ${this._questions.length}
+                        <div style="font-size: 11px; color: var(--tv-text-muted); font-weight: 800; letter-spacing: 1px;">
+                            MATCH PROGRESSION (${this._currentIndex + 1}/${this._questions.length})
                         </div>
                     </div>
 
                     <!-- Countdown Timer -->
-                    <div class="glass-card" style="padding: 8px 16px; display: flex; align-items: center; gap: 8px;">
+                    <div class="glass-card" style="padding: 6px 16px; display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 18px;">⏱️</span>
-                        <span id="sb-timer" style="font-size: 20px; font-weight: 900; color: var(--gold-primary);">30s</span>
+                        <span id="sb-timer" style="font-size: 22px; font-weight: 900; color: var(--tv-gold-primary); font-family: var(--tv-mono);">30s</span>
                     </div>
                 </div>
 

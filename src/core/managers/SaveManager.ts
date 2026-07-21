@@ -113,4 +113,9 @@ export class SaveManager {
         this._profile.xp += amount;
         this.save();
     }
+
+    public updateStreak(count: number): void {
+        this._profile.streakCount = count;
+        this.save();
+    }
 }
