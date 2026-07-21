@@ -41,6 +41,12 @@ export class MatchStatsScreen {
         const achievementsUnlocked = this._stats.accuracy >= 80 ? '🎯 Perfect Matchmaster' : '⚽ League Match Finisher';
         const isMvp = this._stats.matchRating >= 7.5;
 
+        if (this._stats.accuracy >= 50) {
+            this._audioManager.playVictoryFanfare();
+        } else {
+            this._audioManager.playDefeatSound();
+        }
+
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto; overflow-y: auto;">
                 <!-- Floodlight FX -->
@@ -63,7 +69,7 @@ export class MatchStatsScreen {
 
                 <div style="max-width: 620px; margin: 20px auto 40px auto; position: relative; z-index: 10; padding: 0 20px;">
                     <!-- Glassmorphism Broadcast Report Card -->
-                    <div class="glass-card" style="
+                    <div class="glass-card result-transition-in" style="
                         padding: 32px 26px;
                         text-align: center;
                         border-color: var(--tv-gold-primary);

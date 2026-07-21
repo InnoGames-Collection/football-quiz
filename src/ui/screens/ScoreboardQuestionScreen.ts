@@ -189,7 +189,7 @@ export class ScoreboardQuestionScreen {
                 </div>
 
                 <!-- Center Question Card Container -->
-                <div style="
+                <div class="question-transition-in" style="
                     position: absolute;
                     top: 52%;
                     left: 50%;
@@ -324,8 +324,9 @@ export class ScoreboardQuestionScreen {
             const timerEl = document.getElementById('sb-timer');
             if (timerEl) {
                 timerEl.innerText = `${this._timeLeftSec}s`;
-                if (this._timeLeftSec <= 5) {
+                if (this._timeLeftSec <= 5 && this._timeLeftSec > 0) {
                     timerEl.style.color = '#EF4444';
+                    this._audioManager.playCountdownWarning();
                 }
             }
 
@@ -384,11 +385,13 @@ export class ScoreboardQuestionScreen {
             this._spawnFloatingXp(targetBtn, `+${result.xp} XP`);
             this._spawnConfetti();
 
+            this._audioManager.playCorrectAnswer();
             this._audioManager.playGoalCheer();
             this._showGoalOverlay();
         } else {
             targetBtn.style.background = 'linear-gradient(135deg, #EF4444 0%, #991B1B 100%)';
             targetBtn.classList.add('red-flash-border');
+            this._audioManager.playWrongAnswer();
             this._audioManager.playWhistle();
 
             // Camera shake on question card

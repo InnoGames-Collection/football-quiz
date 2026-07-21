@@ -149,26 +149,33 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* TV Glassmorphism Card Component */
+/* TV Glassmorphism Card Component (Card Pop-In: 250ms <= 500ms) */
 .glass-card {
   background: var(--tv-bg-surface);
   border: 1px solid var(--tv-glass-border);
   backdrop-filter: blur(20px);
   border-radius: 18px;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.18s ease-out, background 0.18s ease-out, border-color 0.18s ease-out, box-shadow 0.18s ease-out;
   position: relative;
   overflow: hidden;
+  will-change: transform, opacity;
+  animation: cardPopIn 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardPopIn {
+  0% { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.98); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
 .glass-card:hover {
   background: rgba(30, 41, 59, 0.9);
   border-color: rgba(255, 215, 0, 0.35);
-  transform: translateY(-2px);
+  transform: translate3d(0, -2px, 0);
   box-shadow: 0 20px 56px rgba(0, 0, 0, 0.85), 0 0 24px var(--tv-gold-glow);
 }
 
-/* TV Broadcast Button Base */
+/* TV Broadcast Button Base (Button Micro-Bounce: 180ms <= 500ms, Gloss Sweep: 350ms <= 500ms) */
 .broadcast-btn {
   padding: 14px 24px;
   border-radius: 12px;
@@ -182,11 +189,16 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: all 0.22s ease;
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out, background 180ms ease-out;
   pointer-events: auto;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  will-change: transform;
+}
+
+.broadcast-btn:active {
+  transform: scale(0.96) !important;
 }
 
 .broadcast-btn::after {
@@ -196,9 +208,9 @@
   left: -100%;
   width: 60%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transform: skewX(-20deg);
-  transition: 0.5s;
+  transition: left 350ms ease-in-out;
 }
 
 .broadcast-btn:hover::after {
@@ -213,7 +225,7 @@
 }
 
 .broadcast-btn-gold:hover {
-  transform: scale(1.02);
+  transform: translate3d(0, -2px, 0) scale(1.02);
   box-shadow: 0 8px 32px rgba(255, 215, 0, 0.75);
 }
 
@@ -225,8 +237,14 @@
 }
 
 .broadcast-btn-green:hover {
-  transform: scale(1.02);
+  transform: translate3d(0, -2px, 0) scale(1.02);
   box-shadow: 0 8px 32px rgba(34, 197, 94, 0.75);
+}
+
+/* TV Progress Bar Animation (Progress Fill: 300ms <= 500ms) */
+.tv-progress-fill {
+  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: width;
 }
 
 /* TV Match Minute Badge */
@@ -249,6 +267,7 @@
   border-radius: 14px;
   padding: 16px;
   position: relative;
+  will-change: transform;
 }
 
 .tv-stat-label {
@@ -283,31 +302,29 @@
 .rank-legend { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid #ef4444; }
 .rank-hall-of-fame { background: var(--tv-gold-gradient); color: #020617; border: 1px solid #ffd700; box-shadow: 0 0 12px var(--tv-gold-glow); }
 
-/* --- REAL FOOTBALL MATCH ANIMATIONS --- */
+/* --- HIGH PERFORMANCE CSS KEYFRAMES (STRICTLY <= 500ms) --- */
 
-.whistle-anim {
-  display: inline-block;
-  animation: whistlePulse 0.8s infinite ease-in-out alternate;
+/* Question Slide-In Transition (200ms <= 500ms) */
+.question-transition-in {
+  animation: questionSlideIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
 }
-@keyframes whistlePulse {
-  0% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.25) rotate(-15deg); }
-  100% { transform: scale(1) rotate(15deg); }
-}
-
-.goal-banner-anim {
-  animation: goalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, goalGlow 1.2s infinite alternate;
-}
-@keyframes goalPop {
-  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
-  80% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-}
-@keyframes goalGlow {
-  0% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(255, 215, 0, 0.4); }
-  100% { box-shadow: 0 0 50px rgba(34, 197, 94, 0.9), 0 0 80px rgba(255, 215, 0, 0.8); }
+@keyframes questionSlideIn {
+  0% { opacity: 0; transform: translate3d(24px, 0, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
+/* Result Screen Broadcast Reveal (300ms <= 500ms) */
+.result-transition-in {
+  animation: resultFadeIn 300ms ease-out forwards;
+  will-change: transform, opacity;
+}
+@keyframes resultFadeIn {
+  0% { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.97); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* XP Floating Rise (450ms <= 500ms) */
 .floating-xp {
   position: absolute;
   font-size: 20px;
@@ -315,50 +332,89 @@
   color: #60A5FA;
   text-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
   pointer-events: none;
-  animation: floatUp 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: floatUp 450ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  will-change: transform, opacity;
 }
 @keyframes floatUp {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
+  0% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  100% { opacity: 0; transform: translate3d(0, -40px, 0) scale(1.25); }
 }
 
+/* Achievement Badge Unlock Pulse (350ms <= 500ms) */
+.achievement-unlock-anim {
+  animation: achievementUnlock 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  will-change: transform, opacity;
+}
+@keyframes achievementUnlock {
+  0% { transform: scale(0.85); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Whistle pulse (400ms <= 500ms) */
+.whistle-anim {
+  display: inline-block;
+  animation: whistlePulse 400ms infinite ease-in-out alternate;
+}
+@keyframes whistlePulse {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(-10deg); }
+  100% { transform: scale(1) rotate(10deg); }
+}
+
+/* Goal Banner Pop (350ms <= 500ms) */
+.goal-banner-anim {
+  animation: goalPop 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  will-change: transform, opacity;
+}
+@keyframes goalPop {
+  0% { transform: translate3d(-50%, -50%, 0) scale(0.4); opacity: 0; }
+  80% { transform: translate3d(-50%, -50%, 0) scale(1.1); opacity: 1; }
+  100% { transform: translate3d(-50%, -50%, 0) scale(1); opacity: 1; }
+}
+
+/* Scoreboard Flash FX (300ms <= 500ms) */
 .scoreboard-flash {
-  animation: sbFlash 0.6s ease-out;
+  animation: sbFlash 300ms ease-out;
 }
 @keyframes sbFlash {
   0% { background-color: rgba(34, 197, 94, 0.6); box-shadow: 0 0 30px #22c55e; }
   100% { background-color: transparent; }
 }
 
+/* Camera Shake (350ms <= 500ms) */
 .camera-shake {
-  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+  animation: shake 350ms cubic-bezier(.36,.07,.19,.97) both;
 }
 @keyframes shake {
   10%, 90% { transform: translate3d(-2px, 0, 0); }
   20%, 80% { transform: translate3d(4px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
-  40%, 60% { transform: translate3d(6px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+  40%, 60% { transform: translate3d(5px, 0, 0); }
 }
 
+/* Red Flash Border (300ms <= 500ms) */
 .red-flash-border {
   border-color: #EF4444 !important;
   box-shadow: 0 0 30px rgba(239, 68, 68, 0.8) !important;
-  animation: redFlash 0.5s ease-out;
+  animation: redFlash 300ms ease-out;
 }
 @keyframes redFlash {
   0% { background: rgba(239, 68, 68, 0.4); }
   100% { background: var(--tv-bg-surface); }
 }
 
+/* Confetti Particle Fall (450ms <= 500ms) */
 .confetti-particle {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 2px;
   pointer-events: none;
-  animation: confettiFall 1.5s ease-out forwards;
+  animation: confettiFall 450ms ease-out forwards;
+  will-change: transform, opacity;
 }
 @keyframes confettiFall {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(180px) rotate(720deg); opacity: 0; }
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(0, 140px, 0) rotate(540deg); opacity: 0; }
 }
