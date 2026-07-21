@@ -1,7 +1,7 @@
 /* Football Quiz League - Reusable Football Design System (FDS) Tokens & Utilities */
 
 :root {
-  /* Design System Colors */
+  /* Centralized Color Tokens */
   --fds-gold-primary: #ffd700;
   --fds-gold-dark: #ff8c00;
   --fds-gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
@@ -19,25 +19,34 @@
   --fds-red-glow: rgba(239, 68, 68, 0.6);
 
   --fds-bg-dark: #020617;
-  --fds-bg-surface: rgba(15, 23, 42, 0.82);
-  --fds-border-glass: rgba(255, 255, 255, 0.14);
+  --fds-bg-surface: rgba(15, 23, 42, 0.88);
+  --fds-border-glass: rgba(255, 255, 255, 0.16);
 
-  --fds-text-main: #f8fafc;
-  --fds-text-muted: #94a3b8;
-  --fds-text-dim: #64748b;
+  --fds-text-main: #ffffff;
+  --fds-text-muted: #cbd5e1;
+  --fds-text-dim: #94a3b8;
 
-  /* Typography */
+  /* Strict Typography Scale */
   --fds-font-main: 'Inter', system-ui, -apple-system, sans-serif;
   --fds-font-mono: 'JetBrains Mono', monospace, sans-serif;
 
-  /* Spacing Scale */
-  --fds-space-xs: 4px;
-  --fds-space-sm: 8px;
-  --fds-space-md: 16px;
-  --fds-space-lg: 24px;
-  --fds-space-xl: 36px;
+  --fds-font-xs: 12px;
+  --fds-font-sm: 14px;
+  --fds-font-md: 16px;
+  --fds-font-lg: 20px;
+  --fds-font-xl: 28px;
+  --fds-font-xxl: 36px;
 
-  /* Border Radius */
+  /* Strict 8-Point Spacing Scale: 4, 8, 12, 16, 24, 32, 48 */
+  --fds-space-4: 4px;
+  --fds-space-8: 8px;
+  --fds-space-12: 12px;
+  --fds-space-16: 16px;
+  --fds-space-24: 24px;
+  --fds-space-32: 32px;
+  --fds-space-48: 48px;
+
+  /* Border Radii */
   --fds-radius-sm: 8px;
   --fds-radius-md: 14px;
   --fds-radius-lg: 20px;
@@ -51,6 +60,7 @@
   backdrop-filter: blur(20px);
   border-radius: var(--fds-radius-md);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+  padding: var(--fds-space-24);
   transition: transform 180ms ease-out, background 180ms ease-out, border-color 180ms ease-out;
   position: relative;
   overflow: hidden;
@@ -59,10 +69,11 @@
 }
 
 .fds-btn {
-  padding: 14px 24px;
+  min-height: 48px;
+  padding: 14px var(--fds-space-24);
   border-radius: var(--fds-radius-sm);
   font-weight: 800;
-  font-size: 15px;
+  font-size: var(--fds-font-sm);
   font-family: var(--fds-font-main);
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -71,11 +82,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--fds-space-8);
   transition: transform 180ms ease-out, box-shadow 180ms ease-out;
   position: relative;
   overflow: hidden;
   will-change: transform;
+}
+
+.fds-btn:focus-visible,
+.fds-input:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--fds-gold-primary) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 16px var(--fds-gold-glow) !important;
 }
 
 .fds-btn:active {
@@ -97,11 +118,28 @@
 }
 
 .fds-badge {
-  font-size: 11px;
+  font-size: var(--fds-font-xs);
   font-weight: 800;
-  padding: 4px 12px;
+  padding: var(--fds-space-4) var(--fds-space-12);
   border-radius: var(--fds-radius-full);
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-family: var(--fds-font-main);
+}
+
+.fds-input {
+  width: 100%;
+  padding: var(--fds-space-12) var(--fds-space-16);
+  background: rgba(2, 6, 23, 0.8);
+  border: 1px solid var(--fds-border-glass);
+  border-radius: var(--fds-radius-sm);
+  color: white;
+  font-family: var(--fds-font-main);
+  font-size: var(--fds-font-sm);
+  box-sizing: border-box;
+  transition: border-color 180ms ease-out;
+}
+
+.fds-input:focus {
+  border-color: var(--fds-gold-primary);
 }

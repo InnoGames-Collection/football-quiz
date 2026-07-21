@@ -34,7 +34,35 @@ export interface ProfileProps {
     levelProgressPercent: number;
 }
 
+export interface HeaderProps {
+    title: string;
+    subtitle?: string;
+    badgeText?: string;
+    rightText?: string;
+}
+
 export class DesignSystem {
+    /**
+     * Reusable FDS Header Bar
+     */
+    public static Header(props: HeaderProps): string {
+        return `
+            <div class="tv-broadcast-header">
+                <div style="display: flex; align-items: center; gap: var(--fds-space-12);">
+                    <span class="tv-live-badge">
+                        <span class="tv-live-dot"></span> ${props.badgeText || 'LIVE BROADCAST HD'}
+                    </span>
+                    <span class="tv-channel-logo">ETHIO TELECOM <span>SPORTS HD</span></span>
+                </div>
+                ${props.rightText ? `
+                    <div style="font-family: var(--fds-font-mono); font-weight: 800; font-size: var(--fds-font-xs); color: var(--fds-gold-primary);">
+                        ${props.rightText}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
     /**
      * Reusable FDS Button Component
      */
@@ -60,7 +88,7 @@ export class DesignSystem {
      */
     public static Card(props: CardProps): string {
         const borderStyle = props.borderColor ? `border-color: ${props.borderColor};` : '';
-        const paddingStyle = props.padding ? `padding: ${props.padding};` : 'padding: 20px;';
+        const paddingStyle = props.padding ? `padding: ${props.padding};` : 'padding: var(--fds-space-24);';
         const idAttr = props.id ? `id="${props.id}"` : '';
 
         return `
@@ -97,9 +125,9 @@ export class DesignSystem {
      */
     public static Profile(props: ProfileProps): string {
         return `
-            <div class="glass-card" style="padding: 18px; border-color: var(--fds-gold-primary);">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 14px;">
-                    <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="glass-card" style="padding: var(--fds-space-16); border-color: var(--fds-gold-primary);">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: var(--fds-space-16);">
+                    <div style="display: flex; align-items: center; gap: var(--fds-space-16);">
                         <div style="
                             width: 48px;
                             height: 48px;
@@ -114,18 +142,18 @@ export class DesignSystem {
                             box-shadow: 0 0 14px var(--fds-gold-glow);
                         ">⚽</div>
                         <div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-weight: 900; font-size: 16px; color: white;">${props.username}</span>
+                            <div style="display: flex; align-items: center; gap: var(--fds-space-8);">
+                                <span style="font-weight: 900; font-size: var(--fds-font-md); color: white;">${props.username}</span>
                                 <span class="rank-badge">${props.rankIcon} ${props.rankName}</span>
                             </div>
-                            <div style="font-size: 12px; color: var(--fds-gold-primary); font-weight: 800; margin-top: 2px;">
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-gold-primary); font-weight: 800; margin-top: 2px;">
                                 ${props.divisionBadge} ${props.divisionName}
                             </div>
                         </div>
                     </div>
 
                     <div style="text-align: right;">
-                        <div style="font-size: 12px; color: var(--fds-gold-primary); font-weight: 900; font-family: var(--fds-font-mono);">
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-gold-primary); font-weight: 900; font-family: var(--fds-font-mono);">
                             LVL ${props.level} (${props.xp} XP)
                         </div>
                         <div style="width: 140px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; overflow: hidden; margin-top: 4px;">
@@ -134,6 +162,15 @@ export class DesignSystem {
                     </div>
                 </div>
             </div>
+        `;
+    }
+
+    /**
+     * Reusable FDS Input Field
+     */
+    public static Input(id: string, placeholder: string, value: string = '', type: string = 'text'): string {
+        return `
+            <input id="${id}" type="${type}" placeholder="${placeholder}" value="${value}" class="fds-input" />
         `;
     }
 
@@ -156,13 +193,13 @@ export class DesignSystem {
             <div class="glass-card" style="
                 width: 100%;
                 max-width: 480px;
-                padding: 32px 24px;
+                padding: var(--fds-space-32) var(--fds-space-24);
                 text-align: center;
                 border-color: var(--fds-gold-primary);
                 box-shadow: 0 20px 60px rgba(0,0,0,0.85);
             ">
-                <h2 style="font-size: 26px; font-weight: 900; color: white; margin: 0 0 16px 0;">${title}</h2>
-                <div style="margin-bottom: 24px;">${content}</div>
+                <h2 style="font-size: var(--fds-font-xl); font-weight: 900; color: white; margin: 0 0 var(--fds-space-16) 0;">${title}</h2>
+                <div style="margin-bottom: var(--fds-space-24);">${content}</div>
                 <div>${footer}</div>
             </div>
         `;
