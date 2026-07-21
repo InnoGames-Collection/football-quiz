@@ -64,7 +64,7 @@ export class DailyChallengeScreen {
                     <button id="dc-close-btn" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">⬅️ BACK</button>
                 </div>
 
-                <div style="max-width: 960px; margin: 0 auto; padding: 16px 0 100px 0;">
+                <div style="max-width: 960px; margin: 0 auto; padding: 16px 0 0 0;">
                     
                     <!-- Horizontal Mode Selector -->
                     <div style="padding: 0 16px; margin-bottom: 24px;">
@@ -80,45 +80,6 @@ export class DailyChallengeScreen {
                         <div id="active-mode-content" style="margin-bottom: 24px;">
                             ${this._renderActiveModeContent(currentStreak)}
                         </div>
-
-                        <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 12px; text-transform: uppercase;">Recent Game</div>
-                        
-                        <!-- Continue Last Match -->
-                        <div class="glass-card" style="padding: 16px; border-color: #38BDF8; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                            <div>
-                                <div style="font-size: 11px; font-weight: 800; color: #38BDF8; margin-bottom: 4px;">▶ RESUME IN-PROGRESS MATCH</div>
-                                <div style="font-size: 16px; font-weight: 900; color: white;">Ethiopian Premier Derby</div>
-                                <div style="font-size: 12px; color: #94A3B8; margin-top: 4px;">Question 4 of 10</div>
-                            </div>
-                            <div style="font-size: 24px;">▶️</div>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-                            <!-- Suggested Quiz -->
-                            <div class="glass-card" style="padding: 16px;">
-                                <div style="font-size: 11px; font-weight: 800; color: #A78BFA; margin-bottom: 8px;">💡 SUGGESTED QUIZ</div>
-                                <div style="font-size: 16px; font-weight: 900; color: white; margin-bottom: 4px;">AFCON History</div>
-                                <div style="font-size: 12px; color: #94A3B8; margin-bottom: 12px;">Trending • 20 Questions</div>
-                                ${DesignSystem.Button({ id: 'btn-suggested', text: 'PLAY NOW', variant: 'glass' })}
-                            </div>
-
-                            <!-- Recent Results -->
-                            <div class="glass-card" style="padding: 16px;">
-                                <div style="font-size: 11px; font-weight: 800; color: #F472B6; margin-bottom: 8px;">📊 RECENT RESULTS</div>
-                                <div style="font-size: 16px; font-weight: 900; color: white; margin-bottom: 4px;">Weekly League Qualifier</div>
-                                <div style="display: flex; gap: 12px; margin-top: 12px;">
-                                    <div>
-                                        <div style="font-size: 10px; color: #94A3B8;">SCORE</div>
-                                        <div style="font-size: 14px; font-weight: 800; color: white;">8/10</div>
-                                    </div>
-                                    <div>
-                                        <div style="font-size: 10px; color: #94A3B8;">TIME</div>
-                                        <div style="font-size: 14px; font-weight: 800; color: white;">1m 42s</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>

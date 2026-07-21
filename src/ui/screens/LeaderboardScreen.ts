@@ -109,7 +109,7 @@ export class LeaderboardScreen {
                     <button id="lb-close-btn" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">⬅️ BACK</button>
                 </div>
 
-                <div style="max-width: 960px; margin: 0 auto; padding: 0 0 100px 0; position: relative;">
+                <div style="max-width: 960px; margin: 0 auto; padding: 0; position: relative;">
                     ${stickyHeader}
 
                     <div style="padding: 0 16px;">

@@ -73,7 +73,7 @@ export class FootballLeagueHome {
                     </div>
                 </div>
 
-                <div style="max-width: 960px; margin: 0 auto; padding: 16px 16px 100px 16px;">
+                <div style="max-width: 960px; margin: 0 auto; padding: 16px;">
                     
                     <!-- 1. Daily Challenge (Primary) -->
                     <div class="glass-card" style="border-color: var(--tv-gold-primary); background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(15,23,42,0.8) 100%); padding: 20px; text-align: center; margin-bottom: 16px; cursor: pointer;" id="card-daily">

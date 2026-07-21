@@ -190,6 +190,33 @@ export class ScoreboardQuestionScreen {
                         `).join('')}
                     </div>
                 </div>
+                
+                <!-- Feedback Overlay (Fixed Bottom) -->
+                <div id="feedback-overlay" style="
+                    position: fixed;
+                    bottom: 80px;
+                    left: 50%;
+                    transform: translateX(-50%) scale(0.9);
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    z-index: 100;
+                    width: 90%;
+                    max-width: 400px;
+                    background: rgba(15,23,42,0.95);
+                    border: 2px solid;
+                    border-radius: 20px;
+                    padding: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+                    backdrop-filter: blur(10px);
+                ">
+                    <div id="feedback-icon" style="font-size: 32px;"></div>
+                    <div id="feedback-text" style="font-size: 24px; font-weight: 900; font-family: var(--tv-mono); letter-spacing: 1px;"></div>
+                </div>
             </div>
             <style>
                 .option-btn:active:not(:disabled) { transform: scale(0.97); }
@@ -270,6 +297,7 @@ export class ScoreboardQuestionScreen {
             targetBtn.classList.add('correct');
             this._audioManager.playCorrectAnswer();
             this._audioManager.playGoalCheer();
+            this._showFeedbackOverlay(true);
         } else {
             targetBtn.classList.add('wrong');
             const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
@@ -278,12 +306,39 @@ export class ScoreboardQuestionScreen {
             }
             this._audioManager.playWrongAnswer();
             this._audioManager.playWhistle();
+            this._showFeedbackOverlay(false);
         }
 
         setTimeout(() => {
+            this._hideFeedbackOverlay();
             this._currentIndex++;
             this._renderQuestion();
-        }, 1200); // Faster, smoother transition
+        }, 1500); // Wait for overlay
+    }
+
+    private _showFeedbackOverlay(isGoal: boolean): void {
+        const overlay = document.getElementById('feedback-overlay');
+        const icon = document.getElementById('feedback-icon');
+        const text = document.getElementById('feedback-text');
+        if (overlay && icon && text) {
+            overlay.style.borderColor = isGoal ? 'var(--tv-pitch-green)' : '#EF4444';
+            overlay.style.boxShadow = isGoal ? '0 10px 40px rgba(34,197,94,0.3)' : '0 10px 40px rgba(239,68,68,0.3)';
+            overlay.style.color = isGoal ? 'var(--tv-pitch-green)' : '#EF4444';
+            
+            icon.innerText = isGoal ? '⚽' : '🧤';
+            text.innerText = isGoal ? 'GOAL!!!!!' : 'GOAL SAVED!';
+            
+            overlay.style.opacity = '1';
+            overlay.style.transform = 'translateX(-50%) scale(1)';
+        }
+    }
+
+    private _hideFeedbackOverlay(): void {
+        const overlay = document.getElementById('feedback-overlay');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            overlay.style.transform = 'translateX(-50%) scale(0.9)';
+        }
     }
 
     private _handleTimeOut(): void {
