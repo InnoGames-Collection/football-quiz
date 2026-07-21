@@ -1,5 +1,7 @@
 import { supabase, supabaseService } from '../supabase/SupabaseClient';
+import { EdgeFunctionClient } from '../supabase/EdgeFunctionClient';
 import type { UserRow } from '../supabase/types';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export interface OpponentMatchInfo {
     liveMatchId: string;
@@ -13,7 +15,7 @@ export class MatchmakingService {
     private static _instance: MatchmakingService | null = null;
     private _inQueue: boolean = false;
     private _listeners: Set<MatchFoundListener> = new Set();
-    private _searchTimer: any = null;
+    private _cdcChannel: RealtimeChannel | null = null;
 
     public static getInstance(): MatchmakingService {
         if (!MatchmakingService._instance) {
@@ -24,36 +26,28 @@ export class MatchmakingService {
 
     public async joinQueue(user: UserRow, competitionId?: string): Promise<{ success: boolean; error?: string }> {
         if (this._inQueue) return { success: true };
+        this._inQueue = true;
 
         if (supabaseService.isOnline && supabase) {
-            try {
-                // Delete stale queue entries for this user
-                await (supabase.from('matchmaking_queue' as any) as any)
-                    .delete()
-                    .eq('user_id', user.id);
+            // 1. Invoke matchmaking Edge Function
+            const { data, error } = await EdgeFunctionClient.invoke('matchmaking', {
+                userId: user.id,
+                eloRating: user.elo_rating || 1200,
+                competitionId
+            });
 
-                // Insert into matchmaking queue
-                const { error } = await (supabase.from('matchmaking_queue' as any) as any)
-                    .insert({
-                        user_id: user.id,
-                        elo_rating: user.elo_rating || 1200,
-                        competition_id: competitionId || null
-                    });
-
-                if (error) {
-                    return { success: false, error: error.message };
-                }
-
-                this._inQueue = true;
-                this._startPollingForMatch(user.id);
+            if (!error && data && data.matched && data.liveMatch) {
+                console.log('[MatchmakingService] Matched instantly via Edge Function.');
+                await this._handleMatchFound(data.liveMatch, user.id);
                 return { success: true };
-            } catch (err: any) {
-                return { success: false, error: err.message };
             }
+
+            // 2. Subscribe to Postgres CDC on `live_matches` table
+            this._subscribeToCdc(user.id);
+            return { success: true };
         }
 
-        // Mock offline opponent fallback (e.g. after 3 seconds)
-        this._inQueue = true;
+        // Offline / Simulated Matchmaking Fallback
         setTimeout(() => {
             if (this._inQueue) {
                 const mockOpponent: UserRow = {
@@ -81,92 +75,76 @@ export class MatchmakingService {
                 });
                 this.leaveQueue(user.id);
             }
-        }, 3000);
+        }, 2500);
 
         return { success: true };
     }
 
-    private _startPollingForMatch(userId: string): void {
-        let attempts = 0;
-        this._searchTimer = setInterval(async () => {
-            attempts++;
-            if (!this._inQueue || !supabase) {
-                clearInterval(this._searchTimer);
-                return;
-            }
+    private _subscribeToCdc(userId: string): void {
+        if (!supabase) return;
 
-            try {
-                // Check if a live match has been created involving this player
-                const { data, error } = await (supabase.from('live_matches' as any) as any)
-                    .select('*')
-                    .or(`player_a_id.eq.${userId},player_b_id.eq.${userId}`)
-                    .eq('status', 'waiting')
-                    .order('created_at', { ascending: false })
-                    .limit(1);
-
-                if (!error && data && data.length > 0) {
-                    const match = data[0];
-                    const opponentId = match.player_a_id === userId ? match.player_b_id : match.player_a_id;
-
-                    // Fetch opponent details
-                    const { data: oppData } = await (supabase.from('users' as any) as any)
-                        .select('*')
-                        .eq('id', opponentId)
-                        .single();
-
-                    clearInterval(this._searchTimer);
-                    this.leaveQueue(userId);
-
-                    this._notifyMatchFound({
-                        liveMatchId: match.id,
-                        opponent: oppData as UserRow,
-                        questionIds: match.question_ids || []
-                    });
+        this._cdcChannel = supabase
+            .channel('public:live_matches')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'live_matches'
+                },
+                async (payload) => {
+                    const match = payload.new as any;
+                    if (match.player_a_id === userId || match.player_b_id === userId) {
+                        console.log('[MatchmakingService] Postgres CDC detected live match creation!');
+                        await this._handleMatchFound(match, userId);
+                    }
                 }
-            } catch (err) {
-                console.warn('[MatchmakingService] Polling error:', err);
-            }
-
-            // After 30 seconds of searching, spawn AI opponent
-            if (attempts >= 15 && this._inQueue) {
-                clearInterval(this._searchTimer);
-                this._spawnAiOpponent(userId);
-            }
-        }, 2000);
+            )
+            .subscribe();
     }
 
-    private _spawnAiOpponent(userId: string): void {
-        const aiUser: UserRow = {
-            id: 'bot-ai',
-            username: 'Ethiopian_Star_AI',
+    private async _handleMatchFound(match: any, userId: string): Promise<void> {
+        const opponentId = match.player_a_id === userId ? match.player_b_id : match.player_a_id;
+        let opponent: UserRow = {
+            id: opponentId,
+            username: 'Ethiopian_Rival',
             phone: null,
             avatar_url: null,
             locale: 'en',
-            elo_rating: 1250,
-            coins: 1000,
-            xp: 2500,
-            total_matches: 40,
-            total_wins: 28,
+            elo_rating: 1200,
+            coins: 100,
+            xp: 50,
+            total_matches: 5,
+            total_wins: 3,
             subscription_tier: 'free',
-            streak_count: 12,
+            streak_count: 1,
             streak_last_date: null,
             created_at: new Date().toISOString(),
             last_active: new Date().toISOString()
         };
 
-        this._notifyMatchFound({
-            liveMatchId: `ai-match-${Date.now()}`,
-            opponent: aiUser,
-            questionIds: []
-        });
+        if (supabase) {
+            const { data } = await (supabase.from('users' as any) as any)
+                .select('*')
+                .eq('id', opponentId)
+                .single();
+            if (data) opponent = data as UserRow;
+        }
+
         this.leaveQueue(userId);
+        this._notifyMatchFound({
+            liveMatchId: match.id,
+            opponent,
+            questionIds: match.question_ids || []
+        });
     }
 
     public async leaveQueue(userId: string): Promise<void> {
         this._inQueue = false;
-        if (this._searchTimer) {
-            clearInterval(this._searchTimer);
-            this._searchTimer = null;
+
+        if (this._cdcChannel && supabase) {
+            supabase.removeChannel(this._cdcChannel);
+            this._cdcChannel = null;
         }
 
         if (supabaseService.isOnline && supabase) {
@@ -175,7 +153,7 @@ export class MatchmakingService {
                     .delete()
                     .eq('user_id', userId);
             } catch (e) {
-                console.warn('[MatchmakingService] Error removing from queue:', e);
+                console.warn('[MatchmakingService] Error leaving queue:', e);
             }
         }
     }
