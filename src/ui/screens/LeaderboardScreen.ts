@@ -3,19 +3,23 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { LeaderboardService, LeaderboardDisplayEntry } from '../../core/leaderboard/LeaderboardService';
 import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
 import { DesignSystem } from '../theme/DesignSystem';
+import { ProgressionManager } from '../../core/managers/ProgressionManager';
+import { SaveManager } from '../../core/managers/SaveManager';
 import type { LeaderboardTimeRange } from '../../networking/supabase/types';
 
 export class LeaderboardScreen {
     private _uiManager: UIManager;
     private _audioManager: AudioManager;
+    private _saveManager: SaveManager;
     private _onClose: () => void;
     private _activeTimeRange: LeaderboardTimeRange = 'all_time';
     private _selectedCompetitionId: string = 'all';
     private _searchQuery: string = '';
 
-    constructor(uiManager: UIManager, audioManager: AudioManager, onClose: () => void) {
+    constructor(uiManager: UIManager, audioManager: AudioManager, saveManager: SaveManager, onClose: () => void) {
         this._uiManager = uiManager;
         this._audioManager = audioManager;
+        this._saveManager = saveManager;
         this._onClose = onClose;
     }
 
@@ -29,56 +33,67 @@ export class LeaderboardScreen {
             ? entries.filter(e => e.username.toLowerCase().includes(this._searchQuery.toLowerCase()))
             : entries;
 
-        root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
-                <div class="floodlight floodlight-left"></div>
-                <div class="floodlight floodlight-right"></div>
+        const profile = this._saveManager.profile;
+        const division = ProgressionManager.getDivision(profile.xp);
 
-                ${DesignSystem.Header({
-                    title: 'RANKINGS & LEADERBOARD',
-                    badgeText: 'RANKINGS & LEADERBOARD',
-                    rightText: ''
-                })}
-                
-                <div style="position: absolute; top: 12px; right: 24px; z-index: 30;">
-                    <button id="lb-close-btn" class="glass-card" style="padding: 6px 14px; color: white; font-weight: bold; cursor: pointer;">
-                        ⬅️ BACK TO HUB
-                    </button>
+        // Calculate fake movement for demo if none exists from backend
+        const movement = Math.floor(Math.random() * 5) + 1;
+        const isUp = Math.random() > 0.5;
+        const movementColor = isUp ? '#22C55E' : '#EF4444';
+        const movementSymbol = isUp ? '▲' : '▼';
+
+        root.innerHTML = `
+            <div class="stadium-container" style="pointer-events: auto; background: radial-gradient(circle at 50% 10%, #0B192C 0%, #050A13 80%);">
+
+                <div class="tv-broadcast-header" style="border-bottom: 2px solid var(--fds-gold-primary);">
+                    ${DesignSystem.Flex(`
+                        <span style="font-size: 18px; font-weight: 900; letter-spacing: 1px; color: white;">RANKINGS & LEADERBOARD</span>
+                        <button id="lb-close-btn" class="glass-card" style="padding: 6px 14px; color: white; font-weight: bold; cursor: pointer;">
+                            ⬅️ HUB
+                        </button>
+                    `, { justify: 'space-between', align: 'center' })}
                 </div>
 
-                <div style="max-width: 880px; margin: var(--fds-space-20) auto; position: relative; z-index: 10; padding: 0 var(--fds-space-20);">
+                <div style="max-width: 960px; margin: 0 auto; position: relative; z-index: 10; padding: var(--fds-space-16) var(--fds-space-16) 100px var(--fds-space-16);">
                     
+                    <!-- HERO: Your Position -->
                     ${DesignSystem.Card({
-                        borderColor: 'var(--fds-gold-primary)',
+                        borderColor: division.color,
                         className: 'margin-bottom-20',
                         content: DesignSystem.Flex(`
                             <div>
-                                ${DesignSystem.Text('⚽ YOUR CURRENT LEAGUE POSITION', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 2px 0' })}
-                                ${DesignSystem.Text('Walia Striker <span style="font-size: var(--fds-font-sm); color: #60A5FA;">(Division 2 Premier)</span>', { size: 'var(--fds-font-lg)', weight: '900', color: 'white' })}
+                                ${DesignSystem.Text('⚽ YOUR CURRENT LEAGUE POSITION', { size: 'var(--fds-font-xs)', weight: '800', color: division.color, margin: '0 0 4px 0' })}
+                                ${DesignSystem.Text(`${profile.username} <span style="font-size: var(--fds-font-sm); color: #94A3B8;">(${division.name})</span>`, { size: 'var(--fds-font-lg)', weight: '900', color: 'white' })}
                             </div>
                             <div style="text-align: right;">
-                                ${DesignSystem.Text('RANK #4', { size: 'var(--fds-font-xl)', weight: '900', color: 'var(--fds-gold-primary)', family: 'var(--fds-font-mono)' })}
-                                ${DesignSystem.Text('3,450 PTS • PROMOTION ZONE', { size: 'var(--fds-font-xs)', color: '#94A3B8', weight: 'bold' })}
+                                ${DesignSystem.Flex(`
+                                    <span style="color: ${movementColor}; font-size: var(--fds-font-sm); font-weight: 900; margin-right: 12px;">
+                                        ${movementSymbol} ${movement}
+                                    </span>
+                                    ${DesignSystem.Text('RANK #4', { size: 'var(--fds-font-xl)', weight: '900', color: division.color, family: 'var(--fds-font-mono)' })}
+                                `, { align: 'center', justify: 'flex-end' })}
+                                ${DesignSystem.Text(`${profile.eloRating || 1200} PTS • PROMOTION ZONE`, { size: 'var(--fds-font-xs)', color: '#94A3B8', weight: 'bold' })}
                             </div>
-                        `, { justify: 'space-between', wrap: true, gap: 'var(--fds-space-12)' })
+                        `, { justify: 'space-between', wrap: true, gap: 'var(--fds-space-12)', align: 'center' })
                     })}
 
+                    <!-- FILTER STRIP -->
                     ${DesignSystem.Card({
-                        borderColor: 'rgba(255,215,0,0.2)',
+                        borderColor: 'transparent',
                         className: 'margin-bottom-20',
                         content: DesignSystem.Flex(`
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                 ${this._renderTimePill('all_time', '🌍 GLOBAL')}
-                                ${this._renderTimePill('monthly', '🇪🇹 ETHIOPIA')}
+                                ${this._renderTimePill('daily', '🇪🇹 NATIONAL')}
                                 ${this._renderTimePill('weekly', '⚡ WEEKLY')}
-                                ${this._renderTimePill('daily', '📅 MONTHLY')}
+                                ${this._renderTimePill('monthly', '📅 MONTHLY')}
                             </div>
                             <select id="lb-comp-select" style="
                                 padding: var(--fds-space-8) 14px;
                                 background: rgba(15, 23, 42, 0.9);
-                                border: 1px solid var(--fds-gold-primary);
+                                border: 1px solid rgba(255, 255, 255, 0.2);
                                 border-radius: var(--radius-sm);
-                                color: var(--fds-gold-primary);
+                                color: white;
                                 font-weight: bold;
                                 font-size: var(--fds-font-sm);
                                 outline: none;
@@ -95,38 +110,21 @@ export class LeaderboardScreen {
                     })}
 
                     <div style="margin-bottom: var(--fds-space-20);">
-                        ${DesignSystem.Input('lb-search-input', '🔍 Search Player Name by Username...', this._searchQuery, 'text')}
+                        ${DesignSystem.Input('lb-search-input', '🔍 Search Player Name...', this._searchQuery, 'text')}
                     </div>
 
                     ${entries.length >= 3 ? this._renderPodium(entries.slice(0, 3)) : ''}
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--fds-space-16); margin-bottom: var(--fds-space-20);">
-                        ${DesignSystem.Card({
-                            borderColor: 'var(--fds-gold-primary)',
-                            content: `
-                                ${DesignSystem.Text('🏆 RECENT WEEKLY WINNERS', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-8) 0' })}
-                                ${DesignSystem.Text('🥇 Week 28: Abebe K. (4,820 pts)<br/>🥇 Week 27: Yonas M. (4,610 pts)<br/>🥇 Week 26: Biruk T. (4,390 pts)', { size: 'var(--fds-font-sm)', color: 'white', weight: '600' })}
-                            `
-                        })}
-
-                        ${DesignSystem.Card({
-                            borderColor: '#C084FC',
-                            content: `
-                                ${DesignSystem.Text('🌟 HALL OF FAME LEGENDS', { size: 'var(--fds-font-xs)', weight: '800', color: '#C084FC', margin: '0 0 var(--fds-space-8) 0' })}
-                                ${DesignSystem.Text('👑 All-Time Champion: Abebe K. (50,000 XP)<br/>⚡ Top Striker: Walia Striker (100% Accuracy)<br/>🔥 Longest Streak: Yonas M. (45 Days)', { size: 'var(--fds-font-sm)', color: 'white', weight: '600' })}
-                            `
-                        })}
-                    </div>
-
+                    <!-- LEADERBOARD TABLE -->
                     <div class="glass-card" style="padding: var(--fds-space-20); overflow-x: auto; border-color: rgba(255, 215, 0, 0.2);">
                         <table style="width: 100%; border-collapse: collapse; text-align: left;">
                             <thead>
                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.15); color: #94A3B8; font-size: var(--fds-font-xs);">
                                     <th style="padding: 10px;">POS</th>
                                     <th style="padding: 10px;">PLAYER</th>
-                                    <th style="padding: 10px; text-align: center;">ELO RATING</th>
+                                    <th style="padding: 10px; text-align: center;">LEVEL</th>
                                     <th style="padding: 10px; text-align: center;">MATCHES</th>
-                                    <th style="padding: 10px; text-align: right;">SCORE</th>
+                                    <th style="padding: 10px; text-align: right;">PTS</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -137,20 +135,23 @@ export class LeaderboardScreen {
                                         font-size: var(--fds-font-sm);
                                         background: ${e.rank === 4 ? 'rgba(34, 197, 94, 0.15)' : 'transparent'};
                                     ">
-                                        <td style="padding: 12px 10px; font-weight: 800;">
+                                        <td style="padding: 16px 10px; font-weight: 900;">
                                             ${e.rank === 1 ? '🥇 1' : e.rank === 2 ? '🥈 2' : e.rank === 3 ? '🥉 3' : `#${e.rank}`}
                                         </td>
-                                        <td style="padding: 12px 10px; font-weight: bold;">
-                                            👤 ${e.username}
+                                        <td style="padding: 16px 10px; font-weight: bold;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div style="width: 24px; height: 24px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 12px;">👤</div>
+                                                ${e.username}
+                                            </div>
                                         </td>
-                                        <td style="padding: 12px 10px; text-align: center; color: #60A5FA; font-weight: bold;">
-                                            ⚡ ${e.eloRating}
+                                        <td style="padding: 16px 10px; text-align: center; color: #60A5FA; font-weight: bold;">
+                                            ${ProgressionManager.getLevel(e.score).level}
                                         </td>
-                                        <td style="padding: 12px 10px; text-align: center; color: #94A3B8;">
-                                            ${e.matchesPlayed} (${e.wins} W)
+                                        <td style="padding: 16px 10px; text-align: center; color: #94A3B8;">
+                                            ${e.matchesPlayed}
                                         </td>
-                                        <td style="padding: 12px 10px; text-align: right; color: var(--fds-gold-primary); font-weight: 900;">
-                                            ${e.score.toLocaleString()} PTS
+                                        <td style="padding: 16px 10px; text-align: right; color: var(--fds-gold-primary); font-weight: 900; font-family: var(--fds-font-mono);">
+                                            ${e.score.toLocaleString()}
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -171,15 +172,16 @@ export class LeaderboardScreen {
         const isActive = this._activeTimeRange === range;
         return `
             <button class="lb-time-btn ${isActive ? 'active-pill' : ''}" data-range="${range}" style="
-                padding: var(--fds-space-8) 14px;
-                border-radius: var(--radius-sm);
+                padding: var(--fds-space-8) 16px;
+                border-radius: 24px;
                 border: 1px solid ${isActive ? 'var(--fds-gold-primary)' : 'rgba(255,255,255,0.15)'};
                 background: ${isActive ? 'var(--fds-gold-gradient)' : 'rgba(30, 41, 59, 0.8)'};
                 color: ${isActive ? '#000' : '#94A3B8'};
-                font-weight: 800;
+                font-weight: 900;
                 font-size: var(--fds-font-xs);
                 cursor: pointer;
-                min-height: 48px;
+                min-height: 40px;
+                transition: all 0.2s ease;
             ">${label}</button>
         `;
     }
@@ -192,7 +194,8 @@ export class LeaderboardScreen {
                 justify-content: center;
                 align-items: flex-end;
                 gap: var(--fds-space-16);
-                margin-bottom: var(--fds-space-24);
+                margin-bottom: var(--fds-space-32);
+                margin-top: var(--fds-space-16);
             ">
                 <!-- 2nd Place -->
                 ${second ? `
@@ -215,7 +218,7 @@ export class LeaderboardScreen {
                         width: 160px;
                         text-align: center;
                         border-color: var(--fds-gold-primary);
-                        transform: translateY(-8px);
+                        transform: translateY(-16px);
                         box-shadow: 0 10px 30px rgba(255,215,0,0.3);
                     ">
                         <div style="font-size: 40px;">👑</div>

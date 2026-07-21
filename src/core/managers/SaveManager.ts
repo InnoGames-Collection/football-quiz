@@ -11,6 +11,8 @@ export interface UserProfile {
     eloRating?: number;
     streakCount?: number;
     role?: 'admin' | 'player';
+    totalMatches?: number;
+    totalWins?: number;
 }
 
 export class SaveManager {
@@ -41,7 +43,9 @@ export class SaveManager {
             },
             unlockedItems: ['default-ball', 'default-jersey'],
             eloRating: 1200,
-            streakCount: 0
+            streakCount: 0,
+            totalMatches: 0,
+            totalWins: 0
         };
     }
 

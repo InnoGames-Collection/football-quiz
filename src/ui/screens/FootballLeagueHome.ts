@@ -34,14 +34,12 @@ export class FootballLeagueHome {
         const rank = ProgressionManager.getRank(profile.xp);
         const division = ProgressionManager.getDivision(profile.xp);
         const levelInfo = ProgressionManager.getLevel(profile.xp);
-        const seasonInfo = ProgressionManager.getSeasonPassInfo(profile.xp);
+        const streakCount = profile.streakCount || 0;
 
+        // Header Stats
         const telemetryStats = DesignSystem.Flex(`
             <div class="glass-card" style="padding: 6px 14px; font-weight: 900; color: #60A5FA; font-size: 13px; font-family: var(--fds-font-mono);">
                 ⚡ ${profile.xp} XP
-            </div>
-            <div class="glass-card" style="padding: 6px 14px; font-weight: 900; color: var(--fds-gold-primary); font-size: 13px; font-family: var(--fds-font-mono);">
-                ${division.badge} DIV ${division.tier}
             </div>
             <button id="home-audio-btn" class="glass-card" style="padding: 6px 12px; color: white; font-weight: bold; cursor: pointer; border: 1px solid var(--tv-glass-border);">
                 ${this._audioManager.isMuted ? '🔇' : '🔊'}
@@ -49,144 +47,134 @@ export class FootballLeagueHome {
         `, { gap: 'var(--fds-space-8)' });
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
-                <div class="floodlight floodlight-left"></div>
-                <div class="floodlight floodlight-right"></div>
+            <div class="stadium-container" style="pointer-events: auto; background: radial-gradient(circle at 50% 10%, #0B192C 0%, #050A13 80%);">
                 
-                <div class="tv-broadcast-header">
+                <div class="tv-broadcast-header" style="border-bottom: 2px solid var(--tv-pitch-green);">
                     <div style="display: flex; align-items: center; gap: var(--fds-space-12);">
-                        ${DesignSystem.Badge({ text: 'MATCHDAY HUB', variant: 'live' })}
-                        <span class="tv-channel-logo">ETHIO TELECOM <span>SPORTS HD</span></span>
+                        ${DesignSystem.Badge({ text: 'TELECOM SPORTS HUB', variant: 'live' })}
                     </div>
                     ${telemetryStats}
                 </div>
 
-                <div style="max-width: 880px; margin: var(--fds-space-20) auto; position: relative; z-index: 10; padding: 0 var(--fds-space-20);">
+                <div style="max-width: 960px; margin: 0 auto; position: relative; z-index: 10; padding: var(--fds-space-16) var(--fds-space-16) 100px var(--fds-space-16);">
                     
+                    <!-- HERO SECTION (Welcome + Quick Info) -->
                     ${DesignSystem.Card({
-                        borderColor: 'var(--fds-gold-primary)',
+                        borderColor: 'transparent',
                         className: 'margin-bottom-20',
                         content: DesignSystem.Flex(`
-                            ${DesignSystem.Flex(`
-                                <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--fds-gold-gradient); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #000; box-shadow: 0 0 16px var(--fds-gold-glow);">⚽</div>
-                                <div>
-                                    ${DesignSystem.Text('WELCOME BACK, CHAMPION!', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-4) 0' })}
-                                    ${DesignSystem.Flex(`
-                                        ${DesignSystem.Text(profile.username, { size: 'var(--fds-font-lg)', weight: '900', color: 'white' })}
-                                        <span class="rank-badge ${rank.badgeClass}">${rank.icon} ${rank.name}</span>
-                                    `, { gap: 'var(--fds-space-8)' })}
-                                </div>
-                            `, { gap: 'var(--fds-space-16)' })}
-                            ${DesignSystem.Button({ id: 'btn-quick-kickoff', text: '⚡ QUICK MATCH', variant: 'gold' })}
-                        `, { justify: 'space-between', wrap: true, gap: 'var(--fds-space-16)' })
+                            <div>
+                                ${DesignSystem.Text('WELCOME BACK TO THE LEAGUE', { size: 'var(--fds-font-xs)', weight: '800', color: '#94A3B8', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Flex(`
+                                    <span style="font-size: 32px; margin-right: 8px;">⚽</span>
+                                    ${DesignSystem.Text(profile.username, { size: 'var(--fds-font-xl)', weight: '900', color: 'white' })}
+                                `, { align: 'center' })}
+                            </div>
+                            <div style="text-align: right;">
+                                ${DesignSystem.Text('CURRENT RANK', { size: 'var(--fds-font-xs)', weight: '800', color: '#94A3B8', margin: '0 0 var(--fds-space-4) 0' })}
+                                <div class="rank-badge ${rank.badgeClass}" style="display: inline-block;">${rank.icon} ${rank.name}</div>
+                            </div>
+                        `, { justify: 'space-between', align: 'center', wrap: true, gap: 'var(--fds-space-16)' })
                     })}
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--fds-space-16); margin-bottom: var(--fds-space-20);">
-                        ${DesignSystem.Card({
-                            borderColor: '#60A5FA',
-                            content: `
-                                ${DesignSystem.Text('▶ CONTINUE LAST MATCH', { size: 'var(--fds-font-xs)', weight: '800', color: '#60A5FA', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Walia Ibex National Derby', { size: 'var(--fds-font-md)', weight: '800', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Question 4 of 10 • 1st Half', { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-12) 0' })}
-                                ${DesignSystem.Button({ id: 'btn-resume-match', text: 'RESUME MATCH ⚽', variant: 'green', fullWidth: true })}
-                            `
-                        })}
+                    <!-- PRIMARY ACTIONS (Play Modes) -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--fds-space-16); margin-bottom: var(--fds-space-24);">
+                        
+                        <!-- Daily Quiz CTA -->
+                        <div class="glass-card" style="border-color: var(--tv-gold-primary); background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(30,41,59,0.95) 100%); padding: var(--fds-space-24); text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 8px;">📅</div>
+                            ${DesignSystem.Text('DAILY FOOTBALL QUIZ', { size: 'var(--fds-font-lg)', weight: '900', color: 'var(--tv-gold-primary)', margin: '0 0 var(--fds-space-4) 0' })}
+                            ${DesignSystem.Text(`Play today's featured quiz. Streak: 🔥 ${streakCount} Days`, { size: 'var(--fds-font-sm)', color: '#CBD5E1', margin: '0 0 var(--fds-space-16) 0' })}
+                            ${DesignSystem.Button({ id: 'btn-daily-match', text: 'PLAY DAILY QUIZ (+500 XP)', variant: 'gold', fullWidth: true })}
+                        </div>
 
-                        ${DesignSystem.Card({
-                            borderColor: 'var(--tv-pitch-green)',
-                            content: `
-                                ${DesignSystem.Text('📅 FEATURED DAILY CHALLENGE', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--tv-pitch-green)', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Ethiopian Premier League Derby', { size: 'var(--fds-font-md)', weight: '800', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Earn 2x XP + Daily Streak Bonus (+500 XP)', { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-12) 0' })}
-                                ${DesignSystem.Button({ id: 'btn-daily-match', text: 'PLAY DAILY DERBY (+500 XP)', variant: 'gold', fullWidth: true })}
-                            `
-                        })}
+                        <!-- Quick Play CTA -->
+                        <div class="glass-card" style="border-color: var(--tv-pitch-green); background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(30,41,59,0.95) 100%); padding: var(--fds-space-24); text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 8px;">⚡</div>
+                            ${DesignSystem.Text('QUICK KICK-OFF', { size: 'var(--fds-font-lg)', weight: '900', color: 'var(--tv-pitch-green)', margin: '0 0 var(--fds-space-4) 0' })}
+                            ${DesignSystem.Text('Jump straight into a 10-question random match.', { size: 'var(--fds-font-sm)', color: '#CBD5E1', margin: '0 0 var(--fds-space-16) 0' })}
+                            ${DesignSystem.Button({ id: 'btn-quick-kickoff', text: 'START QUICK MATCH ⚽', variant: 'green', fullWidth: true })}
+                        </div>
 
+                    </div>
+
+                    <!-- WIDGET GRID (Stats & Info) -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--fds-space-16); margin-bottom: var(--fds-space-24);">
+                        
+                        <!-- Current League Progression -->
                         ${DesignSystem.Card({
                             borderColor: division.color,
                             content: `
-                                ${DesignSystem.Text(`${division.badge} CURRENT PLAYER DIVISION`, { size: 'var(--fds-font-xs)', weight: '800', color: division.color, margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text(division.name, { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text(division.weeklyPromotionZone, { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: '0 0 var(--fds-space-8) 0' })}
-                                ${DesignSystem.ProgressBar(seasonInfo.progressPercent, division.color)}
+                                ${DesignSystem.Text(`🏆 CURRENT LEAGUE`, { size: 'var(--fds-font-xs)', weight: '800', color: division.color, margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text(`${division.badge} ${division.name}`, { size: 'var(--fds-font-lg)', weight: '900', color: 'white', margin: '0 0 var(--fds-space-8) 0' })}
+                                ${DesignSystem.ProgressBar(levelInfo.progressPercent, division.color)}
+                                ${DesignSystem.Text(division.weeklyPromotionZone, { size: 'var(--fds-font-xs)', color: '#94A3B8', margin: 'var(--fds-space-8) 0 0 0' })}
                             `
                         })}
 
-                        ${DesignSystem.Card({
-                            borderColor: 'var(--fds-gold-primary)',
-                            content: `
-                                ${DesignSystem.Text('⚡ LEVEL & XP PROGRESS', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Flex(`
-                                    ${DesignSystem.Text(`Level ${levelInfo.level}`, { size: 'var(--fds-font-md)', weight: '800', color: 'white' })}
-                                    ${DesignSystem.Text(`${levelInfo.currentXp}/${levelInfo.nextLevelXp} XP`, { size: 'var(--fds-font-sm)', weight: '800', color: 'var(--fds-gold-primary)', family: 'var(--fds-font-mono)' })}
-                                `, { justify: 'space-between', margin: '0 0 var(--fds-space-8) 0' })}
-                                ${DesignSystem.ProgressBar(levelInfo.progressPercent)}
-                            `
-                        })}
-
-                        ${DesignSystem.Card({
-                            borderColor: '#C084FC',
-                            content: `
-                                ${DesignSystem.Text('📊 WEEKLY LEAGUE STANDING', { size: 'var(--fds-font-xs)', weight: '800', color: '#C084FC', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Flex(`
-                                    <div>
-                                        ${DesignSystem.Text('Rank #4', { size: 'var(--fds-font-lg)', weight: '900', color: 'white' })}
-                                        ${DesignSystem.Text('3,450 Division Points', { size: 'var(--fds-font-xs)', color: '#94A3B8' })}
-                                    </div>
-                                    <span class="fds-badge" style="background: rgba(192, 132, 252, 0.2); color: #C084FC; border: 1px solid #C084FC; font-size: var(--fds-font-xs); font-weight: 800; padding: 4px 8px; border-radius: var(--radius-sm);">PROMOTION ZONE</span>
-                                `, { justify: 'space-between' })}
-                            `
-                        })}
-
-                        ${DesignSystem.Card({
-                            content: `
-                                ${DesignSystem.Text('🏆 LATEST WEEKLY CHAMPIONS', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('🥇 Abebe K. (4,820 pts)<br/>🥈 Yonas M. (4,610 pts)<br/>🥉 Biruk T. (4,390 pts)', { size: 'var(--fds-font-sm)', color: 'white', weight: '600' })}
-                            `
-                        })}
-
+                        <!-- Daily Progress -->
                         ${DesignSystem.Card({
                             borderColor: '#38BDF8',
                             content: `
-                                ${DesignSystem.Text('📢 ETHIO TELECOM SPORTS ANNOUNCEMENTS', { size: 'var(--fds-font-xs)', weight: '800', color: '#38BDF8', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('AFCON 2026 Special Quiz Tournament starts this Friday! Subscribe to unlock 2x bonus rewards.', { size: 'var(--fds-font-sm)', color: '#F8FAFC', weight: '600' })}
-                            `
-                        })}
-
-                        ${DesignSystem.Card({
-                            content: `
-                                ${DesignSystem.Text('👥 INVITE FRIENDS & CHALLENGE', { size: 'var(--fds-font-xs)', weight: '800', color: '#F59E0B', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('Challenge your friends to an async 1v1 derby and earn +250 XP per win.', { size: 'var(--fds-font-sm)', color: '#94A3B8', margin: '0 0 var(--fds-space-8) 0' })}
-                                ${DesignSystem.Button({ id: 'btn-invite-friends', text: 'INVITE FRIEND 👥', variant: 'gold', fullWidth: true })}
-                            `
-                        })}
-
-                        ${DesignSystem.Card({
-                            content: `
-                                ${DesignSystem.Text('📈 RECENT MATCH TELEMETRY', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--tv-pitch-green)', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('⚽ 7 Goals • 🎯 80% Accuracy<br/>⭐ 8.5 Match Rating • 🔥 5x Combo', { size: 'var(--fds-font-sm)', color: 'white', weight: '600' })}
-                            `
-                        })}
-
-                        ${DesignSystem.Card({
-                            borderColor: '#F59E0B',
-                            content: `
-                                ${DesignSystem.Text('🎖️ BADGES CABINET', { size: 'var(--fds-font-xs)', weight: '800', color: '#F59E0B', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text('📈 DAILY PROGRESS', { size: 'var(--fds-font-xs)', weight: '800', color: '#38BDF8', margin: '0 0 var(--fds-space-4) 0' })}
                                 ${DesignSystem.Flex(`
-                                    ${DesignSystem.Text('8 of 15 Unlocked', { size: 'var(--fds-font-sm)', weight: '800', color: 'white' })}
-                                    <span style="font-size: var(--fds-font-lg);">🎯 ⚽ 🏆 🥇</span>
+                                    ${DesignSystem.Text(`Level ${levelInfo.level}`, { size: 'var(--fds-font-md)', weight: '900', color: 'white' })}
+                                    ${DesignSystem.Text(`${levelInfo.currentXp} / ${levelInfo.nextLevelXp} XP`, { size: 'var(--fds-font-sm)', weight: '800', color: '#38BDF8', family: 'var(--fds-font-mono)' })}
                                 `, { justify: 'space-between', margin: '0 0 var(--fds-space-8) 0' })}
-                                ${DesignSystem.Button({ id: 'btn-open-achievements', text: 'VIEW BADGES CABINET 🎖️', variant: 'glass', fullWidth: true })}
+                                ${DesignSystem.ProgressBar(levelInfo.progressPercent, '#38BDF8')}
                             `
                         })}
 
+                        <!-- Recent Activity -->
                         ${DesignSystem.Card({
-                            borderColor: '#EC4899',
                             content: `
-                                ${DesignSystem.Text('📅 UPCOMING MATCHDAY EVENTS', { size: 'var(--fds-font-xs)', weight: '800', color: '#EC4899', margin: '0 0 var(--fds-space-4) 0' })}
-                                ${DesignSystem.Text('⚽ Ethiopian Premier Derby — Today 20:00<br/>🌍 CAF Champions League Final — Sat 18:00', { size: 'var(--fds-font-sm)', color: 'white', weight: '600' })}
+                                ${DesignSystem.Text('⏱️ RECENT ACTIVITY', { size: 'var(--fds-font-xs)', weight: '800', color: '#F472B6', margin: '0 0 var(--fds-space-8) 0' })}
+                                ${DesignSystem.Flex(`
+                                    <span style="font-size: 24px;">🎯</span>
+                                    <div>
+                                        ${DesignSystem.Text('Match Completed', { size: 'var(--fds-font-sm)', weight: '800', color: 'white' })}
+                                        ${DesignSystem.Text('Score: 8/10 • +240 XP', { size: 'var(--fds-font-xs)', color: '#94A3B8' })}
+                                    </div>
+                                `, { gap: 'var(--fds-space-12)', align: 'center' })}
                             `
                         })}
+
+                    </div>
+
+                    <!-- INFORMATION CARDS (News & Community) -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--fds-space-16);">
+                        
+                        <!-- Latest Winners -->
+                        ${DesignSystem.Card({
+                            content: `
+                                ${DesignSystem.Text('🎖️ LATEST TOURNAMENT WINNERS', { size: 'var(--fds-font-xs)', weight: '800', color: 'var(--fds-gold-primary)', margin: '0 0 var(--fds-space-8) 0' })}
+                                ${DesignSystem.Text('🥇 Abebe K. (4,820 pts)', { size: 'var(--fds-font-sm)', color: 'white', weight: '700', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text('🥈 Yonas M. (4,610 pts)', { size: 'var(--fds-font-sm)', color: '#CBD5E1', weight: '600', margin: '0 0 var(--fds-space-4) 0' })}
+                                ${DesignSystem.Text('🥉 Biruk T. (4,390 pts)', { size: 'var(--fds-font-sm)', color: '#94A3B8', weight: '600' })}
+                            `
+                        })}
+
+                        <!-- Upcoming Competitions -->
+                        ${DesignSystem.Card({
+                            content: `
+                                ${DesignSystem.Text('📅 UPCOMING COMPETITIONS', { size: 'var(--fds-font-xs)', weight: '800', color: '#A78BFA', margin: '0 0 var(--fds-space-8) 0' })}
+                                ${DesignSystem.Text('⚽ Ethiopian Premier Derby', { size: 'var(--fds-font-sm)', weight: '800', color: 'white' })}
+                                ${DesignSystem.Text('Starts Today 20:00 EAT', { size: 'var(--fds-font-xs)', color: '#A78BFA', margin: '0 0 var(--fds-space-8) 0' })}
+                                ${DesignSystem.Text('🌍 CAF Champions Quiz', { size: 'var(--fds-font-sm)', weight: '800', color: 'white' })}
+                                ${DesignSystem.Text('Starts Saturday 18:00 EAT', { size: 'var(--fds-font-xs)', color: '#A78BFA' })}
+                            `
+                        })}
+
+                        <!-- Announcements -->
+                        ${DesignSystem.Card({
+                            borderColor: '#38BDF8',
+                            content: `
+                                ${DesignSystem.Text('📢 ANNOUNCEMENTS', { size: 'var(--fds-font-xs)', weight: '800', color: '#38BDF8', margin: '0 0 var(--fds-space-8) 0' })}
+                                ${DesignSystem.Text('AFCON 2026 Special Quiz Tournament starts this Friday! Subscribe to unlock 2x bonus rewards.', { size: 'var(--fds-font-sm)', color: '#F8FAFC', weight: '600', margin: '0 0 var(--fds-space-12) 0' })}
+                                ${DesignSystem.Button({ id: 'btn-view-announcements', text: 'READ MORE', variant: 'glass' })}
+                            `
+                        })}
+
                     </div>
                 </div>
             </div>
@@ -211,25 +199,14 @@ export class FootballLeagueHome {
             this._callbacks.onKickOff();
         });
 
-        document.getElementById('btn-resume-match')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            this._callbacks.onKickOff();
-        });
-
         document.getElementById('btn-daily-match')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._callbacks.onDailyChallenge();
         });
 
-        document.getElementById('btn-invite-friends')?.addEventListener('click', () => {
+        document.getElementById('btn-view-announcements')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            // Fixing broken routing - this originally routed directly to LiveMatch and skipped friends logic.
-            this._callbacks.onLiveMatch();
-        });
-
-        document.getElementById('btn-open-achievements')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            this._callbacks.onAchievements();
+            // Just placeholder for now
         });
     }
 }

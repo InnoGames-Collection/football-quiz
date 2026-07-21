@@ -77,41 +77,7 @@
   padding-right: env(safe-area-inset-right);
 }
 
-/* Sweeping Floodlight Beams */
-.floodlight {
-  position: absolute;
-  width: 380px;
-  height: 750px;
-  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.14) 0%, rgba(59, 130, 246, 0.06) 45%, transparent 80%);
-  transform-origin: top center;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.floodlight-left {
-  top: -50px;
-  left: 8%;
-  transform: rotate(-24deg);
-  animation: sweepLightLeft 14s ease-in-out infinite alternate;
-}
-
-.floodlight-right {
-  top: -50px;
-  right: 8%;
-  transform: rotate(24deg);
-  animation: sweepLightRight 16s ease-in-out infinite alternate;
-}
-
-@keyframes sweepLightLeft {
-  0% { transform: rotate(-28deg); opacity: 0.5; }
-  100% { transform: rotate(-14deg); opacity: 0.85; }
-}
-
-@keyframes sweepLightRight {
-  0% { transform: rotate(28deg); opacity: 0.5; }
-  100% { transform: rotate(14deg); opacity: 0.85; }
-}
-
+/* Removed Floodlight Beams for Performance Optimization */
 /* Enterprise Scoreboard Header Bar */
 .scoreboard-header,
 .tv-broadcast-header {
@@ -151,13 +117,6 @@
   background: var(--tv-red-live);
   border-radius: 50%;
   box-shadow: 0 0 8px var(--tv-red-live);
-  animation: livePulse 1.2s infinite ease-in-out;
-}
-
-@keyframes livePulse {
-  0% { opacity: 0.3; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 0.3; transform: scale(0.8); }
 }
 
 /* Enterprise Glassmorphism Card Component */
@@ -167,23 +126,14 @@
   backdrop-filter: blur(20px);
   border-radius: var(--radius-lg);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
-  transition: transform 180ms ease-out, background 180ms ease-out, border-color 180ms ease-out;
+  transition: background 180ms ease-out, border-color 180ms ease-out;
   position: relative;
   overflow: hidden;
-  will-change: transform, opacity;
-  animation: cardPopIn 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes cardPopIn {
-  0% { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.98); }
-  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 
 .glass-card:hover {
   background: rgba(30, 41, 59, 0.95);
   border-color: rgba(255, 215, 0, 0.4);
-  transform: translate3d(0, -2px, 0);
-  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.85), 0 0 24px var(--tv-gold-glow);
 }
 
 /* Enterprise Broadcast Buttons */
@@ -393,12 +343,6 @@ input:focus-visible {
 
 .whistle-anim {
   display: inline-block;
-  animation: whistlePulse 400ms infinite ease-in-out alternate;
-}
-@keyframes whistlePulse {
-  0% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.2) rotate(-10deg); }
-  100% { transform: scale(1) rotate(10deg); }
 }
 
 .goal-banner-anim {

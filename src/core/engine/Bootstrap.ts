@@ -8,7 +8,7 @@ import { AuthManager } from '../auth/AuthManager';
 import { CompetitionBrowserScreen } from '../../ui/screens/CompetitionBrowserScreen';
 import { DailyChallengeScreen } from '../../ui/screens/DailyChallengeScreen';
 import { LeaderboardScreen } from '../../ui/screens/LeaderboardScreen';
-import { AchievementScreen } from '../../ui/screens/AchievementScreen';
+import { ProfileScreen } from '../../ui/screens/ProfileScreen';
 import { MatchmakingScreen } from '../../ui/screens/MatchmakingScreen';
 import { LiveMatchScreen } from '../../ui/screens/LiveMatchScreen';
 import { QuestionBank } from '../quiz/QuestionBank';
@@ -77,18 +77,17 @@ export async function bootstrapFootballLeague(canvasElementId: string): Promise<
                 const lbScreen = new LeaderboardScreen(
                     game.uiManager,
                     game.audioManager,
+                    game.saveManager,
                     () => renderHome()
                 );
                 await lbScreen.render();
                 break;
             case 'profile':
-                const achScreen = new AchievementScreen(
+                const profScreen = new ProfileScreen(
                     game.uiManager,
-                    game.audioManager,
-                    game.saveManager,
-                    () => renderHome()
+                    game.saveManager
                 );
-                achScreen.render();
+                profScreen.render();
                 break;
         }
     };
