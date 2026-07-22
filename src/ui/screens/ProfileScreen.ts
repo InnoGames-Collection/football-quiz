@@ -4,6 +4,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { LoaderHelper } from '../components/LoaderHelper';
 import { ProfileService } from '../../networking/services/ProfileService';
+import { PullToRefresh } from '../components/PullToRefresh';
 
 
 export interface ProfileCallbacks {
@@ -309,6 +310,15 @@ export class ProfileScreen {
                 }
             });
         });
+
+        // Pull to refresh
+        const container = root.querySelector('.stadium-container') as HTMLElement;
+        if (container) {
+            PullToRefresh.attach(container, async () => {
+                this._audioManager.playClick();
+                await this.render();
+            });
+        }
     }
 
     private _maskPhone(phone: string): string {

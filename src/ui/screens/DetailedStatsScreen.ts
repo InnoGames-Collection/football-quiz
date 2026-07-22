@@ -4,6 +4,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { LoaderHelper } from '../components/LoaderHelper';
 import { GameSessionService } from '../../networking/services/GameSessionService';
+import { PullToRefresh } from '../components/PullToRefresh';
 
 
 export class DetailedStatsScreen {
@@ -146,5 +147,14 @@ export class DetailedStatsScreen {
             this._audioManager.playClick();
             this._onBack();
         });
+
+        // Pull to refresh
+        const container = root.querySelector('.stadium-container') as HTMLElement;
+        if (container) {
+            PullToRefresh.attach(container, async () => {
+                this._audioManager.playClick();
+                await this.render();
+            });
+        }
     }
 }

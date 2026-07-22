@@ -3,6 +3,8 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { QuizEngine, MatchStats } from '../../core/quiz/QuizEngine';
 import { Competition } from '../../core/quiz/CompetitionRegistry';
 import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionManager';
+import { ConfettiCanvas } from '../components/ConfettiCanvas';
+import { RollingCounter } from '../components/RollingCounter';
 
 export interface ScoreboardCallbacks {
     onMatchComplete: (stats: MatchStats, finalScore: number) => void;
@@ -180,40 +182,66 @@ export class ScoreboardQuestionScreen {
         const currentXP = currentGoals * 100;
         
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; display: flex; flex-direction: column;">
+            <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; display: flex; flex-direction: column; min-height: 100vh;">
                 
-                <!-- TOP BAR WITH QUESTION PROGRESS, CIRCULAR TIMER & SCORE -->
+                <!-- TOP BAR WITH FOOTBALL FIELD PROGRESS & TIMER -->
                 <div style="
                     display: flex; 
-                    justify-content: space-between; 
-                    align-items: center; 
+                    flex-direction: column;
+                    gap: 8px;
                     padding: 12px 16px; 
                     background: rgba(15,23,42,0.95);
-                    backdrop-filter: blur(10px);
-                    border-bottom: 1px solid rgba(255,255,255,0.06);
+                    backdrop-filter: blur(12px);
+                    border-bottom: 1px solid rgba(255,255,255,0.08);
                     position: relative;
                 ">
-                    <!-- Left: Question Progress -->
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button id="match-exit-btn" style="background: none; border: none; color: #94A3B8; font-size: 18px; cursor: pointer; padding: 4px;">✕</button>
-                        <div style="font-size: 14px; font-weight: 800; color: #94A3B8;">
-                            ${this._currentIndex + 1} / ${this._questions.length}
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <!-- Exit Match Button -->
+                        <button id="match-exit-btn" class="m3-btn m3-btn-icon m3-btn-secondary" style="width: 36px; height: 36px; min-height: 36px;">✕</button>
+
+                        <!-- Circular Timer -->
+                        <div style="display: flex; align-items: center; justify-content: center; position: relative; width: 42px; height: 42px;">
+                            <svg width="42" height="42" viewBox="0 0 44 44" style="transform: rotate(-90deg);">
+                                <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,0.1)" stroke-width="3" fill="none" />
+                                <circle id="timer-circle" cx="22" cy="22" r="18" stroke="var(--fds-green-pitch)" stroke-width="3" fill="none" 
+                                        stroke-dasharray="113.1" stroke-dashoffset="0" style="transition: stroke-dashoffset 1s linear, stroke 0.3s;" />
+                            </svg>
+                            <span id="timer-text" style="position: absolute; font-size: 13px; font-weight: 900; color: white; font-family: var(--fds-font-mono);">15</span>
+                        </div>
+
+                        <!-- Current Score -->
+                        <div style="font-size: 13px; font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase;">
+                            SCORE: ${currentXP}
                         </div>
                     </div>
 
-                    <!-- Center: Football-themed Circular Timer -->
-                    <div style="display: flex; align-items: center; justify-content: center; position: relative; width: 44px; height: 44px;">
-                        <svg width="44" height="44" viewBox="0 0 44 44" style="transform: rotate(-90deg);">
-                            <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,0.1)" stroke-width="3" fill="none" />
-                            <circle id="timer-circle" cx="22" cy="22" r="18" stroke="var(--tv-pitch-green)" stroke-width="3" fill="none" 
-                                    stroke-dasharray="113.1" stroke-dashoffset="0" style="transition: stroke-dashoffset 1s linear, stroke 0.3s;" />
-                        </svg>
-                        <span id="timer-text" style="position: absolute; font-size: 13px; font-weight: 900; color: white; font-family: monospace;">15</span>
-                    </div>
-
-                    <!-- Right: Current Score -->
-                    <div style="font-size: 13px; font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">
-                        Score: ${currentXP}
+                    <!-- FOOTBALL FIELD PROGRESS TRACK (REQ 6) -->
+                    <div style="padding: 0 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #94A3B8; font-weight: 800; margin-bottom: 4px;">
+                            <span>⚽ KICK OFF</span>
+                            <span>Q ${this._currentIndex + 1} OF ${this._questions.length} (${this._questions.length - (this._currentIndex + 1)} REMAINING)</span>
+                            <span>GOAL 🥅</span>
+                        </div>
+                        <div style="position: relative; height: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: visible;">
+                            <div style="
+                                height: 100%; 
+                                width: ${((this._currentIndex + 1) / this._questions.length) * 100}%; 
+                                background: linear-gradient(90deg, #009A44 0%, #22C55E 100%); 
+                                border-radius: 10px; 
+                                transition: width 350ms cubic-bezier(0.16, 1, 0.3, 1);
+                                position: relative;
+                            ">
+                                <!-- Moving Football Icon -->
+                                <div style="
+                                    position: absolute; 
+                                    right: -10px; 
+                                    top: -7px; 
+                                    font-size: 16px; 
+                                    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+                                    transition: transform 180ms ease;
+                                ">⚽</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -509,17 +537,23 @@ export class ScoreboardQuestionScreen {
 
         if (isCorrect) {
             targetBtn.classList.add('correct');
-            this._audioManager.playCorrectAnswer();
             this._audioManager.playGoalCheer();
+            ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF']);
             this._showFeedbackOverlay(true);
+            
+            // Rolling Scoreboard Goal Counter
+            const currentScore = this._quizEngine.calculateFinalStats().goals;
+            const goalsEl = document.getElementById('match-goals');
+            if (goalsEl) {
+                RollingCounter.animate(goalsEl, currentScore - 1, currentScore, 600, (v) => `${Math.round(v)}`);
+            }
         } else {
             targetBtn.classList.add('wrong');
             const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
             if (correctBtn) {
                 correctBtn.classList.add('correct');
             }
-            this._audioManager.playWrongAnswer();
-            this._audioManager.playWhistle();
+            this._audioManager.playKeeperSave();
             this._showFeedbackOverlay(false);
         }
 
@@ -527,7 +561,7 @@ export class ScoreboardQuestionScreen {
             this._hideFeedbackOverlay();
             this._currentIndex++;
             this._renderQuestion();
-        }, 1600);
+        }, 1300);
     }
 
     private _showFeedbackOverlay(isGoal: boolean): void {
@@ -537,17 +571,17 @@ export class ScoreboardQuestionScreen {
         const sub = document.getElementById('feedback-subtext');
         
         if (overlay && anim && text && sub) {
-            overlay.style.borderColor = isGoal ? 'var(--tv-pitch-green)' : '#EF4444';
+            overlay.style.borderColor = isGoal ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)';
             overlay.style.background = isGoal 
-                ? 'linear-gradient(135deg, rgba(34,197,94,0.18) 0%, rgba(15,23,42,0.95) 100%)' 
-                : 'linear-gradient(135deg, rgba(239,68,68,0.18) 0%, rgba(15,23,42,0.95) 100%)';
-            overlay.style.color = isGoal ? 'var(--tv-pitch-green)' : '#EF4444';
+                ? 'linear-gradient(135deg, rgba(34,197,94,0.25) 0%, rgba(15,23,42,0.96) 100%)' 
+                : 'linear-gradient(135deg, rgba(255,215,0,0.18) 0%, rgba(15,23,42,0.96) 100%)';
+            overlay.style.color = isGoal ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)';
             
-            anim.innerText = isGoal ? '⚽🥅' : '🧤❌';
-            anim.style.animation = isGoal ? 'goal-bounce 0.8s ease-in-out infinite' : 'save-shake 0.5s ease-in-out infinite';
+            anim.innerText = isGoal ? '⚽🥅' : '🧤⚽';
+            anim.style.animation = isGoal ? 'goal-bounce 0.6s ease-in-out infinite' : 'save-shake 0.4s ease-in-out infinite';
             
             text.innerText = isGoal ? 'GOAL!' : 'SAVED!';
-            sub.innerText = isGoal ? 'Brilliant strike!' : 'Keeper parries it away!';
+            sub.innerText = isGoal ? 'Brilliant strike into the net!' : 'Keeper parries the shot away!';
             
             overlay.style.opacity = '1';
             overlay.style.transform = 'translate(-50%, -50%) scale(1)';

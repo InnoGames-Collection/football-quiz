@@ -6,6 +6,7 @@ import { MessageService } from '../../networking/services/MessageService';
 import { Toast } from '../components/Toast';
 import { AuthManager } from '../../core/auth/AuthManager';
 import type { MessageRow } from '../../networking/supabase/types';
+import { PullToRefresh } from '../components/PullToRefresh';
 
 export class MessagesScreen {
     private _uiManager: UIManager;
@@ -233,5 +234,14 @@ export class MessagesScreen {
             navigator.clipboard.writeText('https://ethiofantasy.com/join?ref=251911223345');
             Toast.show('Invitation link copied! Send it to your friends to start chat lobbies.', 'info');
         });
+
+        // Pull to refresh
+        const container = this._uiManager.container.querySelector('.stadium-container') as HTMLElement;
+        if (container) {
+            PullToRefresh.attach(container, async () => {
+                this._audioManager.playClick();
+                await this._loadMessages();
+            });
+        }
     }
 }

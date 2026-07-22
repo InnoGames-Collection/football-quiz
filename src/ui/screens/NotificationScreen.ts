@@ -4,6 +4,7 @@ import { i18n } from '../../localization/i18n';
 import { LoaderHelper } from '../components/LoaderHelper';
 import { NotificationService } from '../../networking/services/NotificationService';
 import type { NotificationRow } from '../../networking/supabase/types';
+import { PullToRefresh } from '../components/PullToRefresh';
 
 export class NotificationScreen {
     private _uiManager: UIManager;
@@ -423,5 +424,14 @@ export class NotificationScreen {
             }
             this._onBack();
         });
+
+        // Pull to refresh
+        const container = this._uiManager.container.querySelector('.stadium-container') as HTMLElement;
+        if (container) {
+            PullToRefresh.attach(container, async () => {
+                this._audioManager.playClick();
+                await this._loadNotifications();
+            });
+        }
     }
 }

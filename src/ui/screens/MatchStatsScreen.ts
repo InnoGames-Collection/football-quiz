@@ -5,6 +5,8 @@ import { MatchStats } from '../../core/quiz/QuizEngine';
 import { MatchSubmissionService } from '../../networking/api/MatchSubmissionService';
 import { QuizEngine } from '../../core/quiz/QuizEngine';
 import { Toast } from '../components/Toast';
+import { RollingCounter } from '../components/RollingCounter';
+import { ConfettiCanvas } from '../components/ConfettiCanvas';
 
 export class MatchStatsScreen {
     private _uiManager: UIManager;
@@ -132,9 +134,9 @@ export class MatchStatsScreen {
                     <!-- Title & Header -->
                     <div style="text-align: center; margin-bottom: 8px; flex-shrink: 0;">
                         <div style="font-size: 32px; margin-bottom: 2px;">🏆</div>
-                        <div style="font-size: 10px; font-weight: 800; color: #94A3B8; letter-spacing: 1.5px; text-transform: uppercase;">Match Result</div>
-                        <div style="font-size: 20px; font-weight: 900; color: white; margin-top: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
-                            SCORE: ${this._finalScore}
+                        <div style="font-size: 10px; font-weight: 800; color: #94A3B8; letter-spacing: 1.5px; text-transform: uppercase;">Ethio Telecom Match Result</div>
+                        <div style="font-size: 22px; font-weight: 900; color: white; margin-top: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
+                            SCORE: <span id="final-score-rolling" style="color: var(--tv-gold-primary);">0</span>
                         </div>
                     </div>
 
@@ -148,17 +150,21 @@ export class MatchStatsScreen {
                         ${statBadge('Max Combo', `${this._stats.maxCombo}x`, '#A855F7')}
                     </div>
 
-                    <!-- Match Rewards -->
-                    <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);">
-                        <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; text-align: center;">Match Rewards</div>
-                        <div style="display: flex; justify-content: space-around;">
+                    <!-- Match Rewards (With Mobile Data Badge) -->
+                    <div style="background: rgba(0,0,0,0.4); border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid rgba(255,215,0,0.2);">
+                        <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; text-align: center;">Match Rewards Unlocked</div>
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
                             <div style="text-align: center;">
                                 <div style="font-size: 18px; margin-bottom: 2px;">🪙</div>
-                                <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary);">+${earnedCoins}</div>
+                                <div style="font-size: 13px; font-weight: 900; color: var(--tv-gold-primary);" id="reward-coins-rolling">+0 Coins</div>
                             </div>
-                            <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 24px;">
+                            <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); padding: 0 16px;">
                                 <div style="font-size: 18px; margin-bottom: 2px;">⚡</div>
-                                <div style="font-size: 12px; font-weight: 900; color: #38BDF8;">+${earnedXp} XP</div>
+                                <div style="font-size: 13px; font-weight: 900; color: #38BDF8;" id="reward-xp-rolling">+0 XP</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 18px; margin-bottom: 2px;">📶</div>
+                                <div style="font-size: 11px; font-weight: 900; color: #4ADE80;">100MB DATA</div>
                             </div>
                         </div>
                     </div>
@@ -226,6 +232,26 @@ export class MatchStatsScreen {
         `;
 
         this._bindEvents();
+
+        // Trigger Confetti Burst and Rolling Numbers
+        if (this._stats.accuracy >= 50) {
+            ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 70, ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF']);
+        }
+
+        const scoreEl = document.getElementById('final-score-rolling');
+        if (scoreEl) {
+            RollingCounter.animate(scoreEl, 0, this._finalScore, 1000, (v) => `${Math.round(v)}`);
+        }
+
+        const coinsEl = document.getElementById('reward-coins-rolling');
+        if (coinsEl) {
+            RollingCounter.animate(coinsEl, 0, earnedCoins, 1000, (v) => `+${Math.round(v)} Coins`);
+        }
+
+        const xpEl = document.getElementById('reward-xp-rolling');
+        if (xpEl) {
+            RollingCounter.animate(xpEl, 0, earnedXp, 1000, (v) => `+${Math.round(v)} XP`);
+        }
     }
 
     private _bindEvents(): void {
@@ -284,51 +310,53 @@ export class MatchStatsScreen {
 
         container.innerHTML = questions.map((q: any, idx: number) => {
             const chosenIdx = choices[idx] !== undefined ? choices[idx] : -1;
-            const correctOpt = q.options[q.correctIndex] || '';
             const chosenOpt = chosenIdx >= 0 ? q.options[chosenIdx] : 'Timeout / Unanswered';
             
             const isCorrect = chosenIdx === q.correctIndex;
-            const chosenColor = isCorrect ? 'var(--tv-pitch-green)' : (chosenIdx >= 0 ? '#EF4444' : '#64748B');
+            const chosenColor = isCorrect ? '#22C55E' : '#EF4444';
 
-            // Generate mock explanation
-            const mockExplanation = q.explanation || `The correct answer is indeed ${correctOpt}. Double-check your sports hub rules for verification.`;
-
+            // REQ 13: SECURE REVIEW SCREEN (DO NOT REVEAL CORRECT ANSWER OR EXPLANATION)
             return `
-                <div class="glass-card" style="border-radius: 12px; padding: 16px; margin-bottom: 16px; border-color: ${isCorrect ? 'var(--tv-pitch-green)' : '#EF4444'}; text-align: left;">
-                    <div style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; margin-bottom: 6px;">Question ${idx + 1}</div>
+                <div class="glass-card" style="border-radius: 12px; padding: 16px; margin-bottom: 16px; border-color: ${chosenColor}; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase;">Question ${idx + 1}</span>
+                        <span style="font-size: 11px; font-weight: 900; color: ${chosenColor}; background: ${isCorrect ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}; padding: 2px 8px; border-radius: 4px;">
+                            ${isCorrect ? '✓ Correct' : '✗ Wrong'}
+                        </span>
+                    </div>
+
                     <div style="font-size: 15px; font-weight: 800; color: white; margin-bottom: 12px; line-height: 1.4;">${q.prompt}</div>
 
-                    <!-- Answers comparison box -->
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.04);">
-                        <div style="margin-bottom: 4px;">
-                            <span style="color: #94A3B8; font-weight: 700;">YOUR ANSWER: </span>
-                            <span style="color: ${chosenColor}; font-weight: 800;">${chosenOpt} ${isCorrect ? '✅' : '❌'}</span>
-                        </div>
-                        <div>
-                            <span style="color: #94A3B8; font-weight: 700;">CORRECT ANSWER: </span>
-                            <span style="color: var(--tv-pitch-green); font-weight: 800;">${correctOpt}</span>
-                        </div>
+                    <!-- Answers status box (Only user selection & status, NO correct answer revealed!) -->
+                    <div style="background: rgba(0,0,0,0.3); padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                        <div style="color: #94A3B8; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">YOUR SELECTED ANSWER</div>
+                        <div style="color: white; font-weight: 800; font-size: 14px;">${chosenOpt}</div>
                     </div>
 
-                    <!-- Explanation -->
-                    <div style="font-size: 12px; color: #CBD5E1; line-height: 1.5; margin-bottom: 16px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; border-left: 2px solid var(--tv-gold-primary);">
-                        <strong style="color: var(--tv-gold-primary);">Explanation:</strong> ${mockExplanation}
-                    </div>
-
-                    <!-- In-App Interactions Row -->
+                    <!-- In-App Interactions Row (REQ 14) -->
                     <div style="display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
-                        <button class="review-action-btn btn-review-like" data-q-idx="${idx}" style="flex: 1; padding: 6px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #94A3B8; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span>👍</span> <span class="like-label">Like</span> (<span class="like-count">12</span>)
+                        <button class="review-action-btn btn-review-like" data-q-idx="${idx}" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #94A3B8; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s;">
+                            <span class="heart-icon" style="transition: transform 0.2s;">❤️</span> <span class="like-label">Like</span> (<span class="like-count">12</span>)
                         </button>
-                        <button class="review-action-btn btn-review-comment" data-q-idx="${idx}" style="flex: 1; padding: 6px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #94A3B8; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <button class="review-action-btn btn-review-comment" data-q-idx="${idx}" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #94A3B8; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
                             <span>💬</span> Comment
                         </button>
-                        <button class="review-action-btn btn-review-share" data-q-idx="${idx}" data-prompt="${q.prompt}" style="flex: 1; padding: 6px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #94A3B8; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span>🔗</span> Share
+                        <button class="review-action-btn btn-review-share" data-q-idx="${idx}" style="flex: 1; padding: 8px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #94A3B8; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <span>⚽</span> Invite
                         </button>
-                        <button class="review-action-btn btn-review-report" data-q-idx="${idx}" style="flex: 1; padding: 6px; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #94A3B8; font-size: 11px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span>⚠️</span> Report
-                        </button>
+                    </div>
+
+                    <!-- Comment Container (Hidden by default, expands on comment click) -->
+                    <div class="comment-box-drawer" id="comment-drawer-${idx}" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+                        <div class="comment-list" id="comment-list-${idx}" style="max-height: 120px; overflow-y: auto; margin-bottom: 8px; font-size: 12px; color: #CBD5E1; display: flex; flex-direction: column; gap: 6px;">
+                            <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
+                                <strong style="color: var(--fds-gold-primary);">Abebe M.:</strong> Great question! Really challenged my knowledge. <span style="font-size: 10px; color: #64748B; float: right;">2m ago</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="comment-input-${idx}" placeholder="Write a comment..." style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; color: white; font-size: 12px;" />
+                            <button class="btn-send-comment" data-q-idx="${idx}" style="background: #009A44; border: none; color: white; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer;">Post</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -336,59 +364,83 @@ export class MatchStatsScreen {
 
         // Bind interactive events for review action buttons
         const cards = container.querySelectorAll('.glass-card');
-        cards.forEach(card => {
-            // Like
+        cards.forEach((card, idx) => {
+            // REQ 14: LIKE FUNCTIONALITY
             const likeBtn = card.querySelector('.btn-review-like') as HTMLButtonElement;
             likeBtn?.addEventListener('click', () => {
                 this._audioManager.playClick();
                 const countSpan = likeBtn.querySelector('.like-count') as HTMLElement;
                 const labelSpan = likeBtn.querySelector('.like-label') as HTMLElement;
-                if (countSpan && labelSpan) {
-                    let count = parseInt(countSpan.innerText);
-                    if (likeBtn.classList.contains('liked')) {
-                        likeBtn.classList.remove('liked');
-                        likeBtn.style.color = '#94A3B8';
-                        likeBtn.style.borderColor = 'rgba(255,255,255,0.1)';
-                        labelSpan.innerText = 'Like';
-                        countSpan.innerText = String(count - 1);
-                    } else {
-                        likeBtn.classList.add('liked');
-                        likeBtn.style.color = 'var(--tv-gold-primary)';
-                        likeBtn.style.borderColor = 'var(--tv-gold-primary)';
-                        labelSpan.innerText = 'Liked';
-                        countSpan.innerText = String(count + 1);
+                const heartIcon = likeBtn.querySelector('.heart-icon') as HTMLElement;
+
+                let count = parseInt(countSpan?.innerText || '12');
+                if (likeBtn.classList.contains('liked')) {
+                    likeBtn.classList.remove('liked');
+                    likeBtn.style.color = '#94A3B8';
+                    likeBtn.style.borderColor = 'rgba(255,255,255,0.1)';
+                    labelSpan.innerText = 'Like';
+                    countSpan.innerText = String(count - 1);
+                } else {
+                    likeBtn.classList.add('liked');
+                    likeBtn.style.color = '#EF4444';
+                    likeBtn.style.borderColor = '#EF4444';
+                    labelSpan.innerText = 'Liked';
+                    countSpan.innerText = String(count + 1);
+                    if (heartIcon) {
+                        heartIcon.style.transform = 'scale(1.4)';
+                        setTimeout(() => { heartIcon.style.transform = 'scale(1)'; }, 200);
                     }
                 }
             });
 
-            // Comment
+            // REQ 14: COMMENT FUNCTIONALITY
             const commentBtn = card.querySelector('.btn-review-comment') as HTMLButtonElement;
+            const drawer = card.querySelector(`#comment-drawer-${idx}`) as HTMLElement;
+            const input = card.querySelector(`#comment-input-${idx}`) as HTMLInputElement;
+            const sendBtn = card.querySelector('.btn-send-comment') as HTMLButtonElement;
+            const list = card.querySelector(`#comment-list-${idx}`) as HTMLElement;
+
             commentBtn?.addEventListener('click', () => {
                 this._audioManager.playClick();
-                const userComment = prompt('Enter your comment on this question:');
-                if (userComment && userComment.trim()) {
-                    Toast.show('Comment posted successfully! It will show up after moderation.', 'success');
+                if (drawer) {
+                    drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+                    if (drawer.style.display === 'block') input?.focus();
                 }
             });
 
-            // Share
-            const shareBtn = card.querySelector('.btn-review-share') as HTMLButtonElement;
-            shareBtn?.addEventListener('click', () => {
+            sendBtn?.addEventListener('click', () => {
                 this._audioManager.playClick();
-                const qText = shareBtn.getAttribute('data-prompt') || '';
-                navigator.clipboard.writeText(`EthioFantasy Trivia Question: "${qText}" - Play and win rewards!`);
-                Toast.show('Copied question details to clipboard! Share with friends to win invite bonuses.', 'info');
+                const text = input?.value.trim();
+                if (!text) {
+                    Toast.show('Comment cannot be empty.', 'info');
+                    return;
+                }
+                const newComment = document.createElement('div');
+                newComment.style.cssText = 'background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;';
+                newComment.innerHTML = `<strong style="color: #4ADE80;">You:</strong> ${text} <span style="font-size: 10px; color: #64748B; float: right;">Just now</span>`;
+                list.appendChild(newComment);
+                input.value = '';
+                list.scrollTop = list.scrollHeight;
+                Toast.show('Comment posted!', 'success');
             });
 
-            // Report
-            const reportBtn = card.querySelector('.btn-review-report') as HTMLButtonElement;
-            reportBtn?.addEventListener('click', () => {
+            // REQ 14: SHARE / FOOTBALL INVITATION
+            const shareBtn = card.querySelector('.btn-review-share') as HTMLButtonElement;
+            shareBtn?.addEventListener('click', async () => {
                 this._audioManager.playClick();
-                if (confirm('Are you sure you want to report this question for inaccuracy or typo?')) {
-                    Toast.show('Report submitted! Thank you for helping keep EthioFantasy accurate.', 'success');
-                    reportBtn.disabled = true;
-                    reportBtn.style.opacity = '0.5';
-                    reportBtn.style.color = '#64748B';
+                const shareText = `⚽ I'm competing in the Ethio Telecom Football Tournament!\nCan you beat my score of ${this._finalScore} PTS?\nJoin the competition and challenge me now!`;
+                
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: 'Ethio Telecom Football League',
+                            text: shareText,
+                            url: window.location.href
+                        });
+                    } catch (e) {}
+                } else {
+                    await navigator.clipboard.writeText(`${shareText}\n${window.location.href}`);
+                    Toast.show('Football invitation link copied to clipboard! Share with friends to challenge them.', 'success');
                 }
             });
         });

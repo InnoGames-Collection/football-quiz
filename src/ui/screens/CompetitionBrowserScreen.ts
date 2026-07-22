@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { CompetitionRegistry, Competition } from '../../core/quiz/CompetitionRegistry';
 import { DesignSystem } from '../theme/DesignSystem';
 import { LoaderHelper } from '../components/LoaderHelper';
+import { PullToRefresh } from '../components/PullToRefresh';
 
 export class CompetitionBrowserScreen {
     private _uiManager: UIManager;
@@ -197,5 +198,15 @@ export class CompetitionBrowserScreen {
                 this._onSelectCompetition(comps[0]);
             }
         });
+
+        // Pull to refresh
+        const container = this._uiManager.container.querySelector('.stadium-container') as HTMLElement;
+        if (container) {
+            PullToRefresh.attach(container, async () => {
+                this._audioManager.playClick();
+                await new Promise(res => setTimeout(res, 500));
+                this.render();
+            });
+        }
     }
 }
