@@ -131,7 +131,7 @@ export class FootballLeagueHome {
                         </div>
 
                         <!-- Hero Primary Action Button -->
-                        <button id="btn-daily-match" class="m3-btn m3-btn-gold" style="width: 100%; min-height: 52px; font-size: 16px; border-radius: 12px; box-shadow: 0 8px 30px var(--fds-gold-glow);">
+                        <button id="btn-daily-match" class="m3-btn m3-btn-gold" style="width: 100%; min-height: 52px; font-size: 16px; font-weight: 900; color: #0F172A; border-radius: 12px; background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%); box-shadow: 0 8px 30px rgba(255, 215, 0, 0.45); cursor: pointer;">
                             ⚡ KICK OFF NOW (+500 XP)
                         </button>
                     </div>
@@ -141,24 +141,24 @@ export class FootballLeagueHome {
                         ⚽ Tournament Lobbies & Actions
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" class="fade-in-up">
-                        <button id="btn-action-kickoff" class="glass-card m3-btn m3-btn-primary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px;">
+                        <button id="btn-action-kickoff" class="m3-btn m3-btn-primary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: linear-gradient(135deg, #22C55E 0%, #009A44 100%); color: #ffffff; box-shadow: 0 6px 20px rgba(34,197,94,0.35);">
                             <span style="font-size: 26px;">⚽</span>
-                            <span style="font-size: 12px; font-weight: 900;">SOLO MATCH</span>
+                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #ffffff;">SOLO MATCH</span>
                         </button>
 
-                        <button id="btn-action-leaderboard" class="glass-card m3-btn m3-btn-gold" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px;">
+                        <button id="btn-action-leaderboard" class="m3-btn m3-btn-gold" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%); color: #0F172A; box-shadow: 0 6px 20px rgba(255,215,0,0.35);">
                             <span style="font-size: 26px;">📊</span>
-                            <span style="font-size: 12px; font-weight: 900;">LEADERBOARD</span>
+                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #0F172A;">LEADERBOARD</span>
                         </button>
 
-                        <button id="btn-action-messages" class="glass-card m3-btn m3-btn-secondary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px;">
+                        <button id="btn-action-messages" class="m3-btn m3-btn-secondary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.4); color: #38BDF8;">
                             <span style="font-size: 26px;">💬</span>
-                            <span style="font-size: 12px; font-weight: 900; color: #38BDF8;">MESSAGES</span>
+                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #38BDF8;">MESSAGES</span>
                         </button>
 
-                        <button id="btn-action-referral" class="glass-card m3-btn m3-btn-secondary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px;">
+                        <button id="btn-action-referral" class="m3-btn m3-btn-secondary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: rgba(15,23,42,0.9); border: 1px solid rgba(192,132,252,0.4); color: #C084FC;">
                             <span style="font-size: 26px;">🎁</span>
-                            <span style="font-size: 12px; font-weight: 900; color: #A78BFA;">INVITE & REWARDS</span>
+                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #C084FC;">INVITE & REWARDS</span>
                         </button>
                     </div>
 
