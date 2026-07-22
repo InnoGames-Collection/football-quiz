@@ -684,8 +684,9 @@ export class ScoreboardQuestionScreen {
             GameSessionManager.getInstance().completeSession(this._session, finalScore);
         }
 
-        // Save review game questions
+        // Save review game questions and choices
         localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(this._questions));
+        localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(this._session ? this._session.choices : []));
 
         (window as any).ethioOnBackPress = null;
         this._callbacks.onMatchComplete(stats, finalScore);

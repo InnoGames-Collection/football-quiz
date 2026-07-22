@@ -30,15 +30,17 @@ export class PaywallGate {
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto; overflow-y: auto; padding: 40px 20px;">
-                <div class="floodlight floodlight-left"></div>
-                <div class="floodlight floodlight-right"></div>
-
-                <div style="max-width: 480px; margin: 0 auto; position: relative; z-index: 10; text-align: center;">
-                    <div class="glass-card" style="
-                        padding: 36px 28px;
-                        border-color: #FFD700;
+                    <div style="
+                        position: relative;
+                        background: rgba(15, 23, 42, 0.95);
+                        backdrop-filter: blur(20px);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 20px;
+                        padding: 32px 24px;
+                        text-align: center;
                         box-shadow: 0 20px 50px rgba(0,0,0,0.6);
                     ">
+                        <button id="pw-close-btn" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                         <div style="font-size: 54px; margin-bottom: 12px;">🔒</div>
                         <span style="font-size: 11px; font-weight: 800; color: #FFD700; letter-spacing: 2px;">
                             VIP FEATURE GATE
@@ -52,9 +54,6 @@ export class PaywallGate {
 
                         <button id="pw-upgrade-btn" class="broadcast-btn broadcast-btn-gold" style="width: 100%; font-size: 16px; margin-bottom: 12px;">
                             👑 UPGRADE LEAGUE PASS
-                        </button>
-                        <button id="pw-close-btn" class="broadcast-btn glass-card" style="width: 100%; color: #94A3B8;">
-                            ✖ MAYBE LATER
                         </button>
                     </div>
                 </div>

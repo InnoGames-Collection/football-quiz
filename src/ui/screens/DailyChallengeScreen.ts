@@ -56,11 +56,11 @@ export class DailyChallengeScreen {
             <div class="stadium-container" style="pointer-events: auto;">
                 
                 <!-- Top App Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
+                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
                     <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
                         <span>📅</span> DAILY CHALLENGE
                     </div>
-                    ${DesignSystem.Button({ id: 'dc-close-btn', text: 'BACK', icon: '⬅️', variant: 'secondary' })}
+                    <button id="dc-close-btn" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 20px;">✕</button>
                 </div>
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">

@@ -167,15 +167,11 @@ export class NotificationScreen {
             <div class="stadium-container" style="pointer-events: auto;">
                 
                 <!-- App Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button id="btn-back" style="
-                            background: none; border: none; color: var(--fds-text-main); font-size: var(--fds-font-lg); cursor: pointer; padding: 4px;
-                        ">❮</button>
-                        <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase;">
-                            ${locale === 'am' ? 'ማሳወቂያዎች' : (locale === 'om' ? 'BEEKSIISAA' : 'NOTIFICATIONS')}
-                        </div>
+                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
+                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase;">
+                        ${locale === 'am' ? 'ማሳወቂያዎች' : (locale === 'om' ? 'BEEKSIISAA' : 'NOTIFICATIONS')}
                     </div>
+                    <button id="btn-back" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                     ${hasUnread ? `
                         <button id="btn-mark-read" style="
                             background: rgba(255,255,255,0.08);

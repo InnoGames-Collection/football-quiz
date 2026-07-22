@@ -59,9 +59,9 @@ export class CompetitionBrowserScreen {
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
                 
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
+                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
                     <div style="font-weight: 900; font-size: 18px; letter-spacing: 1px;">LEAGUE</div>
-                    ${DesignSystem.Button({ id: 'comp-close-btn', icon: '⬅️', text: 'BACK', variant: 'secondary' })}
+                    <button id="comp-close-btn" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 20px;">✕</button>
                 </div>
 
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px 0 100px 0;">

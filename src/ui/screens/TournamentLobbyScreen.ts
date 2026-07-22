@@ -27,8 +27,8 @@ export class TournamentLobbyScreen {
 
                 <div style="max-width: 760px; margin: 0 auto; position: relative; z-index: 10;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                        <div>
+                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px; position: relative;">
+                        <div style="text-align: center;">
                             <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">
                                 SCHEDULED EVENTS
                             </span>
@@ -36,7 +36,7 @@ export class TournamentLobbyScreen {
                                 🏟️ LIVE TOURNAMENT LOBBY
                             </h1>
                         </div>
-                        ${DesignSystem.Button({ id: 't-close-btn', text: 'CLOSE', icon: '✖', variant: 'secondary' })}
+                        <button id="t-close-btn" style="position: absolute; right: 0; top: 0; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                     </div>
 
                     <!-- Tournament Cards List -->

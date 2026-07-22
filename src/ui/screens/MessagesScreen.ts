@@ -96,11 +96,9 @@ export class MessagesScreen {
             <div class="stadium-container" style="pointer-events: auto;">
                 
                 <!-- App Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
-                    <button id="btn-msg-back" style="
-                        background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
-                    ">❮</button>
+                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
                     <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">MESSAGES</div>
+                    <button id="btn-msg-back" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                 </div>
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">

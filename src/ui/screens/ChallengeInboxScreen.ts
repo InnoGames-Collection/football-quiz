@@ -27,8 +27,8 @@ export class ChallengeInboxScreen {
 
                 <div style="max-width: 600px; margin: 0 auto; position: relative; z-index: 10;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                        <div>
+                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px; position: relative;">
+                        <div style="text-align: center;">
                             <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">
                                 ASYNC MULTIPLAYER
                             </span>
@@ -36,7 +36,7 @@ export class ChallengeInboxScreen {
                                 📩 CHALLENGE INBOX (${this._challenges.length})
                             </h1>
                         </div>
-                        ${DesignSystem.Button({ id: 'ch-close-btn', text: 'CLOSE', variant: 'secondary', icon: '✖' })}
+                        <button id="ch-close-btn" style="position: absolute; right: 0; top: 0; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                     </div>
 
                     ${this._challenges.length === 0 ? `

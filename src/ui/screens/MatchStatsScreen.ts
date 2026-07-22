@@ -176,9 +176,9 @@ export class MatchStatsScreen {
                 box-sizing: border-box;
             ">
                 <!-- Modal Top Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px; flex-shrink: 0;">
+                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; flex-shrink: 0; position: relative;">
                     <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px;">REVIEW GAME</div>
-                    <button id="btn-close-review" style="background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: var(--fds-font-sm);">⬅️ BACK</button>
+                    <button id="btn-close-review" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 20px;">✕</button>
                 </div>
 
                 <!-- Scrollable Container -->

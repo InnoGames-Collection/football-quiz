@@ -129,11 +129,9 @@ export class SettingsScreen {
 
         // Custom localized header helper
         const header = (title: string, _backAction?: () => void) => `
-            <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
-                <button id="btn-back-sub" style="
-                    background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
-                ">❮</button>
+            <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
                 <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">${title}</div>
+                <button id="btn-back-sub" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px; cursor: pointer; font-weight: bold;">✕</button>
             </div>
         `;
 
