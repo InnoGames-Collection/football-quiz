@@ -244,6 +244,80 @@ input:focus-visible {
   box-shadow: 0 8px 32px rgba(34, 197, 94, 0.75);
 }
 
+.broadcast-btn-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.broadcast-btn-glass:hover {
+  transform: translate3d(0, -2px, 0) scale(1.02);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* UNIFIED BUTTON SYSTEM */
+.ethio-btn {
+  min-height: 48px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: var(--tv-font);
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms ease-out, background 150ms ease-out, filter 150ms ease-out;
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  text-transform: uppercase;
+}
+
+.ethio-btn:active {
+  transform: scale(0.95) !important;
+}
+
+.ethio-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.ethio-btn-primary {
+  background: linear-gradient(135deg, #22C55E 0%, #15803D 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.ethio-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.5);
+  filter: brightness(1.1);
+}
+
+.ethio-btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ethio-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
 /* Match Minute Badge */
 .tv-minute-badge {
   font-family: var(--tv-mono);
@@ -454,4 +528,44 @@ input:focus-visible {
   animation: skeleton-shimmer 1.6s infinite linear;
   border-radius: 8px;
   display: inline-block;
+}
+
+/* ACCESSIBILITY & RESPONSIVENESS */
+
+/* Minimum Touch Targets (48px) */
+button, 
+.interactive, 
+.lb-tab-btn, 
+.notif-tab, 
+.msg-tab, 
+.list-tile,
+.ethio-btn,
+.broadcast-btn {
+  min-height: 48px !important;
+  min-width: 48px;
+  touch-action: manipulation;
+}
+
+/* Text Truncation for smaller screens */
+.truncate-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* PERFORMANCE OPTIMIZATIONS */
+
+/* Smooth Scrolling & hardware acceleration */
+.stadium-container,
+.scrollable-list {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  will-change: transform;
+}
+
+/* Base element optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
 }

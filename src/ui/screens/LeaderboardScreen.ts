@@ -3,8 +3,8 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
-import { LoaderHelper } from '../components/LoaderHelper';
 import { PullToRefresh } from '../components/PullToRefresh';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class LeaderboardScreen {
     private _uiManager: UIManager;
@@ -22,7 +22,7 @@ export class LeaderboardScreen {
 
     public async render(): Promise<void> {
         const root = this._uiManager.container;
-        root.innerHTML = LoaderHelper.getSkeletonHtml('leaderboard');
+        root.innerHTML = DesignSystem.LoadingState('Loading rankings...');
         
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);
@@ -71,7 +71,7 @@ export class LeaderboardScreen {
                 background: ${active ? 'rgba(255,215,0,0.15)' : 'rgba(15,23,42,0.6)'};
                 color: ${active ? 'var(--fds-gold-primary)' : '#94A3B8'};
                 font-weight: 800;
-                font-size: 11px;
+                font-size: var(--fds-font-xs);
                 cursor: pointer;
                 transition: all 0.2s;
                 text-transform: uppercase;
@@ -91,8 +91,8 @@ export class LeaderboardScreen {
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 24px;">🏆</span>
                         <div>
-                            <div style="font-size: 10px; font-weight: 800; color: #009A44; text-transform: uppercase; letter-spacing: 1px;">ETHIO TELECOM VAS</div>
-                            <h1 style="margin: 0; font-size: 20px; font-weight: 900; color: white;">LEAGUE RANKINGS</h1>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-ethio-green); text-transform: uppercase; letter-spacing: 1px;">ETHIOFANTASY</div>
+                            <h1 style="margin: 0; font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main);">RANK</h1>
                         </div>
                     </div>
                     <button id="lb-close-btn" class="m3-btn m3-btn-icon m3-btn-secondary" style="width: 40px; height: 40px;">✕</button>
@@ -113,44 +113,44 @@ export class LeaderboardScreen {
                         
                         <!-- 2ND PLACE PODIUM (SILVER) -->
                         <div class="glass-card" style="padding: 16px 8px; border-color: #C0C0C0; background: linear-gradient(180deg, rgba(192,192,192,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
-                            <div style="font-size: 28px; margin-bottom: 4px;">🥈</div>
-                            <div style="font-size: 11px; font-weight: 900; color: #E2E8F0; text-transform: uppercase;">2ND PLACE</div>
-                            <div style="font-size: 13px; font-weight: 800; color: white; margin-top: 4px;">${secondPlace.msisdn}</div>
-                            <div style="font-size: 12px; font-weight: 900; color: #38BDF8; margin-top: 2px;">${secondPlace.score} PTS</div>
-                            <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">${secondPlace.points} XP</div>
+                            <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥈</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #E2E8F0; text-transform: uppercase;">2ND</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main); margin-top: 4px;">${secondPlace.msisdn}</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-blue-accent); margin-top: 2px;">${secondPlace.score} PTS</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${secondPlace.points} XP</div>
                         </div>
 
                         <!-- 1ST PLACE PODIUM (GOLD CHAMPION) -->
                         <div class="glass-card" style="padding: 20px 8px; border-color: var(--fds-gold-primary); background: linear-gradient(180deg, rgba(255,215,0,0.25) 0%, rgba(15,23,42,0.95) 100%); border-radius: 20px; box-shadow: 0 10px 30px var(--fds-gold-glow); transform: translateY(-8px);">
                             <div style="font-size: 36px; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));">🥇</div>
-                            <div style="font-size: 12px; font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px;">CHAMPION</div>
-                            <div style="font-size: 14px; font-weight: 900; color: white; margin-top: 4px;">${firstPlace.msisdn}</div>
-                            <div style="font-size: 14px; font-weight: 900; color: var(--fds-gold-primary); margin-top: 2px;">${firstPlace.score} PTS</div>
-                            <div style="font-size: 10px; color: #FEF08A; margin-top: 2px;">🏆 ${firstPlace.points} XP</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px;">CHAMPION</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${firstPlace.msisdn}</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary); margin-top: 2px;">${firstPlace.score} PTS</div>
+                            <div style="font-size: var(--fds-font-xs); color: #FEF08A; margin-top: 2px;">🏆 ${firstPlace.points} XP</div>
                         </div>
 
                         <!-- 3RD PLACE PODIUM (BRONZE) -->
                         <div class="glass-card" style="padding: 16px 8px; border-color: #CD7F32; background: linear-gradient(180deg, rgba(205,127,50,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
-                            <div style="font-size: 28px; margin-bottom: 4px;">🥉</div>
-                            <div style="font-size: 11px; font-weight: 900; color: #FDBA74; text-transform: uppercase;">3RD PLACE</div>
-                            <div style="font-size: 13px; font-weight: 800; color: white; margin-top: 4px;">${thirdPlace.msisdn}</div>
-                            <div style="font-size: 12px; font-weight: 900; color: #CD7F32; margin-top: 2px;">${thirdPlace.score} PTS</div>
-                            <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">${thirdPlace.points} XP</div>
+                            <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥉</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FDBA74; text-transform: uppercase;">3RD</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main); margin-top: 4px;">${thirdPlace.msisdn}</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #CD7F32; margin-top: 2px;">${thirdPlace.score} PTS</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${thirdPlace.points} XP</div>
                         </div>
                     </div>
 
                     <!-- 2. CURRENT USER STATS BANNER -->
-                    <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: #22C55E; background: rgba(34,197,94,0.12); margin-bottom: 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: var(--fds-green-pitch); background: rgba(34,197,94,0.12); margin-bottom: 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 24px;">⚽</span>
                             <div>
-                                <div style="font-size: 10px; color: #4ADE80; font-weight: 800; text-transform: uppercase;">YOUR RANK POSITION</div>
-                                <div style="font-size: 15px; font-weight: 900; color: white;">#4 In ${division.name} League</div>
+                                <div style="font-size: var(--fds-font-xs); color: #4ADE80; font-weight: 800; text-transform: uppercase;">YOUR RANK POSITION</div>
+                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">#4 In ${division.name} League</div>
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 14px; font-weight: 900; color: var(--fds-gold-primary);">${profile.eloRating || 0} PTS</div>
-                            <div style="font-size: 11px; color: #CBD5E1;">${profile.xp} XP</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${profile.eloRating || 0} PTS</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-muted);">${profile.xp} XP</div>
                         </div>
                     </div>
 
@@ -170,17 +170,17 @@ export class LeaderboardScreen {
                                     border-radius: 12px;
                                 ">
                                     <div style="display: flex; align-items: center; gap: 12px;">
-                                        <span style="font-size: 14px; font-weight: 900; color: #94A3B8; min-width: 24px;">#${rank}</span>
+                                        <span style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-dim); min-width: 24px;">#${rank}</span>
                                         <div>
-                                            <div style="font-size: 14px; font-weight: 900; color: ${isMe ? '#4ADE80' : 'white'};">
+                                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${isMe ? '#4ADE80' : 'white'};">
                                                 ${entry.msisdn} ${isMe ? '<span style="background: #22C55E; color: black; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 6px;">YOU</span>' : ''}
                                             </div>
-                                            <div style="font-size: 11px; color: #94A3B8;">${entry.league} League</div>
+                                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">${entry.league} League</div>
                                         </div>
                                     </div>
                                     <div style="text-align: right;">
-                                        <div style="font-size: 14px; font-weight: 900; color: var(--fds-gold-primary);">${entry.score} PTS</div>
-                                        <div style="font-size: 11px; color: #38BDF8;">${entry.points} XP</div>
+                                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${entry.score} PTS</div>
+                                        <div style="font-size: var(--fds-font-xs); color: var(--fds-blue-accent);">${entry.points} XP</div>
                                     </div>
                                 </div>
                             `;

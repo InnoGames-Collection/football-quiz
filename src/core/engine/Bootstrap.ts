@@ -42,11 +42,16 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioEvents = eventBus;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription';
+    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms';
     let navigationStack: RouteName[] = [];
     let currentTab: TabId = 'home';
+    let activeScreen: any = null;
 
     const renderRoute = async (route: RouteName, pushToStack: boolean = true) => {
+        if (activeScreen && typeof activeScreen.destroy === 'function') {
+            activeScreen.destroy();
+        }
+        activeScreen = null;
         if (pushToStack) {
             navigationStack.push(route);
             try {
@@ -87,6 +92,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onMessages: () => renderRoute('messages')
                     }
                 );
+                activeScreen = homeScreen;
                 homeScreen.render();
                 break;
 
@@ -109,6 +115,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         await quizMode.resume(session);
                     }
                 );
+                activeScreen = playScreen;
                 playScreen.render();
                 break;
 
@@ -126,6 +133,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     },
                     handleBack
                 );
+                activeScreen = browser;
                 browser.render();
                 break;
 
@@ -137,6 +145,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     game.uiManager, game.saveManager, game.audioManager,
                     handleBack
                 );
+                activeScreen = lbScreen;
                 await lbScreen.render();
                 break;
 
@@ -152,10 +161,13 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onSubscription: () => renderRoute('subscription'),
                         onMessages: () => renderRoute('messages'),
                         onSettings: () => renderRoute('settings'),
-                        onHelp: () => renderRoute('settings'),
-                        onAbout: () => renderRoute('settings')
+                        onHelp: () => renderRoute('help'),
+                        onAbout: () => renderRoute('about'),
+                        onPrivacy: () => renderRoute('privacy'),
+                        onTerms: () => renderRoute('terms')
                     }
                 );
+                activeScreen = profScreen;
                 profScreen.render();
                 break;
 
@@ -163,9 +175,38 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 cacheManager.setQuizActive(false);
                 const settings = new SettingsScreen(
                     game.uiManager, game.saveManager, game.audioManager,
-                    handleBack
+                    handleBack, 'main'
                 );
+                activeScreen = settings;
                 settings.render();
+                break;
+                
+            case 'help':
+                cacheManager.setQuizActive(false);
+                const help = new SettingsScreen(game.uiManager, game.saveManager, game.audioManager, handleBack, 'help');
+                activeScreen = help;
+                help.render();
+                break;
+
+            case 'about':
+                cacheManager.setQuizActive(false);
+                const about = new SettingsScreen(game.uiManager, game.saveManager, game.audioManager, handleBack, 'about');
+                activeScreen = about;
+                about.render();
+                break;
+
+            case 'privacy':
+                cacheManager.setQuizActive(false);
+                const privacy = new SettingsScreen(game.uiManager, game.saveManager, game.audioManager, handleBack, 'privacy');
+                activeScreen = privacy;
+                privacy.render();
+                break;
+
+            case 'terms':
+                cacheManager.setQuizActive(false);
+                const terms = new SettingsScreen(game.uiManager, game.saveManager, game.audioManager, handleBack, 'terms');
+                activeScreen = terms;
+                terms.render();
                 break;
 
             case 'notifications':
@@ -174,12 +215,14 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     game.uiManager, game.audioManager,
                     handleBack
                 );
+                activeScreen = notifScreen;
                 notifScreen.render();
                 break;
 
             case 'admin':
                 cacheManager.setQuizActive(false);
                 const admin = new AdminPanelScreen(game.uiManager, game.audioManager, handleBack);
+                activeScreen = admin;
                 admin.render();
                 break;
 
@@ -193,6 +236,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     },
                     handleBack
                 );
+                activeScreen = mmScreen;
                 await mmScreen.render();
                 break;
 
@@ -209,6 +253,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     matchInfo.liveMatchId, matchInfo.opponent, questions,
                     handleBack
                 );
+                activeScreen = liveMatch;
                 liveMatch.startMatch();
                 break;
 
@@ -218,6 +263,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     game.uiManager, game.saveManager, game.audioManager,
                     handleBack
                 );
+                activeScreen = statsScreen;
                 statsScreen.render();
                 break;
 
@@ -227,6 +273,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     game.uiManager, game.audioManager,
                     handleBack
                 );
+                activeScreen = messagesScreen;
                 messagesScreen.render();
                 break;
 
@@ -236,6 +283,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     game.uiManager, game.audioManager,
                     handleBack
                 );
+                activeScreen = subScreen;
                 subScreen.render();
                 break;
         }
@@ -308,9 +356,14 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         }
 
         game.audioManager.playClick();
-        const activeOverlay = document.querySelector('#session-recovery-overlay, #ethio-exit-modal, .glass-card-modal, [id*="modal"]');
+        const activeOverlay = document.querySelector('#session-recovery-overlay, #ethio-exit-modal, #ethio-leave-modal, .glass-card-modal, [id*="modal"]');
         if (activeOverlay) {
             activeOverlay.remove();
+            return;
+        }
+
+        if (cacheManager.isQuizActive) {
+            showLeaveMatchDialog();
             return;
         }
 
@@ -326,6 +379,43 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 showMaterial3ExitDialog();
             }
         }
+    };
+
+    const showLeaveMatchDialog = () => {
+        const existingExit = document.getElementById('ethio-leave-modal');
+        if (existingExit) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'ethio-leave-modal';
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(2, 6, 23, 0.88); backdrop-filter: blur(16px);
+            z-index: 99999; display: flex; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box; pointer-events: auto;
+        `;
+        modal.innerHTML = `
+            <div class="glass-card fade-in-up" style="width: 100%; max-width: 360px; padding: 28px 24px; text-align: center; border-radius: 20px;">
+                <h2 style="font-size: 20px; font-weight: 900; color: white; margin: 0 0 8px 0; text-transform: uppercase;">LEAVE MATCH?</h2>
+                <p style="font-size: 13px; color: #CBD5E1; margin: 0 0 24px 0; line-height: 1.4;">Your progress will be suspended. You can resume later.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="leave-btn-continue" class="ethio-btn ethio-btn-primary" style="flex: 1;">CONTINUE</button>
+                    <button id="leave-btn-leave" class="ethio-btn ethio-btn-secondary" style="flex: 1;">LEAVE</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('leave-btn-continue')?.addEventListener('click', () => {
+            game.audioManager.playClick();
+            modal.remove();
+        });
+
+        document.getElementById('leave-btn-leave')?.addEventListener('click', () => {
+            game.audioManager.playClick();
+            modal.remove();
+            cacheManager.setQuizActive(false);
+            navigateToTab('home');
+        });
     };
 
     const showMaterial3ExitDialog = () => {
@@ -346,8 +436,8 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 <h2 style="font-size: 20px; font-weight: 900; color: white; margin: 0 0 8px 0; text-transform: uppercase;">EXIT ETHIOFANTASY?</h2>
                 <p style="font-size: 13px; color: #CBD5E1; margin: 0 0 24px 0; line-height: 1.4;">Are you sure you want to exit the Football Quiz League? Your streak is saved.</p>
                 <div style="display: flex; gap: 10px;">
-                    <button id="exit-btn-stay" class="m3-btn m3-btn-primary" style="flex: 1;">STAY IN GAME</button>
-                    <button id="exit-btn-confirm" class="m3-btn m3-btn-secondary" style="flex: 1; border-color: #EF4444; color: #FCA5A5;">EXIT APP</button>
+                    <button id="exit-btn-stay" class="ethio-btn ethio-btn-primary" style="flex: 1;">STAY IN GAME</button>
+                    <button id="exit-btn-confirm" class="ethio-btn ethio-btn-secondary" style="flex: 1; border-color: #EF4444; color: #FCA5A5;">EXIT APP</button>
                 </div>
             </div>
         `;
@@ -377,6 +467,13 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     });
 
     winAny.ethioReloadHome = () => navigateToTab('home');
+    winAny.ethioNavigateToTab = (tabId: TabId) => navigateToTab(tabId);
+    winAny.ethioPlayAgain = async (compId: string) => {
+        cacheManager.setQuizActive(true);
+        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+        quizMode.setCompetition(compId);
+        await registry.launchGame('football-quiz');
+    };
 
     BottomNav.render((tabId) => {
         navigateToTab(tabId);

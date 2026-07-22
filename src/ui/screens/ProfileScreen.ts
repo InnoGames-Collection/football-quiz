@@ -3,7 +3,6 @@ import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { DesignSystem } from '../theme/DesignSystem';
-import { LoaderHelper } from '../components/LoaderHelper';
 import { ProfileService } from '../../networking/services/ProfileService';
 import { PullToRefresh } from '../components/PullToRefresh';
 
@@ -16,6 +15,8 @@ export interface ProfileCallbacks {
     onSettings: () => void;
     onHelp: () => void;
     onAbout: () => void;
+    onPrivacy: () => void;
+    onTerms: () => void;
 }
 
 export class ProfileScreen {
@@ -38,7 +39,7 @@ export class ProfileScreen {
 
     public render(): void {
         const root = this._uiManager.container;
-        root.innerHTML = LoaderHelper.getSkeletonHtml('profile');
+        root.innerHTML = DesignSystem.LoadingState('Loading profile...');
         
         setTimeout(() => {
             this._renderActual();
@@ -62,10 +63,10 @@ export class ProfileScreen {
                 transition: background-color 0.2s;
             ">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: 20px;">${icon}</span>
-                    <span style="font-size: 15px; font-weight: 700; color: white;">${title}</span>
+                    <span style="font-size: var(--fds-font-lg);">${icon}</span>
+                    <span style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${title}</span>
                 </div>
-                ${hasArrow ? `<span style="color: #94A3B8;">❯</span>` : ''}
+                ${hasArrow ? `<span style="color: var(--fds-text-dim);">❯</span>` : ''}
             </div>
         `;
 
@@ -88,8 +89,8 @@ export class ProfileScreen {
                         box-shadow: 0 4px 15px rgba(0,0,0,0.5);
                         border: 3px solid white;
                     ">👤</div>
-                    <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 4px;">${profile.username}</div>
-                    <div style="font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 16px; font-family: var(--tv-mono);">${msisdn}</div>
+                    <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 4px;">${profile.username}</div>
+                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 16px; font-family: var(--tv-mono);">${msisdn}</div>
                 </div>
 
                 <!-- TELEMETRY BANNER -->
@@ -104,16 +105,16 @@ export class ProfileScreen {
                     text-align: center;
                 ">
                     <div>
-                        <div style="font-size: 10px; font-weight: 800; color: #94A3B8; margin-bottom: 4px;">LEAGUE</div>
-                        <div style="font-size: 14px; font-weight: 900; color: ${division.color};">${division.name}</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">LEAGUE</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${division.color};">${division.name}</div>
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
-                        <div style="font-size: 10px; font-weight: 800; color: #94A3B8; margin-bottom: 4px;">RANK</div>
-                        <div style="font-size: 14px; font-weight: 900; color: white;">#4</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">RANK</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">#4</div>
                     </div>
                     <div>
-                        <div style="font-size: 10px; font-weight: 800; color: #94A3B8; margin-bottom: 4px;">POINTS</div>
-                        <div style="font-size: 14px; font-weight: 900; color: var(--tv-gold-primary);">${profile.xp} XP</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">POINTS</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-gold-primary);">${profile.xp} XP</div>
                     </div>
                 </div>
 
@@ -148,7 +149,7 @@ export class ProfileScreen {
             <!-- Profile Interactive Modals Container -->
             <div id="profile-action-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; pointer-events: auto;">
                 <div class="glass-card" style="width: 100%; max-width: 400px; padding: 24px; border-color: var(--tv-gold-primary); text-align: center; background: rgba(15,23,42,0.95); position: relative;">
-                    <button id="btn-close-prof-modal" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: #94A3B8; font-size: 16px; cursor: pointer;">✖</button>
+                    <button id="btn-close-prof-modal" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--fds-text-dim); font-size: var(--fds-font-md); cursor: pointer;">✖</button>
                     <div id="prof-modal-content" style="max-height: 70vh; overflow-y: auto;" class="hide-scrollbar"></div>
                 </div>
             </div>
@@ -212,14 +213,20 @@ export class ProfileScreen {
                     case 'about':
                         this._callbacks.onAbout();
                         break;
+                    case 'privacy':
+                        this._callbacks.onPrivacy();
+                        break;
+                    case 'terms':
+                        this._callbacks.onTerms();
+                        break;
                     
                     case 'invite':
                         showModal(`
                             <div style="font-size: 40px; margin-bottom: 12px;">👥</div>
-                            <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 8px; text-transform: uppercase;">Invite Friends</div>
-                            <div style="font-size: 13px; color: #CBD5E1; margin-bottom: 16px;">Share EthioFantasy with your friends and win 100 free coins on their first game!</div>
-                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); font-size: 12px; color: var(--tv-gold-primary); font-family: monospace; margin-bottom: 16px; word-break: break-all;">https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}</div>
-                            ${DesignSystem.Button({ id: 'btn-copy-ref', text: 'COPY LINK', variant: 'green', fullWidth: true })}
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px; text-transform: uppercase;">Invite Friends</div>
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 16px;">Earn coins when friends play.</div>
+                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); font-size: var(--fds-font-xs); color: var(--tv-gold-primary); font-family: monospace; margin-bottom: 16px; word-break: break-all;">https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}</div>
+                            ${DesignSystem.Button({ id: 'btn-copy-ref', text: 'COPY LINK', variant: 'primary', fullWidth: true })}
                         `);
 
                         document.getElementById('btn-copy-ref')?.addEventListener('click', () => {
@@ -233,9 +240,9 @@ export class ProfileScreen {
                     case 'achievements':
                         showModal(`
                             <div style="font-size: 32px; margin-bottom: 12px;">🏆</div>
-                            <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 16px; text-transform: uppercase;">Achievements</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">Achievements</div>
                             <div id="achievements-content" style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
-                                <div style="color: #94A3B8; text-align: center;">Loading achievements...</div>
+                                ${DesignSystem.LoadingState('Loading achievements...')}
                             </div>
                         `);
                         
@@ -246,11 +253,7 @@ export class ProfileScreen {
                             
                             if (!achievements || achievements.length === 0) {
                                 content.innerHTML = `
-                                    <div style="text-align: center; color: #94A3B8; padding: 20px;">
-                                        <div style="font-size: 24px; margin-bottom: 8px;">🎯</div>
-                                        <div>No achievements yet</div>
-                                        <div style="font-size: 12px; margin-top: 4px;">Play more matches to earn achievements!</div>
-                                    </div>
+                                    ${DesignSystem.EmptyState('🎯', 'No Achievements', 'Play more matches to earn achievements!')}
                                 `;
                                 return;
                             }
@@ -261,24 +264,26 @@ export class ProfileScreen {
                                     <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                                         <span style="font-size: 24px;">${ach.icon || '🎯'}</span>
                                         <div>
-                                            <div style="font-size: 13px; font-weight: 800; color: white;">${ach.name_en || ach.name || 'Achievement'} ✅</div>
-                                            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">${ach.description_en || ach.description || ''}</div>
+                                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${ach.name_en || ach.name || 'Achievement'} ✅</div>
+                                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${ach.description_en || ach.description || ''}</div>
                                         </div>
                                     </div>
                                 `;
                             }).join('');
                         }).catch(_ => {
                             const content = document.getElementById('achievements-content');
-                            if (content) content.innerHTML = '<div style="color: #EF4444; text-align: center;">Failed to load achievements.</div>';
+                            if (content) content.innerHTML = DesignSystem.ErrorState('btn-retry-achievements');
                         });
                         break;
 
                     case 'awards':
                         showModal(`
                             <div style="font-size: 32px; margin-bottom: 12px;">🏅</div>
-                            <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 16px; text-transform: uppercase;">Trophy Cabinet</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">Trophy Cabinet</div>
                             <div id="awards-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                                <div style="grid-column: span 2; color: #94A3B8; text-align: center;">Loading awards...</div>
+                                <div style="grid-column: span 2;">
+                                    ${DesignSystem.LoadingState('Loading awards...')}
+                                </div>
                             </div>
                         `);
 
@@ -288,10 +293,8 @@ export class ProfileScreen {
                             
                             if (!rewards || rewards.length === 0) {
                                 content.innerHTML = `
-                                    <div style="grid-column: span 2; text-align: center; color: #94A3B8; padding: 20px;">
-                                        <div style="font-size: 24px; margin-bottom: 8px;">🏅</div>
-                                        <div>No awards yet</div>
-                                        <div style="font-size: 12px; margin-top: 4px;">Compete in tournaments to earn awards!</div>
+                                    <div style="grid-column: span 2;">
+                                        ${DesignSystem.EmptyState('🏅', 'No Awards', 'Compete in tournaments to earn awards!')}
                                     </div>
                                 `;
                                 return;
@@ -300,13 +303,13 @@ export class ProfileScreen {
                             content.innerHTML = rewards.map(reward => `
                                 <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); padding: 16px 8px; border-radius: 8px;">
                                     <span style="font-size: 32px;">🏆</span>
-                                    <div style="font-size: 12px; font-weight: 800; color: white; margin-top: 8px;">${reward.name || 'Award'}</div>
-                                    <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">${reward.source_type}</div>
+                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-main); margin-top: 8px;">${reward.name || 'Award'}</div>
+                                    <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${reward.source_type}</div>
                                 </div>
                             `).join('');
                         }).catch(_ => {
                             const content = document.getElementById('awards-content');
-                            if (content) content.innerHTML = '<div style="grid-column: span 2; color: #EF4444; text-align: center;">Failed to load awards.</div>';
+                            if (content) content.innerHTML = `<div style="grid-column: span 2;">${DesignSystem.ErrorState('btn-retry-awards')}</div>`;
                         });
                         break;
                 }

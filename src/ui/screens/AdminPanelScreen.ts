@@ -4,6 +4,7 @@ import { CompetitionRegistry, Competition } from '../../core/quiz/CompetitionReg
 import { QUESTION_CATEGORIES } from '../../core/quiz/QuestionCategories';
 import { supabase } from '../../networking/supabase/SupabaseClient';
 import { AnalyticsService, PlatformAnalytics } from '../../networking/api/AnalyticsService';
+import { DesignSystem } from '../theme/DesignSystem';
 
 type AdminTab = 'QUESTIONS' | 'BULK_IMPORT' | 'COMPETITIONS' | 'ANALYTICS';
 
@@ -35,12 +36,10 @@ export class AdminPanelScreen {
                     <!-- Admin Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                         <div>
-                            <span style="font-size: 11px; font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">ETHIO TELECOM VAS PORTAL</span>
-                            <h1 style="margin: 4px 0 0 0; font-size: 28px; font-weight: 900; color: white;">⚙️ CMS & ADMIN PANEL</h1>
+                            <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">ETHIO TELECOM VAS PORTAL</span>
+                            <h1 style="margin: 4px 0 0 0; font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main);">⚙️ CMS & ADMIN PANEL</h1>
                         </div>
-                        <button id="admin-close-btn" class="broadcast-btn glass-card" style="color: white; padding: 10px 18px;">
-                            ✖ CLOSE
-                        </button>
+                        ${DesignSystem.Button({ id: 'admin-close-btn', text: 'CLOSE', icon: '✖', variant: 'secondary' })}
                     </div>
 
                     ${this._statusMessage ? `
@@ -51,7 +50,7 @@ export class AdminPanelScreen {
                             padding: 12px 16px;
                             border-radius: 12px;
                             margin-bottom: 20px;
-                            font-size: 14px;
+                            font-size: var(--fds-font-sm);
                         ">${this._statusMessage}</div>
                     ` : ''}
 
@@ -88,16 +87,16 @@ export class AdminPanelScreen {
                     border: 1px solid rgba(255, 255, 255, 0.15);
                     border-radius: 10px;
                     padding: 10px 16px;
-                    color: #94A3B8;
+                    color: var(--fds-text-dim);
                     font-weight: 600;
-                    font-size: 13px;
+                    font-size: var(--fds-font-sm);
                     cursor: pointer;
                     transition: all 0.2s;
                 }
                 .tab-btn.active-tab {
                     background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
                     color: #0F172A;
-                    border-color: #FFD700;
+                    border-color: var(--fds-gold-primary);
                     font-weight: bold;
                 }
                 .form-input {
@@ -106,14 +105,14 @@ export class AdminPanelScreen {
                     background: rgba(15, 23, 42, 0.7);
                     border: 1px solid rgba(255,255,255,0.15);
                     border-radius: 8px;
-                    color: white;
-                    font-size: 13px;
+                    color: var(--fds-text-main);
+                    font-size: var(--fds-font-sm);
                     box-sizing: border-box;
                 }
                 .form-label {
                     display: block;
-                    font-size: 11px;
-                    color: #CBD5E1;
+                    font-size: var(--fds-font-xs);
+                    color: var(--fds-text-muted);
                     font-weight: 600;
                     margin-bottom: 4px;
                 }
@@ -211,9 +210,7 @@ export class AdminPanelScreen {
                     </div>
                 </div>
 
-                <button id="add-question-btn" class="broadcast-btn broadcast-btn-green" style="width: 100%;">
-                    💾 SAVE QUESTION TO CLOUD DATABASE
-                </button>
+                ${DesignSystem.Button({ id: 'add-question-btn', text: 'SAVE QUESTION TO CLOUD DATABASE', icon: '💾', variant: 'primary', fullWidth: true })}
             </div>
         `;
     }
@@ -224,18 +221,16 @@ export class AdminPanelScreen {
                 <h3 style="margin: 0 0 12px 0; font-size: 18px; color: var(--gold-primary);">
                     📂 BULK QUESTION CSV IMPORT
                 </h3>
-                <p style="color: #94A3B8; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">
+                <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm); line-height: 1.5; margin-bottom: 16px;">
                     Upload a CSV file containing questions formatted with columns:<br/>
                     <code>category, difficulty, prompt_en, prompt_am, prompt_om, opt0_en, opt1_en, opt2_en, opt3_en, correct_index</code>
                 </p>
 
                 <textarea id="bulk-csv-area" class="form-input" rows="8" placeholder="category,difficulty,prompt_en,opt0_en,opt1_en,opt2_en,opt3_en,correct_index
 walia-ibex,1,In which year did Ethiopia win AFCON?,1957,1962,1970,1984,1
-world-cup,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,South Africa,0" style="font-family: monospace; font-size: 12px; margin-bottom: 16px;"></textarea>
+world-cup,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,South Africa,0" style="font-family: monospace; font-size: var(--fds-font-xs); margin-bottom: 16px;"></textarea>
 
-                <button id="import-csv-btn" class="broadcast-btn broadcast-btn-gold" style="width: 100%;">
-                    🚀 PROCESS & IMPORT QUESTIONS
-                </button>
+                ${DesignSystem.Button({ id: 'import-csv-btn', text: 'PROCESS & IMPORT QUESTIONS', icon: '🚀', variant: 'primary', fullWidth: true })}
             </div>
         `;
     }
@@ -250,14 +245,12 @@ world-cup,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,South Afric
                     <input id="admin-comp-badge" type="text" placeholder="Badge Emoji (e.g. 🇪🇹)" class="form-input" />
                 </div>
                 <input id="admin-comp-desc" type="text" placeholder="Description" class="form-input" style="margin-bottom: 16px;" />
-                <button id="admin-add-comp-btn" class="broadcast-btn broadcast-btn-green" style="width: 100%;">
-                    SAVE & PUBLISH COMPETITION
-                </button>
+                ${DesignSystem.Button({ id: 'admin-add-comp-btn', text: 'SAVE & PUBLISH COMPETITION', variant: 'primary', fullWidth: true })}
             </div>
 
             <!-- Competition List -->
             <div class="glass-card" style="padding: 24px;">
-                <h3 style="margin: 0 0 16px 0; font-size: 18px; color: white;">🏆 MANAGED COMPETITIONS (${competitions.length})</h3>
+                <h3 style="margin: 0 0 16px 0; font-size: 18px; color: var(--fds-text-main);">🏆 MANAGED COMPETITIONS (${competitions.length})</h3>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     ${competitions.map(c => `
                         <div style="
@@ -272,11 +265,11 @@ world-cup,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,South Afric
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <span style="font-size: 24px;">${c.badge}</span>
                                 <div>
-                                    <div style="font-weight: bold; color: white;">${c.name}</div>
-                                    <div style="font-size: 12px; color: var(--text-muted);">${c.description}</div>
+                                    <div style="font-weight: bold; color: var(--fds-text-main);">${c.name}</div>
+                                    <div style="font-size: var(--fds-font-xs); color: var(--text-muted);">${c.description}</div>
                                 </div>
                             </div>
-                            <span style="font-size: 12px; color: var(--gold-primary); font-weight: bold;">${c.questionCount} Qs</span>
+                            <span style="font-size: var(--fds-font-xs); color: var(--gold-primary); font-weight: bold;">${c.questionCount} Qs</span>
                         </div>
                     `).join('')}
                 </div>
@@ -297,35 +290,35 @@ world-cup,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,South Afric
         return `
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
                 <div class="glass-card" style="padding: 20px; border-color: rgba(34,197,94,0.3);">
-                    <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;">TOTAL REGISTERED PLAYERS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: var(--pitch-green); margin-top: 6px;">
+                    <div style="font-size: var(--fds-font-xs); color: var(--text-muted); font-weight: bold;">TOTAL REGISTERED PLAYERS</div>
+                    <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--pitch-green); margin-top: 6px;">
                         ${stats.activePlayers.toLocaleString()}
                     </div>
                 </div>
 
                 <div class="glass-card" style="padding: 20px; border-color: rgba(255,215,0,0.3);">
-                    <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;">TOTAL MATCHES PLAYED</div>
-                    <div style="font-size: 28px; font-weight: 900; color: var(--gold-primary); margin-top: 6px;">
+                    <div style="font-size: var(--fds-font-xs); color: var(--text-muted); font-weight: bold;">TOTAL MATCHES PLAYED</div>
+                    <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--gold-primary); margin-top: 6px;">
                         ${stats.totalMatches.toLocaleString()}
                     </div>
                 </div>
 
                 <div class="glass-card" style="padding: 20px; border-color: rgba(96,165,250,0.3);">
-                    <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ACTIVE COMPETITIONS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: #60A5FA; margin-top: 6px;">${stats.activeCompetitions}</div>
+                    <div style="font-size: var(--fds-font-xs); color: var(--text-muted); font-weight: bold;">ACTIVE COMPETITIONS</div>
+                    <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-blue-accent); margin-top: 6px;">${stats.activeCompetitions}</div>
                 </div>
 
                 <div class="glass-card" style="padding: 20px; border-color: rgba(192,132,252,0.3);">
-                    <div style="font-size: 11px; color: var(--text-muted); font-weight: bold;">ETHIO TELECOM SUBSCRIBERS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: #C084FC; margin-top: 6px;">
+                    <div style="font-size: var(--fds-font-xs); color: var(--text-muted); font-weight: bold;">ETHIO TELECOM SUBSCRIBERS</div>
+                    <div style="font-size: var(--fds-font-xl); font-weight: 900; color: #C084FC; margin-top: 6px;">
                         ${stats.subscribedUsers.toLocaleString()}
                     </div>
                 </div>
             </div>
 
             <div class="glass-card" style="padding: 24px;">
-                <h3 style="margin: 0 0 12px 0; font-size: 16px; color: white;">📡 ETHIO TELECOM VAS PLATFORM STATUS</h3>
-                <p style="color: #94A3B8; font-size: 13px; line-height: 1.6;">
+                <h3 style="margin: 0 0 12px 0; font-size: var(--fds-font-md); color: var(--fds-text-main);">📡 ETHIO TELECOM VAS PLATFORM STATUS</h3>
+                <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm); line-height: 1.6;">
                     API Gateway: <span style="color: #86EFAC; font-weight: bold;">ONLINE</span><br/>
                     SMS OTP Delivery Rate: <span style="color: #86EFAC; font-weight: bold;">${stats.smsOtpSuccessRate}</span><br/>
                     Database Sync latency: <span style="color: #86EFAC; font-weight: bold;">${stats.avgLatencyMs}ms</span>

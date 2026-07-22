@@ -2,7 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
-import { LoaderHelper } from '../components/LoaderHelper';
+import { DesignSystem } from '../theme/DesignSystem';
 import { GameSessionService } from '../../networking/services/GameSessionService';
 import { PullToRefresh } from '../components/PullToRefresh';
 
@@ -22,7 +22,7 @@ export class DetailedStatsScreen {
 
     public async render(): Promise<void> {
         const root = this._uiManager.container;
-        root.innerHTML = LoaderHelper.getSkeletonHtml('profile');
+        root.innerHTML = DesignSystem.LoadingState('Loading stats...');
 
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);
@@ -82,8 +82,8 @@ export class DetailedStatsScreen {
 
         const row = (label: string, value: string) => `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
-                <div style="font-size: 14px; font-weight: 700; color: #94A3B8;">${label}</div>
-                <div style="font-size: 14px; font-weight: 900; color: white;">${value}</div>
+                <div style="font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-dim);">${label}</div>
+                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${value}</div>
             </div>
         `;
 
@@ -93,26 +93,26 @@ export class DetailedStatsScreen {
                 <!-- App Bar -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
                     <button id="btn-stats-back" style="
-                        background: none; border: none; color: white; font-size: 24px; padding: 8px 16px; cursor: pointer;
+                        background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
                     ">❮</button>
-                    <div style="font-weight: 900; font-size: 16px; letter-spacing: 0.5px; text-transform: uppercase;">DETAILED STATISTICS</div>
+                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">DETAILED STATISTICS</div>
                 </div>
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
                     <!-- 1. Game Overview -->
-                    <div style="font-size: 12px; font-weight: 800; color: #38BDF8; margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📊 Game Overview</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📊 Game Overview</div>
                     <div class="glass-card" style="${cardStyle}">
                         ${row('Games Played', String(totalGames))}
                         ${row('Matches Won', String(totalWins))}
                         ${row('Overall Accuracy', `${totalAccuracy}%`)}
                         <div style="border-bottom: none;">
-                            ${row('Total Points Earned', `${points} XP`)}
+                            ${row('Points', `${points} XP`)}
                         </div>
                     </div>
 
                     <!-- 2. Performance -->
-                    <div style="font-size: 12px; font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">⚡ Performance</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">⚡ Performance</div>
                     <div class="glass-card" style="${cardStyle}">
                         ${row('Highest Score (Match)', String(highestScore))}
                         ${row('Average Response Time', avgTimeStr)}
@@ -123,7 +123,7 @@ export class DetailedStatsScreen {
                     </div>
 
                     <!-- 3. Questions Details -->
-                    <div style="font-size: 12px; font-weight: 800; color: #F472B6; margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">❓ Questions Telemetry</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">❓ Questions Telemetry</div>
                     <div class="glass-card" style="${cardStyle}">
                         ${row('Correct Answers', String(totalCorrect))}
                         ${row('Wrong Answers', String(totalWrong))}
@@ -133,9 +133,9 @@ export class DetailedStatsScreen {
                     </div>
 
                     <!-- 4. Competition & Achievements -->
-                    <div style="font-size: 12px; font-weight: 800; color: #A78BFA; margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🏆 Competition Status</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #A78BFA; margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🏆 Competition Status</div>
                     <div class="glass-card" style="${cardStyle}">
-                        ${row('Current League', division.name)}
+                        ${row('League', division.name)}
                         ${row('Win Rate', `${winRate}%`)}
                     </div>
 

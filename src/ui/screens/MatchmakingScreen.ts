@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { MatchmakingService, OpponentMatchInfo } from '../../networking/multiplayer/MatchmakingService';
 import { SaveManager } from '../../core/managers/SaveManager';
 import type { UserRow } from '../../networking/supabase/types';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class MatchmakingScreen {
     private _uiManager: UIManager;
@@ -64,7 +65,7 @@ export class MatchmakingScreen {
                         <span class="tv-channel-logo">ETHIO TELECOM <span>SPORTS HD</span></span>
                     </div>
 
-                    <div style="font-family: var(--tv-mono); font-weight: 800; font-size: 13px; color: var(--tv-gold-primary);">
+                    <div style="font-family: var(--tv-mono); font-weight: 800; font-size: var(--fds-font-sm); color: var(--tv-gold-primary);">
                         ELO: ${profile.eloRating || 0}
                     </div>
                 </div>
@@ -75,10 +76,10 @@ export class MatchmakingScreen {
                         border-color: rgba(96, 165, 250, 0.4);
                         box-shadow: 0 20px 50px rgba(0,0,0,0.6);
                     ">
-                        <span style="font-size: 11px; font-weight: 800; color: #60A5FA; letter-spacing: 2px;">
+                        <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); letter-spacing: 2px;">
                             LIVE MULTIPLAYER MATCHMAKING
                         </span>
-                        <h2 style="margin: 8px 0 24px 0; font-size: 26px; font-weight: 900; color: white;">
+                        <h2 style="margin: 8px 0 24px 0; font-size: 26px; font-weight: 900; color: var(--fds-text-main);">
                             FINDING WORTHY OPPONENT...
                         </h2>
 
@@ -107,19 +108,17 @@ export class MatchmakingScreen {
                             justify-content: space-around;
                         ">
                             <div>
-                                <div style="font-size: 12px; color: #94A3B8;">YOUR RATING</div>
-                                <div style="font-size: 20px; font-weight: 900; color: #FFD700;">⚡ ${profile.eloRating || 0} ELO</div>
+                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">YOUR RATING</div>
+                                <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-gold-primary);">⚡ ${profile.eloRating || 0} ELO</div>
                             </div>
                             <div style="height: 30px; width: 1px; background: rgba(255,255,255,0.1);"></div>
                             <div>
-                                <div style="font-size: 12px; color: #94A3B8;">SEARCH RANGE</div>
-                                <div style="font-size: 20px; font-weight: 900; color: #60A5FA;">±150 ELO</div>
+                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">SEARCH RANGE</div>
+                                <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-blue-accent);">±150 ELO</div>
                             </div>
                         </div>
 
-                        <button id="cancel-mm-btn" class="broadcast-btn glass-card" style="width: 100%; color: #FCA5A5; border-color: rgba(239,68,68,0.3);">
-                            ✖ CANCEL MATCHMAKING
-                        </button>
+                        ${DesignSystem.Button({ id: 'cancel-mm-btn', text: 'CANCEL MATCHMAKING', icon: '✖', variant: 'secondary', fullWidth: true, className: 'cancel-btn-custom' })}
                     </div>
                 </div>
             </div>
@@ -142,6 +141,10 @@ export class MatchmakingScreen {
                 @keyframes pulseRadar {
                     0% { transform: scale(0.3); opacity: 1; }
                     100% { transform: scale(1.3); opacity: 0; }
+                }
+                .cancel-btn-custom {
+                    color: #FCA5A5 !important;
+                    border-color: rgba(239,68,68,0.3) !important;
                 }
             </style>
         `;

@@ -2,6 +2,7 @@ import { GameRegistry } from '../../core/managers/GameRegistry';
 import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class MainMenuScreen {
     private _registry: GameRegistry;
@@ -33,7 +34,7 @@ export class MainMenuScreen {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                color: white;
+                color: var(--fds-text-main);
                 font-family: system-ui, -apple-system, sans-serif;
                 pointer-events: auto;
                 padding: 20px;
@@ -53,8 +54,8 @@ export class MainMenuScreen {
                     border: 1px solid rgba(255, 255, 255, 0.1);
                 ">
                     <span style="font-weight: bold; color: #F8FAFC;">👤 ${profile.username}</span>
-                    <span style="color: #FFD700; font-size: 14px; font-weight: bold;">🪙 ${profile.coins}</span>
-                    <span style="color: #60A5FA; font-size: 14px; font-weight: bold;">⚡ ${profile.xp} XP</span>
+                    <span style="color: var(--fds-gold-primary); font-size: var(--fds-font-sm); font-weight: bold;">🪙 ${profile.coins}</span>
+                    <span style="color: var(--fds-blue-accent); font-size: var(--fds-font-sm); font-weight: bold;">⚡ ${profile.xp} XP</span>
                 </div>
 
                 <!-- Mute Toggle Button -->
@@ -66,7 +67,7 @@ export class MainMenuScreen {
                     border: 1px solid rgba(255, 255, 255, 0.2);
                     border-radius: 20px;
                     padding: 8px 16px;
-                    color: white;
+                    color: var(--fds-text-main);
                     font-weight: bold;
                     cursor: pointer;
                 ">${this._audioManager.isMuted ? '🔇 MUTED' : '🔊 SOUND ON'}</button>
@@ -83,7 +84,7 @@ export class MainMenuScreen {
                         -webkit-text-fill-color: transparent;
                         text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
                     ">FOOTBALL QUIZ LEAGUE</h1>
-                    <p style="color: #94A3B8; margin-top: 8px; font-size: 16px;">ETHIO TELECOM VAS PLATFORM</p>
+                    <p style="color: var(--fds-text-dim); margin-top: 8px; font-size: var(--fds-font-md);">ETHIO TELECOM VAS PLATFORM</p>
                 </div>
 
                 <!-- Quiz Games Grid -->
@@ -110,7 +111,7 @@ export class MainMenuScreen {
                                 <div>
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                         <span style="
-                                            font-size: 12px;
+                                            font-size: var(--fds-font-xs);
                                             font-weight: bold;
                                             padding: 4px 10px;
                                             border-radius: 20px;
@@ -118,24 +119,13 @@ export class MainMenuScreen {
                                             color: #C084FC;
                                             border: 1px solid #A855F7;
                                         ">QUIZ</span>
-                                        <span style="font-size: 13px; color: #FFD700; font-weight: bold;">BEST: ${highScore} PTS</span>
+                                        <span style="font-size: var(--fds-font-sm); color: var(--fds-gold-primary); font-weight: bold;">BEST: ${highScore} PTS</span>
                                     </div>
-                                    <h3 style="margin: 0 0 8px 0; font-size: 22px; font-weight: bold; color: #F8FAFC;">${game.metadata.name}</h3>
-                                    <p style="margin: 0; font-size: 14px; color: #94A3B8; line-height: 1.5;">${game.metadata.description}</p>
+                                    <h3 style="margin: 0 0 8px 0; font-size: var(--fds-font-lg); font-weight: bold; color: #F8FAFC;">${game.metadata.name}</h3>
+                                    <p style="margin: 0; font-size: var(--fds-font-sm); color: var(--fds-text-dim); line-height: 1.5;">${game.metadata.description}</p>
                                 </div>
 
-                                <button class="launch-btn" data-game-id="${game.metadata.id}" style="
-                                    margin-top: 20px;
-                                    width: 100%;
-                                    padding: 12px;
-                                    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
-                                    border: none;
-                                    border-radius: 10px;
-                                    color: white;
-                                    font-weight: bold;
-                                    font-size: 16px;
-                                    cursor: pointer;
-                                ">PLAY</button>
+                                ${DesignSystem.Button({ text: 'PLAY', variant: 'primary', fullWidth: true, className: 'launch-btn', dataAttrs: `data-game-id="${game.metadata.id}"` })}
                             </div>
                         `;
                     }).join('')}

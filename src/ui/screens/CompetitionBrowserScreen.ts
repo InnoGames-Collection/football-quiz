@@ -2,7 +2,6 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { CompetitionRegistry, Competition } from '../../core/quiz/CompetitionRegistry';
 import { DesignSystem } from '../theme/DesignSystem';
-import { LoaderHelper } from '../components/LoaderHelper';
 import { PullToRefresh } from '../components/PullToRefresh';
 
 export class CompetitionBrowserScreen {
@@ -26,7 +25,7 @@ export class CompetitionBrowserScreen {
 
     public render(): void {
         const root = this._uiManager.container;
-        root.innerHTML = LoaderHelper.getSkeletonHtml('league');
+        root.innerHTML = DesignSystem.LoadingState('Loading competitions...');
         
         setTimeout(() => {
             this._renderActual();
@@ -62,7 +61,7 @@ export class CompetitionBrowserScreen {
                 
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
                     <div style="font-weight: 900; font-size: 18px; letter-spacing: 1px;">LEAGUE</div>
-                    <button id="comp-close-btn" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer;">⬅️ BACK</button>
+                    ${DesignSystem.Button({ id: 'comp-close-btn', icon: '⬅️', text: 'BACK', variant: 'secondary' })}
                 </div>
 
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px 0 100px 0;">
@@ -79,7 +78,7 @@ export class CompetitionBrowserScreen {
                 </div>
             </div>
             <style>
-                .league-tab:hover { color: white; }
+                .league-tab:hover { color: var(--fds-text-main); }
                 .active-league-tab { color: var(--tv-pitch-green); }
             </style>
         `;
@@ -97,49 +96,42 @@ export class CompetitionBrowserScreen {
                         <div class="glass-card" style="padding: 20px; border-color: ${idx === 0 ? 'var(--tv-pitch-green)' : 'rgba(255,255,255,0.1)'};">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                                 <div>
-                                    <div style="font-size: 11px; font-weight: 800; color: ${idx === 0 ? 'var(--tv-pitch-green)' : '#94A3B8'}; margin-bottom: 4px;">${comp.status === 'live' ? 'LIVE NOW' : 'UPCOMING'}</div>
-                                    <div style="font-size: 20px; font-weight: 900; color: white;">${comp.name}</div>
+                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: ${idx === 0 ? 'var(--tv-pitch-green)' : '#94A3B8'}; margin-bottom: 4px;">${comp.status === 'live' ? 'LIVE NOW' : 'UPCOMING'}</div>
+                                    <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main);">${comp.name}</div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-size: 11px; font-weight: 800; color: #F472B6; margin-bottom: 4px;">${comp.status === 'live' ? 'ENDS IN' : 'STARTS IN'}</div>
-                                    <div style="font-size: 14px; font-weight: 900; color: white;">${this._formatTimeLeft(comp.status === 'live' ? comp.end_time : comp.start_time)}</div>
+                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; margin-bottom: 4px;">${comp.status === 'live' ? 'ENDS IN' : 'STARTS IN'}</div>
+                                    <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${this._formatTimeLeft(comp.status === 'live' ? comp.end_time : comp.start_time)}</div>
                                 </div>
                             </div>
 
-                            <div style="display: flex; gap: 24px; margin-bottom: ${idx === 0 ? '16px' : '24px'};">
                                 <div>
-                                    <div style="font-size: 11px; color: #94A3B8; font-weight: 700;">PARTICIPANTS</div>
-                                    <div style="font-size: 16px; font-weight: 900; color: white;">${(comp.participants || 0).toLocaleString()}</div>
+                                    <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700;">PLAYERS</div>
+                                    <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">${(comp.participants || 0).toLocaleString()}</div>
                                 </div>
                                 <div>
-                                    <div style="font-size: 11px; color: #94A3B8; font-weight: 700;">PRIZE POOL</div>
-                                    <div style="font-size: 16px; font-weight: 900; color: var(--tv-gold-primary);">${(comp.prize_pool || 0).toLocaleString()} XP</div>
+                                    <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700;">PRIZE</div>
+                                    <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--tv-gold-primary);">${(comp.prize_pool || 0).toLocaleString()} XP</div>
                                 </div>
                             </div>
                             
                             ${idx === 0 ? `
                             <div style="margin-bottom: 24px;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                    <div style="font-size: 11px; font-weight: 800; color: white;">YOUR PROGRESS</div>
-                                    <div style="font-size: 11px; font-weight: 800; color: var(--tv-pitch-green);">Ready</div>
+                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-main);">PROGRESS</div>
+                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--tv-pitch-green);">Ready</div>
                                 </div>
                                 ${DesignSystem.ProgressBar(0, 'var(--tv-pitch-green)')}
                             </div>
                             ` : ''}
 
-                            ${DesignSystem.Button({ id: `btn-join-league-${comp.id}`, text: idx === 0 ? 'CONTINUE LEAGUE' : 'JOIN LEAGUE', variant: idx === 0 ? 'green' : 'glass', fullWidth: true })}
+                            ${DesignSystem.Button({ id: `btn-join-league-${comp.id}`, text: idx === 0 ? 'CONTINUE LEAGUE' : 'JOIN LEAGUE', variant: idx === 0 ? 'primary' : 'secondary', fullWidth: true })}
                         </div>
                     `).join('')}
                 </div>
             `;
         } else {
-            return `
-                <div style="text-align: center; padding: 48px 16px;">
-                    <div style="font-size: 48px; margin-bottom: 16px;">📅</div>
-                    <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 8px;">No ${this._activeTab} leagues</div>
-                    <div style="font-size: 14px; color: #94A3B8;">Check back later for more events.</div>
-                </div>
-            `;
+            return DesignSystem.EmptyState('📅', 'No Matches');
         }
     }
 

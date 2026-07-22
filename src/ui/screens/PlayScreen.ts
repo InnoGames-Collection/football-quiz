@@ -1,6 +1,6 @@
+import { DesignSystem } from "../theme/DesignSystem";
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-import { LoaderHelper } from '../components/LoaderHelper';
 import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionManager';
 
 
@@ -45,7 +45,7 @@ export class PlayScreen {
 
     public render(): void {
         const root = this._uiManager.container;
-        root.innerHTML = LoaderHelper.getSkeletonHtml('home');
+        root.innerHTML = DesignSystem.LoadingState('Loading match modes...');
         
         setTimeout(() => {
             this._renderActual();
@@ -72,7 +72,7 @@ export class PlayScreen {
                     transition: all 0.2s;
                 ">
                     <div style="font-size: 24px; margin-bottom: 6px;">${m.icon}</div>
-                    <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</div>
                 </div>
             `;
         }).join('');
@@ -82,7 +82,7 @@ export class PlayScreen {
                 
                 <!-- TOP APP BAR -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px;">
-                    <div style="font-weight: 900; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">
+                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase;">
                         🎮 PLAY ZONE
                     </div>
                 </div>
@@ -90,7 +90,7 @@ export class PlayScreen {
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">
                     
                     <!-- HORIZONTAL SELECTABLE MODES LIST -->
-                    <div style="font-size: 10px; font-weight: 800; color: #94A3B8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 4px;">Select Game Mode</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 4px;">Select Game Mode</div>
                     <div style="
                         display: flex;
                         gap: 10px;
@@ -118,40 +118,24 @@ export class PlayScreen {
                         <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(34,197,94,0.5)); transform: scale(1.05);">⚽</div>
                         
                         <!-- Title -->
-                        <div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                        <div style="font-size: 24px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
                             ${activeMode.name}
                         </div>
 
                         <!-- Info Pills -->
                         <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 32px;">
                             <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Level</span>
-                                <span style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">${activeMode.difficulty}</span>
+                                <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase;">Level</span>
+                                <span style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">${activeMode.difficulty}</span>
                             </div>
                             <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Prize</span>
-                                <span style="font-size: 12px; font-weight: 900; color: #38BDF8; text-transform: uppercase;">${activeMode.reward}</span>
+                                <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase;">Prize</span>
+                                <span style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-blue-accent); text-transform: uppercase;">${activeMode.reward}</span>
                             </div>
                         </div>
 
                         <!-- Kick Off Button -->
-                        <button id="btn-kickoff" class="btn-kickoff-action" style="
-                            width: 100%; 
-                            min-height: 56px; 
-                            background: linear-gradient(135deg, #22C55E 0%, #009A44 100%);
-                            color: white; 
-                            font-weight: 900; 
-                            font-size: 16px; 
-                            border: none; 
-                            border-radius: 16px; 
-                            cursor: pointer;
-                            box-shadow: 0 8px 24px rgba(34,197,94,0.4);
-                            text-transform: uppercase;
-                            letter-spacing: 1px;
-                            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s;
-                        ">
-                            KICK OFF
-                        </button>
+                        ${DesignSystem.Button({ id: 'btn-kickoff', text: 'KICK OFF', variant: 'primary', fullWidth: true, className: 'btn-kickoff-action' })}
                     </div>
 
                     <!-- RESUME SUSPENDED MATCH SECTION -->
@@ -165,44 +149,19 @@ export class PlayScreen {
                             box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
                         ">
                             <div style="font-size: 48px; margin-bottom: 12px; filter: drop-shadow(0 4px 16px rgba(255,215,0,0.5));">⏱️</div>
-                            <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
-                                SUSPENDED MATCH
+                            <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                                SUSPENDED
                             </div>
-                            <div style="font-size: 13px; color: #94A3B8; margin-bottom: 20px; font-weight: 600;">
-                                You have an active match waiting to be completed.
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 20px; font-weight: 600;">
+                                Match in progress.
                             </div>
                             <div style="display: flex; gap: 12px;">
-                                <button id="btn-resume-match" style="
-                                    flex: 1;
-                                    min-height: 48px; 
-                                    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
-                                    color: #020617; 
-                                    font-weight: 900; 
-                                    font-size: 14px; 
-                                    border: none; 
-                                    border-radius: 12px; 
-                                    cursor: pointer;
-                                    box-shadow: 0 4px 16px rgba(255,215,0,0.3);
-                                    text-transform: uppercase;
-                                    letter-spacing: 1px;
-                                ">
-                                    RESUME
-                                </button>
-                                <button id="btn-discard-match" style="
-                                    flex: 1;
-                                    min-height: 48px; 
-                                    background: rgba(239, 68, 68, 0.1);
-                                    color: #EF4444; 
-                                    font-weight: 800; 
-                                    font-size: 14px; 
-                                    border: 1px solid rgba(239, 68, 68, 0.3); 
-                                    border-radius: 12px; 
-                                    cursor: pointer;
-                                    text-transform: uppercase;
-                                    letter-spacing: 1px;
-                                ">
-                                    DISCARD
-                                </button>
+                                <div style="flex: 1;">
+                                    ${DesignSystem.Button({ id: 'btn-resume-match', text: 'RESUME', variant: 'primary', fullWidth: true })}
+                                </div>
+                                <div style="flex: 1;">
+                                    ${DesignSystem.Button({ id: 'btn-discard-match', text: 'DISCARD', variant: 'secondary', fullWidth: true })}
+                                </div>
                             </div>
                         </div>
                     </div>

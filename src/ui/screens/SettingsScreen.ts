@@ -8,6 +8,7 @@ import { ProfileService } from '../../networking/services/ProfileService';
 import { FAQService } from '../../networking/services/FAQService';
 import { Toast } from '../components/Toast';
 import { SupportService } from '../../networking/services/SupportService';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export interface AppSettings {
     soundEffects: boolean;
@@ -32,11 +33,12 @@ export class SettingsScreen {
     private _showContactSupportForm: boolean = false;
     private _faqsCache: { q: string; a: string }[] = [];
 
-    constructor(uiManager: UIManager, saveManager: SaveManager, audioManager: AudioManager, onBack: () => void) {
+    constructor(uiManager: UIManager, saveManager: SaveManager, audioManager: AudioManager, onBack: () => void, defaultSubScreen: 'main' | 'profile' | 'language' | 'notifications' | 'sound' | 'help' | 'terms' | 'privacy' | 'about' = 'main') {
         this._uiManager = uiManager;
         this._saveManager = saveManager;
         this._audioManager = audioManager;
         this._onBack = onBack;
+        this._subScreen = defaultSubScreen;
         
         // Initialize default settings first to avoid synchronous undefined accesses
         this._settings = this._getDefaultSettings();
@@ -129,9 +131,9 @@ export class SettingsScreen {
         const header = (title: string, _backAction?: () => void) => `
             <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
                 <button id="btn-back-sub" style="
-                    background: none; border: none; color: white; font-size: 24px; padding: 8px 16px; cursor: pointer;
+                    background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
                 ">❮</button>
-                <div style="font-weight: 900; font-size: 16px; letter-spacing: 0.5px; text-transform: uppercase;">${title}</div>
+                <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">${title}</div>
             </div>
         `;
 
@@ -167,13 +169,13 @@ export class SettingsScreen {
                 transition: background-color 0.2s;
             ">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: 20px;">${icon}</span>
+                    <span style="font-size: var(--fds-font-lg);">${icon}</span>
                     <div>
-                        <div style="font-size: 15px; font-weight: 700; color: white;">${title}</div>
-                        ${subtitle ? `<div style="font-size: 13px; color: #94A3B8; margin-top: 2px;">${subtitle}</div>` : ''}
+                        <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${title}</div>
+                        ${subtitle ? `<div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-top: 2px;">${subtitle}</div>` : ''}
                     </div>
                 </div>
-                ${hasChevron ? `<span style="color: #64748B;">❯</span>` : ''}
+                ${hasChevron ? `<span style="color: var(--fds-text-dim);">❯</span>` : ''}
             </div>
         `;
 
@@ -237,15 +239,15 @@ export class SettingsScreen {
                 <!-- App Bar -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
                     <button id="btn-back" style="
-                        background: none; border: none; color: white; font-size: 24px; padding: 8px 16px; cursor: pointer;
+                        background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
                     ">❮</button>
-                    <div style="font-weight: 900; font-size: 16px; letter-spacing: 0.5px; text-transform: uppercase;">${str.title}</div>
+                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">${str.title}</div>
                 </div>
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
                     <!-- Account Group -->
-                    <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${str.account}</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${str.account}</div>
                     <div class="glass-card" style="margin-bottom: 24px; border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
                         ${listTile('👤', str.profile, maskedMsisdn, true, 'tile-profile')}
                         ${listTile('🌍', str.language, currentLangLabel, true, 'tile-language')}
@@ -254,7 +256,7 @@ export class SettingsScreen {
                     </div>
 
                     <!-- Legal Group -->
-                    <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${str.legal}</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${str.legal}</div>
                     <div class="glass-card" style="margin-bottom: 32px; border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
                         ${listTile('❓', str.help, '', true, 'tile-help')}
                         ${listTile('📜', str.terms, '', true, 'tile-terms')}
@@ -264,7 +266,7 @@ export class SettingsScreen {
 
                     <!-- Logout -->
                     <div class="glass-card settings-tile" id="btn-logout" style="margin-bottom: 16px; border-radius: 12px; padding: 0; text-align: center; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); overflow: hidden;">
-                        <div style="padding: 16px; font-size: 15px; font-weight: 800; color: #EF4444; cursor: pointer; letter-spacing: 0.5px;">
+                        <div style="padding: 16px; font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-red-live); cursor: pointer; letter-spacing: 0.5px;">
                             ${str.logout.toUpperCase()}
                         </div>
                     </div>
@@ -318,8 +320,8 @@ export class SettingsScreen {
 
         const row = (label: string, value: string) => `
             <div style="display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <div style="font-size: 14px; font-weight: 700; color: #94A3B8;">${label}</div>
-                <div style="font-size: 14px; font-weight: 800; color: white;">${value}</div>
+                <div style="font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-dim);">${label}</div>
+                <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${value}</div>
             </div>
         `;
 
@@ -364,7 +366,7 @@ export class SettingsScreen {
                     display: flex; align-items: center; justify-content: space-between; 
                     padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
                 ">
-                    <div style="font-size: 15px; font-weight: 700; color: white;">${name}</div>
+                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${name}</div>
                     <div style="
                         width: 20px; height: 20px; border-radius: 50%; 
                         border: 2px solid ${isSelected ? 'var(--tv-gold-primary)' : 'rgba(255,255,255,0.3)'};
@@ -420,7 +422,7 @@ export class SettingsScreen {
             const enabled = this._settings.notifications[key];
             return `
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <div style="font-size: 15px; font-weight: 700; color: white;">${label}</div>
+                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${label}</div>
                     <label class="switch-container">
                         <input type="checkbox" class="switch-input notif-toggle" data-key="${key}" ${enabled ? 'checked' : ''}>
                         <span class="switch-slider"></span>
@@ -508,7 +510,7 @@ export class SettingsScreen {
                     content: "";
                     height: 16px; width: 16px;
                     left: 3px; bottom: 3px;
-                    background-color: white;
+                    background-color: var(--fds-text-main);
                     transition: .3s;
                     border-radius: 50%;
                 }
@@ -545,7 +547,7 @@ export class SettingsScreen {
                     display: flex; align-items: center; justify-content: space-between; 
                     padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
                 ">
-                    <div style="font-size: 15px; font-weight: 700; color: white;">${label}</div>
+                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${label}</div>
                     <div style="
                         width: 20px; height: 20px; border-radius: 50%; 
                         border: 2px solid ${isSelected ? 'var(--tv-gold-primary)' : 'rgba(255,255,255,0.3)'};
@@ -674,15 +676,15 @@ export class SettingsScreen {
                     ${header(titles[locale] || titles['en'])}
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
+                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--fds-text-main); padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
                             ⬅️ HELP DIRECTORY
                         </button>
                         
                         <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left;" id="support-form-container">
-                            <div style="font-size: 16px; font-weight: 800; color: white; margin-bottom: 12px; text-transform: uppercase;">✉️ Contact Support</div>
+                            <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-text-main); margin-bottom: 12px; text-transform: uppercase;">✉️ Contact Support</div>
                             <div style="margin-bottom: 12px;">
-                                <label style="display: block; font-size: 12px; color: #94A3B8; margin-bottom: 6px; font-weight: 600;">ISSUE TYPE</label>
-                                <select id="support-category" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; outline: none;">
+                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">ISSUE TYPE</label>
+                                <select id="support-category" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--fds-text-main); outline: none;">
                                     <option value="Billing & Subscription">Billing & Subscription</option>
                                     <option value="Technical Issues">Technical Issues</option>
                                     <option value="Rewards & Points">Rewards & Points</option>
@@ -690,10 +692,10 @@ export class SettingsScreen {
                                 </select>
                             </div>
                             <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 12px; color: #94A3B8; margin-bottom: 6px; font-weight: 600;">MESSAGE</label>
-                                <textarea id="support-message" placeholder="Describe your issue here..." style="width: 100%; height: 80px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; outline: none; resize: none; font-family: sans-serif; box-sizing: border-box;"></textarea>
+                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">MESSAGE</label>
+                                <textarea id="support-message" placeholder="Describe your issue here..." style="width: 100%; height: 80px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--fds-text-main); outline: none; resize: none; font-family: sans-serif; box-sizing: border-box;"></textarea>
                             </div>
-                            <button id="btn-submit-support" style="width: 100%; padding: 12px; background: var(--tv-pitch-green); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">SUBMIT TICKET</button>
+                            ${DesignSystem.Button({ id: 'btn-submit-support', text: 'SUBMIT TICKET', variant: 'primary', fullWidth: true })}
                         </div>
                     </div>
                 </div>
@@ -719,7 +721,7 @@ export class SettingsScreen {
                 const container = document.getElementById('support-form-container');
                 if (container) {
                     container.innerHTML = `
-                        <div style="text-align: center; padding: 16px; color: #94A3B8;">
+                        <div style="text-align: center; padding: 16px; color: var(--fds-text-dim);">
                             Submitting ticket to server...
                         </div>
                     `;
@@ -729,9 +731,9 @@ export class SettingsScreen {
                     container.innerHTML = `
                         <div style="text-align: center; padding: 16px;">
                             <div style="font-size: 40px; margin-bottom: 8px;">✅</div>
-                            <div style="font-size: 16px; font-weight: 800; color: var(--tv-pitch-green); margin-bottom: 4px;">TICKET SUBMITTED</div>
-                            <div style="font-size: 13px; color: #94A3B8; margin-bottom: 12px;">Our support team will respond via SMS shortly.</div>
-                            <div style="font-size: 12px; font-weight: 700; color: white; background: rgba(255,255,255,0.08); padding: 6px; border-radius: 6px; font-family: monospace; display: inline-block;">REF: ${refId}</div>
+                            <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--tv-pitch-green); margin-bottom: 4px;">TICKET SUBMITTED</div>
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 12px;">Our support team will respond via SMS shortly.</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 700; color: var(--fds-text-main); background: rgba(255,255,255,0.08); padding: 6px; border-radius: 6px; font-family: monospace; display: inline-block;">REF: ${refId}</div>
                         </div>
                     `;
                 }
@@ -744,11 +746,11 @@ export class SettingsScreen {
             const faqHtml = activeFaqs.map((faq, idx) => `
                 <div class="glass-card" style="border-radius: 12px; margin-bottom: 12px; border-color: rgba(255,255,255,0.08); overflow: hidden;">
                     <div class="faq-header" data-idx="${idx}" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; background: rgba(255,255,255,0.02);">
-                        <div style="font-size: 14px; font-weight: 800; color: white;">${faq.q}</div>
-                        <span class="faq-icon" style="color: var(--tv-gold-primary); font-size: 12px; transition: transform 0.2s;">➕</span>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${faq.q}</div>
+                        <span class="faq-icon" style="color: var(--tv-gold-primary); font-size: var(--fds-font-xs); transition: transform 0.2s;">➕</span>
                     </div>
                     <div class="faq-body" id="faq-body-${idx}" style="max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: rgba(0,0,0,0.2);">
-                        <div style="padding: 16px; font-size: 13px; color: #CBD5E1; line-height: 1.5;">${faq.a}</div>
+                        <div style="padding: 16px; font-size: var(--fds-font-sm); color: var(--fds-text-muted); line-height: 1.5;">${faq.a}</div>
                     </div>
                 </div>
             `).join('');
@@ -760,7 +762,7 @@ export class SettingsScreen {
                     ${header(`${categoryName.toUpperCase()}`)}
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
+                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--fds-text-main); padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
                             ⬅️ HELP DIRECTORY
                         </button>
                         
@@ -771,8 +773,8 @@ export class SettingsScreen {
                             background: rgba(0,0,0,0.2); 
                             border: 1px solid rgba(255,255,255,0.1); 
                             border-radius: 8px; 
-                            color: white; 
-                            font-size: 13px; 
+                            color: var(--fds-text-main); 
+                            font-size: var(--fds-font-sm); 
                             margin-bottom: 16px; 
                             box-sizing: border-box;
                         ">
@@ -836,10 +838,10 @@ export class SettingsScreen {
                 padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
             ">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: 20px;">${c.icon}</span>
-                    <div style="font-size: 15px; font-weight: 700; color: white;">${c.name[locale] || c.name['en']}</div>
+                    <span style="font-size: var(--fds-font-lg);">${c.icon}</span>
+                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${c.name[locale] || c.name['en']}</div>
                 </div>
-                <span style="color: #64748B;">❯</span>
+                <span style="color: var(--fds-text-dim);">❯</span>
             </div>
         `).join('');
 
@@ -853,24 +855,7 @@ export class SettingsScreen {
                         ${categoriesHtml}
                     </div>
 
-                    <button id="btn-contact-support" style="
-                        width: 100%; 
-                        padding: 16px; 
-                        background: var(--tv-blue-accent); 
-                        color: white; 
-                        font-weight: 800; 
-                        font-size: 15px; 
-                        border: none; 
-                        border-radius: 12px; 
-                        cursor: pointer;
-                        box-shadow: 0 4px 15px rgba(59,130,246,0.3);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 10px;
-                    ">
-                        ✉️ CONTACT SUPPORT
-                    </button>
+                    ${DesignSystem.Button({ id: 'btn-contact-support', text: 'CONTACT SUPPORT', variant: 'primary', fullWidth: true, icon: '✉️' })}
                 </div>
             </div>
         `;
@@ -894,7 +879,7 @@ export class SettingsScreen {
                     
                     // Show a quick loader while fetching
                     const wrapper = document.getElementById('faq-list-wrapper');
-                    if (wrapper) wrapper.innerHTML = '<div style="padding: 20px; color: #94A3B8;">Loading FAQs...</div>';
+                    if (wrapper) wrapper.innerHTML = '<div style="padding: 20px; color: var(--fds-text-dim);">Loading FAQs...</div>';
                     
                     const faqService = FAQService.getInstance();
                     const rawFaqs = await faqService.getFAQsByCategory(catId);
@@ -970,7 +955,7 @@ export class SettingsScreen {
                 ${header(titles[locale] || titles['en'])}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
-                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: #CBD5E1;">
+                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: var(--fds-text-muted);">
                         ${body[locale] || body['en']}
                     </div>
                 </div>
@@ -1022,7 +1007,7 @@ export class SettingsScreen {
                 ${header(titles[locale] || titles['en'])}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
-                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: #CBD5E1;">
+                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: var(--fds-text-muted);">
                         ${body[locale] || body['en']}
                     </div>
                 </div>
@@ -1045,10 +1030,10 @@ export class SettingsScreen {
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px; text-align: center;">
                     <div style="font-size: 64px; margin-bottom: 16px;">⚽</div>
-                    <div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 8px;">EthioFantasy</div>
-                    <div style="font-size: 13px; color: var(--tv-gold-primary); font-weight: 800; margin-bottom: 24px; letter-spacing: 1.5px; text-transform: uppercase;">Ethio Telecom VAS Integration</div>
+                    <div style="font-size: 24px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">EthioFantasy</div>
+                    <div style="font-size: var(--fds-font-sm); color: var(--tv-gold-primary); font-weight: 800; margin-bottom: 24px; letter-spacing: 1.5px; text-transform: uppercase;">Ethio Telecom VAS Integration</div>
                     
-                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: 14px; line-height: 1.6; color: #CBD5E1; margin-bottom: 24px;">
+                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: var(--fds-font-sm); line-height: 1.6; color: var(--fds-text-muted); margin-bottom: 24px;">
                         <p style="margin-top: 0;"><strong>Application Description:</strong><br>EthioFantasy is a premium Football Quiz League platform crafted specifically for football fans in Ethiopia. Play daily trivia matches, challenge other players in live 1v1 showdowns, and climb the league divisions to win cash prizes.</p>
                         
                         <p style="margin-bottom: 0;"><strong>Key Features:</strong><br>
@@ -1059,14 +1044,14 @@ export class SettingsScreen {
                         • Integrated billing checking via SMS OTP</p>
                     </div>
 
-                    <div class="glass-card" style="border-radius: 12px; padding: 16px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: 13px; color: #CBD5E1; margin-bottom: 24px;">
+                    <div class="glass-card" style="border-radius: 12px; padding: 16px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 24px;">
                         <div><strong>Version:</strong> 1.1.0</div>
                         <div style="margin-top: 6px;"><strong>Developer:</strong> InnoGames VAS Team</div>
                         <div style="margin-top: 6px;"><strong>Ethio Telecom Integration:</strong> VAS Gateway API v3.2</div>
                         <div style="margin-top: 6px;"><strong>Contact:</strong> support@ethiofantasy.com</div>
                     </div>
 
-                    <div style="font-size: 12px; color: #64748B; font-weight: 700;">
+                    <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700;">
                         © 2026 Ethio Telecom VAS. All Rights Reserved.
                     </div>
                 </div>

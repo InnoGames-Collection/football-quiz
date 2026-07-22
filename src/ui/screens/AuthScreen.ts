@@ -1,6 +1,7 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { AuthManager } from '../../core/auth/AuthManager';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class AuthScreen {
     private _uiManager: UIManager;
@@ -38,7 +39,7 @@ export class AuthScreen {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                color: white;
+                color: var(--fds-text-main);
                 font-family: system-ui, -apple-system, sans-serif;
                 pointer-events: auto;
                 padding: 20px;
@@ -60,7 +61,7 @@ export class AuthScreen {
                     <div style="margin-bottom: 24px;">
                         <div style="font-size: 48px; margin-bottom: 8px;">⚽</div>
                         <h1 style="
-                            font-size: 28px;
+                            font-size: var(--fds-font-xl);
                             font-weight: 900;
                             margin: 0;
                             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
@@ -68,7 +69,7 @@ export class AuthScreen {
                             -webkit-text-fill-color: transparent;
                             letter-spacing: 1px;
                         ">FOOTBALL QUIZ LEAGUE</h1>
-                        <p style="color: #94A3B8; font-size: 13px; margin-top: 6px; letter-spacing: 0.5px;">
+                        <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm); margin-top: 6px; letter-spacing: 0.5px;">
                             ETHIO TELECOM VAS PLATFORM
                         </p>
                     </div>
@@ -80,7 +81,7 @@ export class AuthScreen {
                             color: #FCA5A5;
                             padding: 10px 14px;
                             border-radius: 12px;
-                            font-size: 13px;
+                            font-size: var(--fds-font-sm);
                             margin-bottom: 20px;
                         ">${this._statusMessage}</div>
                     ` : ''}
@@ -99,7 +100,7 @@ export class AuthScreen {
 
         return `
             <div style="text-align: left; margin-bottom: 16px;">
-                <label style="display: block; font-size: 12px; color: #CBD5E1; margin-bottom: 6px; font-weight: 600;">
+                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-muted); margin-bottom: 6px; font-weight: 600;">
                     PHONE NUMBER (+251 ETHIOPIA)
                 </label>
                 <div style="display: flex; gap: 8px;">
@@ -108,9 +109,9 @@ export class AuthScreen {
                         border: 1px solid rgba(255, 255, 255, 0.15);
                         border-radius: 12px;
                         padding: 12px 14px;
-                        color: #FFD700;
+                        color: var(--fds-gold-primary);
                         font-weight: bold;
-                        font-size: 14px;
+                        font-size: var(--fds-font-sm);
                     ">+251</span>
                     <input type="tel" id="phone-input" placeholder="911000000" value="${defaultVal}" style="
                         flex: 1;
@@ -118,8 +119,8 @@ export class AuthScreen {
                         border: 1px solid rgba(255, 255, 255, 0.15);
                         border-radius: 12px;
                         padding: 12px 14px;
-                        color: white;
-                        font-size: 15px;
+                        color: var(--fds-text-main);
+                        font-size: var(--fds-font-md);
                         outline: none;
                     " />
                 </div>
@@ -127,30 +128,17 @@ export class AuthScreen {
 
             <!-- Test Accounts Quick Selector -->
             <div style="margin-bottom: 20px; text-align: left;">
-                <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
                     ⚡ Ethio Telecom Test Phone Numbers:
                 </div>
                 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button class="test-phone-chip" data-phone="911000000" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #FFD700; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">911000000</button>
-                    <button class="test-phone-chip" data-phone="911000001" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #FFD700; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">911000001</button>
-                    <button class="test-phone-chip" data-phone="911000002" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #FFD700; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">911000002</button>
+                    <button class="test-phone-chip" data-phone="911000000" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: var(--fds-gold-primary); padding: 4px 10px; border-radius: 6px; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer;">911000000</button>
+                    <button class="test-phone-chip" data-phone="911000001" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: var(--fds-gold-primary); padding: 4px 10px; border-radius: 6px; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer;">911000001</button>
+                    <button class="test-phone-chip" data-phone="911000002" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: var(--fds-gold-primary); padding: 4px 10px; border-radius: 6px; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer;">911000002</button>
                 </div>
             </div>
 
-            <button id="send-otp-btn" style="
-                width: 100%;
-                padding: 14px;
-                background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
-                border: none;
-                border-radius: 12px;
-                color: white;
-                font-weight: bold;
-                font-size: 15px;
-                cursor: pointer;
-                box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-            ">
-                SEND SMS VERIFICATION CODE
-            </button>
+            ${DesignSystem.Button({ id: 'send-otp-btn', text: 'SEND SMS VERIFICATION CODE', variant: 'primary', fullWidth: true })}
         `;
     }
 
@@ -158,10 +146,10 @@ export class AuthScreen {
         return `
             <div style="text-align: left; margin-bottom: 16px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <label style="font-size: 12px; color: #CBD5E1; font-weight: 600;">
+                    <label style="font-size: var(--fds-font-xs); color: var(--fds-text-muted); font-weight: 600;">
                         ENTER 6-DIGIT VERIFICATION CODE
                     </label>
-                    <button id="change-phone-btn" style="background: none; border: none; color: #60A5FA; font-size: 11px; cursor: pointer;">
+                    <button id="change-phone-btn" style="background: none; border: none; color: var(--fds-blue-accent); font-size: var(--fds-font-xs); cursor: pointer;">
                         Change number
                     </button>
                 </div>
@@ -171,31 +159,18 @@ export class AuthScreen {
                     border: 1px solid #FFD700;
                     border-radius: 12px;
                     padding: 14px;
-                    color: #FFD700;
-                    font-size: 20px;
+                    color: var(--fds-gold-primary);
+                    font-size: var(--fds-font-lg);
                     letter-spacing: 8px;
                     text-align: center;
                     outline: none;
                     box-sizing: border-box;
                 " />
-                <div style="font-size: 11px; color: #86EFAC; font-weight: 700; margin-top: 6px; text-align: center;">
+                <div style="font-size: var(--fds-font-xs); color: #86EFAC; font-weight: 700; margin-top: 6px; text-align: center;">
                     🔑 Test OTP code for test accounts: <span style="font-family: var(--tv-mono);">123456</span>
                 </div>
             </div>
-            <button id="verify-otp-btn" style="
-                width: 100%;
-                padding: 14px;
-                background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-                border: none;
-                border-radius: 12px;
-                color: #0F172A;
-                font-weight: bold;
-                font-size: 15px;
-                cursor: pointer;
-                box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            ">
-                VERIFY & ENTER LEAGUE
-            </button>
+            ${DesignSystem.Button({ id: 'verify-otp-btn', text: 'VERIFY & ENTER LEAGUE', variant: 'primary', fullWidth: true })}
         `;
     }
 

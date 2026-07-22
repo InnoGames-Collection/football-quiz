@@ -1,3 +1,4 @@
+import { DesignSystem } from "../theme/DesignSystem";
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { QuizEngine, MatchStats } from '../../core/quiz/QuizEngine';
@@ -146,16 +147,16 @@ export class ScoreboardQuestionScreen {
                     border-color: var(--tv-pitch-green);
                 ">
                     <div style="font-size: 64px; margin-bottom: 16px;">${this._competition.badge}</div>
-                    <div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 8px;">${this._competition.name}</div>
-                    <div style="font-size: 14px; font-weight: 700; color: #94A3B8; margin-bottom: 32px;">Ready to test your knowledge, ${playerName}?</div>
+                    <div style="font-size: 24px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">${this._competition.name}</div>
+                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-dim); margin-bottom: 32px;">Ready to test your knowledge, ${playerName}?</div>
                     
                     <button id="kick-off-btn" style="
                         width: 100%; 
                         padding: 16px; 
                         background: var(--tv-pitch-green); 
-                        color: white; 
+                        color: var(--fds-text-main); 
                         font-weight: 900; 
-                        font-size: 16px; 
+                        font-size: var(--fds-font-md); 
                         border: none; 
                         border-radius: 12px; 
                         cursor: pointer;
@@ -213,14 +214,14 @@ export class ScoreboardQuestionScreen {
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <!-- Score -->
                         <div style="text-align: left; flex: 1;">
-                            <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Score</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Score</div>
                             <div style="font-size: 18px; font-weight: 900; color: var(--tv-gold-primary);">${currentXP} Points</div>
                         </div>
 
                         <!-- Time -->
                         <div style="text-align: center; flex: 1; position: relative;">
-                            <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Time</div>
-                            <div id="timer-text" style="font-size: 22px; font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,255,255,0.2); transition: color 0.3s, text-shadow 0.3s, transform 0.1s;">
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Time</div>
+                            <div id="timer-text" style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,255,255,0.2); transition: color 0.3s, text-shadow 0.3s, transform 0.1s;">
                                 00:${String(startTimerSec).padStart(2, '0')}
                             </div>
                         </div>
@@ -228,10 +229,10 @@ export class ScoreboardQuestionScreen {
                         <!-- Question -->
                         <div style="text-align: right; flex: 1; position: relative;">
                             <div style="position: absolute; top: -10px; right: 0;">
-                                <button id="match-exit-btn" class="m3-btn m3-btn-icon" style="width: 24px; height: 24px; min-height: 24px; background: transparent; color: #94A3B8; font-size: 14px; border: none; padding: 0;">✕</button>
+                                <button id="match-exit-btn" class="m3-btn m3-btn-icon" style="width: 24px; height: 24px; min-height: 24px; background: transparent; color: var(--fds-text-dim); font-size: var(--fds-font-sm); border: none; padding: 0;">✕</button>
                             </div>
-                            <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Question</div>
-                            <div style="font-size: 18px; font-weight: 900; color: white;">
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Question</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main);">
                                 ${this._currentIndex + 1}/${this._questions.length}
                             </div>
                         </div>
@@ -266,7 +267,7 @@ export class ScoreboardQuestionScreen {
                     <div style="
                         font-size: clamp(20px, 5.5vw, 26px);
                         font-weight: 900;
-                        color: white;
+                        color: var(--fds-text-main);
                         text-align: center;
                         line-height: 1.35;
                         margin-bottom: 32px;
@@ -288,7 +289,7 @@ export class ScoreboardQuestionScreen {
                                 background: rgba(30, 41, 59, 0.7);
                                 border: 2px solid rgba(255,255,255,0.1);
                                 border-radius: 16px;
-                                color: white;
+                                color: var(--fds-text-main);
                                 font-size: clamp(15px, 4vw, 17px);
                                 font-weight: 700;
                                 text-align: left;
@@ -305,7 +306,7 @@ export class ScoreboardQuestionScreen {
                                     background: rgba(255,255,255,0.1); 
                                     display: flex; align-items: center; justify-content: center; 
                                     margin-right: 16px; 
-                                    font-size: 14px; font-weight: 900;
+                                    font-size: var(--fds-font-sm); font-weight: 900;
                                     flex-shrink: 0;
                                 ">${String.fromCharCode(65 + i)}</span>
                                 <span style="flex: 1; word-break: break-word; line-height: 1.3;">${opt}</span>
@@ -335,8 +336,8 @@ export class ScoreboardQuestionScreen {
                     box-sizing: border-box;
                 ">
                     <div id="feedback-anim" style="font-size: 64px; display: inline-block;">⚽</div>
-                    <div id="feedback-text" style="font-size: 28px; font-weight: 900; letter-spacing: 2px; margin-top: 12px; text-transform: uppercase; font-family: var(--tv-mono);"></div>
-                    <div id="feedback-subtext" style="font-size: 13px; color: #CBD5E1; margin-top: 4px; font-weight: 700;"></div>
+                    <div id="feedback-text" style="font-size: var(--fds-font-xl); font-weight: 900; letter-spacing: 2px; margin-top: 12px; text-transform: uppercase; font-family: var(--tv-mono);"></div>
+                    <div id="feedback-subtext" style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-top: 4px; font-weight: 700;"></div>
                 </div>
 
                 <!-- MATCH EXIT CONFIRMATION DIALOG -->
@@ -360,11 +361,15 @@ export class ScoreboardQuestionScreen {
                         border: 1px solid rgba(255,255,255,0.1);
                         box-shadow: 0 16px 40px rgba(0,0,0,0.5);
                     ">
-                        <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px;">Leave Match?</div>
-                        <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">Your progress will be abandoned.</div>
+                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">Leave Match?</div>
+                        <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px;">Your progress will be abandoned.</div>
                         <div style="display: flex; gap: 12px;">
-                            <button id="btn-pause-leave" style="flex: 1; padding: 14px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; cursor: pointer; transition: background 0.2s;">Leave</button>
-                            <button id="btn-pause-resume" style="flex: 1; padding: 14px; background: linear-gradient(135deg, #22C55E 0%, #009A44 100%); color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.3);">Continue</button>
+                            <div style="flex: 1;">
+                                ${DesignSystem.Button({ id: 'btn-pause-leave', text: 'Leave', variant: 'secondary', fullWidth: true })}
+                            </div>
+                            <div style="flex: 1;">
+                                ${DesignSystem.Button({ id: 'btn-pause-resume', text: 'Continue', variant: 'primary', fullWidth: true })}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -372,10 +377,10 @@ export class ScoreboardQuestionScreen {
             
             <style>
                 .option-btn:active:not(:disabled) { transform: scale(0.98); }
-                .option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: #22C55E !important; }
-                .option-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: #EF4444 !important; }
-                .option-btn.correct .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: #22C55E; }
-                .option-btn.wrong .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: #EF4444; }
+                .option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: var(--fds-green-pitch) !important; }
+                .option-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: var(--fds-red-live) !important; }
+                .option-btn.correct .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-green-pitch); }
+                .option-btn.wrong .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-red-live); }
                 .option-btn.correct .feedback-icon::after { content: '✓'; }
                 .option-btn.wrong .feedback-icon::after { content: '✕'; }
 

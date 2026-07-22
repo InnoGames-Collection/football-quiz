@@ -1,10 +1,11 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
-import { LoaderHelper } from '../components/LoaderHelper';
+
 import { NotificationService } from '../../networking/services/NotificationService';
 import type { NotificationRow } from '../../networking/supabase/types';
 import { PullToRefresh } from '../components/PullToRefresh';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class NotificationScreen {
     private _uiManager: UIManager;
@@ -70,7 +71,7 @@ export class NotificationScreen {
                     border: 1px solid ${isActive ? 'var(--tv-gold-primary)' : 'rgba(255,255,255,0.08)'};
                     background: ${isActive ? 'rgba(255, 215, 0, 0.12)' : 'rgba(15, 23, 42, 0.6)'};
                     color: ${isActive ? 'var(--tv-gold-primary)' : '#94A3B8'};
-                    font-size: 13px;
+                    font-size: var(--fds-font-sm);
                     font-weight: 700;
                     cursor: pointer;
                     white-space: nowrap;
@@ -132,40 +133,33 @@ export class NotificationScreen {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 22px;
+                        font-size: var(--fds-font-lg);
                         flex-shrink: 0;
                     ">${icon}</div>
 
                     <!-- Texts -->
                     <div style="flex: 1; padding-right: 12px;">
                         <div style="
-                            font-size: 15px; 
+                            font-size: var(--fds-font-md); 
                             font-weight: 800; 
                             color: ${item.read ? '#CBD5E1' : '#FFFFFF'};
                             margin-bottom: 4px;
                         ">${title}</div>
                         <div style="
-                            font-size: 13px; 
-                            color: #94A3B8; 
+                            font-size: var(--fds-font-sm); 
+                            color: var(--fds-text-dim); 
                             line-height: 1.4;
                             margin-bottom: 6px;
                         ">${desc}</div>
                         <div style="
-                            font-size: 11px; 
-                            color: #64748B; 
+                            font-size: var(--fds-font-xs); 
+                            color: var(--fds-text-dim); 
                             font-weight: 600;
                         ">⏱️ ${timeString}</div>
                     </div>
                 </div>
             `;
-        }).join('') : LoaderHelper.getEmptyStateHtml(
-            'notifications',
-            locale === 'am' 
-                ? 'ምንም ማሳወቂያዎች የሉም። የቅርብ ጊዜ ውድድሮችን ለመከታተል በኋላ ይመለሱ።' 
-                : (locale === 'om' ? 'Beeksisi hin jiru. Ibsa haaraa dorgommiitiif booda deebi\'aa.' : 'No notifications found in this folder. Keep playing to trigger division milestones!'),
-            locale === 'am' ? 'ወደ መነሻ' : (locale === 'om' ? 'Gara Manaa' : 'Back to Home'),
-            'btn-empty-home'
-        );
+        }).join('') : DesignSystem.EmptyState('📭', 'No Notifications');
 
         const hasUnread = this._notifications.some(n => !n.read);
 
@@ -176,9 +170,9 @@ export class NotificationScreen {
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <button id="btn-back" style="
-                            background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 4px;
+                            background: none; border: none; color: var(--fds-text-main); font-size: var(--fds-font-lg); cursor: pointer; padding: 4px;
                         ">❮</button>
-                        <div style="font-weight: 900; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">
+                        <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase;">
                             ${locale === 'am' ? 'ማሳወቂያዎች' : (locale === 'om' ? 'BEEKSIISAA' : 'NOTIFICATIONS')}
                         </div>
                     </div>
@@ -186,8 +180,8 @@ export class NotificationScreen {
                         <button id="btn-mark-read" style="
                             background: rgba(255,255,255,0.08);
                             border: 1px solid rgba(255,255,255,0.15);
-                            color: white;
-                            font-size: 11px;
+                            color: var(--fds-text-main);
+                            font-size: var(--fds-font-xs);
                             font-weight: 800;
                             padding: 6px 12px;
                             border-radius: 12px;
@@ -208,8 +202,8 @@ export class NotificationScreen {
                         background: rgba(0,0,0,0.2); 
                         border: 1px solid rgba(255,255,255,0.1); 
                         border-radius: 8px; 
-                        color: white; 
-                        font-size: 13px; 
+                        color: var(--fds-text-main); 
+                        font-size: var(--fds-font-sm); 
                         margin-bottom: 16px; 
                         box-sizing: border-box;
                     ">
@@ -308,38 +302,33 @@ export class NotificationScreen {
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            font-size: 22px;
+                            font-size: var(--fds-font-lg);
                             flex-shrink: 0;
                         ">${icon}</div>
 
                         <!-- Texts -->
                         <div style="flex: 1; padding-right: 12px;">
                             <div style="
-                                font-size: 15px; 
+                                font-size: var(--fds-font-md); 
                                 font-weight: 800; 
                                 color: ${item.read ? '#CBD5E1' : '#FFFFFF'};
                                 margin-bottom: 4px;
                             ">${title}</div>
                             <div style="
-                                font-size: 13px; 
-                                color: #94A3B8; 
+                                font-size: var(--fds-font-sm); 
+                                color: var(--fds-text-dim); 
                                 line-height: 1.4;
                                 margin-bottom: 6px;
                             ">${desc}</div>
                             <div style="
-                                font-size: 11px; 
-                                color: #64748B; 
+                                font-size: var(--fds-font-xs); 
+                                color: var(--fds-text-dim); 
                                 font-weight: 600;
                             ">⏱️ ${timeString}</div>
                         </div>
                     </div>
                 `;
-            }).join('') : LoaderHelper.getEmptyStateHtml(
-                'search',
-                locale === 'am' ? 'ምንም ማሳወቂያዎች አልተገኙም።' : (locale === 'om' ? 'Beeksisi hin argamne.' : 'No notifications match your search query.'),
-                locale === 'am' ? 'ፍለጋ አጽዳ' : (locale === 'om' ? 'Qulqulleessi' : 'Clear Search'),
-                'btn-empty-clear-notif'
-            );
+            }).join('') : DesignSystem.EmptyState('📭', 'No Notifications');
 
             // Re-bind click handlers
             const items = container.querySelectorAll('.notif-item');

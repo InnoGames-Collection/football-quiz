@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { TournamentManager } from '../../core/competition/TournamentManager';
 import type { TournamentRow } from '../../networking/supabase/types';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class TournamentLobbyScreen {
     private _uiManager: UIManager;
@@ -28,16 +29,14 @@ export class TournamentLobbyScreen {
                     <!-- Header -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                         <div>
-                            <span style="font-size: 11px; font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">
+                            <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">
                                 SCHEDULED EVENTS
                             </span>
-                            <h1 style="margin: 4px 0 0 0; font-size: 28px; font-weight: 900; color: white;">
+                            <h1 style="margin: 4px 0 0 0; font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main);">
                                 🏟️ LIVE TOURNAMENT LOBBY
                             </h1>
                         </div>
-                        <button id="t-close-btn" class="broadcast-btn glass-card" style="color: white; padding: 10px 20px;">
-                            ✖ CLOSE
-                        </button>
+                        ${DesignSystem.Button({ id: 't-close-btn', text: 'CLOSE', icon: '✖', variant: 'secondary' })}
                     </div>
 
                     <!-- Tournament Cards List -->
@@ -51,20 +50,18 @@ export class TournamentLobbyScreen {
                                 align-items: center;
                             ">
                                 <div>
-                                    <div style="font-size: 11px; color: #86EFAC; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px;">
+                                    <div style="font-size: var(--fds-font-xs); color: #86EFAC; font-weight: 800; letter-spacing: 1px; margin-bottom: 4px;">
                                         STATUS: REGISTRATION OPEN
                                     </div>
-                                    <h3 style="margin: 0 0 6px 0; font-size: 20px; font-weight: 900; color: white;">
+                                    <h3 style="margin: 0 0 6px 0; font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main);">
                                         ${t.name_en}
                                     </h3>
-                                    <div style="font-size: 13px; color: #94A3B8;">
-                                        Prize Pool: <span style="color: #FFD700; font-weight: bold;">🪙 ${t.prize_coins} COINS</span> | Max Players: ${t.max_players}
+                                    <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim);">
+                                        Prize Pool: <span style="color: var(--fds-gold-primary); font-weight: bold;">🪙 ${t.prize_coins} COINS</span> | Max Players: ${t.max_players}
                                     </div>
                                 </div>
 
-                                <button class="broadcast-btn broadcast-btn-gold register-t-btn" data-id="${t.id}" style="padding: 12px 20px;">
-                                    📝 REGISTER NOW
-                                </button>
+                                ${DesignSystem.Button({ text: 'REGISTER NOW', icon: '📝', variant: 'primary', className: 'register-t-btn', dataAttrs: `data-id="${t.id}"` })}
                             </div>
                         `).join('')}
                     </div>

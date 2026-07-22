@@ -5,6 +5,7 @@ import { LiveMatchClient, LiveMatchEventData } from '../../networking/multiplaye
 import { ELORatingSystem } from '../../networking/multiplayer/ELORatingSystem';
 import type { ExtendedQuestionData } from '../../core/quiz/QuestionBank';
 import type { UserRow } from '../../networking/supabase/types';
+import { DesignSystem } from '../theme/DesignSystem';
 
 export class LiveMatchScreen {
     private _uiManager: UIManager;
@@ -80,8 +81,8 @@ export class LiveMatchScreen {
                     border-bottom: 1px solid rgba(255,255,255,0.05);
                 ">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="background: #EF4444; color: white; font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 4px; letter-spacing: 1px;">LIVE 1v1</span>
-                        <div style="font-size: 14px; font-weight: 800; color: white;">ROUND ${this._currentIndex + 1} OF ${this._questions.length}</div>
+                        <span style="background: #EF4444; color: var(--fds-text-main); font-size: var(--fds-font-xs); font-weight: 900; padding: 4px 8px; border-radius: 4px; letter-spacing: 1px;">LIVE 1v1</span>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">ROUND ${this._currentIndex + 1} OF ${this._questions.length}</div>
                     </div>
                 </div>
 
@@ -93,14 +94,14 @@ export class LiveMatchScreen {
                 <!-- Scoreboard vs Opponent -->
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; background: rgba(0,0,0,0.4);">
                     <div style="text-align: left;">
-                        <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 4px;">YOU</div>
-                        <div style="font-size: 16px; font-weight: 900; color: white; margin-bottom: 4px;">${myProfile.username}</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">YOU</div>
+                        <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-bottom: 4px;">${myProfile.username}</div>
                         <div id="my-score" style="font-size: 24px; font-weight: 900; color: var(--tv-pitch-green);">${this._myScore}</div>
                     </div>
-                    <div style="font-size: 20px; font-weight: 900; color: #EF4444; background: rgba(239,68,68,0.15); padding: 8px 16px; border-radius: 20px;">VS</div>
+                    <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-red-live); background: rgba(239,68,68,0.15); padding: 8px 16px; border-radius: 20px;">VS</div>
                     <div style="text-align: right;">
-                        <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 4px;">OPPONENT</div>
-                        <div style="font-size: 16px; font-weight: 900; color: white; margin-bottom: 4px;">${this._opponent.username}</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">OPPONENT</div>
+                        <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-bottom: 4px;">${this._opponent.username}</div>
                         <div id="opponent-score" style="font-size: 24px; font-weight: 900; color: #F59E0B;">${this._opponentScore}</div>
                     </div>
                 </div>
@@ -119,9 +120,9 @@ export class LiveMatchScreen {
                 ">
                     <!-- High-Focus Question Text -->
                     <div style="
-                        font-size: 28px;
+                        font-size: var(--fds-font-xl);
                         font-weight: 900;
-                        color: white;
+                        color: var(--fds-text-main);
                         text-align: center;
                         line-height: 1.4;
                         margin-bottom: 40px;
@@ -139,7 +140,7 @@ export class LiveMatchScreen {
                                 background: rgba(255,255,255,0.03);
                                 border: 2px solid rgba(255,255,255,0.1);
                                 border-radius: 16px;
-                                color: white;
+                                color: var(--fds-text-main);
                                 font-size: 18px;
                                 font-weight: 700;
                                 text-align: left;
@@ -154,7 +155,7 @@ export class LiveMatchScreen {
                                     background: rgba(255,255,255,0.1); 
                                     display: flex; align-items: center; justify-content: center; 
                                     margin-right: 16px; 
-                                    font-size: 14px; font-weight: 900;
+                                    font-size: var(--fds-font-sm); font-weight: 900;
                                 ">${String.fromCharCode(65 + i)}</span>
                                 <span style="flex: 1;">${opt}</span>
                                 <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);"></span>
@@ -192,10 +193,10 @@ export class LiveMatchScreen {
             </div>
             <style>
                 .live-option-btn:active:not(:disabled) { transform: scale(0.97); }
-                .live-option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: #22C55E !important; }
-                .live-option-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: #EF4444 !important; }
-                .live-option-btn.correct .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: #22C55E; }
-                .live-option-btn.wrong .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: #EF4444; }
+                .live-option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: var(--fds-green-pitch) !important; }
+                .live-option-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: var(--fds-red-live) !important; }
+                .live-option-btn.correct .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-green-pitch); }
+                .live-option-btn.wrong .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-red-live); }
                 .live-option-btn.correct .feedback-icon::after { content: '✓'; }
                 .live-option-btn.wrong .feedback-icon::after { content: '✕'; }
             </style>
@@ -358,36 +359,26 @@ export class LiveMatchScreen {
                     <div style="font-size: 32px; font-weight: 900; color: ${isWinner ? 'var(--tv-gold-primary)' : (isDraw ? '#60A5FA' : '#EF4444')}; margin-bottom: 8px;">
                         ${isWinner ? 'VICTORY' : isDraw ? 'DRAW' : 'DEFEAT'}
                     </div>
-                    <div style="font-size: 16px; font-weight: 700; color: #94A3B8; margin-bottom: 32px;">
+                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-dim); margin-bottom: 32px;">
                         FINAL SCORE: ${this._myScore} - ${this._opponentScore}
                     </div>
 
                     <div style="display: flex; gap: 16px; margin-bottom: 32px;">
                         <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px;">
-                            <div style="font-size: 11px; font-weight: 800; color: #94A3B8; margin-bottom: 4px;">RATING</div>
-                            <div style="font-size: 20px; font-weight: 900; color: #60A5FA;">
-                                ${eloResult.winnerNewElo} <span style="font-size: 12px;">(${eloResult.winnerEloChange >= 0 ? '+' : ''}${eloResult.winnerEloChange})</span>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">RATING</div>
+                            <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-blue-accent);">
+                                ${eloResult.winnerNewElo} <span style="font-size: var(--fds-font-xs);">(${eloResult.winnerEloChange >= 0 ? '+' : ''}${eloResult.winnerEloChange})</span>
                             </div>
                         </div>
                         <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px;">
-                            <div style="font-size: 11px; font-weight: 800; color: #94A3B8; margin-bottom: 4px;">COINS</div>
-                            <div style="font-size: 20px; font-weight: 900; color: var(--tv-gold-primary);">
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">COINS</div>
+                            <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--tv-gold-primary);">
                                 +${isWinner ? 300 : 100}
                             </div>
                         </div>
                     </div>
 
-                    <button id="live-finish-btn" style="
-                        width: 100%; 
-                        padding: 16px; 
-                        background: var(--tv-pitch-green); 
-                        color: white; 
-                        font-weight: 900; 
-                        font-size: 16px; 
-                        border: none; 
-                        border-radius: 12px; 
-                        cursor: pointer;
-                    ">RETURN TO LEAGUE HUB</button>
+                    ${DesignSystem.Button({ id: 'live-finish-btn', text: 'RETURN TO LEAGUE HUB', variant: 'primary', fullWidth: true })}
                 </div>
             </div>
             <style>

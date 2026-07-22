@@ -1,10 +1,12 @@
 export interface ButtonProps {
     id?: string;
     text: string;
-    variant?: 'gold' | 'green' | 'glass';
+    variant?: 'primary' | 'secondary';
     icon?: string;
     fullWidth?: boolean;
     className?: string;
+    disabled?: boolean;
+    dataAttrs?: string;
 }
 
 export interface CardProps {
@@ -67,17 +69,15 @@ export class DesignSystem {
      * Reusable FDS Button Component
      */
     public static Button(props: ButtonProps): string {
-        const variantClass = props.variant === 'gold' 
-            ? 'broadcast-btn-gold' 
-            : props.variant === 'green' 
-            ? 'broadcast-btn-green' 
-            : 'glass-card'; // glass-card is a valid button variant too
+        const variantClass = props.variant === 'secondary' ? 'ethio-btn-secondary' : 'ethio-btn-primary';
         const widthStyle = props.fullWidth ? 'width: 100%;' : '';
         const idAttr = props.id ? `id="${props.id}"` : '';
+        const disabledAttr = props.disabled ? 'disabled' : '';
+        const dataAttrs = props.dataAttrs ? props.dataAttrs : '';
 
         return `
-            <button ${idAttr} class="broadcast-btn ${variantClass} ${props.className || ''}" style="${widthStyle}">
-                ${props.icon ? `<span>${props.icon}</span>` : ''}
+            <button ${idAttr} ${dataAttrs} ${disabledAttr} class="ethio-btn ${variantClass} ${props.className || ''}" style="${widthStyle}">
+                ${props.icon ? `<span style="font-size: 1.1em;">${props.icon}</span>` : ''}
                 ${props.text}
             </button>
         `;
@@ -238,6 +238,54 @@ export class DesignSystem {
                 <h2 style="font-size: var(--fds-font-xl); font-weight: 900; color: white; margin: 0 0 var(--fds-space-16) 0;">${title}</h2>
                 <div style="margin-bottom: var(--fds-space-24);">${content}</div>
                 <div>${footer}</div>
+            </div>
+        `;
+    }
+
+    /**
+     * Reusable FDS Loading State
+     */
+    public static LoadingState(message: string = 'Loading...', compact: boolean = false): string {
+        if (compact) {
+            return `
+                <div style="display: flex; align-items: center; gap: 8px; justify-content: center; opacity: 0.7;">
+                    <div class="loading-spinner" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--fds-gold-primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <div style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">${message}</div>
+                    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+                </div>
+            `;
+        }
+        return `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; opacity: 0.7;">
+                <div class="loading-spinner" style="width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--fds-gold-primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
+                <div style="font-size: 12px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">${message}</div>
+                <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+            </div>
+        `;
+    }
+
+    /**
+     * Reusable FDS Empty State
+     */
+    public static EmptyState(icon: string, title: string, subtitle?: string): string {
+        return `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.8; filter: grayscale(0.5);">${icon}</div>
+                <div style="font-size: 16px; font-weight: 900; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">${title}</div>
+                ${subtitle ? `<div style="font-size: 13px; color: #94A3B8; font-weight: 600; line-height: 1.5; max-width: 280px;">${subtitle}</div>` : ''}
+            </div>
+        `;
+    }
+
+    /**
+     * Reusable FDS Error State
+     */
+    public static ErrorState(onRetryActionId: string = 'btn-error-retry'): string {
+        return `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; text-align: center; border: 1px dashed rgba(239, 68, 68, 0.3); border-radius: 16px; background: rgba(239, 68, 68, 0.05);">
+                <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
+                <div style="font-size: 15px; font-weight: 900; color: white; margin-bottom: 16px;">Something went wrong.</div>
+                ${this.Button({ id: onRetryActionId, text: 'Try Again', variant: 'secondary', className: 'error-retry-btn' })}
             </div>
         `;
     }

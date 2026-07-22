@@ -1,3 +1,4 @@
+import { DesignSystem } from "../theme/DesignSystem";
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AuthManager } from '../../core/auth/AuthManager';
 import { AudioManager } from '../../core/managers/AudioManager';
@@ -29,6 +30,7 @@ export class FootballLeagueHome {
     private _uiManager: UIManager;
     private _callbacks: FootballHomeCallbacks;
     private _timerInterval: number | null = null;
+    private _autoScrollInterval: any = null;
 
     constructor(saveManager: SaveManager, audioManager: AudioManager, uiManager: UIManager, callbacks: FootballHomeCallbacks) {
         this._saveManager = saveManager;
@@ -62,17 +64,17 @@ export class FootballLeagueHome {
                             ⚽
                         </div>
                         <div>
-                            <div style="font-size: 9px; font-weight: 800; color: #009A44; text-transform: uppercase; letter-spacing: 1px;">ETHIO FANTASY</div>
-                            <div style="font-weight: 900; font-size: 14px; color: white; font-family: var(--fds-font-mono);">${profile.phone ? this._maskPhone(profile.phone) : 'Guest'}</div>
+                            <div style="font-size: 9px; font-weight: 800; color: var(--fds-ethio-green); text-transform: uppercase; letter-spacing: 1px;">ETHIO FANTASY</div>
+                            <div style="font-weight: 900; font-size: var(--fds-font-sm); color: var(--fds-text-main); font-family: var(--fds-font-mono);">${profile.phone ? this._maskPhone(profile.phone) : 'Guest'}</div>
                         </div>
                     </div>
 
                     <!-- Right: Notification & Settings -->
                     <div style="display: flex; align-items: center; gap: 4px;">
-                        <button id="btn-notif" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                        <button id="btn-notif" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                             🔔
                         </button>
-                        <button id="btn-settings" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                        <button id="btn-settings" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); font-weight: bold; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                             ⚙️
                         </button>
                     </div>
@@ -81,18 +83,18 @@ export class FootballLeagueHome {
                 <!-- COMPACT TELEMETRY ROW -->
                 <div class="fade-in-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 16px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; animation-delay: 50ms;">
                     <div>
-                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">League</div>
-                        <div style="font-size: 14px; font-weight: 900; color: ${division.color}; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">League</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${division.color}; display: flex; align-items: center; justify-content: center; gap: 4px;">
                             <span>${division.badge}</span> <span>${division.name}</span>
                         </div>
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Rank</div>
-                        <div id="global-rank-display" style="font-size: 14px; font-weight: 900; color: white;">Loading...</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Rank</div>
+                        <div id="global-rank-display" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${DesignSystem.LoadingState('', true)}</div>
                     </div>
                     <div>
-                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Points</div>
-                        <div style="font-size: 14px; font-weight: 900; color: var(--fds-gold-primary);">${profile.xp} XP</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Points</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${profile.xp} XP</div>
                     </div>
                 </div>
 
@@ -138,88 +140,77 @@ export class FootballLeagueHome {
                             <span id="daily-players-count" class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
                                 🟢 LIVE MATCH
                             </span>
-                            <span style="font-size: 11px; font-weight: 900; color: var(--fds-gold-primary); font-family: var(--fds-font-mono);" id="daily-countdown">
-                                ⏱️ Loading...
-                            </span>
+                                ${DesignSystem.LoadingState('', true)}
                         </div>
 
                         <!-- Title & Description -->
                         <div style="text-align: left; margin-bottom: 16px;">
-                            <h2 style="font-size: 22px; font-weight: 900; color: white; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                                🏆 ETHIO FANTASY CHAMPIONSHIP
+                            <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                🏆 ETHIOFANTASY CHAMPIONSHIP
                             </h2>
-                            <div style="font-size: 13px; color: #94A3B8; font-weight: 600;">
-                                The ultimate football trivia showdown.
-                            </div>
                         </div>
 
                         <!-- Hero Primary Action Button -->
-                        <button id="btn-daily-match" class="m3-btn m3-btn-gold" style="width: 100%; min-height: 52px; font-size: 16px; font-weight: 900; color: #0F172A; border-radius: 12px; background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%); box-shadow: 0 8px 30px rgba(255, 215, 0, 0.45); cursor: pointer;">
-                            <span id="daily-play-btn-text">⚡ KICK OFF NOW</span>
-                        </button>
+                        ${DesignSystem.Button({ id: 'btn-daily-match', text: 'DAILY CHALLENGE', variant: 'primary', fullWidth: true, icon: '⚡' })}
                     </div>
 
                     <!-- 2. QUICK GAME MODES & ACTIONS GRID -->
-                    <div style="font-size: 11px; font-weight: 800; color: #38BDF8; margin-left: 4px; text-transform: uppercase; letter-spacing: 1px;" class="fade-in-up">
-                        ⚽ Tournament Lobbies & Actions
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); margin-left: 4px; text-transform: uppercase; letter-spacing: 1px;" class="fade-in-up">
+                        ⚽ Lobbies
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" class="fade-in-up">
-                        <button id="btn-action-kickoff" class="m3-btn m3-btn-primary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: linear-gradient(135deg, #22C55E 0%, #009A44 100%); color: #ffffff; box-shadow: 0 6px 20px rgba(34,197,94,0.35);">
-                            <span style="font-size: 26px;">⚽</span>
-                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #ffffff;">SOLO MATCH</span>
-                        </button>
-
-                        <button id="btn-action-leaderboard" class="m3-btn m3-btn-gold" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%); color: #0F172A; box-shadow: 0 6px 20px rgba(255,215,0,0.35);">
-                            <span style="font-size: 26px;">📊</span>
-                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #0F172A;">LEADERBOARD</span>
-                        </button>
-
-                        <!-- Clean Invite & Earn Information Card -->
-                        <div id="btn-action-referral" style="grid-column: span 2; padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(192,132,252,0.4));">🎁</div>
-                                <div style="text-align: left;">
-                                    <div style="font-size: 13px; font-weight: 900; color: white; letter-spacing: 0.5px; text-transform: uppercase;">Invite Friends</div>
-                                    <div style="font-size: 11px; color: #94A3B8; font-weight: 600; margin-top: 2px;">Earn 200 XP for each friend who joins.</div>
-                                </div>
+                    <div style="display: flex; gap: 12px; margin-bottom: 24px;" class="fade-in-up">
+                        <div style="flex: 1;">
+                            ${DesignSystem.Button({ id: 'btn-action-kickoff', text: 'KICK OFF', variant: 'primary', fullWidth: true, icon: '⚽' })}
+                        </div>
+                        <div style="flex: 1;">
+                            ${DesignSystem.Button({ id: 'btn-action-leaderboard', text: 'RANKINGS', variant: 'secondary', fullWidth: true, icon: '🏆' })}
+                        </div>
+                    </div>
+                    
+                    <div class="fade-in-up" id="btn-action-referral" style="margin-bottom: 24px; padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: var(--fds-font-xl); filter: drop-shadow(0 2px 4px rgba(192,132,252,0.4));">🎁</div>
+                            <div style="text-align: left;">
+                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); letter-spacing: 0.5px; text-transform: uppercase;">Invite</div>
+                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; margin-top: 2px;">+200 XP per friend.</div>
                             </div>
-                            <div style="font-size: 11px; font-weight: 900; color: #C084FC; background: rgba(192,132,252,0.15); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                Copy Link
-                            </div>
+                        </div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #C084FC; background: rgba(192,132,252,0.15); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Copy Link
                         </div>
                     </div>
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
                     <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.12); border-radius: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <div style="font-size: 11px; font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">📊 Your Performance Telemetry</div>
-                            <button id="btn-view-all-stats" style="background: none; border: none; color: #F472B6; font-size: 12px; font-weight: 800; cursor: pointer; text-decoration: underline;">VIEW DETAILED</button>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">📊 Performance</div>
+                            <button id="btn-view-all-stats" style="background: none; border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; text-decoration: underline;">DETAILS</button>
                         </div>
                         <div style="display: grid; grid-template-columns: repeat(4, 1fr); text-align: center;">
                             <div>
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">MATCHES</div>
-                                <div style="font-size: 15px; font-weight: 900; color: white; margin-top: 4px;">${gamesPlayed}</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">MATCHES</div>
+                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${gamesPlayed}</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.06);">
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">ACCURACY</div>
-                                <div style="font-size: 15px; font-weight: 900; color: #4ADE80; margin-top: 4px;">${winRate}%</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">ACCURACY</div>
+                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: #4ADE80; margin-top: 4px;">${winRate}%</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.06);">
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">POINTS</div>
-                                <div style="font-size: 15px; font-weight: 900; color: white; margin-top: 4px;">${profile.xp}</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">POINTS</div>
+                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${profile.xp}</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.06);">
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">SCORE</div>
-                                <div style="font-size: 15px; font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">${profile.eloRating || 0}</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">SCORE</div>
+                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">${profile.eloRating || 0}</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->
                     <div class="glass-card fade-in-up" style="padding: 20px 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
-                        <div style="font-size: 10px; font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">🎖️ Leaderboard</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">🎖️ Rankings</div>
                         <div id="home-leaderboard-preview" style="display: flex; flex-direction: column;">
-                            <div style="font-size: 12px; color: #94A3B8; text-align: center;">Loading...</div>
+                            ${DesignSystem.LoadingState('Loading Rankings')}
                         </div>
                     </div>
                 </div>
@@ -281,16 +272,16 @@ export class FootballLeagueHome {
                     <div style="display: flex; justify-content: space-between; align-items: center; background: ${bgColors[idx]}; padding: 12px 16px; border-radius: 12px; margin-bottom: 8px;">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <span style="font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${medals[idx]}</span>
-                            <span style="font-size: 14px; font-weight: ${idx === 0 ? '800' : '700'}; color: ${textColors[idx]};">${entry.username}</span>
+                            <span style="font-size: var(--fds-font-sm); font-weight: ${idx === 0 ? '800' : '700'}; color: ${textColors[idx]};">${entry.username}</span>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 16px; font-weight: 900; color: ${idx === 0 ? 'var(--fds-gold-primary)' : 'white'}; font-family: var(--fds-font-mono); line-height: 1.1;">${entry.score.toLocaleString()}</div>
-                            <div style="font-size: 9px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">Points</div>
+                            <div style="font-size: var(--fds-font-md); font-weight: 900; color: ${idx === 0 ? 'var(--fds-gold-primary)' : 'white'}; font-family: var(--fds-font-mono); line-height: 1.1;">${entry.score.toLocaleString()}</div>
+                            <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">Points</div>
                         </div>
                     </div>
                 `).join('');
             } else if (previewEl) {
-                previewEl.innerHTML = `<div style="font-size: 12px; color: #94A3B8; text-align: center;">No ranked players yet</div>`;
+                previewEl.innerHTML = `<div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); text-align: center;">No ranked players yet</div>`;
             }
         } catch(e) {
             console.error(e);
@@ -376,7 +367,6 @@ export class FootballLeagueHome {
         const dots = root.querySelectorAll('.ad-dot');
         if (carousel && dots.length > 0) {
             let currentIndex = 0;
-            let autoScrollInterval: any;
 
             const updateDots = (index: number) => {
                 dots.forEach((dot, i) => {
@@ -399,12 +389,12 @@ export class FootballLeagueHome {
             };
 
             const startAutoScroll = () => {
-                clearInterval(autoScrollInterval);
-                autoScrollInterval = setInterval(scrollToNext, 4000);
+                clearInterval(this._autoScrollInterval);
+                this._autoScrollInterval = setInterval(scrollToNext, 4000);
             };
 
             const stopAutoScroll = () => {
-                clearInterval(autoScrollInterval);
+                clearInterval(this._autoScrollInterval);
             };
 
             carousel.addEventListener('scroll', () => {
@@ -449,5 +439,16 @@ export class FootballLeagueHome {
             clean = phone;
         }
         return clean.substring(0, 4) + '****' + clean.substring(clean.length - 2);
+    }
+
+    public destroy(): void {
+        if (this._timerInterval) {
+            clearInterval(this._timerInterval);
+            this._timerInterval = null;
+        }
+        if (this._autoScrollInterval) {
+            clearInterval(this._autoScrollInterval);
+            this._autoScrollInterval = null;
+        }
     }
 }

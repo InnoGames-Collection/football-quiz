@@ -39,15 +39,15 @@ export class DailyChallengeScreen {
         const historyHtml = historyList.map(h => `
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 8px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <span style="font-size: 20px;">${h.badge}</span>
+                    <span style="font-size: var(--fds-font-lg);">${h.badge}</span>
                     <div>
-                        <div style="font-size: 13px; font-weight: 800; color: white;">${h.title}</div>
-                        <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">${h.date}</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${h.title}</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${h.date}</div>
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 13px; font-weight: 900; color: var(--tv-pitch-green);">${h.score}</div>
-                    <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-top: 2px;">${h.status}</div>
+                    <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-pitch-green);">${h.score}</div>
+                    <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; margin-top: 2px;">${h.status}</div>
                 </div>
             </div>
         `).join('');
@@ -57,10 +57,10 @@ export class DailyChallengeScreen {
                 
                 <!-- Top App Bar -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
-                    <div style="font-weight: 900; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
                         <span>📅</span> DAILY CHALLENGE
                     </div>
-                    <button id="dc-close-btn" style="background: none; border: none; color: white; font-weight: bold; cursor: pointer; padding: 4px;">⬅️ BACK</button>
+                    ${DesignSystem.Button({ id: 'dc-close-btn', text: 'BACK', icon: '⬅️', variant: 'secondary' })}
                 </div>
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">
@@ -79,7 +79,7 @@ export class DailyChallengeScreen {
                         <div style="
                             position: absolute;
                             top: 16px; right: 16px;
-                            font-size: 11px;
+                            font-size: var(--fds-font-xs);
                             font-weight: 900;
                             letter-spacing: 0.5px;
                             padding: 4px 10px;
@@ -92,44 +92,52 @@ export class DailyChallengeScreen {
                         </div>
 
                         <div style="font-size: 48px; margin-bottom: 12px; margin-top: 12px;">⚽</div>
-                        <div style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Today's Match Topic</div>
-                        <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 12px; line-height: 1.4;">
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Today's Match Topic</div>
+                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 12px; line-height: 1.4;">
                             ${this._challengeInfo?.themeEn || 'Ethiopian Premier League Derby'}
                         </div>
 
                         <!-- Difficulty & Reward Grid -->
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                             <div>
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</div>
-                                <div style="font-size: 13px; font-weight: 900; color: var(--tv-gold-primary); margin-top: 4px;">⭐⭐⭐ (Medium)</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</div>
+                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-gold-primary); margin-top: 4px;">⭐⭐⭐ (Medium)</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.08);">
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Reward</div>
-                                <div style="font-size: 13px; font-weight: 900; color: #38BDF8; margin-top: 4px;">+500 XP (1.5x Boost)</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Reward</div>
+                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-blue-accent); margin-top: 4px;">+500 XP (1.5x Boost)</div>
                             </div>
                         </div>
 
                         <!-- Countdown Timer -->
                         <div style="margin-bottom: 24px;">
-                            <div style="font-size: 11px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Time Remaining</div>
-                            <div id="countdown-timer" style="font-size: 18px; font-weight: 900; color: white; font-family: var(--tv-mono); letter-spacing: 1px;">--h --m --s</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Time Remaining</div>
+                            <div id="countdown-timer" style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); font-family: var(--tv-mono); letter-spacing: 1px;">--h --m --s</div>
                         </div>
 
                         <!-- Play Button -->
                         ${isCompleted 
-                            ? `<button disabled style="width: 100%; padding: 16px; background: rgba(255,255,255,0.05); color: #64748B; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; font-size: 15px; cursor: not-allowed; text-transform: uppercase; letter-spacing: 0.5px;">MATCH COMPLETED FOR TODAY</button>`
-                            : `${DesignSystem.Button({ id: 'btn-start-challenge', text: 'START DAILY CHALLENGE', variant: 'gold', fullWidth: true })}`
+                            ? `${DesignSystem.Button({ text: 'MATCH COMPLETED FOR TODAY', disabled: true, fullWidth: true, className: 'dc-completed-btn' })}`
+                            : `${DesignSystem.Button({ id: 'btn-start-challenge', text: 'START DAILY CHALLENGE', variant: 'primary', fullWidth: true })}`
                         }
                     </div>
 
                     <!-- History Section -->
-                    <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 4px;">⏱️ Match History</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 4px;">⏱️ Match History</div>
                     <div class="glass-card" style="border-radius: 12px; padding: 12px; border-color: rgba(255,255,255,0.08);">
                         ${historyHtml}
                     </div>
 
                 </div>
             </div>
+            <style>
+                .dc-completed-btn {
+                    background: rgba(255,255,255,0.05) !important;
+                    color: var(--fds-text-dim) !important;
+                    border: 1px solid rgba(255,255,255,0.1) !important;
+                    cursor: not-allowed !important;
+                }
+            </style>
         `;
 
         this._bindEvents();
