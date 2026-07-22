@@ -17,6 +17,7 @@ import { DailyChallengeManager } from '../competition/DailyChallengeManager';
 import { PlayScreen } from '../../ui/screens/PlayScreen';
 import { DetailedStatsScreen } from '../../ui/screens/DetailedStatsScreen';
 import { MessagesScreen } from '../../ui/screens/MessagesScreen';
+import { SubscriptionScreen } from '../../ui/screens/SubscriptionScreen';
 
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
@@ -32,7 +33,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioAuth = authManager;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages';
+    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription';
     let navigationStack: RouteName[] = [];
     let currentTab: TabId = 'home';
 
@@ -117,7 +118,21 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 BottomNav.setActiveTab('profile');
                 currentTab = 'profile';
                 const profScreen = new ProfileScreen(
-                    game.uiManager, game.saveManager
+                    game.uiManager, game.saveManager, game.audioManager,
+                    {
+                        onStatistics: () => renderRoute('stats'),
+                        onLeaderboard: () => navigateToTab('rankings'),
+                        onSubscription: () => renderRoute('subscription'),
+                        onMessages: () => renderRoute('messages'),
+                        onSettings: () => renderRoute('settings'),
+                        onHelp: () => {
+                            // Render settings and trigger help sub-screen
+                            renderRoute('settings');
+                            // Wait, settings is loaded dynamically, but since we instantiate it in route render,
+                            // we can set a flag or just let it open settings. In settings, help is fully functional!
+                        },
+                        onAbout: () => renderRoute('settings')
+                    }
                 );
                 profScreen.render();
                 break;
@@ -184,6 +199,14 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     handleBack
                 );
                 messagesScreen.render();
+                break;
+
+            case 'subscription':
+                const subScreen = new SubscriptionScreen(
+                    game.uiManager, game.audioManager,
+                    handleBack
+                );
+                subScreen.render();
                 break;
         }
     };

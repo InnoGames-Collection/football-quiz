@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
+import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 
 export class LeaderboardScreen {
     private _uiManager: UIManager;
@@ -77,22 +78,36 @@ export class LeaderboardScreen {
             </div>
         `;
 
-        // Mock ranking data based on selected tab
-        const mockEntries: { msisdn: string; score: number; points: number; league: string; isMe?: boolean }[] = [
-            { msisdn: '2519****18', score: 1850, points: 5800, league: 'Walia Ibex' },
-            { msisdn: '2519****92', score: 1720, points: 5120, league: 'Walia Ibex' },
-            { msisdn: '2519****46', score: 1690, points: 4980, league: 'Premier Div' },
-            { msisdn: this._maskPhone(profile.phone || '251911223345'), score: profile.eloRating || 1200, points: profile.xp, league: division.name, isMe: true },
-            { msisdn: '2519****27', score: 1150, points: 2800, league: 'CAF Cup' },
-            { msisdn: '2519****81', score: 1080, points: 2450, league: 'CAF Cup' },
-            { msisdn: '2519****53', score: 980, points: 2100, league: 'Novice Div' }
-        ];
+        // Fetch ranking data dynamically from LeaderboardService
+        const apiRange: any = this._activeTab === 'tournament' ? 'all_time' : this._activeTab;
+        const rawEntries = await LeaderboardService.getInstance().getLeaderboard(undefined, apiRange);
+
+        const mockEntries = rawEntries.map((entry: any) => {
+            const isMe = entry.username === profile.username || entry.username === 'Me';
+            
+            // Mask subscriber MSISDN
+            const isPhone = entry.username.replace(/[^0-9]/g, '').length >= 9;
+            const phoneSeed = isPhone ? entry.username : `2519110000${entry.rank}`;
+            const maskedMsisdn = this._maskPhone(phoneSeed);
+            
+            const score = entry.eloRating || 1200;
+            const points = entry.score || (score * 5);
+            const entryDiv = ProgressionManager.getDivision(points);
+
+            return {
+                msisdn: maskedMsisdn,
+                score,
+                points,
+                league: entryDiv.name,
+                isMe
+            };
+        });
 
         // Sort entries by score descending
-        mockEntries.sort((a, b) => b.score - a.score);
+        mockEntries.sort((a: any, b: any) => b.score - a.score);
 
         // Render Leaderboard Rows
-        const rowsHtml = mockEntries.map((entry, idx) => {
+        const rowsHtml = mockEntries.map((entry: any, idx: number) => {
             const rank = idx + 1;
             let medal = '';
             if (rank === 1) medal = '🥇';
