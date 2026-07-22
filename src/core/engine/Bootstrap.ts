@@ -253,6 +253,63 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         }
     });
 
+    // Global Online/Offline Connection Monitoring
+    const handleNetworkChange = () => {
+        const isOnline = navigator.onLine;
+        let offlineBanner = document.getElementById('ethio-offline-banner');
+
+        if (!isOnline) {
+            if (!offlineBanner) {
+                offlineBanner = document.createElement('div');
+                offlineBanner.id = 'ethio-offline-banner';
+                offlineBanner.style.cssText = `
+                    position: fixed;
+                    top: 0; left: 0;
+                    width: 100vw;
+                    background: #EF4444;
+                    color: white;
+                    text-align: center;
+                    font-size: 13px;
+                    font-weight: 800;
+                    padding: 8px 12px;
+                    z-index: 99999;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    font-family: sans-serif;
+                `;
+                offlineBanner.innerHTML = `
+                    <span>⚠️</span>
+                    <span>No internet connection. Quiz paused. Reconnecting...</span>
+                `;
+                document.body.appendChild(offlineBanner);
+            }
+            window.dispatchEvent(new CustomEvent('ethio-network-offline'));
+        } else {
+            if (offlineBanner) {
+                offlineBanner.style.background = 'var(--tv-pitch-green)';
+                offlineBanner.innerHTML = `
+                    <span>✅</span>
+                    <span>Connection restored! Resuming...</span>
+                `;
+                setTimeout(() => {
+                    offlineBanner?.remove();
+                }, 2000);
+            }
+            window.dispatchEvent(new CustomEvent('ethio-network-online'));
+        }
+    };
+
+    window.addEventListener('online', handleNetworkChange);
+    window.addEventListener('offline', handleNetworkChange);
+
+    // Initial check
+    if (!navigator.onLine) {
+        handleNetworkChange();
+    }
+
     // Check for session recovery
     const activeSession = GameSessionManager.getInstance().getActiveSession();
     if (activeSession) {

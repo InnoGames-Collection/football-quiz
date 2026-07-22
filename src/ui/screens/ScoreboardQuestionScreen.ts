@@ -32,6 +32,8 @@ export class ScoreboardQuestionScreen {
     private _session: GameSession | null = null;
     private _isPaused: boolean = false;
     private _visibilityHandler: () => void;
+    private _networkOfflineHandler: () => void;
+    private _networkOnlineHandler: () => void;
 
     constructor(
         uiManager: UIManager,
@@ -55,6 +57,24 @@ export class ScoreboardQuestionScreen {
             }
         };
         document.addEventListener('visibilitychange', this._visibilityHandler);
+
+        // Network Monitor Listeners
+        this._networkOfflineHandler = () => {
+            if (this._hasKickedOff && !this._isPaused && this._currentIndex < this._questions.length) {
+                this._pauseMatch();
+                const text = document.getElementById('pause-modal')?.querySelector('div > div:nth-child(3)');
+                if (text) {
+                    text.innerHTML = '⚠️ Your connection was lost. Reconnect to resume your match.';
+                }
+            }
+        };
+        this._networkOnlineHandler = () => {
+            if (this._hasKickedOff && this._isPaused && this._currentIndex < this._questions.length) {
+                this._resumeMatch();
+            }
+        };
+        window.addEventListener('ethio-network-offline', this._networkOfflineHandler);
+        window.addEventListener('ethio-network-online', this._networkOnlineHandler);
     }
 
     public startMatch(): void {
@@ -609,5 +629,7 @@ export class ScoreboardQuestionScreen {
     public destroy(): void {
         this._stopTimer();
         document.removeEventListener('visibilitychange', this._visibilityHandler);
+        window.removeEventListener('ethio-network-offline', this._networkOfflineHandler);
+        window.removeEventListener('ethio-network-online', this._networkOnlineHandler);
     }
 }
