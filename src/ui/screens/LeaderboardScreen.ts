@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
+import { LoaderHelper } from '../components/LoaderHelper';
 
 export class LeaderboardScreen {
     private _uiManager: UIManager;
@@ -20,6 +21,8 @@ export class LeaderboardScreen {
 
     public async render(): Promise<void> {
         const root = this._uiManager.container;
+        root.innerHTML = LoaderHelper.getSkeletonHtml('leaderboard');
+        
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);
 

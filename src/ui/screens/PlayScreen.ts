@@ -1,5 +1,6 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
+import { LoaderHelper } from '../components/LoaderHelper';
 
 
 export interface GameModeInfo {
@@ -40,6 +41,15 @@ export class PlayScreen {
     }
 
     public render(): void {
+        const root = this._uiManager.container;
+        root.innerHTML = LoaderHelper.getSkeletonHtml('home');
+        
+        setTimeout(() => {
+            this._renderActual();
+        }, 300);
+    }
+
+    private _renderActual(): void {
         const root = this._uiManager.container;
         const activeMode = GAME_MODES.find(m => m.id === this._selectedMode) || GAME_MODES[0];
 

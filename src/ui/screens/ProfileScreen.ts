@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
+import { LoaderHelper } from '../components/LoaderHelper';
 
 export interface ProfileCallbacks {
     onStatistics: () => void;
@@ -32,6 +33,15 @@ export class ProfileScreen {
     }
 
     public render(): void {
+        const root = this._uiManager.container;
+        root.innerHTML = LoaderHelper.getSkeletonHtml('profile');
+        
+        setTimeout(() => {
+            this._renderActual();
+        }, 300);
+    }
+
+    private _renderActual(): void {
         const root = this._uiManager.container;
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);

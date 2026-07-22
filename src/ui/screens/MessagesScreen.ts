@@ -1,6 +1,7 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
+import { LoaderHelper } from '../components/LoaderHelper';
 
 export interface MessageItem {
     id: string;
@@ -131,12 +132,12 @@ export class MessagesScreen {
                     <div style="font-size: 10px; color: #64748B; font-weight: 700;">⏱️ ${item.time}</div>
                 </div>
             `;
-        }).join('') : `
-            <div style="text-align: center; padding: 48px; color: #64748B; font-size: 14px; font-weight: 700;">
-                <div style="font-size: 40px; margin-bottom: 8px;">✉️</div>
-                No messages in this folder.
-            </div>
-        `;
+        }).join('') : LoaderHelper.getEmptyStateHtml(
+            'messages',
+            'You do not have any messages in this category yet. Invite friends or participate in active tournaments to spark conversations!',
+            'Invite Friends',
+            'btn-empty-invite'
+        );
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
@@ -187,6 +188,12 @@ export class MessagesScreen {
                     this.render();
                 }
             });
+        });
+
+        document.getElementById('btn-empty-invite')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            navigator.clipboard.writeText('https://ethiofantasy.com/join?ref=251911223345');
+            alert('Invitation link copied! Send it to your friends to start chat lobbies.');
         });
     }
 }

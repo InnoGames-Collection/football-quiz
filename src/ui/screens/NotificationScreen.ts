@@ -1,6 +1,7 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
+import { LoaderHelper } from '../components/LoaderHelper';
 
 export interface NotificationItem {
     id: string;
@@ -265,18 +266,14 @@ export class NotificationScreen {
                     </div>
                 </div>
             `;
-        }).join('') : `
-            <div style="
-                text-align: center;
-                padding: 48px 24px;
-                color: #64748B;
-                font-size: 14px;
-                font-weight: 600;
-            ">
-                <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
-                ${locale === 'am' ? 'ምንም ማሳወቂያዎች የሉም' : (locale === 'om' ? 'Beeksisi hin jiru' : 'No notifications found')}
-            </div>
-        `;
+        }).join('') : LoaderHelper.getEmptyStateHtml(
+            'notifications',
+            locale === 'am' 
+                ? 'ምንም ማሳወቂያዎች የሉም። የቅርብ ጊዜ ውድድሮችን ለመከታተል በኋላ ይመለሱ።' 
+                : (locale === 'om' ? 'Beeksisi hin jiru. Ibsa haaraa dorgommiitiif booda deebi\'aa.' : 'No notifications found in this folder. Keep playing to trigger division milestones!'),
+            locale === 'am' ? 'ወደ መነሻ' : (locale === 'om' ? 'Gara Manaa' : 'Back to Home'),
+            'btn-empty-home'
+        );
 
         const hasUnread = this._notifications.some(n => !n.read);
 
@@ -373,6 +370,11 @@ export class NotificationScreen {
                     this.render();
                 }
             });
+        });
+
+        document.getElementById('btn-empty-home')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._onBack();
         });
     }
 }

@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { CompetitionRegistry, Competition } from '../../core/quiz/CompetitionRegistry';
 import { DesignSystem } from '../theme/DesignSystem';
+import { LoaderHelper } from '../components/LoaderHelper';
 
 export class CompetitionBrowserScreen {
     private _uiManager: UIManager;
@@ -23,6 +24,15 @@ export class CompetitionBrowserScreen {
     }
 
     public render(): void {
+        const root = this._uiManager.container;
+        root.innerHTML = LoaderHelper.getSkeletonHtml('league');
+        
+        setTimeout(() => {
+            this._renderActual();
+        }, 300);
+    }
+
+    private _renderActual(): void {
         const root = this._uiManager.container;
 
         const tabs = [

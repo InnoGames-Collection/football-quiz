@@ -442,3 +442,16 @@ input:focus-visible {
   0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
   100% { transform: translate3d(0, 140px, 0) rotate(540deg); opacity: 0; }
 }
+
+/* CSS Skeleton Loading Shimmer Style */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-box {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s infinite linear;
+  border-radius: 8px;
+  display: inline-block;
+}
