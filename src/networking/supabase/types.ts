@@ -23,9 +23,19 @@ export type ChallengeStatus = 'pending' | 'accepted' | 'completed' | 'expired';
 export type BracketStatus = 'pending' | 'in_progress' | 'completed' | 'bye';
 export type SubscriptionStatus = 'active' | 'cancelled' | 'expired';
 export type LeaderboardTimeRange = 'daily' | 'weekly' | 'monthly' | 'all_time';
+export type NotificationCategory = 'daily' | 'tournament' | 'rewards' | 'announcements' | 'subscription' | 'system';
+export type MessageChannel = 'global' | 'direct' | 'system';
+export type GameSessionState = 'playing' | 'paused' | 'completed' | 'abandoned' | 'expired';
+export type GameSessionMatchType = 'solo' | 'daily' | 'league' | 'tournament' | 'guess' | 'iq' | 'penalty';
+export type RewardType = 'match' | 'daily' | 'weekly' | 'tournament' | 'achievement' | 'referral' | 'streak';
+export type SupportTicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type UserRole = 'player' | 'admin' | 'moderator';
 
 export interface Database {
     public: {
+        Views: Record<string, never>;
+        Enums: Record<string, never>;
+        CompositeTypes: Record<string, never>;
         Tables: {
             users: {
                 Row: {
@@ -42,6 +52,9 @@ export interface Database {
                     subscription_tier: SubscriptionTier;
                     streak_count: number;
                     streak_last_date: string | null;
+                    role: UserRole;
+                    referral_code: string | null;
+                    referred_by: string | null;
                     created_at: string;
                     last_active: string;
                 };
@@ -59,6 +72,9 @@ export interface Database {
                     subscription_tier?: SubscriptionTier;
                     streak_count?: number;
                     streak_last_date?: string | null;
+                    role?: UserRole;
+                    referral_code?: string | null;
+                    referred_by?: string | null;
                 };
                 Update: {
                     username?: string;
@@ -74,7 +90,11 @@ export interface Database {
                     streak_count?: number;
                     streak_last_date?: string | null;
                     last_active?: string;
-                };
+                    role?: UserRole;
+                    referral_code?: string | null;
+                    referred_by?: string | null;
+                }
+                    Relationships: any[];
             };
             questions: {
                 Row: {
@@ -124,7 +144,8 @@ export interface Database {
                     times_answered?: number;
                     times_correct?: number;
                     is_active?: boolean;
-                };
+                }
+                    Relationships: any[];
             };
             competitions: {
                 Row: {
@@ -171,7 +192,8 @@ export interface Database {
                     is_active?: boolean;
                     min_level?: number;
                     subscription_required?: SubscriptionTier;
-                };
+                }
+                    Relationships: any[];
             };
             seasons: {
                 Row: {
@@ -197,7 +219,8 @@ export interface Database {
                     starts_at?: string;
                     ends_at?: string;
                     status?: SeasonStatus;
-                };
+                }
+                    Relationships: any[];
             };
             matches: {
                 Row: {
@@ -255,7 +278,8 @@ export interface Database {
                     elo_change?: number;
                     is_winner?: boolean | null;
                     answers?: Json | null;
-                };
+                }
+                    Relationships: any[];
             };
             matchmaking_queue: {
                 Row: {
@@ -274,7 +298,8 @@ export interface Database {
                 Update: {
                     elo_rating?: number;
                     competition_id?: string | null;
-                };
+                }
+                    Relationships: any[];
             };
             live_matches: {
                 Row: {
@@ -308,7 +333,8 @@ export interface Database {
                     winner_id?: string | null;
                     started_at?: string | null;
                     completed_at?: string | null;
-                };
+                }
+                    Relationships: any[];
             };
             live_match_answers: {
                 Row: {
@@ -330,7 +356,8 @@ export interface Database {
                     response_time_ms: number;
                     is_correct: boolean;
                 };
-                Update: never;
+                Update: never
+                    Relationships: any[];
             };
             tournaments: {
                 Row: {
@@ -365,7 +392,8 @@ export interface Database {
                     status?: TournamentStatus;
                     bracket_size?: number | null;
                     prize_coins?: number;
-                };
+                }
+                    Relationships: any[];
             };
             tournament_registrations: {
                 Row: {
@@ -377,7 +405,8 @@ export interface Database {
                     tournament_id: string;
                     user_id: string;
                 };
-                Update: never;
+                Update: never
+                    Relationships: any[];
             };
             tournament_brackets: {
                 Row: {
@@ -404,7 +433,8 @@ export interface Database {
                     winner_id?: string | null;
                     live_match_id?: string | null;
                     status?: BracketStatus;
-                };
+                }
+                    Relationships: any[];
             };
             challenges: {
                 Row: {
@@ -429,7 +459,8 @@ export interface Database {
                 Update: {
                     opponent_match_id?: string | null;
                     status?: ChallengeStatus;
-                };
+                }
+                    Relationships: any[];
             };
             leaderboard_entries: {
                 Row: {
@@ -458,7 +489,8 @@ export interface Database {
                     matches_played?: number;
                     wins?: number;
                     updated_at?: string;
-                };
+                }
+                    Relationships: any[];
             };
             achievements: {
                 Row: {
@@ -502,7 +534,8 @@ export interface Database {
                     requirement_value?: number;
                     reward_coins?: number;
                     reward_xp?: number;
-                };
+                }
+                    Relationships: any[];
             };
             user_achievements: {
                 Row: {
@@ -514,7 +547,8 @@ export interface Database {
                     user_id: string;
                     achievement_id: string;
                 };
-                Update: never;
+                Update: never
+                    Relationships: any[];
             };
             daily_challenges: {
                 Row: {
@@ -542,7 +576,8 @@ export interface Database {
                     theme_om?: string | null;
                     question_ids?: string[];
                     bonus_multiplier?: number;
-                };
+                }
+                    Relationships: any[];
             };
             daily_challenge_completions: {
                 Row: {
@@ -556,7 +591,8 @@ export interface Database {
                     challenge_date: string;
                     match_id: string;
                 };
-                Update: never;
+                Update: never
+                    Relationships: any[];
             };
             subscriptions: {
                 Row: {
@@ -583,7 +619,346 @@ export interface Database {
                     status?: SubscriptionStatus;
                     expires_at?: string | null;
                     auto_renew?: boolean;
+                }
+                    Relationships: any[];
+            };
+            user_preferences: {
+                Row: {
+                    user_id: string;
+                    locale: Locale;
+                    sound_enabled: boolean;
+                    vibration_enabled: boolean;
+                    dark_mode: boolean;
+                    notif_daily: boolean;
+                    notif_tournament: boolean;
+                    notif_rewards: boolean;
+                    notif_announcements: boolean;
+                    notif_subscription: boolean;
+                    notif_system: boolean;
+                    updated_at: string;
                 };
+                Insert: {
+                    user_id: string;
+                    locale?: Locale;
+                    sound_enabled?: boolean;
+                    vibration_enabled?: boolean;
+                    dark_mode?: boolean;
+                    notif_daily?: boolean;
+                    notif_tournament?: boolean;
+                    notif_rewards?: boolean;
+                    notif_announcements?: boolean;
+                    notif_subscription?: boolean;
+                    notif_system?: boolean;
+                };
+                Update: {
+                    locale?: Locale;
+                    sound_enabled?: boolean;
+                    vibration_enabled?: boolean;
+                    dark_mode?: boolean;
+                    notif_daily?: boolean;
+                    notif_tournament?: boolean;
+                    notif_rewards?: boolean;
+                    notif_announcements?: boolean;
+                    notif_subscription?: boolean;
+                    notif_system?: boolean;
+                    updated_at?: string;
+                }
+                    Relationships: any[];
+            };
+            notifications: {
+                Row: {
+                    id: string;
+                    user_id: string | null;
+                    title_en: string;
+                    title_am: string | null;
+                    title_om: string | null;
+                    body_en: string;
+                    body_am: string | null;
+                    body_om: string | null;
+                    category: NotificationCategory;
+                    read: boolean;
+                    action_type: string | null;
+                    action_target: string | null;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id?: string | null;
+                    title_en: string;
+                    title_am?: string | null;
+                    title_om?: string | null;
+                    body_en: string;
+                    body_am?: string | null;
+                    body_om?: string | null;
+                    category: NotificationCategory;
+                    read?: boolean;
+                    action_type?: string | null;
+                    action_target?: string | null;
+                };
+                Update: {
+                    user_id?: string | null;
+                    title_en?: string;
+                    title_am?: string | null;
+                    title_om?: string | null;
+                    body_en?: string;
+                    body_am?: string | null;
+                    body_om?: string | null;
+                    category?: NotificationCategory;
+                    read?: boolean;
+                    action_type?: string | null;
+                    action_target?: string | null;
+                }
+                    Relationships: any[];
+            };
+            messages: {
+                Row: {
+                    id: string;
+                    sender_id: string | null;
+                    recipient_id: string | null;
+                    channel: MessageChannel;
+                    body_en: string;
+                    body_am: string | null;
+                    body_om: string | null;
+                    read: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    sender_id?: string | null;
+                    recipient_id?: string | null;
+                    channel: MessageChannel;
+                    body_en: string;
+                    body_am?: string | null;
+                    body_om?: string | null;
+                    read?: boolean;
+                };
+                Update: {
+                    sender_id?: string | null;
+                    recipient_id?: string | null;
+                    channel?: MessageChannel;
+                    body_en?: string;
+                    body_am?: string | null;
+                    body_om?: string | null;
+                    read?: boolean;
+                }
+                    Relationships: any[];
+            };
+            game_sessions: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    competition_id: string | null;
+                    match_type: GameSessionMatchType;
+                    state: GameSessionState;
+                    difficulty: number;
+                    total_questions: number;
+                    current_question: number;
+                    correct_count: number;
+                    wrong_count: number;
+                    timeout_count: number;
+                    score: number;
+                    final_score: number | null;
+                    accuracy: number | null;
+                    avg_response_time: number | null;
+                    max_combo: number;
+                    time_remaining: number;
+                    question_ids: string[];
+                    started_at: string;
+                    paused_at: string | null;
+                    completed_at: string | null;
+                    updated_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    competition_id?: string | null;
+                    match_type: GameSessionMatchType;
+                    state?: GameSessionState;
+                    difficulty: number;
+                    total_questions: number;
+                    current_question?: number;
+                    correct_count?: number;
+                    wrong_count?: number;
+                    timeout_count?: number;
+                    score?: number;
+                    final_score?: number | null;
+                    accuracy?: number | null;
+                    avg_response_time?: number | null;
+                    max_combo?: number;
+                    time_remaining: number;
+                    question_ids: string[];
+                    paused_at?: string | null;
+                    completed_at?: string | null;
+                };
+                Update: {
+                    competition_id?: string | null;
+                    match_type?: GameSessionMatchType;
+                    state?: GameSessionState;
+                    difficulty?: number;
+                    total_questions?: number;
+                    current_question?: number;
+                    correct_count?: number;
+                    wrong_count?: number;
+                    timeout_count?: number;
+                    score?: number;
+                    final_score?: number | null;
+                    accuracy?: number | null;
+                    avg_response_time?: number | null;
+                    max_combo?: number;
+                    time_remaining?: number;
+                    question_ids?: string[];
+                    paused_at?: string | null;
+                    completed_at?: string | null;
+                    updated_at?: string;
+                }
+                    Relationships: any[];
+            };
+            game_session_answers: {
+                Row: {
+                    id: string;
+                    session_id: string;
+                    question_id: string;
+                    question_index: number;
+                    selected_index: number;
+                    correct_index: number;
+                    is_correct: boolean;
+                    response_time_ms: number;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    session_id: string;
+                    question_id: string;
+                    question_index: number;
+                    selected_index: number;
+                    correct_index: number;
+                    is_correct: boolean;
+                    response_time_ms: number;
+                };
+                Update: {
+                    session_id?: string;
+                    question_id?: string;
+                    question_index?: number;
+                    selected_index?: number;
+                    correct_index?: number;
+                    is_correct?: boolean;
+                    response_time_ms?: number;
+                }
+                    Relationships: any[];
+            };
+            rewards: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    type: RewardType;
+                    coins: number;
+                    xp: number;
+                    description_en: string | null;
+                    description_am: string | null;
+                    description_om: string | null;
+                    claimed: boolean;
+                    claimed_at: string | null;
+                    expires_at: string | null;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    type: RewardType;
+                    coins?: number;
+                    xp?: number;
+                    description_en?: string | null;
+                    description_am?: string | null;
+                    description_om?: string | null;
+                    claimed?: boolean;
+                    claimed_at?: string | null;
+                    expires_at?: string | null;
+                };
+                Update: {
+                    user_id?: string;
+                    type?: RewardType;
+                    coins?: number;
+                    xp?: number;
+                    description_en?: string | null;
+                    description_am?: string | null;
+                    description_om?: string | null;
+                    claimed?: boolean;
+                    claimed_at?: string | null;
+                    expires_at?: string | null;
+                }
+                    Relationships: any[];
+            };
+            faq_items: {
+                Row: {
+                    id: string;
+                    category: string;
+                    question_en: string;
+                    question_am: string | null;
+                    question_om: string | null;
+                    answer_en: string;
+                    answer_am: string | null;
+                    answer_om: string | null;
+                    sort_order: number;
+                    is_active: boolean;
+                    created_at: string;
+                };
+                Insert: {
+                    id?: string;
+                    category: string;
+                    question_en: string;
+                    question_am?: string | null;
+                    question_om?: string | null;
+                    answer_en: string;
+                    answer_am?: string | null;
+                    answer_om?: string | null;
+                    sort_order?: number;
+                    is_active?: boolean;
+                };
+                Update: {
+                    category?: string;
+                    question_en?: string;
+                    question_am?: string | null;
+                    question_om?: string | null;
+                    answer_en?: string;
+                    answer_am?: string | null;
+                    answer_om?: string | null;
+                    sort_order?: number;
+                    is_active?: boolean;
+                }
+                    Relationships: any[];
+            };
+            support_tickets: {
+                Row: {
+                    id: string;
+                    user_id: string;
+                    category: string;
+                    subject: string | null;
+                    message: string;
+                    status: SupportTicketStatus;
+                    admin_response: string | null;
+                    created_at: string;
+                    resolved_at: string | null;
+                };
+                Insert: {
+                    id?: string;
+                    user_id: string;
+                    category: string;
+                    subject?: string | null;
+                    message: string;
+                    status?: SupportTicketStatus;
+                    admin_response?: string | null;
+                    resolved_at?: string | null;
+                };
+                Update: {
+                    user_id?: string;
+                    category?: string;
+                    subject?: string | null;
+                    message?: string;
+                    status?: SupportTicketStatus;
+                    admin_response?: string | null;
+                    resolved_at?: string | null;
+                }
+                    Relationships: any[];
             };
         };
         Functions: {
@@ -648,3 +1023,30 @@ export type UserAchievementRow = Database['public']['Tables']['user_achievements
 export type DailyChallengeRow = Database['public']['Tables']['daily_challenges']['Row'];
 
 export type SubscriptionRow = Database['public']['Tables']['subscriptions']['Row'];
+
+export type UserPreferenceRow = Database['public']['Tables']['user_preferences']['Row'];
+export type UserPreferenceInsert = Database['public']['Tables']['user_preferences']['Insert'];
+export type UserPreferenceUpdate = Database['public']['Tables']['user_preferences']['Update'];
+
+export type NotificationRow = Database['public']['Tables']['notifications']['Row'];
+export type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
+
+export type MessageRow = Database['public']['Tables']['messages']['Row'];
+export type MessageInsert = Database['public']['Tables']['messages']['Insert'];
+
+export type GameSessionRow = Database['public']['Tables']['game_sessions']['Row'];
+export type GameSessionInsert = Database['public']['Tables']['game_sessions']['Insert'];
+export type GameSessionUpdate = Database['public']['Tables']['game_sessions']['Update'];
+
+export type GameSessionAnswerRow = Database['public']['Tables']['game_session_answers']['Row'];
+export type GameSessionAnswerInsert = Database['public']['Tables']['game_session_answers']['Insert'];
+
+export type RewardRow = Database['public']['Tables']['rewards']['Row'];
+export type RewardInsert = Database['public']['Tables']['rewards']['Insert'];
+export type RewardUpdate = Database['public']['Tables']['rewards']['Update'];
+
+export type FaqItemRow = Database['public']['Tables']['faq_items']['Row'];
+
+export type SupportTicketRow = Database['public']['Tables']['support_tickets']['Row'];
+export type SupportTicketInsert = Database['public']['Tables']['support_tickets']['Insert'];
+export type SupportTicketUpdate = Database['public']['Tables']['support_tickets']['Update'];

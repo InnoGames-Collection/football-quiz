@@ -52,6 +52,7 @@ export class MatchmakingService {
             if (this._inQueue) {
                 const mockOpponent: UserRow = {
                     id: 'bot-1',
+                    role: 'player',
                     username: 'Solomon_Walia',
                     phone: null,
                     avatar_url: null,
@@ -65,7 +66,9 @@ export class MatchmakingService {
                     streak_count: 5,
                     streak_last_date: null,
                     created_at: new Date().toISOString(),
-                    last_active: new Date().toISOString()
+                    last_active: new Date().toISOString(),
+                    referral_code: null,
+                    referred_by: null
                 };
 
                 this._notifyMatchFound({
@@ -107,6 +110,7 @@ export class MatchmakingService {
         const opponentId = match.player_a_id === userId ? match.player_b_id : match.player_a_id;
         let opponent: UserRow = {
             id: opponentId,
+            role: 'player',
             username: 'Ethiopian_Rival',
             phone: null,
             avatar_url: null,
@@ -120,7 +124,9 @@ export class MatchmakingService {
             streak_count: 1,
             streak_last_date: null,
             created_at: new Date().toISOString(),
-            last_active: new Date().toISOString()
+            last_active: new Date().toISOString(),
+            referral_code: null,
+            referred_by: null
         };
 
         if (supabase) {

@@ -31,6 +31,7 @@ export class MatchmakingScreen {
 
         const currentUser: UserRow = {
             id: 'local-user',
+            role: 'player',
             username: profile.username,
             phone: null,
             avatar_url: null,
@@ -44,7 +45,9 @@ export class MatchmakingScreen {
             streak_count: profile.streakCount || 0,
             streak_last_date: null,
             created_at: new Date().toISOString(),
-            last_active: new Date().toISOString()
+            last_active: new Date().toISOString(),
+            referral_code: null,
+            referred_by: null
         };
 
         root.innerHTML = `

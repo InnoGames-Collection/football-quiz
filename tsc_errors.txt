@@ -1,0 +1,16 @@
+src/networking/services/FAQService.ts(31,77): error TS2339: Property 'category' does not exist on type 'never'.
+src/networking/services/GameSessionService.ts(32,21): error TS2353: Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+src/networking/services/GameSessionService.ts(88,25): error TS2345: Argument of type 'Partial<{ id: string; user_id: string; competition_id: string | null; match_type: GameSessionMatchType; state: GameSessionState; difficulty: number; ... 15 more ...; updated_at: string; }>' is not assignable to parameter of type 'never'.
+src/networking/services/GameSessionService.ts(124,13): error TS2353: Object literal may only specify known properties, and 'avg_time' does not exist in type 'Partial<{ id: string; user_id: string; competition_id: string | null; match_type: GameSessionMatchType; state: GameSessionState; difficulty: number; ... 15 more ...; updated_at: string; }>'.
+src/networking/services/GameSessionService.ts(153,21): error TS2353: Object literal may only specify known properties, and 'session_id' does not exist in type 'never[]'.
+src/networking/services/MessageService.ts(114,21): error TS2353: Object literal may only specify known properties, and 'sender_id' does not exist in type 'never[]'.
+src/networking/services/MessageService.ts(138,25): error TS2345: Argument of type '{ is_read: boolean; }' is not assignable to parameter of type 'never'.
+src/networking/services/NotificationService.ts(80,25): error TS2345: Argument of type '{ is_read: boolean; }' is not assignable to parameter of type 'never'.
+src/networking/services/NotificationService.ts(101,25): error TS2345: Argument of type '{ is_read: boolean; }' is not assignable to parameter of type 'never'.
+src/networking/services/ProfileService.ts(56,25): error TS2345: Argument of type '{ username?: string | undefined; phone?: string | null | undefined; avatar_url?: string | null | undefined; locale?: Locale | undefined; elo_rating?: number | undefined; coins?: number | undefined; ... 9 more ...; referred_by?: string | ... 1 more ... | undefined; }' is not assignable to parameter of type 'never'.
+src/networking/services/ProfileService.ts(108,25): error TS2345: Argument of type 'Partial<{ user_id: string; locale: Locale; sound_enabled: boolean; vibration_enabled: boolean; dark_mode: boolean; notif_daily: boolean; notif_tournament: boolean; notif_rewards: boolean; notif_announcements: boolean; notif_subscription: boolean; notif_system: boolean; updated_at: string; }>' is not assignable to parameter of type 'never'.
+src/networking/services/RewardService.ts(73,25): error TS2345: Argument of type '{ is_claimed: boolean; claimed_at: string; }' is not assignable to parameter of type 'never'.
+src/networking/services/RewardService.ts(88,33): error TS2339: Property 'coins' does not exist on type 'never'.
+src/networking/services/RewardService.ts(89,30): error TS2339: Property 'xp' does not exist on type 'never'.
+src/networking/services/SupportService.ts(36,21): error TS2353: Object literal may only specify known properties, and 'user_id' does not exist in type 'never[]'.
+src/networking/services/SupportService.ts(50,37): error TS2339: Property 'id' does not exist on type 'never'.

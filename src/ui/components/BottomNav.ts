@@ -131,4 +131,18 @@ export class BottomNav {
             }
         });
     }
+
+    public static hide(): void {
+        const navContainer = document.getElementById('fds-bottom-nav');
+        if (navContainer) {
+            navContainer.style.display = 'none';
+        }
+    }
+
+    public static show(): void {
+        const navContainer = document.getElementById('fds-bottom-nav');
+        if (navContainer) {
+            navContainer.style.display = 'flex';
+        }
+    }
 }

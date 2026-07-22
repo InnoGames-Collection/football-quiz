@@ -4,6 +4,8 @@ import { QuizGameMode } from '../../games/quiz/QuizGameMode';
 import { AdminPanelScreen } from '../../ui/screens/AdminPanelScreen';
 import { FootballLeagueHome } from '../../ui/screens/FootballLeagueHome';
 import { AuthManager } from '../auth/AuthManager';
+import { AuthScreen } from '../../ui/screens/AuthScreen';
+import { RealtimeService } from '../../networking/services/RealtimeService';
 import { CompetitionBrowserScreen } from '../../ui/screens/CompetitionBrowserScreen';
 import { LeaderboardScreen } from '../../ui/screens/LeaderboardScreen';
 import { ProfileScreen } from '../../ui/screens/ProfileScreen';
@@ -310,56 +312,77 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         handleNetworkChange();
     }
 
-    // Check for session recovery
-    const activeSession = GameSessionManager.getInstance().getActiveSession();
-    if (activeSession) {
-        // Show Resume Previous Match dialog overlay
-        const recoveryOverlay = document.createElement('div');
-        recoveryOverlay.id = 'session-recovery-overlay';
-        recoveryOverlay.style.cssText = `
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: rgba(15,23,42,0.95);
-            z-index: 20000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-            pointer-events: auto;
-        `;
-        recoveryOverlay.innerHTML = `
-            <div class="glass-card" style="width: 100%; max-width: 360px; padding: 28px 20px; text-align: center; border-color: var(--tv-gold-primary);">
-                <div style="font-size: 48px; margin-bottom: 12px;">⚽⏱️</div>
-                <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 6px;">RESUME MATCH?</div>
-                <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">An active match session was found. Would you like to resume it or discard it?</div>
-                <button id="btn-recovery-resume" style="width: 100%; padding: 14px; background: var(--tv-pitch-green); color: white; border: none; border-radius: 8px; font-weight: 800; margin-bottom: 12px; cursor: pointer; text-transform: uppercase;">Resume Match</button>
-                <button id="btn-recovery-discard" style="width: 100%; padding: 14px; background: rgba(239,68,68,0.1); border: 1px solid #EF4444; color: #EF4444; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase;">Discard Match</button>
-            </div>
-        `;
-        document.body.appendChild(recoveryOverlay);
-
-        document.getElementById('btn-recovery-resume')?.addEventListener('click', async () => {
-            game.audioManager.playClick();
-            recoveryOverlay.remove();
+    // Listen to authentication state
+    authManager.subscribe((user) => {
+        if (!user) {
+            console.log('[Bootstrap] User not authenticated. Showing AuthScreen.');
+            BottomNav.hide();
+            const authScreen = new AuthScreen(
+                game.uiManager, game.audioManager, authManager,
+                () => {
+                    // On success, the subscriber will trigger again because authState changed
+                }
+            );
+            authScreen.render();
+        } else {
+            console.log('[Bootstrap] User authenticated successfully:', user.username);
+            BottomNav.show();
             
-            // Launch game and restore session
-            const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-            await registry.launchGame('football-quiz');
-            await quizMode.resume(activeSession);
-        });
+            // Initialize Realtime channels for the user
+            RealtimeService.getInstance().initUserChannels(user.id);
 
-        document.getElementById('btn-recovery-discard')?.addEventListener('click', () => {
-            game.audioManager.playClick();
-            recoveryOverlay.remove();
-            GameSessionManager.getInstance().clearSession();
-            navigateToTab('home');
-        });
-    } else {
-        // Initial load
-        navigateToTab('home');
-    }
+            // Check for session recovery
+            const activeSession = GameSessionManager.getInstance().getActiveSession();
+            if (activeSession) {
+                // Show Resume Previous Match dialog overlay
+                const recoveryOverlay = document.createElement('div');
+                recoveryOverlay.id = 'session-recovery-overlay';
+                recoveryOverlay.style.cssText = `
+                    position: fixed;
+                    top: 0; left: 0;
+                    width: 100vw; height: 100vh;
+                    background: rgba(15,23,42,0.95);
+                    z-index: 20000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                    box-sizing: border-box;
+                    pointer-events: auto;
+                `;
+                recoveryOverlay.innerHTML = `
+                    <div class="glass-card" style="width: 100%; max-width: 360px; padding: 28px 20px; text-align: center; border-color: var(--tv-gold-primary);">
+                        <div style="font-size: 48px; margin-bottom: 12px;">⚽⏱️</div>
+                        <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 6px;">RESUME MATCH?</div>
+                        <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">An active match session was found. Would you like to resume it or discard it?</div>
+                        <button id="btn-recovery-resume" style="width: 100%; padding: 14px; background: var(--tv-pitch-green); color: white; border: none; border-radius: 8px; font-weight: 800; margin-bottom: 12px; cursor: pointer; text-transform: uppercase;">Resume Match</button>
+                        <button id="btn-recovery-discard" style="width: 100%; padding: 14px; background: rgba(239,68,68,0.1); border: 1px solid #EF4444; color: #EF4444; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase;">Discard Match</button>
+                    </div>
+                `;
+                document.body.appendChild(recoveryOverlay);
+
+                document.getElementById('btn-recovery-resume')?.addEventListener('click', async () => {
+                    game.audioManager.playClick();
+                    recoveryOverlay.remove();
+                    
+                    // Launch game and restore session
+                    const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                    await registry.launchGame('football-quiz');
+                    await quizMode.resume(activeSession);
+                });
+
+                document.getElementById('btn-recovery-discard')?.addEventListener('click', () => {
+                    game.audioManager.playClick();
+                    recoveryOverlay.remove();
+                    GameSessionManager.getInstance().clearSession();
+                    navigateToTab('home');
+                });
+            } else {
+                // Initial load
+                navigateToTab('home');
+            }
+        }
+    });
 
     console.log('[Bootstrap] ⚽ Football Quiz League Stack Navigation initialized.');
 

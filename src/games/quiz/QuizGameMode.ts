@@ -87,7 +87,8 @@ export class QuizGameMode implements IGameMode {
                 if (winAny.ethioReloadHome) {
                     winAny.ethioReloadHome();
                 }
-            }
+            },
+            this._quizEngine
         );
         statsScreen.render();
     }

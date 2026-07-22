@@ -2,6 +2,7 @@ import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { UIManager } from '../../core/managers/UIManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
+import { Toast } from '../components/Toast';
 import { ReturningPlayerModal } from '../components/ReturningPlayerModal';
 import { DesignSystem } from '../theme/DesignSystem';
 
@@ -321,7 +322,7 @@ export class FootballLeagueHome {
                         btn.style.background = 'rgba(255,255,255,0.1)';
                         this._saveManager.addCoins(200);
                     } else {
-                        alert('Please enter a valid code.');
+                        Toast.show('Please enter a valid code.', 'warning');
                     }
                 }
             });

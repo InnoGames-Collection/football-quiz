@@ -87,53 +87,6 @@ export class AuthScreen {
 
                     <!-- Auth Flow Forms -->
                     ${this._phoneStep === 'INPUT_PHONE' ? this._renderPhoneInput() : this._renderOtpInput()}
-
-                    <div style="
-                        display: flex;
-                        align-items: center;
-                        margin: 24px 0;
-                        color: #64748B;
-                        font-size: 12px;
-                    ">
-                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                        <span style="padding: 0 12px;">OR CONTINUE WITH</span>
-                        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
-                    </div>
-
-                    <!-- Social / Guest Actions -->
-                    <button id="google-auth-btn" style="
-                        width: 100%;
-                        padding: 12px;
-                        background: rgba(255, 255, 255, 0.08);
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                        border-radius: 12px;
-                        color: white;
-                        font-weight: 600;
-                        font-size: 14px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        gap: 10px;
-                        margin-bottom: 12px;
-                        transition: background 0.2s;
-                    ">
-                        <span>🌐</span> Google Account
-                    </button>
-
-                    <button id="guest-auth-btn" style="
-                        width: 100%;
-                        padding: 12px;
-                        background: transparent;
-                        border: 1px dashed rgba(255, 255, 255, 0.3);
-                        border-radius: 12px;
-                        color: #94A3B8;
-                        font-weight: 600;
-                        font-size: 14px;
-                        cursor: pointer;
-                    ">
-                        👤 Continue as Guest (Offline Mode)
-                    </button>
                 </div>
             </div>
         `;
@@ -293,27 +246,6 @@ export class AuthScreen {
                 this._phoneStep = 'INPUT_PHONE';
                 this._statusMessage = '';
                 this.render();
-            });
-        }
-
-        const googleBtn = root.querySelector('#google-auth-btn');
-        if (googleBtn) {
-            googleBtn.addEventListener('click', async () => {
-                this._audioManager.playClick();
-                const res = await this._authManager.signInWithGoogle();
-                if (!res.success) {
-                    this._statusMessage = res.error || 'Google sign-in failed.';
-                    this.render();
-                }
-            });
-        }
-
-        const guestBtn = root.querySelector('#guest-auth-btn');
-        if (guestBtn) {
-            guestBtn.addEventListener('click', () => {
-                this._audioManager.playClick();
-                this._authManager.continueAsGuest();
-                this._onSuccess();
             });
         }
     }

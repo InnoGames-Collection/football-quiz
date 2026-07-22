@@ -3,6 +3,8 @@ import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { LoaderHelper } from '../components/LoaderHelper';
+import { ProfileService } from '../../networking/services/ProfileService';
+
 
 export interface ProfileCallbacks {
     onStatistics: () => void;
@@ -229,66 +231,80 @@ export class ProfileScreen {
                         showModal(`
                             <div style="font-size: 32px; margin-bottom: 12px;">🏆</div>
                             <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 16px; text-transform: uppercase;">Achievements</div>
-                            <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
-                                <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                                    <span style="font-size: 24px;">🎯</span>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 800; color: white;">First Whistle ✅</div>
-                                        <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Completed first quiz match.</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                                    <span style="font-size: 24px;">⚽</span>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 800; color: white;">Regular Player ✅</div>
-                                        <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Completed 10 matches.</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                                    <span style="font-size: 24px;">💯</span>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 800; color: white;">Perfect Match ✅</div>
-                                        <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Scored 100% accuracy.</div>
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; opacity: 0.5;">
-                                    <span style="font-size: 24px;">🔒</span>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 800; color: #94A3B8;">Living Legend</div>
-                                        <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Reach Legend Rank.</div>
-                                    </div>
-                                </div>
+                            <div id="achievements-content" style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
+                                <div style="color: #94A3B8; text-align: center;">Loading achievements...</div>
                             </div>
                         `);
+                        
+                        // Fetch achievements
+                        ProfileService.getInstance().getEarnedAchievements().then(achievements => {
+                            const content = document.getElementById('achievements-content');
+                            if (!content) return;
+                            
+                            if (!achievements || achievements.length === 0) {
+                                content.innerHTML = `
+                                    <div style="text-align: center; color: #94A3B8; padding: 20px;">
+                                        <div style="font-size: 24px; margin-bottom: 8px;">🎯</div>
+                                        <div>No achievements yet</div>
+                                        <div style="font-size: 12px; margin-top: 4px;">Play more matches to earn achievements!</div>
+                                    </div>
+                                `;
+                                return;
+                            }
+
+                            content.innerHTML = achievements.map(achRow => {
+                                const ach = achRow.achievement || {};
+                                return `
+                                    <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                                        <span style="font-size: 24px;">${ach.icon || '🎯'}</span>
+                                        <div>
+                                            <div style="font-size: 13px; font-weight: 800; color: white;">${ach.name_en || ach.name || 'Achievement'} ✅</div>
+                                            <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">${ach.description_en || ach.description || ''}</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                        }).catch(_ => {
+                            const content = document.getElementById('achievements-content');
+                            if (content) content.innerHTML = '<div style="color: #EF4444; text-align: center;">Failed to load achievements.</div>';
+                        });
                         break;
 
                     case 'awards':
                         showModal(`
                             <div style="font-size: 32px; margin-bottom: 12px;">🏅</div>
                             <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 16px; text-transform: uppercase;">Trophy Cabinet</div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                                <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); padding: 16px 8px; border-radius: 8px;">
-                                    <span style="font-size: 32px;">🏆</span>
-                                    <div style="font-size: 12px; font-weight: 800; color: white; margin-top: 8px;">Walia Champions</div>
-                                    <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">Season 1</div>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 16px 8px; border-radius: 8px;">
-                                    <span style="font-size: 32px;">🎖️</span>
-                                    <div style="font-size: 12px; font-weight: 800; color: white; margin-top: 8px;">CAF Gold Medal</div>
-                                    <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">Continental Quiz</div>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 16px 8px; border-radius: 8px;">
-                                    <span style="font-size: 32px;">👑</span>
-                                    <div style="font-size: 12px; font-weight: 800; color: white; margin-top: 8px;">Top 3 Finisher</div>
-                                    <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">Weekly Rank</div>
-                                </div>
-                                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 16px 8px; border-radius: 8px; opacity: 0.4;">
-                                    <span style="font-size: 32px;">🏟️</span>
-                                    <div style="font-size: 12px; font-weight: 800; color: #94A3B8; margin-top: 8px;">Stadium Master</div>
-                                    <div style="font-size: 10px; color: #64748B; margin-top: 2px;">Unlock 10 Badges</div>
-                                </div>
+                            <div id="awards-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div style="grid-column: span 2; color: #94A3B8; text-align: center;">Loading awards...</div>
                             </div>
                         `);
+
+                        ProfileService.getInstance().getRewards().then(rewards => {
+                            const content = document.getElementById('awards-content');
+                            if (!content) return;
+                            
+                            if (!rewards || rewards.length === 0) {
+                                content.innerHTML = `
+                                    <div style="grid-column: span 2; text-align: center; color: #94A3B8; padding: 20px;">
+                                        <div style="font-size: 24px; margin-bottom: 8px;">🏅</div>
+                                        <div>No awards yet</div>
+                                        <div style="font-size: 12px; margin-top: 4px;">Compete in tournaments to earn awards!</div>
+                                    </div>
+                                `;
+                                return;
+                            }
+
+                            content.innerHTML = rewards.map(reward => `
+                                <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); padding: 16px 8px; border-radius: 8px;">
+                                    <span style="font-size: 32px;">🏆</span>
+                                    <div style="font-size: 12px; font-weight: 800; color: white; margin-top: 8px;">${reward.name || 'Award'}</div>
+                                    <div style="font-size: 10px; color: #94A3B8; margin-top: 2px;">${reward.source_type}</div>
+                                </div>
+                            `).join('');
+                        }).catch(_ => {
+                            const content = document.getElementById('awards-content');
+                            if (content) content.innerHTML = '<div style="grid-column: span 2; color: #EF4444; text-align: center;">Failed to load awards.</div>';
+                        });
                         break;
                 }
             });

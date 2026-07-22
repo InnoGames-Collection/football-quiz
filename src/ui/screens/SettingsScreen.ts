@@ -4,7 +4,10 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
 import { AuthManager } from '../../core/auth/AuthManager';
 import { BottomNav } from '../components/BottomNav';
-
+import { ProfileService } from '../../networking/services/ProfileService';
+import { FAQService } from '../../networking/services/FAQService';
+import { Toast } from '../components/Toast';
+import { SupportService } from '../../networking/services/SupportService';
 
 export interface AppSettings {
     soundEffects: boolean;
@@ -27,16 +30,23 @@ export class SettingsScreen {
     private _settings!: AppSettings;
     private _helpCategory: string | null = null;
     private _showContactSupportForm: boolean = false;
+    private _faqsCache: { q: string; a: string }[] = [];
 
     constructor(uiManager: UIManager, saveManager: SaveManager, audioManager: AudioManager, onBack: () => void) {
         this._uiManager = uiManager;
         this._saveManager = saveManager;
         this._audioManager = audioManager;
         this._onBack = onBack;
+        
+        // Initialize default settings first to avoid synchronous undefined accesses
+        this._settings = this._getDefaultSettings();
+        
+        // Asynchronously load settings from cloud/local storage
         this._loadSettings();
     }
 
-    private _loadSettings(): void {
+    private async _loadSettings(): Promise<void> {
+        // Load local fallback first
         const saved = localStorage.getItem('ETHIO_FOOTBALL_SETTINGS_V2');
         if (saved) {
             try {
@@ -47,9 +57,32 @@ export class SettingsScreen {
         } else {
             this._settings = this._getDefaultSettings();
         }
-        // Keep sound mute state in sync
+
         const isMuted = localStorage.getItem('ETHIO_FOOTBALL_MUTED') === 'true';
         this._settings.soundEffects = !isMuted;
+
+        // Try loading from Supabase Preferences if online
+        const pref = await ProfileService.getInstance().getPreferences();
+        if (pref) {
+            this._settings.soundEffects = pref.sound_enabled;
+            this._settings.notifications = {
+                dailyChallenge: pref.notif_daily,
+                tournament: pref.notif_tournament,
+                rewards: pref.notif_rewards,
+                announcements: pref.notif_announcements,
+                subscription: pref.notif_subscription,
+                system: pref.notif_system
+            };
+            
+            // Sync audio manager mute state
+            if (pref.sound_enabled && this._audioManager.isMuted) {
+                this._audioManager.toggleMute();
+            } else if (!pref.sound_enabled && !this._audioManager.isMuted) {
+                this._audioManager.toggleMute();
+            }
+        }
+        
+        this.render();
     }
 
     private _getDefaultSettings(): AppSettings {
@@ -66,7 +99,7 @@ export class SettingsScreen {
         };
     }
 
-    private _saveSettings(): void {
+    private async _saveSettings(): Promise<void> {
         localStorage.setItem('ETHIO_FOOTBALL_SETTINGS_V2', JSON.stringify(this._settings));
         localStorage.setItem('ETHIO_FOOTBALL_MUTED', String(!this._settings.soundEffects));
         
@@ -75,6 +108,17 @@ export class SettingsScreen {
         } else if (!this._settings.soundEffects && !this._audioManager.isMuted) {
             this._audioManager.toggleMute();
         }
+
+        // Persist to Supabase if online
+        await ProfileService.getInstance().updatePreferences({
+            sound_enabled: this._settings.soundEffects,
+            notif_daily: this._settings.notifications.dailyChallenge,
+            notif_tournament: this._settings.notifications.tournament,
+            notif_rewards: this._settings.notifications.rewards,
+            notif_announcements: this._settings.notifications.announcements,
+            notif_subscription: this._settings.notifications.subscription,
+            notif_system: this._settings.notifications.system
+        });
     }
 
     public render(): void {
@@ -662,16 +706,26 @@ export class SettingsScreen {
                 this.render();
             });
 
-            document.getElementById('btn-submit-support')?.addEventListener('click', () => {
+            document.getElementById('btn-submit-support')?.addEventListener('click', async () => {
                 this._audioManager.playClick();
                 const msg = (document.getElementById('support-message') as HTMLTextAreaElement)?.value.trim();
+                const catSelect = document.getElementById('support-category') as HTMLSelectElement;
+                const cat = catSelect ? catSelect.value : 'General Feedback';
+                
                 if (!msg) {
-                    alert('Please enter a message before submitting.');
+                    Toast.show('Please enter a message before submitting.', 'warning');
                     return;
                 }
                 const container = document.getElementById('support-form-container');
                 if (container) {
-                    const refId = 'EF-' + Math.floor(100000 + Math.random() * 900000);
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 16px; color: #94A3B8;">
+                            Submitting ticket to server...
+                        </div>
+                    `;
+                    const res = await SupportService.getInstance().createTicket(cat, msg);
+                    const refId = res.success ? `EF-${res.ticketId.substring(0, 8).toUpperCase()}` : 'EF-' + Math.floor(100000 + Math.random() * 900000);
+                    
                     container.innerHTML = `
                         <div style="text-align: center; padding: 16px;">
                             <div style="font-size: 40px; margin-bottom: 8px;">✅</div>
@@ -686,7 +740,7 @@ export class SettingsScreen {
         }
 
         if (this._helpCategory) {
-            const activeFaqs = HELP_FAQS[this._helpCategory] || [];
+            const activeFaqs = this._faqsCache.length > 0 ? this._faqsCache : (HELP_FAQS[this._helpCategory] || []);
             const faqHtml = activeFaqs.map((faq, idx) => `
                 <div class="glass-card" style="border-radius: 12px; margin-bottom: 12px; border-color: rgba(255,255,255,0.08); overflow: hidden;">
                     <div class="faq-header" data-idx="${idx}" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; background: rgba(255,255,255,0.02);">
@@ -734,6 +788,7 @@ export class SettingsScreen {
             document.getElementById('btn-back-help')?.addEventListener('click', () => {
                 this._audioManager.playClick();
                 this._helpCategory = null;
+                this._faqsCache = [];
                 this.render();
             });
 
@@ -830,12 +885,34 @@ export class SettingsScreen {
 
         const catTiles = root.querySelectorAll('.help-category-tile');
         catTiles.forEach(tile => {
-            tile.addEventListener('click', (e) => {
+            tile.addEventListener('click', async (e) => {
                 const target = e.currentTarget as HTMLElement;
                 const catId = target.getAttribute('data-cat-id');
                 if (catId) {
                     this._audioManager.playClick();
                     this._helpCategory = catId;
+                    
+                    // Show a quick loader while fetching
+                    const wrapper = document.getElementById('faq-list-wrapper');
+                    if (wrapper) wrapper.innerHTML = '<div style="padding: 20px; color: #94A3B8;">Loading FAQs...</div>';
+                    
+                    const faqService = FAQService.getInstance();
+                    const rawFaqs = await faqService.getFAQsByCategory(catId);
+                    
+                    const currentLocale = i18n.currentLocale;
+                    this._faqsCache = rawFaqs.map(item => {
+                        let q = item.question_en;
+                        let a = item.answer_en;
+                        if (currentLocale === 'am' && item.question_am && item.answer_am) {
+                            q = item.question_am;
+                            a = item.answer_am;
+                        } else if (currentLocale === 'om' && item.question_om && item.answer_om) {
+                            q = item.question_om;
+                            a = item.answer_om;
+                        }
+                        return { q, a };
+                    });
+                    
                     this.render();
                 }
             });

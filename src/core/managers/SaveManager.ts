@@ -56,6 +56,8 @@ export class SaveManager {
         this._profile.xp = user.xp;
         this._profile.eloRating = user.elo_rating;
         this._profile.streakCount = user.streak_count;
+        this._profile.totalMatches = user.total_matches;
+        this._profile.totalWins = user.total_wins;
         if (user.phone) {
             this._profile.phone = user.phone;
         }

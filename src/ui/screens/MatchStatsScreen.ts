@@ -2,6 +2,9 @@ import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { MatchStats } from '../../core/quiz/QuizEngine';
+import { MatchSubmissionService } from '../../networking/api/MatchSubmissionService';
+import { QuizEngine } from '../../core/quiz/QuizEngine';
+import { Toast } from '../components/Toast';
 
 export class MatchStatsScreen {
     private _uiManager: UIManager;
@@ -12,6 +15,7 @@ export class MatchStatsScreen {
     private _onContinue: () => void;
 
     private _finalScore: number;
+    private _quizEngine?: QuizEngine;
 
     constructor(
         uiManager: UIManager,
@@ -20,7 +24,8 @@ export class MatchStatsScreen {
         stats: MatchStats,
         finalScore: number,
         gameId: string,
-        onContinue: () => void
+        onContinue: () => void,
+        quizEngine?: QuizEngine
     ) {
         this._uiManager = uiManager;
         this._saveManager = saveManager;
@@ -29,9 +34,8 @@ export class MatchStatsScreen {
         this._finalScore = finalScore;
         this._gameId = gameId;
         this._onContinue = onContinue;
+        this._quizEngine = quizEngine;
 
-        this._saveManager.addXp(this._stats.xpEarned);
-        this._saveManager.addCoins(50); // Add rewards to save
         this._saveManager.updateHighScore(this._gameId, this._finalScore);
     }
 
@@ -39,6 +43,41 @@ export class MatchStatsScreen {
         const root = this._uiManager.container;
         const correct = this._stats.goals;
         const wrong = this._stats.incorrectAnswers;
+
+        root.innerHTML = `
+            <div class="stadium-container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+                <div style="color: white; font-weight: bold;">Loading Rewards...</div>
+            </div>
+        `;
+
+        this._submitAndRender(root, correct, wrong);
+    }
+
+    private async _submitAndRender(root: HTMLElement, correct: number, wrong: number): Promise<void> {
+        let earnedXp = this._stats.xpEarned;
+        let earnedCoins = this._stats.coinsEarned;
+
+        if (this._quizEngine) {
+            try {
+                const result = await MatchSubmissionService.getInstance().submitMatch({
+                    matchType: 'solo',
+                    competitionId: this._gameId,
+                    answers: this._quizEngine.answerSubmissions
+                });
+                if (result.success) {
+                    earnedXp = result.xp ?? earnedXp;
+                    earnedCoins = result.coins ?? earnedCoins;
+                    console.log('Match submitted successfully', result);
+                }
+            } catch (err) {
+                console.warn('Failed to submit match to backend, using local stats', err);
+            }
+        }
+
+        // Apply to local save to keep UI updated
+        this._saveManager.addXp(earnedXp);
+        this._saveManager.addCoins(earnedCoins);
+
         
         if (this._stats.accuracy >= 50) {
             this._audioManager.playVictoryFanfare();
@@ -99,14 +138,29 @@ export class MatchStatsScreen {
                         </div>
                     </div>
 
-                    <!-- 3x2 Compact Stats Grid -->
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; flex-shrink: 0;">
-                        ${statBadge('Accuracy', `${this._stats.accuracy}%`, '#60A5FA')}
-                        ${statBadge('Avg Time', `${this._stats.avgResponseTime}s`, '#38BDF8')}
-                        ${statBadge('Correct', correct, 'var(--tv-pitch-green)')}
+                    <!-- Compact Telemetry -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px;">
+                        ${statBadge('Correct', correct, '#22C55E')}
                         ${statBadge('Wrong', wrong, '#EF4444')}
-                        ${statBadge('Points', `${this._stats.xpEarned} XP`, '#F472B6')}
-                        ${statBadge('Rewards', '+50 Coins', 'var(--tv-gold-primary)')}
+                        ${statBadge('Accuracy', `${this._stats.accuracy}%`, 'var(--tv-gold-primary)')}
+                        ${statBadge('Avg Time', `${this._stats.avgResponseTime}s`, 'white')}
+                        ${statBadge('Possession', `${this._stats.possessionPercent}%`, '#38BDF8')}
+                        ${statBadge('Max Combo', `${this._stats.maxCombo}x`, '#A855F7')}
+                    </div>
+
+                    <!-- Match Rewards -->
+                    <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                        <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; text-align: center;">Match Rewards</div>
+                        <div style="display: flex; justify-content: space-around;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 18px; margin-bottom: 2px;">🪙</div>
+                                <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary);">+${earnedCoins}</div>
+                            </div>
+                            <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 24px;">
+                                <div style="font-size: 18px; margin-bottom: 2px;">⚡</div>
+                                <div style="font-size: 12px; font-weight: 900; color: #38BDF8;">+${earnedXp} XP</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Actions Grid -->
@@ -313,7 +367,7 @@ export class MatchStatsScreen {
                 this._audioManager.playClick();
                 const userComment = prompt('Enter your comment on this question:');
                 if (userComment && userComment.trim()) {
-                    alert('Comment posted successfully! It will show up after moderation.');
+                    Toast.show('Comment posted successfully! It will show up after moderation.', 'success');
                 }
             });
 
@@ -323,7 +377,7 @@ export class MatchStatsScreen {
                 this._audioManager.playClick();
                 const qText = shareBtn.getAttribute('data-prompt') || '';
                 navigator.clipboard.writeText(`EthioFantasy Trivia Question: "${qText}" - Play and win rewards!`);
-                alert('Copied question details to clipboard! Share with friends to win invite bonuses.');
+                Toast.show('Copied question details to clipboard! Share with friends to win invite bonuses.', 'info');
             });
 
             // Report
@@ -331,7 +385,7 @@ export class MatchStatsScreen {
             reportBtn?.addEventListener('click', () => {
                 this._audioManager.playClick();
                 if (confirm('Are you sure you want to report this question for inaccuracy or typo?')) {
-                    alert('Report submitted! Thank you for helping keep EthioFantasy accurate.');
+                    Toast.show('Report submitted! Thank you for helping keep EthioFantasy accurate.', 'success');
                     reportBtn.disabled = true;
                     reportBtn.style.opacity = '0.5';
                     reportBtn.style.color = '#64748B';

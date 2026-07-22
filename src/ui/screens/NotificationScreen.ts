@@ -2,149 +2,35 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
 import { LoaderHelper } from '../components/LoaderHelper';
-
-export interface NotificationItem {
-    id: string;
-    title: Record<string, string>;
-    description: Record<string, string>;
-    time: Record<string, string>;
-    category: 'daily' | 'tournament' | 'rewards' | 'announcements' | 'subscription';
-    read: boolean;
-}
-
-const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
-    {
-        id: 'notif-1',
-        title: {
-            en: 'Daily Quiz Active!',
-            am: 'የዕለት ጥያቄው ወጥቷል!',
-            om: 'Gaaffiin Guyyaa Gadi Lakkifameera!'
-        },
-        description: {
-            en: 'Today\'s challenge on the Ethiopian Premier League is now live. Complete it to earn a 1.5x XP multiplier!',
-            am: 'የዛሬው የኢትዮጵያ ፕሪሚየር ሊግ ተግዳሮት አሁን ዝግጁ ነው። ያጠናቅቁና ባለ 1.5x XP ያግኙ!',
-            om: 'Qormaanni guyyaa har\'aa tapha Liigii Itoophiyaa irratti kallattiin darba. Xumuraa XP 1.5x argadhaa!'
-        },
-        time: {
-            en: '5 mins ago',
-            am: 'ከ5 ደቂቃ በፊት',
-            om: 'Daqiiqaa 5 dura'
-        },
-        category: 'daily',
-        read: false
-    },
-    {
-        id: 'notif-2',
-        title: {
-            en: 'Weekly Prize Pool Claimable',
-            am: 'የሳምንታዊ ሽልማት ማግኛ!',
-            om: 'Badhaasa Torbanii Fudhachuuf!'
-        },
-        description: {
-            en: 'Congratulations! You finished in the top 10 this week. Claim your 500 bonus coins now.',
-            am: 'እንኳን ደስ አሰኘዎት! በዚህ ሳምንት በምርጥ 10 ውስጥ አጠናቀዋል። የ 500 ሳንቲም ጉርሻዎን አሁን ያግኙ።',
-            om: 'Baga gammaddan! Torban kana top 10 keessatti xumurtan. Badhaasa qabxii 500 keessan fudhadhaa.'
-        },
-        time: {
-            en: '2 hours ago',
-            am: 'ከ2 ሰዓት በፊት',
-            om: 'Sa\'aatii 2 dura'
-        },
-        category: 'rewards',
-        read: false
-    },
-    {
-        id: 'notif-3',
-        title: {
-            en: 'Champions League Quiz Night',
-            am: 'የቻምፒየንስ ሊግ የጥያቄ ምሽት',
-            om: 'Halkan Gaaffii Chaampiyoonsi Liigii'
-        },
-        description: {
-            en: 'New UEFA Champions League trivia set is live. Test your knowledge against other fans.',
-            am: 'አዲስ የUEFA ቻምፒየንስ ሊግ ጥያቄዎች ወጥተዋል። እውቀትዎን ከሌሎች ደጋፊዎች ጋር ይፈትኑ።',
-            om: 'Trivia UEFA Champions League haaraan kallattiin darba. Beekumsa kee taajjabi.'
-        },
-        time: {
-            en: '1 day ago',
-            am: 'ከ1 ቀን በፊት',
-            om: 'Guyyaa 1 dura'
-        },
-        category: 'tournament',
-        read: true
-    },
-    {
-        id: 'notif-4',
-        title: {
-            en: 'System Upgrade Completed',
-            am: 'የስርዓት ማሻሻያ ተጠናቋል',
-            om: 'Fooyya\'insi Sirnaa Xumurameera'
-        },
-        description: {
-            en: 'EthioFantasy has been upgraded to v1.1.0 with faster load times and the new Notification Center.',
-            am: 'ኢትዮፋንታሲ ወደ ስሪት v1.1.0 ተሻሽሏል - ፈጣን አፈጻጸም እና አዲስ የማሳወቂያ ማዕከልን አካቷል።',
-            om: 'EthioFantasy gara v1.1.0 fooyya\'eera - saffisa gaarii fi kuusaa beeksisa haaraa qaba.'
-        },
-        time: {
-            en: '2 days ago',
-            am: 'ከ2 ቀን በፊት',
-            om: 'Guyyaa 2 dura'
-        },
-        category: 'announcements',
-        read: true
-    },
-    {
-        id: 'notif-5',
-        title: {
-            en: 'Premium Subscription Renewed',
-            am: 'ፕሪሚየም ምዝገባ ታድሷል',
-            om: 'Koodiin Premium Haarameera'
-        },
-        description: {
-            en: 'Thank you for playing! Your Ethio Telecom premium subscription has been successfully renewed.',
-            am: 'ስለተጫወቱ እናመሰግናለን! የኢትዮ ቴሌኮም ፕሪሚየም ምዝገባዎ በተሳካ ሁኔታ ታድሷል።',
-            om: 'Taphachuu keessaniif galatoomaa! Koodiin premium Itiyo Telekoom keessanii milkiin haarameera.'
-        },
-        time: {
-            en: '3 days ago',
-            am: 'ከ3 ቀን በፊት',
-            om: 'Guyyaa 3 dura'
-        },
-        category: 'subscription',
-        read: true
-    }
-];
+import { NotificationService } from '../../networking/services/NotificationService';
+import type { NotificationRow } from '../../networking/supabase/types';
 
 export class NotificationScreen {
     private _uiManager: UIManager;
     private _audioManager: AudioManager;
     private _onBack: () => void;
     private _activeTab: string = 'all';
-    private _notifications: NotificationItem[] = [];
+    private _notifications: NotificationRow[] = [];
+    private _unsubscribeRealtime: (() => void) | null = null;
 
     constructor(uiManager: UIManager, audioManager: AudioManager, onBack: () => void) {
         this._uiManager = uiManager;
         this._audioManager = audioManager;
         this._onBack = onBack;
+        
+        // Listen for new notifications
+        this._unsubscribeRealtime = NotificationService.getInstance().subscribeToNewNotifications((newNotif) => {
+            this._notifications.unshift(newNotif);
+            this.render();
+        });
+
         this._loadNotifications();
     }
 
-    private _loadNotifications(): void {
-        const saved = localStorage.getItem('ETHIO_FOOTBALL_NOTIFICATIONS');
-        if (saved) {
-            try {
-                this._notifications = JSON.parse(saved);
-            } catch (e) {
-                this._notifications = [...DEFAULT_NOTIFICATIONS];
-            }
-        } else {
-            this._notifications = [...DEFAULT_NOTIFICATIONS];
-            this._saveNotifications();
-        }
-    }
-
-    private _saveNotifications(): void {
-        localStorage.setItem('ETHIO_FOOTBALL_NOTIFICATIONS', JSON.stringify(this._notifications));
+    private async _loadNotifications(): Promise<void> {
+        const notifService = NotificationService.getInstance();
+        this._notifications = await notifService.getNotifications();
+        this.render();
     }
 
     public render(): void {
@@ -200,9 +86,14 @@ export class NotificationScreen {
                 tournament: '🏆',
                 rewards: '🎁',
                 announcements: '📢',
+                system: '⚙️',
                 subscription: '💳'
             };
             const icon = categoryIcons[item.category] || '🔔';
+
+            const title = locale === 'am' && item.title_am ? item.title_am : (locale === 'om' && item.title_om ? item.title_om : item.title_en);
+            const desc = locale === 'am' && item.body_am ? item.body_am : (locale === 'om' && item.body_om ? item.body_om : item.body_en);
+            const timeString = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             return `
                 <div class="glass-card notif-item ${item.read ? 'notif-read' : 'notif-unread'}" data-notif-id="${item.id}" style="
@@ -251,18 +142,18 @@ export class NotificationScreen {
                             font-weight: 800; 
                             color: ${item.read ? '#CBD5E1' : '#FFFFFF'};
                             margin-bottom: 4px;
-                        ">${item.title[locale] || item.title['en']}</div>
+                        ">${title}</div>
                         <div style="
                             font-size: 13px; 
                             color: #94A3B8; 
                             line-height: 1.4;
                             margin-bottom: 6px;
-                        ">${item.description[locale] || item.description['en']}</div>
+                        ">${desc}</div>
                         <div style="
                             font-size: 11px; 
                             color: #64748B; 
                             font-weight: 600;
-                        ">⏱️ ${item.time[locale] || item.time['en']}</div>
+                        ">⏱️ ${timeString}</div>
                     </div>
                 </div>
             `;
@@ -354,10 +245,12 @@ export class NotificationScreen {
         if (query.trim()) {
             const q = query.toLowerCase();
             filtered = filtered.filter(item => 
-                (item.title[locale] || '').toLowerCase().includes(q) || 
-                (item.title['en'] || '').toLowerCase().includes(q) ||
-                (item.description[locale] || '').toLowerCase().includes(q) ||
-                (item.description['en'] || '').toLowerCase().includes(q)
+                (item.title_en && item.title_en.toLowerCase().includes(q)) || 
+                (item.title_am && item.title_am.toLowerCase().includes(q)) ||
+                (item.title_om && item.title_om.toLowerCase().includes(q)) ||
+                (item.body_en && item.body_en.toLowerCase().includes(q)) ||
+                (item.body_am && item.body_am.toLowerCase().includes(q)) ||
+                (item.body_om && item.body_om.toLowerCase().includes(q))
             );
         }
 
@@ -369,9 +262,14 @@ export class NotificationScreen {
                     tournament: '🏆',
                     rewards: '🎁',
                     announcements: '📢',
+                    system: '⚙️',
                     subscription: '💳'
                 };
                 const icon = categoryIcons[item.category] || '🔔';
+
+                const title = locale === 'am' && item.title_am ? item.title_am : (locale === 'om' && item.title_om ? item.title_om : item.title_en);
+                const desc = locale === 'am' && item.body_am ? item.body_am : (locale === 'om' && item.body_om ? item.body_om : item.body_en);
+                const timeString = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 return `
                     <div class="glass-card notif-item ${item.read ? 'notif-read' : 'notif-unread'}" data-notif-id="${item.id}" style="
@@ -420,18 +318,18 @@ export class NotificationScreen {
                                 font-weight: 800; 
                                 color: ${item.read ? '#CBD5E1' : '#FFFFFF'};
                                 margin-bottom: 4px;
-                            ">${item.title[locale] || item.title['en']}</div>
+                            ">${title}</div>
                             <div style="
                                 font-size: 13px; 
                                 color: #94A3B8; 
                                 line-height: 1.4;
                                 margin-bottom: 6px;
-                            ">${item.description[locale] || item.description['en']}</div>
+                            ">${desc}</div>
                             <div style="
                                 font-size: 11px; 
                                 color: #64748B; 
                                 font-weight: 600;
-                            ">⏱️ ${item.time[locale] || item.time['en']}</div>
+                            ">⏱️ ${timeString}</div>
                         </div>
                     </div>
                 `;
@@ -445,16 +343,13 @@ export class NotificationScreen {
             // Re-bind click handlers
             const items = container.querySelectorAll('.notif-item');
             items.forEach(item => {
-                item.addEventListener('click', (e) => {
+                item.addEventListener('click', async (e) => {
                     const target = e.currentTarget as HTMLElement;
                     const notifId = target.getAttribute('data-notif-id');
-                    const notif = this._notifications.find(n => n.id === notifId);
-                    if (notif) {
+                    if (notifId) {
                         this._audioManager.playClick();
-                        notif.read = !notif.read;
-                        this._saveNotifications();
-                        const input = document.getElementById('notif-search-input') as HTMLInputElement;
-                        this._filterNotifications(input ? input.value : '');
+                        await NotificationService.getInstance().markAsRead(notifId);
+                        await this._loadNotifications();
                     }
                 });
             });
@@ -474,6 +369,9 @@ export class NotificationScreen {
     private _bindEvents(): void {
         document.getElementById('btn-back')?.addEventListener('click', () => {
             this._audioManager.playClick();
+            if (this._unsubscribeRealtime) {
+                this._unsubscribeRealtime();
+            }
             this._onBack();
         });
 
@@ -484,11 +382,10 @@ export class NotificationScreen {
             this._filterNotifications(query);
         });
 
-        document.getElementById('btn-mark-read')?.addEventListener('click', () => {
+        document.getElementById('btn-mark-read')?.addEventListener('click', async () => {
             this._audioManager.playClick();
-            this._notifications.forEach(n => n.read = true);
-            this._saveNotifications();
-            this.render();
+            await NotificationService.getInstance().markAllAsRead();
+            await this._loadNotifications();
         });
 
         // Tab Filter switching
@@ -508,21 +405,22 @@ export class NotificationScreen {
         // Click Notification to Toggle Read status
         const items = this._uiManager.container.querySelectorAll('.notif-item');
         items.forEach(item => {
-            item.addEventListener('click', (e) => {
+            item.addEventListener('click', async (e) => {
                 const target = e.currentTarget as HTMLElement;
                 const notifId = target.getAttribute('data-notif-id');
-                const notif = this._notifications.find(n => n.id === notifId);
-                if (notif) {
+                if (notifId) {
                     this._audioManager.playClick();
-                    notif.read = !notif.read;
-                    this._saveNotifications();
-                    this.render();
+                    await NotificationService.getInstance().markAsRead(notifId);
+                    await this._loadNotifications();
                 }
             });
         });
 
         document.getElementById('btn-empty-home')?.addEventListener('click', () => {
             this._audioManager.playClick();
+            if (this._unsubscribeRealtime) {
+                this._unsubscribeRealtime();
+            }
             this._onBack();
         });
     }
