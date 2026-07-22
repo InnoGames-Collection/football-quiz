@@ -95,6 +95,8 @@ export class AuthScreen {
     }
 
     private _renderPhoneInput(): string {
+        const defaultVal = this._pendingPhone ? this._pendingPhone.replace('+251', '') : '911000000';
+
         return `
             <div style="text-align: left; margin-bottom: 16px;">
                 <label style="display: block; font-size: 12px; color: #CBD5E1; margin-bottom: 6px; font-weight: 600;">
@@ -110,7 +112,7 @@ export class AuthScreen {
                         font-weight: bold;
                         font-size: 14px;
                     ">+251</span>
-                    <input type="tel" id="phone-input" placeholder="912 345 678" value="${this._pendingPhone.replace('+251', '')}" style="
+                    <input type="tel" id="phone-input" placeholder="911000000" value="${defaultVal}" style="
                         flex: 1;
                         background: rgba(15, 23, 42, 0.6);
                         border: 1px solid rgba(255, 255, 255, 0.15);
@@ -122,6 +124,19 @@ export class AuthScreen {
                     " />
                 </div>
             </div>
+
+            <!-- Test Accounts Quick Selector -->
+            <div style="margin-bottom: 20px; text-align: left;">
+                <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                    ⚡ Ethio Telecom Test Phone Numbers:
+                </div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button class="test-phone-chip" data-phone="911000000" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #FFD700; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">911000000</button>
+                    <button class="test-phone-chip" data-phone="911000001" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #FFD700; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">911000001</button>
+                    <button class="test-phone-chip" data-phone="911000002" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); color: #FFD700; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">911000002</button>
+                </div>
+            </div>
+
             <button id="send-otp-btn" style="
                 width: 100%;
                 padding: 14px;
@@ -150,7 +165,7 @@ export class AuthScreen {
                         Change number
                     </button>
                 </div>
-                <input type="text" id="otp-input" maxlength="6" placeholder="123456" style="
+                <input type="text" id="otp-input" maxlength="6" value="123456" placeholder="123456" style="
                     width: 100%;
                     background: rgba(15, 23, 42, 0.6);
                     border: 1px solid #FFD700;
@@ -163,6 +178,9 @@ export class AuthScreen {
                     outline: none;
                     box-sizing: border-box;
                 " />
+                <div style="font-size: 11px; color: #86EFAC; font-weight: 700; margin-top: 6px; text-align: center;">
+                    🔑 Test OTP code for test accounts: <span style="font-family: var(--tv-mono);">123456</span>
+                </div>
             </div>
             <button id="verify-otp-btn" style="
                 width: 100%;
@@ -183,6 +201,18 @@ export class AuthScreen {
 
     private _bindEvents(): void {
         const root = this._uiManager.container;
+
+        root.querySelectorAll('.test-phone-chip').forEach(chip => {
+            chip.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                const phone = (e.currentTarget as HTMLElement).getAttribute('data-phone') || '911000000';
+                const phoneInput = root.querySelector('#phone-input') as HTMLInputElement;
+                if (phoneInput) {
+                    phoneInput.value = phone;
+                    this._pendingPhone = `+251${phone}`;
+                }
+            });
+        });
 
         const sendOtpBtn = root.querySelector('#send-otp-btn');
         if (sendOtpBtn) {
