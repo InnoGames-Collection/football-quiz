@@ -710,7 +710,22 @@ export class SettingsScreen {
                             ⬅️ HELP DIRECTORY
                         </button>
                         
-                        ${faqHtml}
+                        <!-- Search FAQs -->
+                        <input type="text" id="faq-search-input" placeholder="🔍 Search FAQs..." style="
+                            width: 100%; 
+                            padding: 10px 14px; 
+                            background: rgba(0,0,0,0.2); 
+                            border: 1px solid rgba(255,255,255,0.1); 
+                            border-radius: 8px; 
+                            color: white; 
+                            font-size: 13px; 
+                            margin-bottom: 16px; 
+                            box-sizing: border-box;
+                        ">
+
+                        <div id="faq-list-wrapper">
+                            ${faqHtml}
+                        </div>
                     </div>
                 </div>
             `;
@@ -720,6 +735,22 @@ export class SettingsScreen {
                 this._audioManager.playClick();
                 this._helpCategory = null;
                 this.render();
+            });
+
+            // FAQ Search Input Event
+            const faqSearch = document.getElementById('faq-search-input') as HTMLInputElement;
+            faqSearch?.addEventListener('input', (e) => {
+                const query = (e.target as HTMLInputElement).value.toLowerCase();
+                const cards = root.querySelectorAll('#faq-list-wrapper > .glass-card');
+                cards.forEach(card => {
+                    const headerText = (card.querySelector('.faq-header > div')?.textContent || '').toLowerCase();
+                    const bodyText = (card.querySelector('.faq-body > div')?.textContent || '').toLowerCase();
+                    if (headerText.includes(query) || bodyText.includes(query)) {
+                        (card as HTMLElement).style.display = 'block';
+                    } else {
+                        (card as HTMLElement).style.display = 'none';
+                    }
+                });
             });
 
             const faqHeaders = root.querySelectorAll('.faq-header');

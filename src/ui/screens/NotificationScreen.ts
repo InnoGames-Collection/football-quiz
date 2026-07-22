@@ -309,6 +309,19 @@ export class NotificationScreen {
                 <!-- Scrolling Section -->
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">
                     
+                    <!-- Search Input -->
+                    <input type="text" id="notif-search-input" placeholder="🔍 Search notifications..." style="
+                        width: 100%; 
+                        padding: 10px 14px; 
+                        background: rgba(0,0,0,0.2); 
+                        border: 1px solid rgba(255,255,255,0.1); 
+                        border-radius: 8px; 
+                        color: white; 
+                        font-size: 13px; 
+                        margin-bottom: 16px; 
+                        box-sizing: border-box;
+                    ">
+                    
                     <!-- Horizontal Category Filter Slider -->
                     <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 16px; scrollbar-width: none; -ms-overflow-style: none;">
                         ${tabsHtml}
@@ -329,10 +342,146 @@ export class NotificationScreen {
         this._bindEvents();
     }
 
+    private _filterNotifications(query: string): void {
+        const locale = i18n.currentLocale;
+        
+        let filtered = this._notifications.filter(item => {
+            if (this._activeTab === 'all') return true;
+            if (this._activeTab === 'unread') return !item.read;
+            return item.category === this._activeTab;
+        });
+
+        if (query.trim()) {
+            const q = query.toLowerCase();
+            filtered = filtered.filter(item => 
+                (item.title[locale] || '').toLowerCase().includes(q) || 
+                (item.title['en'] || '').toLowerCase().includes(q) ||
+                (item.description[locale] || '').toLowerCase().includes(q) ||
+                (item.description['en'] || '').toLowerCase().includes(q)
+            );
+        }
+
+        const container = document.getElementById('notifications-list');
+        if (container) {
+            container.innerHTML = filtered.length > 0 ? filtered.map(item => {
+                const categoryIcons: Record<string, string> = {
+                    daily: '📅',
+                    tournament: '🏆',
+                    rewards: '🎁',
+                    announcements: '📢',
+                    subscription: '💳'
+                };
+                const icon = categoryIcons[item.category] || '🔔';
+
+                return `
+                    <div class="glass-card notif-item ${item.read ? 'notif-read' : 'notif-unread'}" data-notif-id="${item.id}" style="
+                        display: flex;
+                        gap: 16px;
+                        padding: 16px;
+                        margin-bottom: 12px;
+                        border-radius: 14px;
+                        cursor: pointer;
+                        position: relative;
+                        transition: transform 0.2s, background-color 0.2s;
+                        border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(255, 215, 0, 0.3)'};
+                        background: ${item.read ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 215, 0, 0.03)'};
+                    ">
+                        <!-- Status Indicator Dot -->
+                        ${!item.read ? `
+                            <div style="
+                                position: absolute;
+                                top: 16px;
+                                right: 16px;
+                                width: 8px;
+                                height: 8px;
+                                border-radius: 50%;
+                                background-color: var(--tv-pitch-green);
+                                box-shadow: 0 0 8px var(--tv-pitch-glow);
+                            "></div>
+                        ` : ''}
+
+                        <!-- Category Icon -->
+                        <div style="
+                            width: 44px;
+                            height: 44px;
+                            border-radius: 10px;
+                            background: rgba(255,255,255,0.05);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 22px;
+                            flex-shrink: 0;
+                        ">${icon}</div>
+
+                        <!-- Texts -->
+                        <div style="flex: 1; padding-right: 12px;">
+                            <div style="
+                                font-size: 15px; 
+                                font-weight: 800; 
+                                color: ${item.read ? '#CBD5E1' : '#FFFFFF'};
+                                margin-bottom: 4px;
+                            ">${item.title[locale] || item.title['en']}</div>
+                            <div style="
+                                font-size: 13px; 
+                                color: #94A3B8; 
+                                line-height: 1.4;
+                                margin-bottom: 6px;
+                            ">${item.description[locale] || item.description['en']}</div>
+                            <div style="
+                                font-size: 11px; 
+                                color: #64748B; 
+                                font-weight: 600;
+                            ">⏱️ ${item.time[locale] || item.time['en']}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('') : LoaderHelper.getEmptyStateHtml(
+                'search',
+                locale === 'am' ? 'ምንም ማሳወቂያዎች አልተገኙም።' : (locale === 'om' ? 'Beeksisi hin argamne.' : 'No notifications match your search query.'),
+                locale === 'am' ? 'ፍለጋ አጽዳ' : (locale === 'om' ? 'Qulqulleessi' : 'Clear Search'),
+                'btn-empty-clear-notif'
+            );
+
+            // Re-bind click handlers
+            const items = container.querySelectorAll('.notif-item');
+            items.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const target = e.currentTarget as HTMLElement;
+                    const notifId = target.getAttribute('data-notif-id');
+                    const notif = this._notifications.find(n => n.id === notifId);
+                    if (notif) {
+                        this._audioManager.playClick();
+                        notif.read = !notif.read;
+                        this._saveNotifications();
+                        const input = document.getElementById('notif-search-input') as HTMLInputElement;
+                        this._filterNotifications(input ? input.value : '');
+                    }
+                });
+            });
+
+            // Bind Clear search btn
+            document.getElementById('btn-empty-clear-notif')?.addEventListener('click', () => {
+                this._audioManager.playClick();
+                const input = document.getElementById('notif-search-input') as HTMLInputElement;
+                if (input) {
+                    input.value = '';
+                    this._filterNotifications('');
+                }
+            });
+        }
+    }
+
     private _bindEvents(): void {
         document.getElementById('btn-back')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._onBack();
+        });
+
+        // Search input event
+        const searchInput = document.getElementById('notif-search-input') as HTMLInputElement;
+        searchInput?.addEventListener('input', (e) => {
+            const query = (e.target as HTMLInputElement).value;
+            this._filterNotifications(query);
         });
 
         document.getElementById('btn-mark-read')?.addEventListener('click', () => {

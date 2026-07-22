@@ -478,7 +478,14 @@ export class ScoreboardQuestionScreen {
     }
 
     private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement): void {
-        const responseTimeSec = parseFloat(((performance.now() - this._startTimeMs) / 1000).toFixed(1));
+        let responseTimeSec = parseFloat(((performance.now() - this._startTimeMs) / 1000).toFixed(1));
+        
+        // Anti-cheat: prevent timer manipulation (> 15.5s)
+        if (responseTimeSec > 15.5) {
+            this._handleTimeOut();
+            return;
+        }
+
         const q = this._questions[this._currentIndex];
         const isCorrect = chosenIndex === q.correctIndex;
         

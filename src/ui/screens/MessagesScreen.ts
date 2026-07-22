@@ -152,6 +152,19 @@ export class MessagesScreen {
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">
                     
+                    <!-- Search Input -->
+                    <input type="text" id="msg-search-input" placeholder="🔍 Search messages..." style="
+                        width: 100%; 
+                        padding: 10px 14px; 
+                        background: rgba(0,0,0,0.2); 
+                        border: 1px solid rgba(255,255,255,0.1); 
+                        border-radius: 8px; 
+                        color: white; 
+                        font-size: 13px; 
+                        margin-bottom: 16px; 
+                        box-sizing: border-box;
+                    ">
+
                     <!-- Tabs Segmented Control -->
                     <div style="display: flex; gap: 8px; margin-bottom: 20px;">
                         <button class="msg-tab" data-tab-id="global" style="${tabStyle('global')}">📢 GLOBAL</button>
@@ -160,7 +173,7 @@ export class MessagesScreen {
                     </div>
 
                     <!-- Messages Container -->
-                    <div>
+                    <div id="messages-list-wrapper">
                         ${messagesHtml}
                     </div>
 
@@ -171,10 +184,67 @@ export class MessagesScreen {
         this._bindEvents();
     }
 
+    private _filterMessages(query: string): void {
+        const locale = i18n.currentLocale;
+        let messagesList: MessageItem[] = [];
+        if (this._activeTab === 'global') messagesList = GLOBAL_MESSAGES;
+        else if (this._activeTab === 'inbox') messagesList = INBOX_MESSAGES;
+        else if (this._activeTab === 'sent') messagesList = SENT_MESSAGES;
+
+        if (query.trim()) {
+            const q = query.toLowerCase();
+            messagesList = messagesList.filter(item => 
+                item.sender.toLowerCase().includes(q) || 
+                (item.text[locale] || '').toLowerCase().includes(q) ||
+                (item.text['en'] || '').toLowerCase().includes(q)
+            );
+        }
+
+        const wrapper = document.getElementById('messages-list-wrapper');
+        if (wrapper) {
+            wrapper.innerHTML = messagesList.length > 0 ? messagesList.map(item => {
+                const isMeSender = item.sender === 'Me';
+                const displayName = isMeSender ? `To: ${item.recipient}` : `From: ${item.sender}`;
+                return `
+                    <div class="glass-card" style="padding: 16px; margin-bottom: 12px; border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'var(--tv-gold-primary)'}; background: ${item.read ? 'rgba(15,23,42,0.6)' : 'rgba(255,215,0,0.02)'}; position: relative;">
+                        ${!item.read ? `
+                            <div style="position: absolute; top: 16px; right: 16px; width: 6px; height: 6px; border-radius: 50%; background: var(--tv-pitch-green);"></div>
+                        ` : ''}
+                        <div style="font-size: 13px; font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 4px;">${displayName}</div>
+                        <div style="font-size: 14px; color: white; line-height: 1.4; margin-bottom: 8px;">${item.text[locale] || item.text['en']}</div>
+                        <div style="font-size: 10px; color: #64748B; font-weight: 700;">⏱️ ${item.time}</div>
+                    </div>
+                `;
+            }).join('') : LoaderHelper.getEmptyStateHtml(
+                'search',
+                'No messages match your search query. Try typing something else!',
+                'Clear Search',
+                'btn-empty-clear-search'
+            );
+
+            // Bind clear search button
+            document.getElementById('btn-empty-clear-search')?.addEventListener('click', () => {
+                this._audioManager.playClick();
+                const input = document.getElementById('msg-search-input') as HTMLInputElement;
+                if (input) {
+                    input.value = '';
+                    this._filterMessages('');
+                }
+            });
+        }
+    }
+
     private _bindEvents(): void {
         document.getElementById('btn-msg-back')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._onBack();
+        });
+
+        // Search keyup monitor
+        const searchInput = document.getElementById('msg-search-input') as HTMLInputElement;
+        searchInput?.addEventListener('input', (e) => {
+            const query = (e.target as HTMLInputElement).value;
+            this._filterMessages(query);
         });
 
         const tabs = this._uiManager.container.querySelectorAll('.msg-tab');
