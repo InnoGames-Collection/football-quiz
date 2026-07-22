@@ -1,3 +1,5 @@
+import { i18n } from '../../localization/i18n';
+
 export type TabId = 'home' | 'play' | 'league' | 'rankings' | 'profile';
 
 export interface TabConfig {
@@ -8,6 +10,7 @@ export interface TabConfig {
 
 export class BottomNav {
     private static _activeTab: TabId = 'home';
+    private static _lastCallback: ((tabId: TabId) => void) | null = null;
 
     private static TABS: TabConfig[] = [
         { id: 'home', label: 'Home', icon: '🏠' },
@@ -16,6 +19,14 @@ export class BottomNav {
         { id: 'rankings', label: 'Rankings', icon: '📊' },
         { id: 'profile', label: 'Profile', icon: '👤' }
     ];
+
+    private static LABELS: Record<string, Record<string, string>> = {
+        home: { en: 'Home', am: 'መነሻ', om: 'Mula\'a' },
+        play: { en: 'Play', am: 'ተጫወት', om: 'Taphadhu' },
+        league: { en: 'League', am: 'ሊግ', om: 'Liigii' },
+        rankings: { en: 'Rankings', am: 'ደረጃዎች', om: 'Sadarkaa' },
+        profile: { en: 'Profile', am: 'መገለጫ', om: 'Profile' }
+    };
 
     public static get activeTab(): TabId {
         return BottomNav._activeTab;
@@ -26,7 +37,14 @@ export class BottomNav {
         BottomNav.updateTabHighlights();
     }
 
+    public static refresh(): void {
+        if (BottomNav._lastCallback) {
+            BottomNav.render(BottomNav._lastCallback);
+        }
+    }
+
     public static render(onTabChange: (tabId: TabId) => void): void {
+        BottomNav._lastCallback = onTabChange;
         let navContainer = document.getElementById('fds-bottom-nav');
         if (!navContainer) {
             navContainer = document.createElement('div');
@@ -46,13 +64,16 @@ export class BottomNav {
             navContainer.style.zIndex = '9000';
             navContainer.style.display = 'flex';
             navContainer.style.justifyContent = 'space-around';
-            navContainer.style.alignItems = 'center'; // Usually center, but paddingBottom handles the safe area offset
+            navContainer.style.alignItems = 'center';
             navContainer.style.pointerEvents = 'auto';
             document.body.appendChild(navContainer);
         }
 
+        const locale = i18n.currentLocale;
+
         navContainer.innerHTML = BottomNav.TABS.map(t => {
             const isActive = t.id === BottomNav._activeTab;
+            const tabLabel = BottomNav.LABELS[t.id][locale] || t.label;
             return `
                 <button class="nav-tab-item ${isActive ? 'nav-tab-active' : ''}" data-tab-id="${t.id}" style="
                     background: none;
@@ -70,12 +91,12 @@ export class BottomNav {
                     outline: none;
                 ">
                     <span style="font-size: 20px; margin-bottom: 2px;">${t.icon}</span>
-                    <span style="
+                    <span class="tab-text" style="
                         font-size: var(--fds-font-xs);
                         font-weight: ${isActive ? '800' : '600'};
                         letter-spacing: 0.5px;
                         font-family: var(--fds-font-body);
-                    ">${t.label}</span>
+                    ">${tabLabel}</span>
                 </button>
             `;
         }).join('');
@@ -104,7 +125,7 @@ export class BottomNav {
             const isActive = tabId === BottomNav._activeTab;
             const element = btn as HTMLElement;
             element.style.color = isActive ? 'var(--fds-gold-primary, #FFD700)' : '#94A3B8';
-            const labelSpan = element.querySelector('span:nth-child(2)') as HTMLElement;
+            const labelSpan = element.querySelector('.tab-text') as HTMLElement;
             if (labelSpan) {
                 labelSpan.style.fontWeight = isActive ? '800' : '600';
             }

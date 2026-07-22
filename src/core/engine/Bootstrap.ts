@@ -13,6 +13,7 @@ import { LiveMatchScreen } from '../../ui/screens/LiveMatchScreen';
 import { QuestionBank } from '../quiz/QuestionBank';
 import { BottomNav, TabId } from '../../ui/components/BottomNav';
 import { SettingsScreen } from '../../ui/screens/SettingsScreen';
+import { NotificationScreen } from '../../ui/screens/NotificationScreen';
 
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
@@ -28,7 +29,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioAuth = authManager;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin';
+    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications';
     let navigationStack: RouteName[] = [];
     let currentTab: TabId = 'home';
 
@@ -55,7 +56,8 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onLeaderboard: () => navigateToTab('rankings'),
                         onAchievements: () => navigateToTab('profile'),
                         onAdminPanel: () => renderRoute('admin'),
-                        onSettings: () => renderRoute('settings')
+                        onSettings: () => renderRoute('settings'),
+                        onNotifications: () => renderRoute('notifications')
                     }
                 );
                 homeScreen.render();
@@ -116,6 +118,14 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     handleBack
                 );
                 settings.render();
+                break;
+
+            case 'notifications':
+                const notifScreen = new NotificationScreen(
+                    game.uiManager, game.audioManager,
+                    handleBack
+                );
+                notifScreen.render();
                 break;
 
             case 'admin':

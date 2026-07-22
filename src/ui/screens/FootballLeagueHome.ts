@@ -14,6 +14,7 @@ export interface FootballHomeCallbacks {
     onAchievements: () => void;
     onAdminPanel: () => void;
     onSettings: () => void;
+    onNotifications?: () => void;
 }
 
 export class FootballLeagueHome {
@@ -32,127 +33,163 @@ export class FootballLeagueHome {
     public render(): void {
         const root = this._uiManager.container;
         const profile = this._saveManager.profile;
-        const rank = ProgressionManager.getRank(profile.xp);
         const division = ProgressionManager.getDivision(profile.xp);
-        const levelInfo = ProgressionManager.getLevel(profile.xp);
-        const msisdn = "+251 911 *** ***"; // Mock MSISDN
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
                 
-                <!-- ETHIO FANTASY APP BAR -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: space-between; padding: 12px 16px;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--tv-pitch-green); display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                            👤
+                <!-- TOP APP BAR -->
+                <div class="tv-broadcast-header" style="justify-content: space-between; padding: 12px 16px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <!-- Left: Masked MSISDN -->
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">👤</span>
+                        <span style="font-weight: 800; font-size: 15px; color: #CBD5E1; font-family: var(--fds-font-mono);">${this._maskPhone(profile.phone || '251911223345')}</span>
+                    </div>
+                    <!-- Right: Notification & Settings Toggles -->
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <button id="btn-notif" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 4px; display: flex; align-items: center;">
+                            🔔
+                        </button>
+                        <button id="btn-settings" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 4px; display: flex; align-items: center;">
+                            <!-- 6-tooth gear SVG -->
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- COMPACT TELEMETRY ROW -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px; background: rgba(0,0,0,0.35); border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center;">
+                    <div>
+                        <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Current League</div>
+                        <div style="font-size: 14px; font-weight: 900; color: ${division.color}; margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <span>${division.badge}</span> <span>${division.name}</span>
                         </div>
-                        <div style="font-weight: 900; font-size: 18px; letter-spacing: 1px;">ETHIO FANTASY</div>
                     </div>
-                    <button id="btn-settings" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">
-                        ⚙️
-                    </button>
-                </div>
-
-                <!-- COMPACT TELEMETRY BAR -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 12px 16px; background: rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center;">
-                    <div>
-                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">MSISDN</div>
-                        <div style="font-size: 12px; font-weight: 600; color: white; margin-top: 2px;">${msisdn}</div>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
+                        <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Current Rank</div>
+                        <div style="font-size: 14px; font-weight: 900; color: white; margin-top: 4px;">#4</div>
                     </div>
                     <div>
-                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">League</div>
-                        <div style="font-size: 12px; font-weight: 600; color: ${division.color}; margin-top: 2px;">${division.name}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Rank</div>
-                        <div style="font-size: 12px; font-weight: 600; color: white; margin-top: 2px;">${rank.name}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Points</div>
-                        <div style="font-size: 12px; font-weight: 600; color: #60A5FA; margin-top: 2px;">${profile.xp} XP</div>
+                        <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Current Points</div>
+                        <div style="font-size: 14px; font-weight: 900; color: var(--tv-gold-primary); margin-top: 4px;">${profile.xp} XP</div>
                     </div>
                 </div>
 
+                <!-- SCROLLABLE BODY CONTENT -->
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px;">
                     
-                    <!-- 1. Daily Challenge (Primary) -->
-                    <div class="glass-card" style="border-color: var(--tv-gold-primary); background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(15,23,42,0.8) 100%); padding: 20px; text-align: center; margin-bottom: 16px; cursor: pointer;" id="card-daily">
+                    <!-- AD BANNER PLACEHOLDER -->
+                    <div class="glass-card" style="
+                        background: linear-gradient(90deg, #1E3A8A 0%, #3B82F6 100%);
+                        padding: 16px;
+                        border-radius: 12px;
+                        margin-bottom: 20px;
+                        position: relative;
+                        overflow: hidden;
+                        border-color: rgba(59, 130, 246, 0.4);
+                    ">
+                        <div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2;">
+                            <div>
+                                <div style="font-size: 10px; font-weight: 800; color: #93C5FD; text-transform: uppercase; letter-spacing: 1px;">SPONSORED ADVERTISEMENT</div>
+                                <div style="font-size: 15px; font-weight: 900; color: white; margin-top: 4px;">ETHIO TELECOM 5G</div>
+                                <div style="font-size: 12px; color: #DBEAFE; margin-top: 2px;">Experience Ultra-Fast Internet & Quiz Night Prizes!</div>
+                            </div>
+                            <div style="font-size: 28px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));">🚀</div>
+                        </div>
+                        <div style="position: absolute; top: -50%; right: -20%; width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 60%); pointer-events: none; z-index: 1;"></div>
+                    </div>
+
+                    <!-- 1. DAILY CHALLENGE -->
+                    <div class="glass-card" style="border-color: var(--tv-gold-primary); background: linear-gradient(135deg, rgba(255,215,0,0.15) 0%, rgba(15,23,42,0.85) 100%); padding: 20px; text-align: center; margin-bottom: 20px; cursor: pointer; position: relative;" id="card-daily">
                         <div style="font-size: 32px; margin-bottom: 8px;">📅</div>
-                        <div style="font-size: 20px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 12px;">DAILY CHALLENGE</div>
+                        <div style="font-size: 18px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;">DAILY CHALLENGE</div>
+                        <div style="font-size: 13px; color: #CBD5E1; margin-bottom: 16px;">Test your knowledge in today's football quiz and double your reward points!</div>
                         ${DesignSystem.Button({ id: 'btn-daily-match', text: 'PLAY NOW (+500 XP)', variant: 'gold', fullWidth: true })}
                     </div>
 
-                    <!-- 2. Quick Play -->
-                    <div class="glass-card" style="border-color: var(--tv-pitch-green); background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(15,23,42,0.8) 100%); padding: 20px; text-align: center; margin-bottom: 16px; cursor: pointer;" id="card-quickplay">
-                        <div style="font-size: 32px; margin-bottom: 8px;">⚡</div>
-                        <div style="font-size: 18px; font-weight: 900; color: var(--tv-pitch-green); margin-bottom: 12px;">QUICK PLAY</div>
-                        ${DesignSystem.Button({ id: 'btn-quick-kickoff', text: 'START MATCH ⚽', variant: 'green', fullWidth: true })}
+                    <!-- 2. YOUR STATISTICS -->
+                    <div class="glass-card" style="padding: 16px; border-color: #F472B6; margin-bottom: 20px;">
+                        <div style="font-size: 11px; font-weight: 800; color: #F472B6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📊 Your Statistics</div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); text-align: center;">
+                            <div>
+                                <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">WIN RATE</div>
+                                <div style="font-size: 16px; font-weight: 900; color: white; margin-top: 4px;">${Math.round(((profile.totalWins || 0) / (profile.totalMatches || 1)) * 100)}%</div>
+                            </div>
+                            <div style="border-left: 1px solid rgba(255,255,255,0.06); border-right: 1px solid rgba(255,255,255,0.06);">
+                                <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">MATCHES</div>
+                                <div style="font-size: 16px; font-weight: 900; color: white; margin-top: 4px;">${profile.totalMatches || 0}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">STREAK</div>
+                                <div style="font-size: 16px; font-weight: 900; color: white; margin-top: 4px;">🔥 ${profile.streakCount || 0}</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
-                        <!-- 3. Current League -->
-                        <div class="glass-card" style="padding: 16px; border-color: ${division.color}; cursor: pointer;" id="card-league">
-                            <div style="font-size: 11px; font-weight: 800; color: ${division.color}; margin-bottom: 8px;">🏆 CURRENT LEAGUE</div>
-                            <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 8px;">${division.badge} ${division.name}</div>
-                            ${DesignSystem.ProgressBar(levelInfo.progressPercent, division.color)}
-                        </div>
+                    <!-- 3. QUICK ACTIONS -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                        <button id="action-quickplay" class="glass-card" style="padding: 16px; border-color: var(--tv-pitch-green); display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(34,197,94,0.08); min-height: 90px; gap: 8px; cursor: pointer; transition: all 0.2s; border-radius: 14px;">
+                            <span style="font-size: 28px;">⚡</span>
+                            <span style="font-size: 13px; font-weight: 800; color: var(--tv-pitch-green); text-transform: uppercase;">Quick Play</span>
+                        </button>
+                        <button id="action-livematch" class="glass-card" style="padding: 16px; border-color: #38BDF8; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(56,189,248,0.08); min-height: 90px; gap: 8px; cursor: pointer; transition: all 0.2s; border-radius: 14px;">
+                            <span style="font-size: 28px;">⚽</span>
+                            <span style="font-size: 13px; font-weight: 800; color: #38BDF8; text-transform: uppercase;">Live 1v1 Match</span>
+                        </button>
+                    </div>
 
-                        <!-- 4. Daily Progress -->
-                        <div class="glass-card" style="padding: 16px; border-color: #38BDF8;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                <div style="font-size: 11px; font-weight: 800; color: #38BDF8;">📈 DAILY PROGRESS</div>
-                                <div style="font-size: 11px; font-weight: 800; color: #38BDF8;">Level ${levelInfo.level}</div>
+                    <!-- 4. LATEST TOURNAMENT WINNERS -->
+                    <div class="glass-card" style="padding: 16px; margin-bottom: 20px; border-color: rgba(255,215,0,0.2);">
+                        <div style="font-size: 11px; font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🎖️ Tournament Winners</div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 13px; font-weight: 700; color: white;">🥇 Abebe K.</span>
+                                <span style="font-size: 12px; font-weight: 800; color: var(--tv-gold-primary);">5800 pts</span>
                             </div>
-                            <div style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 8px; font-family: var(--fds-font-mono);">${levelInfo.currentXp} / ${levelInfo.nextLevelXp} XP</div>
-                            ${DesignSystem.ProgressBar(levelInfo.progressPercent, '#38BDF8')}
-                        </div>
-
-                        <!-- 5. Your Statistics -->
-                        <div class="glass-card" style="padding: 16px; border-color: #F472B6;">
-                            <div style="font-size: 11px; font-weight: 800; color: #F472B6; margin-bottom: 12px;">📊 YOUR STATISTICS</div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <div>
-                                    <div style="font-size: 10px; color: #94A3B8; font-weight: 700;">WIN RATE</div>
-                                    <div style="font-size: 16px; font-weight: 800; color: white;">${Math.round(((profile.totalWins || 0) / (profile.totalMatches || 1)) * 100)}%</div>
-                                </div>
-                                <div>
-                                    <div style="font-size: 10px; color: #94A3B8; font-weight: 700;">MATCHES</div>
-                                    <div style="font-size: 16px; font-weight: 800; color: white;">${profile.totalMatches || 0}</div>
-                                </div>
-                                <div>
-                                    <div style="font-size: 10px; color: #94A3B8; font-weight: 700;">STREAK</div>
-                                    <div style="font-size: 16px; font-weight: 800; color: white;">${profile.streakCount || 0}</div>
-                                </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 13px; font-weight: 700; color: #CBD5E1;">🥈 Yonas M.</span>
+                                <span style="font-size: 12px; font-weight: 800; color: #94A3B8;">5100 pts</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 13px; font-weight: 700; color: #94A3B8;">🥉 Biruk T.</span>
+                                <span style="font-size: 12px; font-weight: 800; color: #64748B;">4950 pts</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- 6. Latest Winners -->
-                        <div class="glass-card" style="padding: 16px; cursor: pointer;" id="card-leaderboard">
-                            <div style="font-size: 11px; font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 12px;">🎖️ TOURNAMENT WINNERS</div>
-                            <div style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px;">🥇 Abebe K.</div>
-                            <div style="font-size: 14px; font-weight: 700; color: #CBD5E1; margin-bottom: 4px;">🥈 Yonas M.</div>
-                            <div style="font-size: 14px; font-weight: 700; color: #94A3B8;">🥉 Biruk T.</div>
-                        </div>
-
-                        <!-- 7. Upcoming Competitions -->
-                        <div class="glass-card" style="padding: 16px;">
-                            <div style="font-size: 11px; font-weight: 800; color: #A78BFA; margin-bottom: 12px;">📅 UPCOMING</div>
-                            <div style="font-size: 14px; font-weight: 800; color: white;">⚽ Ethiopian Premier Derby</div>
-                            <div style="font-size: 12px; color: #A78BFA; margin-bottom: 12px;">Today 20:00 EAT</div>
-                            <div style="font-size: 14px; font-weight: 800; color: white;">🌍 CAF Champions Quiz</div>
-                            <div style="font-size: 12px; color: #A78BFA;">Saturday 18:00 EAT</div>
-                        </div>
-
-                        <!-- 8. Recent Activity -->
-                        <div class="glass-card" style="padding: 16px;">
-                            <div style="font-size: 11px; font-weight: 800; color: #F472B6; margin-bottom: 12px;">⏱️ RECENT ACTIVITY</div>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <span style="font-size: 20px;">🎯</span>
+                    <!-- 5. UPCOMING COMPETITIONS -->
+                    <div class="glass-card" style="padding: 16px; margin-bottom: 20px; border-color: #A78BFA;">
+                        <div style="font-size: 11px; font-weight: 800; color: #A78BFA; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📅 Upcoming Competitions</div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <div style="font-size: 14px; font-weight: 800; color: white;">Match Completed</div>
-                                    <div style="font-size: 12px; color: #94A3B8;">+240 XP</div>
+                                    <div style="font-size: 13px; font-weight: 800; color: white;">⚽ Ethiopian Premier Derby</div>
+                                    <div style="font-size: 11px; color: #A78BFA; margin-top: 2px;">Walia Cup Qualifier</div>
                                 </div>
+                                <span style="font-size: 12px; font-weight: 800; color: white; background: rgba(167,139,250,0.15); padding: 4px 8px; border-radius: 4px;">Today 20:00 EAT</span>
                             </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-size: 13px; font-weight: 800; color: white;">🌍 CAF Champions League Quiz</div>
+                                    <div style="font-size: 11px; color: #A78BFA; margin-top: 2px;">Continental Trivia</div>
+                                </div>
+                                <span style="font-size: 12px; font-weight: 800; color: white; background: rgba(167,139,250,0.15); padding: 4px 8px; border-radius: 4px;">Saturday 18:00 EAT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. RECENT ACTIVITY -->
+                    <div class="glass-card" style="padding: 16px; border-color: #F472B6; margin-bottom: 20px;">
+                        <div style="font-size: 11px; font-weight: 800; color: #F472B6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">⏱️ Recent Activity</div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 24px;">🎯</span>
+                            <div style="flex: 1;">
+                                <div style="font-size: 13px; font-weight: 800; color: white;">Solo Match Completed</div>
+                                <div style="font-size: 11px; color: #94A3B8; margin-top: 2px;">Walia Ibex Division</div>
+                            </div>
+                            <span style="font-size: 13px; font-weight: 800; color: #22C55E;">+240 XP</span>
                         </div>
                     </div>
 
@@ -170,13 +207,23 @@ export class FootballLeagueHome {
             if (this._callbacks.onSettings) this._callbacks.onSettings();
         });
 
+        document.getElementById('btn-notif')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            if (this._callbacks.onNotifications) this._callbacks.onNotifications();
+        });
+
         document.getElementById('btn-quick-kickoff')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._callbacks.onKickOff();
         });
-        document.getElementById('card-quickplay')?.addEventListener('click', () => {
+        document.getElementById('action-quickplay')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._callbacks.onKickOff();
+        });
+
+        document.getElementById('action-livematch')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._callbacks.onLiveMatch();
         });
 
         document.getElementById('btn-daily-match')?.addEventListener('click', () => {
@@ -187,15 +234,16 @@ export class FootballLeagueHome {
             this._audioManager.playClick();
             this._callbacks.onDailyChallenge();
         });
+    }
 
-        document.getElementById('card-league')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            this._callbacks.onCompetitions();
-        });
-
-        document.getElementById('card-leaderboard')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            this._callbacks.onLeaderboard();
-        });
+    private _maskPhone(phone: string): string {
+        let clean = phone.replace(/[^0-9]/g, '');
+        if (clean.length < 10) {
+            clean = '251911223345';
+        }
+        if (!clean.startsWith('251')) {
+            clean = '251' + clean.replace(/^0+/, '');
+        }
+        return clean.substring(0, 4) + '****' + clean.substring(clean.length - 2);
     }
 }
