@@ -16,7 +16,7 @@ export interface UserProfile {
 }
 
 export class SaveManager {
-    private static STORAGE_KEY = 'ETHIO_FOOTBALL_SAVE_V1';
+    private static STORAGE_KEY = 'ETHIO_FOOTBALL_SAVE_V3';
     private _profile: UserProfile;
     private _cloudUserId: string | null = null;
 
@@ -36,13 +36,13 @@ export class SaveManager {
 
         return {
             username: 'Walia Player',
-            coins: 100,
+            coins: 0,
             xp: 0,
             highScores: {
                 'football-quiz': 0
             },
             unlockedItems: ['default-ball', 'default-jersey'],
-            eloRating: 1200,
+            eloRating: 0,
             streakCount: 0,
             totalMatches: 0,
             totalWins: 0
@@ -80,7 +80,7 @@ export class SaveManager {
                     username: this._profile.username,
                     coins: this._profile.coins,
                     xp: this._profile.xp,
-                    elo_rating: this._profile.eloRating || 1200,
+                    elo_rating: this._profile.eloRating || 0,
                     streak_count: this._profile.streakCount || 0,
                     last_active: new Date().toISOString()
                 })

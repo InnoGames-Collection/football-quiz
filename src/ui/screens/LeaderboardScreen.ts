@@ -149,7 +149,7 @@ export class LeaderboardScreen {
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 14px; font-weight: 900; color: var(--fds-gold-primary);">${profile.eloRating || 1200} PTS</div>
+                            <div style="font-size: 14px; font-weight: 900; color: var(--fds-gold-primary);">${profile.eloRating || 0} PTS</div>
                             <div style="font-size: 11px; color: #CBD5E1;">${profile.xp} XP</div>
                         </div>
                     </div>

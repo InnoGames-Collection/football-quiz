@@ -36,7 +36,7 @@ export class MatchmakingScreen {
             phone: null,
             avatar_url: null,
             locale: 'en',
-            elo_rating: profile.eloRating || 1200,
+            elo_rating: profile.eloRating || 0,
             coins: profile.coins,
             xp: profile.xp,
             total_matches: 10,
@@ -65,7 +65,7 @@ export class MatchmakingScreen {
                     </div>
 
                     <div style="font-family: var(--tv-mono); font-weight: 800; font-size: 13px; color: var(--tv-gold-primary);">
-                        ELO: ${profile.eloRating || 1200}
+                        ELO: ${profile.eloRating || 0}
                     </div>
                 </div>
 
@@ -108,7 +108,7 @@ export class MatchmakingScreen {
                         ">
                             <div>
                                 <div style="font-size: 12px; color: #94A3B8;">YOUR RATING</div>
-                                <div style="font-size: 20px; font-weight: 900; color: #FFD700;">⚡ ${profile.eloRating || 1200} ELO</div>
+                                <div style="font-size: 20px; font-weight: 900; color: #FFD700;">⚡ ${profile.eloRating || 0} ELO</div>
                             </div>
                             <div style="height: 30px; width: 1px; background: rgba(255,255,255,0.1);"></div>
                             <div>

@@ -62,17 +62,17 @@ export class FootballLeagueHome {
                             ⚽
                         </div>
                         <div>
-                            <div style="font-size: 9px; font-weight: 800; color: #009A44; text-transform: uppercase; letter-spacing: 1px;">ETHIO TELECOM VAS</div>
+                            <div style="font-size: 9px; font-weight: 800; color: #009A44; text-transform: uppercase; letter-spacing: 1px;">ETHIO FANTASY</div>
                             <div style="font-weight: 900; font-size: 14px; color: white; font-family: var(--fds-font-mono);">${profile.phone ? this._maskPhone(profile.phone) : 'Guest'}</div>
                         </div>
                     </div>
 
                     <!-- Right: Notification & Settings -->
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <button id="btn-notif" class="m3-btn m3-btn-icon m3-btn-secondary" style="width: 44px; height: 44px;">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <button id="btn-notif" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                             🔔
                         </button>
-                        <button id="btn-settings" class="m3-btn m3-btn-icon m3-btn-secondary" style="width: 44px; height: 44px;">
+                        <button id="btn-settings" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                             ⚙️
                         </button>
                     </div>
@@ -186,7 +186,7 @@ export class FootballLeagueHome {
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.06);">
                                 <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase;">SCORE</div>
-                                <div style="font-size: 15px; font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">${profile.eloRating || 1200}</div>
+                                <div style="font-size: 15px; font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">${profile.eloRating || 0}</div>
                             </div>
                         </div>
                     </div>
@@ -277,7 +277,7 @@ export class FootballLeagueHome {
         const comps = CompetitionRegistry.getAll().filter(c => c.status === 'live');
         const daily = comps.find(c => c.id === 'daily') || comps[0];
         
-        let targetTime = new Date().getTime() + (14 * 3600 + 22 * 60 + 45) * 1000;
+        let targetTime = new Date().setHours(23, 59, 59, 999);
         if (daily && daily.end_time) {
             targetTime = new Date(daily.end_time).getTime();
         }

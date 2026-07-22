@@ -330,7 +330,7 @@ export class LiveMatchScreen {
 
     private _showFinalResults(): void {
         const root = this._uiManager.container;
-        const myElo = this._saveManager.profile.eloRating || 1200;
+        const myElo = this._saveManager.profile.eloRating || 0;
         const isWinner = this._myScore > this._opponentScore;
         const isDraw = this._myScore === this._opponentScore;
 
