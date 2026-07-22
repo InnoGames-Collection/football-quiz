@@ -5,6 +5,7 @@ import { i18n } from '../../localization/i18n';
 import { AuthManager } from '../../core/auth/AuthManager';
 import { BottomNav } from '../components/BottomNav';
 
+
 export interface AppSettings {
     soundEffects: boolean;
     notifications: {
@@ -24,6 +25,8 @@ export class SettingsScreen {
     private _onBack: () => void;
     private _subScreen: 'main' | 'profile' | 'language' | 'notifications' | 'sound' | 'help' | 'terms' | 'privacy' | 'about' = 'main';
     private _settings!: AppSettings;
+    private _helpCategory: string | null = null;
+    private _showContactSupportForm: boolean = false;
 
     constructor(uiManager: UIManager, saveManager: SaveManager, audioManager: AudioManager, onBack: () => void) {
         this._uiManager = uiManager;
@@ -66,7 +69,7 @@ export class SettingsScreen {
     private _saveSettings(): void {
         localStorage.setItem('ETHIO_FOOTBALL_SETTINGS_V2', JSON.stringify(this._settings));
         localStorage.setItem('ETHIO_FOOTBALL_MUTED', String(!this._settings.soundEffects));
-        // Update AudioManager if necessary
+        
         if (this._settings.soundEffects && this._audioManager.isMuted) {
             this._audioManager.toggleMute();
         } else if (!this._settings.soundEffects && !this._audioManager.isMuted) {
@@ -79,7 +82,7 @@ export class SettingsScreen {
         const locale = i18n.currentLocale;
 
         // Custom localized header helper
-        const header = (title: string, _backAction: () => void) => `
+        const header = (title: string, _backAction?: () => void) => `
             <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
                 <button id="btn-back-sub" style="
                     background: none; border: none; color: white; font-size: 24px; padding: 8px 16px; cursor: pointer;
@@ -130,7 +133,6 @@ export class SettingsScreen {
             </div>
         `;
 
-        // Localized Strings
         const strings: Record<string, any> = {
             en: {
                 title: 'SETTINGS',
@@ -259,8 +261,7 @@ export class SettingsScreen {
             this._audioManager.playClick();
             if (confirm(locale === 'am' ? 'በእርግጥ መውጣት ይፈልጋሉ?' : (locale === 'om' ? 'Dhuguma ba\'uu barbaadduu?' : 'Are you sure you want to log out?'))) {
                 await AuthManager.getInstance().signOut();
-                // Redirect to auth route
-                window.location.reload(); // Hard reload is the safest to reset all state to Guest
+                window.location.reload();
             }
         });
     }
@@ -268,8 +269,6 @@ export class SettingsScreen {
     private _renderProfileScreen(root: HTMLElement, locale: string, header: Function): void {
         const profile = this._saveManager.profile;
         const maskedMsisdn = this._maskPhone(profile.phone || '251911223345');
-
-        // Static registration date helper
         const regDate = 'July 22, 2026';
         const subStatus = profile.eloRating && profile.eloRating > 1400 ? 'Active Premium' : 'Active Basic';
 
@@ -296,7 +295,7 @@ export class SettingsScreen {
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
@@ -341,7 +340,7 @@ export class SettingsScreen {
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
@@ -357,7 +356,6 @@ export class SettingsScreen {
 
         this._bindSubBack();
 
-        // Bind lang item clicks
         const items = root.querySelectorAll('.lang-item');
         items.forEach(item => {
             item.addEventListener('click', (e) => {
@@ -424,7 +422,7 @@ export class SettingsScreen {
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
@@ -481,7 +479,6 @@ export class SettingsScreen {
 
         this._bindSubBack();
 
-        // Bind toggles
         const toggles = root.querySelectorAll('.notif-toggle');
         toggles.forEach(toggle => {
             toggle.addEventListener('change', (e) => {
@@ -527,7 +524,7 @@ export class SettingsScreen {
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
@@ -542,7 +539,6 @@ export class SettingsScreen {
 
         this._bindSubBack();
 
-        // Bind sound clicks
         const items = root.querySelectorAll('.sound-item');
         items.forEach(item => {
             item.addEventListener('click', (e) => {
@@ -563,67 +559,253 @@ export class SettingsScreen {
             om: 'GARGAARSA'
         };
 
-        const faqs: Record<string, { q: string; a: string }[]> = {
-            en: [
-                { q: 'How do I play the quiz?', a: 'Tap "Play" or "Quick Play" from the Home dashboard to select a category. Answer questions as fast as possible to score goals!' },
-                { q: 'How are ELO ratings calculated?', a: 'Winning Live 1v1 Matches increases your ELO rating. Scoring goals with high accuracy yields maximum points.' },
-                { q: 'How do I win weekly prizes?', a: 'Top players in the rankings list at the end of the week win exclusive rewards. Keep active to maintain your rank!' }
+        const helpCategories: { id: string; name: Record<string, string>; icon: string }[] = [
+            { id: 'account', name: { en: 'Account', am: 'መለያ', om: 'Herrega' }, icon: '👤' },
+            { id: 'subscription', name: { en: 'Subscription', am: 'ምዝገባ', om: 'Kaffaltii' }, icon: '💳' },
+            { id: 'unsubscription', name: { en: 'Unsubscription', am: 'ምዝገባ መሰረዝ', om: 'Haquu' }, icon: '🛑' },
+            { id: 'dailyChallenge', name: { en: 'Daily Challenge', am: 'የዕለት ተግዳሮት', om: 'Qormaata Guyyaa' }, icon: '📅' },
+            { id: 'tournament', name: { en: 'Tournament', am: 'ውድድር', om: 'Dorgommii' }, icon: '🏆' },
+            { id: 'rewards', name: { en: 'Rewards', am: 'ሽልማቶች', om: 'Badhaasa' }, icon: '🎁' },
+            { id: 'gameplay', name: { en: 'Gameplay', am: 'የጨዋታ ሁኔታ', om: 'Tapha' }, icon: '⚽' },
+            { id: 'leaderboard', name: { en: 'Leaderboard', am: 'ደረጃ ሰሌዳ', om: 'Sadarkaa' }, icon: '📊' },
+            { id: 'profile', name: { en: 'Profile', am: 'መገለጫ', om: 'Profile' }, icon: '👤' },
+            { id: 'notifications', name: { en: 'Notifications', am: 'ማሳወቂያዎች', om: 'Beeksisa' }, icon: '🔔' },
+            { id: 'technicalIssues', name: { en: 'Technical Issues', am: 'ቴክኒካዊ ጉዳዮች', om: 'Rakkina Sirnaa' }, icon: '🔧' },
+            { id: 'privacy', name: { en: 'Privacy', am: 'ምስጢራዊነት', om: 'Dhuunfaa' }, icon: '🔒' },
+            { id: 'terms', name: { en: 'Terms', am: 'ውሎች', om: 'Haalawwan' }, icon: '📜' }
+        ];
+
+        const HELP_FAQS: Record<string, { q: string; a: string }[]> = {
+            account: [
+                { q: 'How is my account created?', a: 'Your account is automatically created when you authenticate with your Ethio Telecom mobile phone number. There is no password required.' },
+                { q: 'Can I delete my account?', a: 'To delete your account data, please contact Ethio Telecom customer service or submit a support ticket via the app.' }
             ],
-            am: [
-                { q: 'ጥያቄውን እንዴት እጫወታለሁ?', a: 'ከመነሻ ገጽ ላይ "ተጫወት" ወይም "ፈጣን ጨዋታ" ን በመንካት የሚፈልጉትን ሊግ ይምረጡ። በፍጥነት በመመለስ ጎል ያስቆጥሩ!' },
-                { q: 'የኤሎ (ELO) ደረጃ እንዴት ነው የሚሰላው?', a: 'ቀጥታ 1v1 ውድድሮችን ማሸነፍ የእርስዎን የኤሎ ደረጃ ይጨምረዋል። ፈጣን እና ትክክለኛ ምላሽ ከፍተኛ ነጥብ ያስገኛል።' },
-                { q: 'ሳምንታዊ ሽልማት እንዴት ማግኘት እችላለሁ?', a: 'በሳምንቱ መጨረሻ በደረጃ ሰሌዳው አናት ላይ የሚገኙ ተጫዋቾች ልዩ ሽልማት ያገኛሉ። ደረጃዎን ለመጠበቅ ዘወትር ይወዳደሩ!' }
+            subscription: [
+                { q: 'What is Premium Subscription?', a: 'Premium subscription gives you unlimited daily plays, full access to all leagues, and entry into the weekly cash prize draws for 2 Birr/day.' },
+                { q: 'How do I pay for subscription?', a: 'Subscription fees are automatically deducted from your Ethio Telecom airtime balance daily.' }
             ],
-            om: [
-                { q: 'Gaaffii akkamittiin taphadha?', a: 'Mula\'a duraa irraa "Taphadhu" ykn "Tapha Saffisaa" tuquun garee dorgommii filadhu. Goolii galchuuf saffisaan deebisi!' },
-                { q: 'Sadarkaan ELO akkamittiin shallagama?', a: 'Tapha Kallattii 1v1 injifachuun sadarkaa ELO kee dabala. Goolii galchuun qabxii olaanaa kenna.' },
-                { q: 'Badhaasa torbanii akkamittiin mo\'adha?', a: 'Xumura torbaniitti dorgomtoota top ta\'an badhaasa addaa argatu. Sadarkaa kee eeggadhu!' }
+            unsubscription: [
+                { q: 'How do I unsubscribe?', a: 'You can cancel your active subscription anytime by going to Settings > Account > Profile and choosing Unsubscribe, or by sending "STOP" to the Ethio Telecom shortcode 8282.' }
+            ],
+            dailyChallenge: [
+                { q: 'What is the Daily Challenge?', a: 'The Daily Challenge is a special daily set of 10 trivia questions on hot football topics. Completing it awards double reward coins and a 1.5x XP bonus!' },
+                { q: 'How many times can I play the Daily Challenge?', a: 'You can play the Daily Challenge once per calendar day. It resets every night at midnight EAT.' }
+            ],
+            tournament: [
+                { q: 'How do tournaments work?', a: 'Tournaments are knockout brackets held every weekend. Players register during the week and compete live in 1v1 match phases to progress.' },
+                { q: 'What are the tournament entry requirements?', a: 'Premium subscribers can enter tournaments for free. Basic and free players must pay a 100 coin registration fee.' }
+            ],
+            rewards: [
+                { q: 'What rewards can I win?', a: 'You can win in-game coins, profile XP, custom football badges, and real cash prizes credited directly to your Ethio Telecom mobile account balance.' },
+                { q: 'When are weekly prizes distributed?', a: 'Weekly prizes are processed and sent every Monday at 10:00 AM EAT based on the final Sunday night division standings.' }
+            ],
+            gameplay: [
+                { q: 'How do I play a match?', a: 'Read the question carefully and tap the correct option before the timer runs out. Fast answers score Goals, while incorrect ones are Saved by the goalkeeper!' },
+                { q: 'How does the match timer work?', a: 'You have 30 seconds per question in Solo Matches, and 20 seconds in Live 1v1 Matches. Answering quicker increases your possession stat!' }
+            ],
+            leaderboard: [
+                { q: 'How are leaderboard points calculated?', a: 'Leaderboard standings are based on ELO ratings. You win ELO points by defeating opponents in Live 1v1 Matches and scoring high accuracy in Solo Matches.' },
+                { q: 'How often does the leaderboard reset?', a: 'Division leaderboards reset weekly on Sunday at midnight EAT, after which the top players are promoted and rewards are dispatched.' }
+            ],
+            profile: [
+                { q: 'Why can\'t I edit my username?', a: 'To comply with Ethio Telecom VAS portal guidelines, player profiles are verified and tied securely to your MSISDN. Manually changing names is restricted.' }
+            ],
+            notifications: [
+                { q: 'What notifications will I receive?', a: 'You will receive SMS alerts for tournament kick-offs, daily challenge reminders, and subscription renewals. You can toggle these settings anytime.' }
+            ],
+            technicalIssues: [
+                { q: 'The app is freezing. What should I do?', a: 'Ensure you have a stable network connection (3G/4G/LTE/5G). Try refreshing the app page by swiping down, or clearing your mobile browser cache.' }
+            ],
+            privacy: [
+                { q: 'How is my data used?', a: 'We collect your phone number and game statistics solely to manage your game state and calculate rankings. We never share your data with third parties.' }
+            ],
+            terms: [
+                { q: 'Are there age restrictions?', a: 'Yes, you must be 18 years or older, or have parental consent, and be an active Ethio Telecom subscriber to compete for cash rewards.' }
             ]
         };
 
-        const activeFaqs = faqs[locale] || faqs['en'];
+        if (this._showContactSupportForm) {
+            root.innerHTML = `
+                <div class="stadium-container" style="pointer-events: auto;">
+                    ${header(titles[locale] || titles['en'])}
 
-        const faqHtml = activeFaqs.map((faq, idx) => `
-            <div class="glass-card" style="border-radius: 12px; margin-bottom: 12px; border-color: rgba(255,255,255,0.08); overflow: hidden;">
-                <div class="faq-header" data-idx="${idx}" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; background: rgba(255,255,255,0.02);">
-                    <div style="font-size: 14px; font-weight: 800; color: white;">${faq.q}</div>
-                    <span class="faq-icon" style="color: var(--tv-gold-primary); font-size: 12px; transition: transform 0.2s;">➕</span>
+                    <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
+                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
+                            ⬅️ HELP DIRECTORY
+                        </button>
+                        
+                        <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left;" id="support-form-container">
+                            <div style="font-size: 16px; font-weight: 800; color: white; margin-bottom: 12px; text-transform: uppercase;">✉️ Contact Support</div>
+                            <div style="margin-bottom: 12px;">
+                                <label style="display: block; font-size: 12px; color: #94A3B8; margin-bottom: 6px; font-weight: 600;">ISSUE TYPE</label>
+                                <select id="support-category" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; outline: none;">
+                                    <option value="Billing & Subscription">Billing & Subscription</option>
+                                    <option value="Technical Issues">Technical Issues</option>
+                                    <option value="Rewards & Points">Rewards & Points</option>
+                                    <option value="General Feedback">General Feedback</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 12px; color: #94A3B8; margin-bottom: 6px; font-weight: 600;">MESSAGE</label>
+                                <textarea id="support-message" placeholder="Describe your issue here..." style="width: 100%; height: 80px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: white; outline: none; resize: none; font-family: sans-serif; box-sizing: border-box;"></textarea>
+                            </div>
+                            <button id="btn-submit-support" style="width: 100%; padding: 12px; background: var(--tv-pitch-green); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">SUBMIT TICKET</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="faq-body" id="faq-body-${idx}" style="max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: rgba(0,0,0,0.2);">
-                    <div style="padding: 16px; font-size: 13px; color: #CBD5E1; line-height: 1.5;">${faq.a}</div>
+            `;
+
+            this._bindSubBack();
+            document.getElementById('btn-back-help')?.addEventListener('click', () => {
+                this._audioManager.playClick();
+                this._showContactSupportForm = false;
+                this.render();
+            });
+
+            document.getElementById('btn-submit-support')?.addEventListener('click', () => {
+                this._audioManager.playClick();
+                const msg = (document.getElementById('support-message') as HTMLTextAreaElement)?.value.trim();
+                if (!msg) {
+                    alert('Please enter a message before submitting.');
+                    return;
+                }
+                const container = document.getElementById('support-form-container');
+                if (container) {
+                    const refId = 'EF-' + Math.floor(100000 + Math.random() * 900000);
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 16px;">
+                            <div style="font-size: 40px; margin-bottom: 8px;">✅</div>
+                            <div style="font-size: 16px; font-weight: 800; color: var(--tv-pitch-green); margin-bottom: 4px;">TICKET SUBMITTED</div>
+                            <div style="font-size: 13px; color: #94A3B8; margin-bottom: 12px;">Our support team will respond via SMS shortly.</div>
+                            <div style="font-size: 12px; font-weight: 700; color: white; background: rgba(255,255,255,0.08); padding: 6px; border-radius: 6px; font-family: monospace; display: inline-block;">REF: ${refId}</div>
+                        </div>
+                    `;
+                }
+            });
+            return;
+        }
+
+        if (this._helpCategory) {
+            const activeFaqs = HELP_FAQS[this._helpCategory] || [];
+            const faqHtml = activeFaqs.map((faq, idx) => `
+                <div class="glass-card" style="border-radius: 12px; margin-bottom: 12px; border-color: rgba(255,255,255,0.08); overflow: hidden;">
+                    <div class="faq-header" data-idx="${idx}" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; background: rgba(255,255,255,0.02);">
+                        <div style="font-size: 14px; font-weight: 800; color: white;">${faq.q}</div>
+                        <span class="faq-icon" style="color: var(--tv-gold-primary); font-size: 12px; transition: transform 0.2s;">➕</span>
+                    </div>
+                    <div class="faq-body" id="faq-body-${idx}" style="max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: rgba(0,0,0,0.2);">
+                        <div style="padding: 16px; font-size: 13px; color: #CBD5E1; line-height: 1.5;">${faq.a}</div>
+                    </div>
                 </div>
+            `).join('');
+
+            const categoryName = helpCategories.find(c => c.id === this._helpCategory)?.name[locale] || this._helpCategory;
+
+            root.innerHTML = `
+                <div class="stadium-container" style="pointer-events: auto;">
+                    ${header(`${categoryName.toUpperCase()}`)}
+
+                    <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
+                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: white; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
+                            ⬅️ HELP DIRECTORY
+                        </button>
+                        
+                        ${faqHtml}
+                    </div>
+                </div>
+            `;
+
+            this._bindSubBack();
+            document.getElementById('btn-back-help')?.addEventListener('click', () => {
+                this._audioManager.playClick();
+                this._helpCategory = null;
+                this.render();
+            });
+
+            const faqHeaders = root.querySelectorAll('.faq-header');
+            faqHeaders.forEach(h => {
+                h.addEventListener('click', (e) => {
+                    this._audioManager.playClick();
+                    const target = e.currentTarget as HTMLElement;
+                    const idx = target.getAttribute('data-idx');
+                    const body = root.querySelector(`#faq-body-${idx}`) as HTMLElement;
+                    const icon = target.querySelector('.faq-icon') as HTMLElement;
+                    if (body && icon) {
+                        if (body.style.maxHeight === '0px' || !body.style.maxHeight) {
+                            body.style.maxHeight = body.scrollHeight + 'px';
+                            icon.innerText = '➖';
+                        } else {
+                            body.style.maxHeight = '0px';
+                            icon.innerText = '➕';
+                        }
+                    }
+                });
+            });
+            return;
+        }
+
+        const categoriesHtml = helpCategories.map(c => `
+            <div class="settings-tile help-category-tile" data-cat-id="${c.id}" style="
+                display: flex; align-items: center; justify-content: space-between; 
+                padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+            ">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <span style="font-size: 20px;">${c.icon}</span>
+                    <div style="font-size: 15px; font-weight: 700; color: white;">${c.name[locale] || c.name['en']}</div>
+                </div>
+                <span style="color: #64748B;">❯</span>
             </div>
         `).join('');
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
-                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-                    ${faqHtml}
+                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
+                    
+                    <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08); margin-bottom: 24px;">
+                        ${categoriesHtml}
+                    </div>
+
+                    <button id="btn-contact-support" style="
+                        width: 100%; 
+                        padding: 16px; 
+                        background: var(--tv-blue-accent); 
+                        color: white; 
+                        font-weight: 800; 
+                        font-size: 15px; 
+                        border: none; 
+                        border-radius: 12px; 
+                        cursor: pointer;
+                        box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                    ">
+                        ✉️ CONTACT SUPPORT
+                    </button>
                 </div>
             </div>
         `;
 
         this._bindSubBack();
 
-        // FAQ accordion logic
-        const faqHeaders = root.querySelectorAll('.faq-header');
-        faqHeaders.forEach(h => {
-            h.addEventListener('click', (e) => {
-                this._audioManager.playClick();
+        document.getElementById('btn-contact-support')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._showContactSupportForm = true;
+            this.render();
+        });
+
+        const catTiles = root.querySelectorAll('.help-category-tile');
+        catTiles.forEach(tile => {
+            tile.addEventListener('click', (e) => {
                 const target = e.currentTarget as HTMLElement;
-                const idx = target.getAttribute('data-idx');
-                const body = root.querySelector(`#faq-body-${idx}`) as HTMLElement;
-                const icon = target.querySelector('.faq-icon') as HTMLElement;
-                if (body && icon) {
-                    if (body.style.maxHeight === '0px' || !body.style.maxHeight) {
-                        body.style.maxHeight = body.scrollHeight + 'px';
-                        icon.innerText = '➖';
-                    } else {
-                        body.style.maxHeight = '0px';
-                        icon.innerText = '➕';
-                    }
+                const catId = target.getAttribute('data-cat-id');
+                if (catId) {
+                    this._audioManager.playClick();
+                    this._helpCategory = catId;
+                    this.render();
                 }
             });
         });
@@ -638,37 +820,49 @@ export class SettingsScreen {
 
         const body: Record<string, string> = {
             en: `
-                <h3>1. Introduction</h3>
-                <p>Welcome to EthioFantasy. By subscribing and using our service, you agree to these terms.</p>
-                <h3>2. Subscription Rates</h3>
-                <p>Subscribing to premium features charges a daily fee directly from your Ethio Telecom mobile account balance.</p>
-                <h3>3. Conduct</h3>
-                <p>Cheating, exploiting bugs, or using unauthorized bots will lead to immediate ban and forfeit of all reward balances.</p>
+                <div style="font-family: sans-serif; line-height: 1.6;">
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Introduction & EthioFantasy Agreement</h2>
+                    <p>Welcome to EthioFantasy, the premium Football Quiz League developed for Ethio Telecom customers. By accessing this Value Added Service (VAS), you enter into a binding agreement with EthioFantasy and Ethio Telecom.</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Subscription Plans & Billing</h2>
+                    <p>Subscribing to Premium grants unlimited gameplay access, full league entry, and entry into weekly cash pools. Premium subscription billing is 2 Birr/day. Basic subscription is billed at 1 Birr/day. Daily subscription fees are automatically deducted from your Ethio Telecom airtime balance.</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Gameplay & Leaderboard Integrity</h2>
+                    <p>The Football Quiz League requires participants to answer themed questions within the allocated time (30 seconds for Solo, 20 seconds for Live 1v1). Score progression and ELO points are recorded in real-time. Cheating, abusing system vulnerabilities, or using bots is strictly prohibited and results in immediate account termination.</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">4. Rewards & Cash Prize Distribution</h2>
+                    <p>Reward points (XP and coins) gained in Daily Challenges, Tournaments, and matches do not have real cash value unless specified. Official weekly leaderboard cash prizes are credited directly to the subscriber's verified Ethio Telecom mobile account balance. Decision of the EthioFantasy administration on rank calculations is final.</p>
+                </div>
             `,
             am: `
-                <h3>1. መግቢያ</h3>
-                <p>ወደ ኢትዮ ፋንታሲ እንኳን በደህና መጡ። አገልግሎቱን በመጠቀም በውሎች እና ሁኔታዎች መስማማትዎን ያረጋግጣሉ።</p>
-                <h3>2. የምዝገባ ክፍያ</h3>
-                <p>ለፕሪሚየም አገልግሎት ዕለታዊ ክፍያ ከኢትዮ ቴሌኮም የሞባይል ሂሳብዎ ላይ በቀጥታ ተቀናሽ ይደረጋል።</p>
-                <h3>3. የተከለከሉ ተግባራት</h3>
-                <p>ማጭበርበር ወይም ሌሎች ያልተፈቀዱ ተግባራት መለያዎን በቋሚነት እንዲታገድ እና ያገኙትን ነጥብ እንዲያጡ ያደርጋል።</p>
+                <div style="font-family: sans-serif; line-height: 1.6;">
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. መግቢያ እና የኢትዮፋንታሲ ስምምነት</h2>
+                    <p>ለኢትዮ ቴሌኮም ደንበኞች ወደተዘጋጀው የኢትዮ ፋንታሲ የእግር ኳስ ጥያቄ ሊግ እንኳን በደህና መጡ። ይህንን ተጨማሪ እሴት አገልግሎት (VAS) በመጠቀም፣ ከኢትዮፋንታሲ እና ከኢትዮ ቴሌኮም ጋር ውል ይገባሉ።</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. የምዝገባ ዕቅድ እና ክፍያ</h2>
+                    <p>ለፕሪሚየም አገልግሎት ዕለታዊ ክፍያ 2 ብር ሲሆን፤ መሰረታዊ አገልግሎት ዕለታዊ ክፍያ 1 ብር ነው። የምዝገባ ክፍያው ከኢትዮ ቴሌኮም የሞባይል ሂሳብዎ ላይ በቀጥታ ተቀናሽ ይደረጋል።</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. የጨዋታ እና የደረጃ ሰሌዳ ታማኝነት</h2>
+                    <p>ጥያቄዎችን በተሰጠው የጊዜ ገደብ ውስጥ መመለስ ይኖርብዎታል። በጨዋታ ላይ ማጭበርበር ወይም ያልተፈቀዱ ቦቶችን መጠቀም መለያዎ በቋሚነት እንዲታገድ ያደርጋል።</p>
+                </div>
             `,
             om: `
-                <h3>1. Seensa</h3>
-                <p>Gara EthioFantasy baga nagaan dhuftan. Tajaajila keenya dhimma ba\'uun dhimmoota kanneen walii galuu keessan mul\'isa.</p>
-                <h3>2. Kaffaltii</h3>
-                <p>Premium dhimma ba\'uun kaffaltii guyyaa lakkoofsa bilbila Itiyo Telekoom keessan irraa fudhata.</p>
-                <h3>3. Naamusa</h3>
-                <p>Dogoggora uumuun, hack gochuun dhorkaa dha. Adabbiin isaa herrega dhoorkuu ta\'a.</p>
+                <div style="font-family: sans-serif; line-height: 1.6;">
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Seensa & Waliigaltee EthioFantasy</h2>
+                    <p>Gara EthioFantasy, dorgommii gaaffii kubbaa miilaa Itiyo Telekoom fayyadamtootaaf qophaa'eetti baga nagaan dhuftan.</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Kaffaltii</h2>
+                    <p>Kaffaltiin Premium guyyaatti qarshii 2 yommuu ta'u, kaffaltiin Basic guyyaatti qarshii 1 dha. Kaffaltiin kun herrega bilbila keessanii irraa hir'ifama.</p>
+                </div>
             `
         };
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
-                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); font-size: 14px; line-height: 1.6; color: #CBD5E1;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
+                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: #CBD5E1;">
                         ${body[locale] || body['en']}
                     </div>
                 </div>
@@ -687,31 +881,40 @@ export class SettingsScreen {
 
         const body: Record<string, string> = {
             en: `
-                <h3>Data Collection</h3>
-                <p>We store your phone number, score progression, and leaderboard metrics solely to offer the EthioFantasy quiz gameplay experience.</p>
-                <h3>Third Parties</h3>
-                <p>We do not sell or share your subscriber data with any unauthorized third parties outside of the necessary Ethio Telecom VAS portal connections.</p>
+                <div style="font-family: sans-serif; line-height: 1.6;">
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Information We Collect</h2>
+                    <p>We collect subscriber MSISDN (mobile number), device IP address, locale preference, subscription state, and gameplay statistics (scores, response times, ELO ratings) to manage the EthioFantasy service.</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Integration with Ethio Telecom</h2>
+                    <p>Our application integrates directly with Ethio Telecom VAS Gateway APIs. Subscription status checks are executed on every login session to confirm billing and verify eligibility for weekly cash rewards.</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Data Protection & Retainment</h2>
+                    <p>Player statistics and phone numbers are encrypted in transit and at rest. We store player data securely using cloud server clusters. We do not sell or share subscriber data with any third-party organizations.</p>
+                </div>
             `,
             am: `
-                <h3>የመረጃ አሰባሰብ</h3>
-                <p>አገልግሎታችንን ለመስጠት ስንል የእርስዎን የስልክ ቁጥር እና የጨዋታ ነጥቦችን ብቻ እናስቀምጣለን።</p>
-                <h3>ሶስተኛ ወገኖች</h3>
-                <p>የተመዝጋቢዎችን መረጃ ከኢትዮ ቴሌኮም የክፍያ ስርዓት ውጭ ለሌላ ለማንኛውም ሶስተኛ ወገን አናጋራም።</p>
+                <div style="font-family: sans-serif; line-height: 1.6;">
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. የምንሰበስበው መረጃ</h2>
+                    <p>ለጨዋታው አስተዳደር እንዲረዳን የተጠቃሚውን ስልክ ቁጥር (MSISDN)፣ የቋንቋ ምርጫ እና የጨዋታ ነጥቦችን እንሰበስባለን።</p>
+                    
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. ከኢትዮ ቴሌኮም ጋር ያለው ትስስር</h2>
+                    <p>አፕሊኬሽኑ ከኢትዮ ቴሌኮም የቪኤኤስ (VAS) መተግበሪያ ጋር በቀጥታ የተገናኘ ሲሆን፣ ሳምንታዊ ሽልማቶችን ለማረጋገጥ ስልክዎን እንጠቀማለን።</p>
+                </div>
             `,
             om: `
-                <h3>Odeeffannoo</h3>
-                <p>Odeeffannoo keessan kan akka lakkoofsa bilbilaa fi qabxii keessanii tapha qofaaf fayyadamna.</p>
-                <h3>Garee 3ffaa</h3>
-                <p>Odeeffannoo keessan kaffaltii Itiyo Telekoom tiin ala eenyuufiyyuu hin laannu.</p>
+                <div style="font-family: sans-serif; line-height: 1.6;">
+                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Odeeffannoo Nyaatamu</h2>
+                    <p>Lakkoofsa bilbilaa fi qabxii tapha keessanii qofa sirnaa keenya keessatti kuusna.</p>
+                </div>
             `
         };
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
-                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); font-size: 14px; line-height: 1.6; color: #CBD5E1;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
+                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: #CBD5E1;">
                         ${body[locale] || body['en']}
                     </div>
                 </div>
@@ -728,27 +931,34 @@ export class SettingsScreen {
             om: 'WAA\'EE ETHIO FANTASY'
         };
 
-        const desc: Record<string, string> = {
-            en: 'EthioFantasy is a premium Football Quiz League developed for Ethio Telecom customers. Test your knowledge, climb the divisions, and compete weekly to win fantastic prizes.',
-            am: 'ኢትዮ ፋንታሲ ለኢትዮ ቴሌኮም ደንበኞች የተዘጋጀ ምርጥ የእግር ኳስ ጥያቄ ሊግ ነው። እውቀትዎን ይፈትኑ፣ ወደ ከፍተኛ ዲቪዚዮን ያድጉ፣ እና በየሳምንቱ አሸናፊ በመሆን ሽልማቶችን ያግኙ።',
-            om: 'EthioFantasy dorgommii kubbaa miilaa qarshii Itiyo Telekoom fayyadamtootaaf qophaa\'eedha. Beekumsa kee mirkaneessi badhaasa addaa fudhadhu.'
-        };
-
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'], () => this._goBack())}
+                ${header(titles[locale] || titles['en'])}
 
-                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px; text-align: center;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px; text-align: center;">
                     <div style="font-size: 64px; margin-bottom: 16px;">⚽</div>
                     <div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 8px;">EthioFantasy</div>
-                    <div style="font-size: 13px; color: var(--tv-gold-primary); font-weight: 800; margin-bottom: 24px; letter-spacing: 1px;">CO-BRANDED ETHIO TELECOM VAS</div>
+                    <div style="font-size: 13px; color: var(--tv-gold-primary); font-weight: 800; margin-bottom: 24px; letter-spacing: 1.5px; text-transform: uppercase;">Ethio Telecom VAS Integration</div>
                     
                     <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: 14px; line-height: 1.6; color: #CBD5E1; margin-bottom: 24px;">
-                        <p>${desc[locale] || desc['en']}</p>
+                        <p style="margin-top: 0;"><strong>Application Description:</strong><br>EthioFantasy is a premium Football Quiz League platform crafted specifically for football fans in Ethiopia. Play daily trivia matches, challenge other players in live 1v1 showdowns, and climb the league divisions to win cash prizes.</p>
+                        
+                        <p style="margin-bottom: 0;"><strong>Key Features:</strong><br>
+                        • Daily themed challenges with score multipliers<br>
+                        • Live 1v1 real-time matchmaking<br>
+                        • Interactive Weekend knockout tournaments<br>
+                        • Professional division promotions & ELO ranking leaderboard<br>
+                        • Integrated billing checking via SMS OTP</p>
+                    </div>
+
+                    <div class="glass-card" style="border-radius: 12px; padding: 16px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: 13px; color: #CBD5E1; margin-bottom: 24px;">
+                        <div><strong>Version:</strong> 1.1.0</div>
+                        <div style="margin-top: 6px;"><strong>Developer:</strong> InnoGames VAS Team</div>
+                        <div style="margin-top: 6px;"><strong>Ethio Telecom Integration:</strong> VAS Gateway API v3.2</div>
+                        <div style="margin-top: 6px;"><strong>Contact:</strong> support@ethiofantasy.com</div>
                     </div>
 
                     <div style="font-size: 12px; color: #64748B; font-weight: 700;">
-                        Version 1.1.0 • Built with HTML5/TypeScript<br>
                         © 2026 Ethio Telecom VAS. All Rights Reserved.
                     </div>
                 </div>
@@ -760,6 +970,8 @@ export class SettingsScreen {
 
     private _goBack(): void {
         this._subScreen = 'main';
+        this._helpCategory = null;
+        this._showContactSupportForm = false;
         this.render();
     }
 

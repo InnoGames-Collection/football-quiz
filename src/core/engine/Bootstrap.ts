@@ -14,6 +14,7 @@ import { QuestionBank } from '../quiz/QuestionBank';
 import { BottomNav, TabId } from '../../ui/components/BottomNav';
 import { SettingsScreen } from '../../ui/screens/SettingsScreen';
 import { NotificationScreen } from '../../ui/screens/NotificationScreen';
+import { DailyChallengeManager } from '../competition/DailyChallengeManager';
 
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
@@ -51,7 +52,13 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                             await registry.launchGame('football-quiz');
                         },
                         onLiveMatch: () => renderRoute('matchmaking'),
-                        onDailyChallenge: () => navigateToTab('play'),
+                        onDailyChallenge: async () => {
+                            const challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
+                            const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                            quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
+                            localStorage.setItem('ETHIO_DAILY_COMPLETED_TODAY', 'true');
+                            await registry.launchGame('football-quiz');
+                        },
                         onCompetitions: () => navigateToTab('league'),
                         onLeaderboard: () => navigateToTab('rankings'),
                         onAchievements: () => navigateToTab('profile'),

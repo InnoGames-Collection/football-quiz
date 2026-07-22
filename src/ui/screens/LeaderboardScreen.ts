@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { SaveManager } from '../../core/managers/SaveManager';
+import { ProgressionManager } from '../../core/managers/ProgressionManager';
 
 export class LeaderboardScreen {
     private _uiManager: UIManager;
@@ -24,31 +25,57 @@ export class LeaderboardScreen {
         // Fetch fake data for demo
         const entries = await LeaderboardService.getInstance().getLeaderboard(undefined, 'all_time');
 
-        // Sticky Header HTML
+        // Sticky Football Scoreboard Header HTML
+        const division = ProgressionManager.getDivision(profile.xp);
+        const weeklyRank = '#12';
+        const monthlyRank = '#8';
+        const movement = '🔼 +2 spots';
+
         const stickyHeader = `
             <div class="glass-card" style="
                 position: sticky; 
                 top: 0; 
                 z-index: 100; 
-                background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(15,23,42,0.95) 100%);
+                background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(2,6,23,0.98) 100%);
                 backdrop-filter: blur(12px);
-                border-color: var(--tv-pitch-green);
+                border-color: var(--tv-gold-primary);
                 padding: 16px;
-                margin-bottom: 24px;
+                margin-bottom: 20px;
                 border-radius: 0 0 12px 12px;
                 border-top: none;
             ">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; gap: 16px; align-items: center;">
-                        <div style="font-size: 32px; font-weight: 900; color: var(--tv-pitch-green); text-shadow: 0 0 10px rgba(34,197,94,0.5);">#4</div>
+                <!-- Top Row: League & Position -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">🏆</span>
                         <div>
-                            <div style="font-size: 11px; font-weight: 800; color: #94A3B8; margin-bottom: 2px;">YOUR RANK</div>
-                            <div style="font-size: 18px; font-weight: 900; color: white;">${profile.username}</div>
+                            <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">League</div>
+                            <div style="font-size: 14px; font-weight: 900; color: ${division.color};">${division.name}</div>
                         </div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="font-size: 16px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 2px;">${profile.eloRating || 1200} PTS</div>
-                        <div style="font-size: 12px; font-weight: 800; color: #22C55E;">🔼 +2 spots</div>
+                        <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Current Position</div>
+                        <div style="font-size: 14px; font-weight: 900; color: var(--tv-gold-primary);">4th Place (${movement})</div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid: Score, Points, Weekly Rank, Monthly Rank -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; background: rgba(0,0,0,0.35); padding: 10px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+                    <div>
+                        <div style="font-size: 8px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">Score</div>
+                        <div style="font-size: 12px; font-weight: 900; color: white; margin-top: 2px;">${profile.eloRating || 1200}</div>
+                    </div>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.08);">
+                        <div style="font-size: 8px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">Points</div>
+                        <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); margin-top: 2px;">${profile.xp} XP</div>
+                    </div>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.08);">
+                        <div style="font-size: 8px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">Weekly</div>
+                        <div style="font-size: 12px; font-weight: 900; color: #38BDF8; margin-top: 2px;">${weeklyRank}</div>
+                    </div>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.08);">
+                        <div style="font-size: 8px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">Monthly</div>
+                        <div style="font-size: 12px; font-weight: 900; color: #A78BFA; margin-top: 2px;">${monthlyRank}</div>
                     </div>
                 </div>
             </div>
