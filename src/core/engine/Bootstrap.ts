@@ -101,6 +101,12 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
                         quizMode.setCompetition(category);
                         await registry.launchGame('football-quiz');
+                    },
+                    async (session) => {
+                        cacheManager.setQuizActive(true);
+                        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                        await registry.launchGame('football-quiz');
+                        await quizMode.resume(session);
                     }
                 );
                 playScreen.render();
@@ -294,6 +300,13 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
     // Android Back Button Handler
     const handleBack = () => {
+        if (typeof (window as any).ethioOnBackPress === 'function') {
+            if ((window as any).ethioOnBackPress()) {
+                // If handled by screen (e.g. Match Screen), prevent further routing
+                return;
+            }
+        }
+
         game.audioManager.playClick();
         const activeOverlay = document.querySelector('#session-recovery-overlay, #ethio-exit-modal, .glass-card-modal, [id*="modal"]');
         if (activeOverlay) {

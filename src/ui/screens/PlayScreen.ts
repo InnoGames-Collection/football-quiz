@@ -1,6 +1,7 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { LoaderHelper } from '../components/LoaderHelper';
+import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionManager';
 
 
 export interface GameModeInfo {
@@ -27,17 +28,19 @@ export class PlayScreen {
     private _audioManager: AudioManager;
 
     private _onStartMatch: (category: string) => void;
+    private _onResumeMatch?: (session: GameSession) => void;
     private _selectedMode: string = 'quick';
 
     constructor(
         uiManager: UIManager,
         audioManager: AudioManager,
-        onStartMatch: (category: string) => void
+        onStartMatch: (category: string) => void,
+        onResumeMatch?: (session: GameSession) => void
     ) {
         this._uiManager = uiManager;
-
         this._audioManager = audioManager;
         this._onStartMatch = onStartMatch;
+        this._onResumeMatch = onResumeMatch;
     }
 
     public render(): void {
@@ -100,48 +103,108 @@ export class PlayScreen {
                     </div>
 
                     <!-- ACTIVE PLAY DETAILS CARD -->
-                    <div class="glass-card" style="
-                        border-color: var(--tv-gold-primary); 
-                        background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(15,23,42,0.92) 100%); 
-                        padding: 24px; 
+                    <div class="glass-card fade-in-up" style="
+                        border: 2px solid rgba(34, 197, 94, 0.3); 
+                        background: radial-gradient(circle at top, rgba(34, 197, 94, 0.15) 0%, rgba(15, 23, 42, 0.95) 80%);
+                        padding: 32px 20px 24px 20px; 
                         text-align: center;
-                        border-radius: 16px;
+                        border-radius: 20px;
                         margin-bottom: 24px;
+                        box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(34, 197, 94, 0.05);
+                        position: relative;
+                        overflow: hidden;
                     ">
-                        <div style="font-size: 48px; margin-bottom: 12px;">⚽</div>
-                        <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <!-- Icon -->
+                        <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(34,197,94,0.5)); transform: scale(1.05);">⚽</div>
+                        
+                        <!-- Title -->
+                        <div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
                             ${activeMode.name}
                         </div>
 
-                        <!-- Info Grid -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                            <div>
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</div>
-                                <div style="font-size: 13px; font-weight: 900; color: var(--tv-gold-primary); margin-top: 4px;">${activeMode.difficulty}</div>
+                        <!-- Info Pills -->
+                        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 32px;">
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Level</span>
+                                <span style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">${activeMode.difficulty}</span>
                             </div>
-                            <div style="border-left: 1px solid rgba(255,255,255,0.08);">
-                                <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Reward</div>
-                                <div style="font-size: 13px; font-weight: 900; color: #38BDF8; margin-top: 4px;">${activeMode.reward}</div>
+                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Prize</span>
+                                <span style="font-size: 12px; font-weight: 900; color: #38BDF8; text-transform: uppercase;">${activeMode.reward}</span>
                             </div>
                         </div>
 
                         <!-- Kick Off Button -->
-                        <button id="btn-kickoff" style="
+                        <button id="btn-kickoff" class="btn-kickoff-action" style="
                             width: 100%; 
-                            padding: 16px; 
-                            background: var(--tv-pitch-green); 
+                            min-height: 56px; 
+                            background: linear-gradient(135deg, #22C55E 0%, #009A44 100%);
                             color: white; 
                             font-weight: 900; 
                             font-size: 16px; 
                             border: none; 
-                            border-radius: 12px; 
+                            border-radius: 16px; 
                             cursor: pointer;
-                            box-shadow: 0 4px 15px rgba(34,197,94,0.4);
+                            box-shadow: 0 8px 24px rgba(34,197,94,0.4);
                             text-transform: uppercase;
                             letter-spacing: 1px;
+                            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s;
                         ">
                             KICK OFF
                         </button>
+                    </div>
+
+                    <!-- RESUME SUSPENDED MATCH SECTION -->
+                    <div id="resume-match-container" style="display: none; margin-bottom: 24px;">
+                        <div class="glass-card fade-in-up" style="
+                            border: 2px solid rgba(255, 215, 0, 0.3); 
+                            background: radial-gradient(circle at top, rgba(255, 215, 0, 0.15) 0%, rgba(15, 23, 42, 0.95) 80%);
+                            padding: 24px 20px; 
+                            text-align: center;
+                            border-radius: 20px;
+                            box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
+                        ">
+                            <div style="font-size: 48px; margin-bottom: 12px; filter: drop-shadow(0 4px 16px rgba(255,215,0,0.5));">⏱️</div>
+                            <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                                SUSPENDED MATCH
+                            </div>
+                            <div style="font-size: 13px; color: #94A3B8; margin-bottom: 20px; font-weight: 600;">
+                                You have an active match waiting to be completed.
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <button id="btn-resume-match" style="
+                                    flex: 1;
+                                    min-height: 48px; 
+                                    background: linear-gradient(135deg, #FFD700 0%, #D4AF37 100%);
+                                    color: #020617; 
+                                    font-weight: 900; 
+                                    font-size: 14px; 
+                                    border: none; 
+                                    border-radius: 12px; 
+                                    cursor: pointer;
+                                    box-shadow: 0 4px 16px rgba(255,215,0,0.3);
+                                    text-transform: uppercase;
+                                    letter-spacing: 1px;
+                                ">
+                                    RESUME
+                                </button>
+                                <button id="btn-discard-match" style="
+                                    flex: 1;
+                                    min-height: 48px; 
+                                    background: rgba(239, 68, 68, 0.1);
+                                    color: #EF4444; 
+                                    font-weight: 800; 
+                                    font-size: 14px; 
+                                    border: 1px solid rgba(239, 68, 68, 0.3); 
+                                    border-radius: 12px; 
+                                    cursor: pointer;
+                                    text-transform: uppercase;
+                                    letter-spacing: 1px;
+                                ">
+                                    DISCARD
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -154,6 +217,10 @@ export class PlayScreen {
                 .hide-scrollbar {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
+                }
+                .btn-kickoff-action:active {
+                    transform: scale(0.96) !important;
+                    box-shadow: 0 4px 12px rgba(34,197,94,0.2) !important;
                 }
             </style>
         `;
@@ -187,5 +254,26 @@ export class PlayScreen {
             }
             this._onStartMatch(activeMode.category);
         });
+
+        // Resume handlers
+        const activeSession = GameSessionManager.getInstance().getActiveSession();
+        if (activeSession) {
+            const resumeContainer = document.getElementById('resume-match-container');
+            if (resumeContainer) resumeContainer.style.display = 'block';
+
+            document.getElementById('btn-resume-match')?.addEventListener('click', () => {
+                this._audioManager.playClick();
+                if (this._onResumeMatch) {
+                    this._onResumeMatch(activeSession);
+                }
+            });
+
+            document.getElementById('btn-discard-match')?.addEventListener('click', () => {
+                this._audioManager.playClick();
+                GameSessionManager.getInstance().clearSession();
+                if (resumeContainer) resumeContainer.style.display = 'none';
+                this.render(); // Re-render to clear out the active session fully
+            });
+        }
     }
 }

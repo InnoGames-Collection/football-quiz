@@ -79,26 +79,46 @@ export class FootballLeagueHome {
                 </div>
 
                 <!-- COMPACT TELEMETRY ROW -->
-                <div class="fade-in-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 16px; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center; animation-delay: 50ms;">
+                <div class="fade-in-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 16px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; animation-delay: 50ms;">
                     <div>
-                        <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Current League</div>
-                        <div style="font-size: 13px; font-weight: 900; color: ${division.color}; margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">League</div>
+                        <div style="font-size: 14px; font-weight: 900; color: ${division.color}; display: flex; align-items: center; justify-content: center; gap: 4px;">
                             <span>${division.badge}</span> <span>${division.name}</span>
                         </div>
                     </div>
-                    <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
-                        <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Global Rank</div>
-                        <div id="global-rank-display" style="font-size: 13px; font-weight: 900; color: white; margin-top: 2px;">Loading...</div>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Rank</div>
+                        <div id="global-rank-display" style="font-size: 14px; font-weight: 900; color: white;">Loading...</div>
                     </div>
                     <div>
-                        <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Total Points</div>
-                        <div style="font-size: 13px; font-weight: 900; color: var(--fds-gold-primary); margin-top: 2px;">${profile.xp} XP</div>
+                        <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Points</div>
+                        <div style="font-size: 14px; font-weight: 900; color: var(--fds-gold-primary);">${profile.xp} XP</div>
                     </div>
                 </div>
 
                 <!-- SCROLLABLE BODY CONTENT (8dp Grid System) -->
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
                     
+                    <!-- PREMIUM AD BANNER CAROUSEL -->
+                    <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6);">
+                        <div id="ad-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                            <img src="https://placehold.co/800x250/1E293B/FFFFFF?text=Placeholder+1" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 1">
+                            <img src="https://placehold.co/800x250/0F172A/FFFFFF?text=Placeholder+2" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 2">
+                            <img src="https://placehold.co/800x250/334155/FFFFFF?text=Placeholder+3" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 3">
+                            <img src="https://placehold.co/800x250/020617/FFFFFF?text=Placeholder+4" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 4">
+                        </div>
+                        <!-- Page Indicators -->
+                        <div style="position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none;">
+                            <div class="ad-dot active" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 1;"></div>
+                            <div class="ad-dot" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 0.4;"></div>
+                            <div class="ad-dot" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 0.4;"></div>
+                            <div class="ad-dot" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 0.4;"></div>
+                        </div>
+                    </div>
+                    <style>
+                        #ad-carousel::-webkit-scrollbar { display: none; }
+                    </style>
+
                     <!-- 1. HERO SECTION: DAILY CHAMPIONSHIP TOURNAMENT -->
                     <div class="glass-card fade-in-up" style="
                         border: 2px solid var(--fds-gold-primary);
@@ -125,11 +145,11 @@ export class FootballLeagueHome {
 
                         <!-- Title & Description -->
                         <div style="text-align: left; margin-bottom: 16px;">
-                            <h2 style="font-size: 22px; font-weight: 900; color: white; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                                🏆 ETHIO TELECOM VAS CHAMPIONSHIP
+                            <h2 style="font-size: 22px; font-weight: 900; color: white; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                🏆 ETHIO FANTASY CHAMPIONSHIP
                             </h2>
-                            <div style="font-size: 13px; color: #CBD5E1; line-height: 1.4;">
-                                Win up to <strong style="color: var(--fds-gold-primary);">10,000 ETB Prize Pool</strong> & <strong style="color: #4ADE80;">100GB Free Mobile Data Pass</strong> in today's tournament!
+                            <div style="font-size: 13px; color: #94A3B8; font-weight: 600;">
+                                The ultimate football trivia showdown.
                             </div>
                         </div>
 
@@ -154,15 +174,19 @@ export class FootballLeagueHome {
                             <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #0F172A;">LEADERBOARD</span>
                         </button>
 
-                        <button id="btn-action-messages" class="m3-btn m3-btn-secondary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: rgba(15,23,42,0.9); border: 1px solid rgba(56,189,248,0.4); color: #38BDF8;">
-                            <span style="font-size: 26px;">💬</span>
-                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #38BDF8;">MESSAGES</span>
-                        </button>
-
-                        <button id="btn-action-referral" class="m3-btn m3-btn-secondary" style="padding: 16px 12px; height: 90px; flex-direction: column; justify-content: center; gap: 6px; border-radius: 16px; background: rgba(15,23,42,0.9); border: 1px solid rgba(192,132,252,0.4); color: #C084FC;">
-                            <span style="font-size: 26px;">🎁</span>
-                            <span style="font-size: 13px; font-weight: 900; letter-spacing: 0.5px; color: #C084FC;">INVITE & REWARDS</span>
-                        </button>
+                        <!-- Clean Invite & Earn Information Card -->
+                        <div id="btn-action-referral" style="grid-column: span 2; padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(192,132,252,0.4));">🎁</div>
+                                <div style="text-align: left;">
+                                    <div style="font-size: 13px; font-weight: 900; color: white; letter-spacing: 0.5px; text-transform: uppercase;">Invite Friends</div>
+                                    <div style="font-size: 11px; color: #94A3B8; font-weight: 600; margin-top: 2px;">Earn 200 XP for each friend who joins.</div>
+                                </div>
+                            </div>
+                            <div style="font-size: 11px; font-weight: 900; color: #C084FC; background: rgba(192,132,252,0.15); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Copy Link
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
@@ -192,10 +216,10 @@ export class FootballLeagueHome {
                     </div>
 
                     <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->
-                    <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
-                        <div style="font-size: 11px; font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🎖️ Current Tournament Leaders</div>
-                        <div id="home-leaderboard-preview" style="display: flex; flex-direction: column; gap: 10px;">
-                            <div style="font-size: 12px; color: #94A3B8; text-align: center;">Loading leaderboard...</div>
+                    <div class="glass-card fade-in-up" style="padding: 20px 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
+                        <div style="font-size: 10px; font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">🎖️ Leaderboard</div>
+                        <div id="home-leaderboard-preview" style="display: flex; flex-direction: column;">
+                            <div style="font-size: 12px; color: #94A3B8; text-align: center;">Loading...</div>
                         </div>
                     </div>
                 </div>
@@ -214,7 +238,6 @@ export class FootballLeagueHome {
                 this._audioManager.playClick();
                 await new Promise(res => setTimeout(res, 600));
                 this.render();
-                Toast.show('Refreshed EthioFantasy home feed.', 'info');
             });
         }
 
@@ -251,13 +274,19 @@ export class FootballLeagueHome {
             const previewEl = document.getElementById('home-leaderboard-preview');
             if (previewEl && lb.length > 0) {
                 const medals = ['🥇', '🥈', '🥉'];
-                const bgColors = ['rgba(255,215,0,0.05)', 'rgba(255,255,255,0.03)', 'rgba(255,255,255,0.03)'];
-                const textColors = ['white', '#CBD5E1', '#94A3B8'];
+                const bgColors = ['rgba(255,215,0,0.08)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.02)'];
+                const textColors = ['white', '#E2E8F0', '#CBD5E1'];
                 
                 previewEl.innerHTML = lb.map((entry, idx) => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: ${bgColors[idx]}; padding: 8px 12px; border-radius: 8px;">
-                        <span style="font-size: 13px; font-weight: ${idx === 0 ? '800' : '700'}; color: ${textColors[idx]};">${medals[idx]} ${entry.username}</span>
-                        <span style="font-size: 12px; font-weight: ${idx === 0 ? '900' : '800'}; color: ${idx === 0 ? 'var(--fds-gold-primary)' : '#94A3B8'};">${entry.score.toLocaleString()} pts</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: ${bgColors[idx]}; padding: 12px 16px; border-radius: 12px; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${medals[idx]}</span>
+                            <span style="font-size: 14px; font-weight: ${idx === 0 ? '800' : '700'}; color: ${textColors[idx]};">${entry.username}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 16px; font-weight: 900; color: ${idx === 0 ? 'var(--fds-gold-primary)' : 'white'}; font-family: var(--fds-font-mono); line-height: 1.1;">${entry.score.toLocaleString()}</div>
+                            <div style="font-size: 9px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">Points</div>
+                        </div>
                     </div>
                 `).join('');
             } else if (previewEl) {
@@ -321,12 +350,6 @@ export class FootballLeagueHome {
             this._callbacks.onLeaderboard();
         });
 
-        root.querySelector('#btn-action-messages')?.addEventListener('click', (e) => {
-            this._addRipple(e);
-            this._audioManager.playClick();
-            if (this._callbacks.onMessages) this._callbacks.onMessages();
-        });
-
         root.querySelector('#btn-action-referral')?.addEventListener('click', (e) => {
             this._addRipple(e);
             this._audioManager.playClick();
@@ -347,6 +370,59 @@ export class FootballLeagueHome {
             this._audioManager.playClick();
             this._callbacks.onSettings();
         });
+
+        // Ad Carousel Logic
+        const carousel = root.querySelector('#ad-carousel') as HTMLElement;
+        const dots = root.querySelectorAll('.ad-dot');
+        if (carousel && dots.length > 0) {
+            let currentIndex = 0;
+            let autoScrollInterval: any;
+
+            const updateDots = (index: number) => {
+                dots.forEach((dot, i) => {
+                    if (i === index) {
+                        dot.classList.add('active');
+                        (dot as HTMLElement).style.opacity = '1';
+                    } else {
+                        dot.classList.remove('active');
+                        (dot as HTMLElement).style.opacity = '0.4';
+                    }
+                });
+            };
+
+            const scrollToNext = () => {
+                if (!carousel.clientWidth) return;
+                currentIndex = (currentIndex + 1) % dots.length;
+                const targetScroll = carousel.clientWidth * currentIndex;
+                carousel.scrollTo({ left: targetScroll, behavior: 'smooth' });
+                updateDots(currentIndex);
+            };
+
+            const startAutoScroll = () => {
+                clearInterval(autoScrollInterval);
+                autoScrollInterval = setInterval(scrollToNext, 4000);
+            };
+
+            const stopAutoScroll = () => {
+                clearInterval(autoScrollInterval);
+            };
+
+            carousel.addEventListener('scroll', () => {
+                if (!carousel.clientWidth) return;
+                const newIndex = Math.round(carousel.scrollLeft / carousel.clientWidth);
+                if (newIndex !== currentIndex && newIndex >= 0 && newIndex < dots.length) {
+                    currentIndex = newIndex;
+                    updateDots(currentIndex);
+                }
+            }, { passive: true });
+
+            carousel.addEventListener('touchstart', stopAutoScroll, { passive: true });
+            carousel.addEventListener('touchend', startAutoScroll, { passive: true });
+            carousel.addEventListener('mouseenter', stopAutoScroll);
+            carousel.addEventListener('mouseleave', startAutoScroll);
+
+            startAutoScroll();
+        }
     }
 
     private _addRipple(e: Event): void {

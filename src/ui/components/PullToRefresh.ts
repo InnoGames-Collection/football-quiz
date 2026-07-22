@@ -1,6 +1,4 @@
 import { CacheManager } from '../../core/cache/CacheManager';
-import { Toast } from './Toast';
-
 export class PullToRefresh {
     /**
      * Attach pull-to-refresh behavior to a container element.
@@ -17,24 +15,27 @@ export class PullToRefresh {
             top: -50px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(15,23,42,0.96);
-            border: 1px solid var(--fds-gold-primary);
-            color: var(--fds-gold-primary);
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 900;
-            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            transition: top 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: top 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s, transform 0.2s;
             opacity: 0;
             pointer-events: none;
-            backdrop-filter: blur(12px);
         `;
-        spinner.innerHTML = `<span>⚽</span> <span>Pull down to refresh...</span>`;
+        
+        // Standard Material circular SVG spinner
+        spinner.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#009A44" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
+        `;
+        
         container.style.position = 'relative';
         container.appendChild(spinner);
 
@@ -57,11 +58,10 @@ export class PullToRefresh {
                 const pullDistance = Math.min(diff * 0.45, 75);
                 spinner.style.top = `${pullDistance - 42}px`;
                 spinner.style.opacity = `${Math.min(pullDistance / 50, 1)}`;
-                if (pullDistance >= 55) {
-                    spinner.innerHTML = `<span>⚡</span> <span>Release to refresh!</span>`;
-                } else {
-                    spinner.innerHTML = `<span>⚽</span> <span>Pull down to refresh...</span>`;
-                }
+                
+                // Spin SVG based on pull distance
+                const svg = spinner.querySelector('svg');
+                if (svg) svg.style.transform = `rotate(${pullDistance * 4}deg)`;
             }
         }, { passive: true });
 
@@ -72,22 +72,31 @@ export class PullToRefresh {
 
             if (diff > 110 && container.scrollTop <= 0) {
                 spinner.style.top = '16px';
-                spinner.innerHTML = `<span>⚽⏳</span> <span>Updating EthioFantasy...</span>`;
+                
+                // Add infinite spinning animation
+                const svg = spinner.querySelector('svg');
+                if (svg) {
+                    svg.style.transition = 'transform 1s linear';
+                    svg.style.transform = 'rotate(1080deg)';
+                }
                 
                 const savedScroll = container.scrollTop;
 
                 try {
                     await onRefresh();
                     container.scrollTop = savedScroll;
-                    Toast.show('Everything is up to date.', 'info');
                 } catch (err) {
                     console.error('[PullToRefresh] Refresh failed:', err);
-                    Toast.show('Failed to refresh data. Pull down to try again.', 'error');
                 }
             }
             
             spinner.style.top = '-50px';
             spinner.style.opacity = '0';
+            const svg = spinner.querySelector('svg');
+            if (svg) {
+                svg.style.transition = 'none';
+                svg.style.transform = 'rotate(0deg)';
+            }
             startY = 0;
             currentY = 0;
         });

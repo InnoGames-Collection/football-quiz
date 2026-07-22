@@ -115,6 +115,20 @@ export class ScoreboardQuestionScreen {
         localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(session.choices));
         localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(session.questions));
 
+        // Push history state to intercept Android back button
+        history.pushState({ match_active: true }, '');
+        (window as any).ethioOnBackPress = () => {
+            const modal = document.getElementById('match-exit-dialog');
+            if (modal && modal.style.display !== 'none') {
+                this._resumeMatch();
+            } else {
+                this._pauseMatch();
+            }
+            // Re-push state so next back press can be caught
+            history.pushState({ match_active: true }, '');
+            return true; 
+        };
+
         this._renderQuestion(session.timeLeftSec);
     }
 
@@ -184,64 +198,54 @@ export class ScoreboardQuestionScreen {
         root.innerHTML = `
             <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; display: flex; flex-direction: column; min-height: 100vh;">
                 
-                <!-- TOP BAR WITH FOOTBALL FIELD PROGRESS & TIMER -->
+                <!-- PREMIUM GAMING HEADER -->
                 <div style="
                     display: flex; 
                     flex-direction: column;
-                    gap: 8px;
-                    padding: 12px 16px; 
+                    gap: 16px;
+                    padding: 16px 20px; 
                     background: rgba(15,23,42,0.95);
                     backdrop-filter: blur(12px);
                     border-bottom: 1px solid rgba(255,255,255,0.08);
                     position: relative;
+                    z-index: 10;
                 ">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <!-- Exit Match Button -->
-                        <button id="match-exit-btn" class="m3-btn m3-btn-icon m3-btn-secondary" style="width: 36px; height: 36px; min-height: 36px;">✕</button>
-
-                        <!-- Circular Timer -->
-                        <div style="display: flex; align-items: center; justify-content: center; position: relative; width: 42px; height: 42px;">
-                            <svg width="42" height="42" viewBox="0 0 44 44" style="transform: rotate(-90deg);">
-                                <circle cx="22" cy="22" r="18" stroke="rgba(255,255,255,0.1)" stroke-width="3" fill="none" />
-                                <circle id="timer-circle" cx="22" cy="22" r="18" stroke="var(--fds-green-pitch)" stroke-width="3" fill="none" 
-                                        stroke-dasharray="113.1" stroke-dashoffset="0" style="transition: stroke-dashoffset 1s linear, stroke 0.3s;" />
-                            </svg>
-                            <span id="timer-text" style="position: absolute; font-size: 13px; font-weight: 900; color: white; font-family: var(--fds-font-mono);">15</span>
+                        <!-- Score -->
+                        <div style="text-align: left; flex: 1;">
+                            <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Score</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--tv-gold-primary);">${currentXP} Points</div>
                         </div>
 
-                        <!-- Current Score -->
-                        <div style="font-size: 13px; font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase;">
-                            SCORE: ${currentXP}
+                        <!-- Time -->
+                        <div style="text-align: center; flex: 1; position: relative;">
+                            <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Time</div>
+                            <div id="timer-text" style="font-size: 22px; font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,255,255,0.2); transition: color 0.3s, text-shadow 0.3s, transform 0.1s;">
+                                00:${String(startTimerSec).padStart(2, '0')}
+                            </div>
+                        </div>
+
+                        <!-- Question -->
+                        <div style="text-align: right; flex: 1; position: relative;">
+                            <div style="position: absolute; top: -10px; right: 0;">
+                                <button id="match-exit-btn" class="m3-btn m3-btn-icon" style="width: 24px; height: 24px; min-height: 24px; background: transparent; color: #94A3B8; font-size: 14px; border: none; padding: 0;">✕</button>
+                            </div>
+                            <div style="font-size: 10px; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Question</div>
+                            <div style="font-size: 18px; font-weight: 900; color: white;">
+                                ${this._currentIndex + 1}/${this._questions.length}
+                            </div>
                         </div>
                     </div>
 
-                    <!-- FOOTBALL FIELD PROGRESS TRACK (REQ 6) -->
-                    <div style="padding: 0 4px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #94A3B8; font-weight: 800; margin-bottom: 4px;">
-                            <span>⚽ KICK OFF</span>
-                            <span>Q ${this._currentIndex + 1} OF ${this._questions.length} (${this._questions.length - (this._currentIndex + 1)} REMAINING)</span>
-                            <span>GOAL 🥅</span>
-                        </div>
-                        <div style="position: relative; height: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: visible;">
-                            <div style="
-                                height: 100%; 
-                                width: ${((this._currentIndex + 1) / this._questions.length) * 100}%; 
-                                background: linear-gradient(90deg, #009A44 0%, #22C55E 100%); 
-                                border-radius: 10px; 
-                                transition: width 350ms cubic-bezier(0.16, 1, 0.3, 1);
-                                position: relative;
-                            ">
-                                <!-- Moving Football Icon -->
-                                <div style="
-                                    position: absolute; 
-                                    right: -10px; 
-                                    top: -7px; 
-                                    font-size: 16px; 
-                                    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
-                                    transition: transform 180ms ease;
-                                ">⚽</div>
-                            </div>
-                        </div>
+                    <!-- Clean Progress Bar -->
+                    <div style="position: relative; height: 6px; background: rgba(0,0,0,0.5); border-radius: 6px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
+                        <div style="
+                            height: 100%; 
+                            width: ${((this._currentIndex + 1) / this._questions.length) * 100}%; 
+                            background: linear-gradient(90deg, #009A44 0%, #22C55E 100%); 
+                            border-radius: 6px; 
+                            transition: width 350ms cubic-bezier(0.16, 1, 0.3, 1);
+                        "></div>
                     </div>
                 </div>
 
@@ -260,14 +264,15 @@ export class ScoreboardQuestionScreen {
                 ">
                     <!-- High-Focus Responsive Question Text -->
                     <div style="
-                        font-size: clamp(16px, 4.5vw, 22px);
+                        font-size: clamp(20px, 5.5vw, 26px);
                         font-weight: 900;
                         color: white;
                         text-align: center;
-                        line-height: 1.4;
-                        margin-bottom: 24px;
+                        line-height: 1.35;
+                        margin-bottom: 32px;
                         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
                         width: 100%;
+                        padding: 0 16px;
                         box-sizing: border-box;
                     ">${q.prompt}</div>
 
@@ -278,12 +283,13 @@ export class ScoreboardQuestionScreen {
                                 display: flex;
                                 align-items: center;
                                 width: 100%;
-                                padding: 14px 16px;
-                                background: rgba(255,255,255,0.03);
+                                min-height: 64px;
+                                padding: 12px 20px;
+                                background: rgba(30, 41, 59, 0.7);
                                 border: 2px solid rgba(255,255,255,0.1);
-                                border-radius: 12px;
+                                border-radius: 16px;
                                 color: white;
-                                font-size: clamp(13px, 3.5vw, 15px);
+                                font-size: clamp(15px, 4vw, 17px);
                                 font-weight: 700;
                                 text-align: left;
                                 cursor: pointer;
@@ -291,18 +297,19 @@ export class ScoreboardQuestionScreen {
                                 position: relative;
                                 overflow: hidden;
                                 box-sizing: border-box;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                             ">
                                 <span style="
-                                    width: 28px; height: 28px; 
+                                    width: 32px; height: 32px; 
                                     border-radius: 50%; 
                                     background: rgba(255,255,255,0.1); 
                                     display: flex; align-items: center; justify-content: center; 
-                                    margin-right: 12px; 
-                                    font-size: 13px; font-weight: 900;
+                                    margin-right: 16px; 
+                                    font-size: 14px; font-weight: 900;
                                     flex-shrink: 0;
                                 ">${String.fromCharCode(65 + i)}</span>
-                                <span style="flex: 1; word-break: break-word;">${opt}</span>
-                                <span class="feedback-icon" style="font-size: 20px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 8px;"></span>
+                                <span style="flex: 1; word-break: break-word; line-height: 1.3;">${opt}</span>
+                                <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
                             </button>
                         `).join('')}
                     </div>
@@ -332,23 +339,33 @@ export class ScoreboardQuestionScreen {
                     <div id="feedback-subtext" style="font-size: 13px; color: #CBD5E1; margin-top: 4px; font-weight: 700;"></div>
                 </div>
 
-                <!-- PAUSE MODAL OVERLAY -->
-                <div id="pause-modal" style="
+                <!-- MATCH EXIT CONFIRMATION DIALOG -->
+                <div id="match-exit-dialog" style="
                     display: none; 
                     position: fixed; 
                     top: 0; left: 0; 
                     width: 100%; height: 100%; 
-                    background: rgba(15,23,42,0.95); 
+                    background: rgba(0, 0, 0, 0.4); 
+                    backdrop-filter: blur(4px);
                     z-index: 10000; 
                     align-items: center; justify-content: center;
                     padding: 20px; box-sizing: border-box;
+                    animation: fade-in 0.2s ease-out;
                 ">
-                    <div class="glass-card" style="width: 100%; max-width: 360px; padding: 28px 20px; text-align: center; border-color: var(--tv-gold-primary);">
-                        <div style="font-size: 48px; margin-bottom: 12px;">⏸️</div>
-                        <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 6px;">GAME PAUSED</div>
-                        <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">Your match has been paused. Progress is safely saved.</div>
-                        <button id="btn-pause-resume" style="width: 100%; padding: 14px; background: var(--tv-pitch-green); color: white; border: none; border-radius: 8px; font-weight: 800; margin-bottom: 12px; cursor: pointer;">RESUME MATCH</button>
-                        <button id="btn-pause-leave" style="width: 100%; padding: 14px; background: rgba(239,68,68,0.1); border: 1px solid #EF4444; color: #EF4444; border-radius: 8px; font-weight: 800; cursor: pointer;">LEAVE MATCH</button>
+                    <div class="glass-card" style="
+                        width: 100%; max-width: 320px; 
+                        padding: 24px; text-align: center; 
+                        border-radius: 20px;
+                        background: rgba(15, 23, 42, 0.95);
+                        border: 1px solid rgba(255,255,255,0.1);
+                        box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+                    ">
+                        <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px;">Leave Match?</div>
+                        <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">Your progress will be abandoned.</div>
+                        <div style="display: flex; gap: 12px;">
+                            <button id="btn-pause-leave" style="flex: 1; padding: 14px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; cursor: pointer; transition: background 0.2s;">Leave</button>
+                            <button id="btn-pause-resume" style="flex: 1; padding: 14px; background: linear-gradient(135deg, #22C55E 0%, #009A44 100%); color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.3);">Continue</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -385,24 +402,25 @@ export class ScoreboardQuestionScreen {
         this._timeLeftSec = startVal;
         this._startTimeMs = performance.now();
 
-        const timerCircle = document.getElementById('timer-circle');
         const timerText = document.getElementById('timer-text');
 
         const drawTimer = () => {
-            if (timerCircle && timerText) {
-                // Circumference = 2 * PI * 18 = 113.1
-                const offset = 113.1 - (this._timeLeftSec / 15) * 113.1;
-                timerCircle.style.strokeDashoffset = String(offset);
-                
-                timerText.innerText = String(this._timeLeftSec);
+            if (timerText) {
+                timerText.innerText = `00:${String(this._timeLeftSec).padStart(2, '0')}`;
 
                 if (this._timeLeftSec <= 5) {
-                    timerCircle.style.stroke = '#EF4444';
                     timerText.style.color = '#EF4444';
-                    this._audioManager.playCountdownWarning();
+                    timerText.style.textShadow = '0 0 12px rgba(239, 68, 68, 0.6)';
+                    timerText.style.transform = 'scale(1.1)';
+                    setTimeout(() => { if(timerText) timerText.style.transform = 'scale(1)'; }, 150);
+                    
+                    if (this._timeLeftSec > 0 && this._timeLeftSec <= 5) {
+                        this._audioManager.playCountdownWarning();
+                    }
                 } else {
-                    timerCircle.style.stroke = 'var(--tv-pitch-green)';
                     timerText.style.color = 'white';
+                    timerText.style.textShadow = '0 0 10px rgba(255,255,255,0.2)';
+                    timerText.style.transform = 'scale(1)';
                 }
             }
         };
@@ -440,7 +458,7 @@ export class ScoreboardQuestionScreen {
         this._isPaused = true;
         this._stopTimer();
         
-        const modal = document.getElementById('pause-modal');
+        const modal = document.getElementById('match-exit-dialog');
         if (modal) modal.style.display = 'flex';
 
         if (this._session) {
@@ -452,7 +470,7 @@ export class ScoreboardQuestionScreen {
     private _resumeMatch(): void {
         this._isPaused = false;
         
-        const modal = document.getElementById('pause-modal');
+        const modal = document.getElementById('match-exit-dialog');
         if (modal) modal.style.display = 'none';
 
         if (this._session) {
@@ -464,13 +482,13 @@ export class ScoreboardQuestionScreen {
     }
 
     private _leaveMatch(): void {
-        if (confirm('Leave Match?\nYour progress will be saved as Abandoned and this match will end.')) {
-            this._stopTimer();
-            if (this._session) {
-                GameSessionManager.getInstance().abandonSession(this._session);
-            }
-            this._callbacks.onExitMatch();
+        this._stopTimer();
+        if (this._session) {
+            this._session.state = 'Paused';
+            GameSessionManager.getInstance().saveSession(this._session);
         }
+        (window as any).ethioOnBackPress = null;
+        this._callbacks.onExitMatch();
     }
 
     private _bindPauseButtons(): void {
@@ -664,6 +682,7 @@ export class ScoreboardQuestionScreen {
         // Save review game questions
         localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(this._questions));
 
+        (window as any).ethioOnBackPress = null;
         this._callbacks.onMatchComplete(stats, finalScore);
     }
     

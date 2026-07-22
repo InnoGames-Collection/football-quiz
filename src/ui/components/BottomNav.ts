@@ -107,6 +107,14 @@ export class BottomNav {
             btn.addEventListener('click', (e) => {
                 const target = e.currentTarget as HTMLButtonElement;
                 const tabId = target.getAttribute('data-tab-id') as TabId;
+                
+                // Intercept tab changes if a match is active
+                if (typeof (window as any).ethioOnBackPress === 'function') {
+                    if ((window as any).ethioOnBackPress()) {
+                        return; // The match screen handled the intercept (e.g. showed a Leave confirmation)
+                    }
+                }
+
                 if (tabId && tabId !== BottomNav._activeTab) {
                     BottomNav.setActiveTab(tabId);
                     onTabChange(tabId);
