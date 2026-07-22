@@ -5,7 +5,6 @@ import { AdminPanelScreen } from '../../ui/screens/AdminPanelScreen';
 import { FootballLeagueHome } from '../../ui/screens/FootballLeagueHome';
 import { AuthManager } from '../auth/AuthManager';
 import { CompetitionBrowserScreen } from '../../ui/screens/CompetitionBrowserScreen';
-import { DailyChallengeScreen } from '../../ui/screens/DailyChallengeScreen';
 import { LeaderboardScreen } from '../../ui/screens/LeaderboardScreen';
 import { ProfileScreen } from '../../ui/screens/ProfileScreen';
 import { MatchmakingScreen } from '../../ui/screens/MatchmakingScreen';
@@ -15,6 +14,9 @@ import { BottomNav, TabId } from '../../ui/components/BottomNav';
 import { SettingsScreen } from '../../ui/screens/SettingsScreen';
 import { NotificationScreen } from '../../ui/screens/NotificationScreen';
 import { DailyChallengeManager } from '../competition/DailyChallengeManager';
+import { PlayScreen } from '../../ui/screens/PlayScreen';
+import { DetailedStatsScreen } from '../../ui/screens/DetailedStatsScreen';
+import { MessagesScreen } from '../../ui/screens/MessagesScreen';
 
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
@@ -30,7 +32,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioAuth = authManager;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications';
+    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages';
     let navigationStack: RouteName[] = [];
     let currentTab: TabId = 'home';
 
@@ -64,7 +66,9 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onAchievements: () => navigateToTab('profile'),
                         onAdminPanel: () => renderRoute('admin'),
                         onSettings: () => renderRoute('settings'),
-                        onNotifications: () => renderRoute('notifications')
+                        onNotifications: () => renderRoute('notifications'),
+                        onViewStats: () => renderRoute('stats'),
+                        onMessages: () => renderRoute('messages')
                     }
                 );
                 homeScreen.render();
@@ -73,16 +77,15 @@ export async function bootstrapFootballLeague(): Promise<Game> {
             case 'play':
                 BottomNav.setActiveTab('play');
                 currentTab = 'play';
-                const dcScreen = new DailyChallengeScreen(
+                const playScreen = new PlayScreen(
                     game.uiManager, game.audioManager,
-                    async (challengeInfo) => {
+                    async (category) => {
                         const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-                        quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
+                        quizMode.setCompetition(category);
                         await registry.launchGame('football-quiz');
-                    },
-                    handleBack
+                    }
                 );
-                await dcScreen.render();
+                playScreen.render();
                 break;
 
             case 'league':
@@ -104,7 +107,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 BottomNav.setActiveTab('rankings');
                 currentTab = 'rankings';
                 const lbScreen = new LeaderboardScreen(
-                    game.uiManager, game.audioManager, game.saveManager,
+                    game.uiManager, game.saveManager, game.audioManager,
                     handleBack
                 );
                 await lbScreen.render();
@@ -165,6 +168,22 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     handleBack
                 );
                 liveMatch.startMatch();
+                break;
+
+            case 'stats':
+                const statsScreen = new DetailedStatsScreen(
+                    game.uiManager, game.saveManager, game.audioManager,
+                    handleBack
+                );
+                statsScreen.render();
+                break;
+
+            case 'messages':
+                const messagesScreen = new MessagesScreen(
+                    game.uiManager, game.audioManager,
+                    handleBack
+                );
+                messagesScreen.render();
                 break;
         }
     };
