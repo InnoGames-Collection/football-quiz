@@ -74,8 +74,10 @@ export class FootballLeagueHome {
                         <button id="btn-notif" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                             🔔
                         </button>
-                        <button id="btn-settings" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); font-weight: bold; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
-                            ⚙️
+                        <button id="btn-settings" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); color: var(--fds-text-main); font-weight: bold; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94l-0.36-2.54c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41l-0.36,2.54c-0.59,0.24-1.13,0.56-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.04,0.64,0.09,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -104,10 +106,10 @@ export class FootballLeagueHome {
                     <!-- PREMIUM AD BANNER CAROUSEL -->
                     <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6);">
                         <div id="ad-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
-                            <img src="https://placehold.co/800x250/1E293B/FFFFFF?text=Placeholder+1" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 1">
-                            <img src="https://placehold.co/800x250/0F172A/FFFFFF?text=Placeholder+2" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 2">
-                            <img src="https://placehold.co/800x250/334155/FFFFFF?text=Placeholder+3" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 3">
-                            <img src="https://placehold.co/800x250/020617/FFFFFF?text=Placeholder+4" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 4">
+                            <img src="/assets/banners/banner1.jpg" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 1">
+                            <img src="/assets/banners/banner2.jpg" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 2">
+                            <img src="/assets/banners/banner3.png" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 3">
+                            <img src="/assets/banners/banner4.png" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 4">
                         </div>
                         <!-- Page Indicators -->
                         <div style="position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none;">

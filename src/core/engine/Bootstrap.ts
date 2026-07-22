@@ -348,9 +348,12 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
     // Android Back Button Handler
     const handleBack = () => {
+        const currentRoute = navigationStack.length > 0 ? navigationStack[navigationStack.length - 1] : 'home';
+
         if (typeof (window as any).ethioOnBackPress === 'function') {
             if ((window as any).ethioOnBackPress()) {
-                // If handled by screen (e.g. Match Screen), prevent further routing
+                // If handled by screen (e.g. Match Screen), prevent further routing and restore history
+                try { window.history.pushState({ route: currentRoute }, '', window.location.href); } catch(e){}
                 return;
             }
         }
@@ -359,11 +362,13 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         const activeOverlay = document.querySelector('#session-recovery-overlay, #ethio-exit-modal, #ethio-leave-modal, .glass-card-modal, [id*="modal"]');
         if (activeOverlay) {
             activeOverlay.remove();
+            try { window.history.pushState({ route: currentRoute }, '', window.location.href); } catch(e){}
             return;
         }
 
         if (cacheManager.isQuizActive) {
             showLeaveMatchDialog();
+            try { window.history.pushState({ route: currentRoute }, '', window.location.href); } catch(e){}
             return;
         }
 
@@ -377,6 +382,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 navigateToTab('home');
             } else {
                 showMaterial3ExitDialog();
+                try { window.history.pushState({ route: 'home' }, '', window.location.href); } catch(e){}
             }
         }
     };
