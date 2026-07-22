@@ -1,10 +1,11 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-import { QuizEngine } from '../../core/quiz/QuizEngine';
+import { QuizEngine, MatchStats } from '../../core/quiz/QuizEngine';
 import { Competition } from '../../core/quiz/CompetitionRegistry';
+import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionManager';
 
 export interface ScoreboardCallbacks {
-    onMatchComplete: () => void;
+    onMatchComplete: (stats: MatchStats, finalScore: number) => void;
     onExitMatch: () => void;
 }
 
@@ -24,9 +25,13 @@ export class ScoreboardQuestionScreen {
 
     private _currentIndex: number = 0;
     private _timerInterval: any = null;
-    private _timeLeftSec: number = 30;
+    private _timeLeftSec: number = 15;
     private _startTimeMs: number = 0;
     private _hasKickedOff: boolean = false;
+    
+    private _session: GameSession | null = null;
+    private _isPaused: boolean = false;
+    private _visibilityHandler: () => void;
 
     constructor(
         uiManager: UIManager,
@@ -42,14 +47,53 @@ export class ScoreboardQuestionScreen {
         this._competition = competition;
         this._questions = questions;
         this._callbacks = callbacks;
+
+        // Visibility / Pause Listener
+        this._visibilityHandler = () => {
+            if (document.visibilityState === 'hidden' && this._hasKickedOff && !this._isPaused && this._currentIndex < this._questions.length) {
+                this._pauseMatch();
+            }
+        };
+        document.addEventListener('visibilitychange', this._visibilityHandler);
     }
 
     public startMatch(): void {
         this._quizEngine.reset();
         this._currentIndex = 0;
         this._hasKickedOff = false;
+        
+        // Initialize Game Session Manager
+        this._session = GameSessionManager.getInstance().createSession(
+            this._competition.id,
+            'Medium',
+            this._questions
+        );
+
         localStorage.setItem('ETHIO_REVIEW_CHOICES', '[]');
         this._renderKickOffScreen();
+    }
+
+    public resumeSession(session: GameSession): void {
+        this._quizEngine.reset();
+        this._session = session;
+        this._questions = session.questions;
+        this._currentIndex = session.currentIndex;
+        this._hasKickedOff = true;
+        this._isPaused = false;
+
+        // Restore quiz engine stats from session progress
+        for (let i = 0; i < session.choices.length; i++) {
+            const chosen = session.choices[i];
+            const correct = session.questions[i].correctIndex;
+            const time = session.responseTimes[i];
+            this._quizEngine.recordAnswer(chosen === correct, time);
+        }
+
+        // Restore reviews cache in localStorage
+        localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(session.choices));
+        localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(session.questions));
+
+        this._renderQuestion(session.timeLeftSec);
     }
 
     private _renderKickOffScreen(): void {
@@ -98,7 +142,7 @@ export class ScoreboardQuestionScreen {
         });
     }
 
-    private _renderQuestion(): void {
+    private _renderQuestion(startTimerSec: number = 15): void {
         if (!this._hasKickedOff) {
             this._renderKickOffScreen();
             return;
@@ -106,14 +150,14 @@ export class ScoreboardQuestionScreen {
 
         if (this._currentIndex >= this._questions.length) {
             this._stopTimer();
-            // Cache current session questions for results review game mode
-            localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(this._questions));
-            this._callbacks.onMatchComplete();
+            this._completeMatch();
             return;
         }
 
         const q = this._questions[this._currentIndex];
         const root = this._uiManager.container;
+        const currentGoals = this._quizEngine.calculateFinalStats().goals;
+        const currentXP = currentGoals * 100;
         
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto; display: flex; flex-direction: column;">
@@ -144,12 +188,12 @@ export class ScoreboardQuestionScreen {
                             <circle id="timer-circle" cx="22" cy="22" r="18" stroke="var(--tv-pitch-green)" stroke-width="3" fill="none" 
                                     stroke-dasharray="113.1" stroke-dashoffset="0" style="transition: stroke-dashoffset 1s linear, stroke 0.3s;" />
                         </svg>
-                        <span id="timer-text" style="position: absolute; font-size: 13px; font-weight: 900; color: white; font-family: monospace;">30</span>
+                        <span id="timer-text" style="position: absolute; font-size: 13px; font-weight: 900; color: white; font-family: monospace;">15</span>
                     </div>
 
                     <!-- Right: Current Score -->
                     <div style="font-size: 13px; font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">
-                        Score: ${this._quizEngine.calculateFinalStats().goals * 100}
+                        Score: ${currentXP}
                     </div>
                 </div>
 
@@ -216,7 +260,7 @@ export class ScoreboardQuestionScreen {
                     </div>
                 </div>
                 
-                <!-- TRANSLUCENT GOAL / SAVE FEEDBACK OVERLAY (Middle screen, non-intrusive) -->
+                <!-- TRANSLUCENT FEEDBACK OVERLAY -->
                 <div id="feedback-overlay" style="
                     position: fixed;
                     top: 50%;
@@ -239,7 +283,28 @@ export class ScoreboardQuestionScreen {
                     <div id="feedback-text" style="font-size: 28px; font-weight: 900; letter-spacing: 2px; margin-top: 12px; text-transform: uppercase; font-family: var(--tv-mono);"></div>
                     <div id="feedback-subtext" style="font-size: 13px; color: #CBD5E1; margin-top: 4px; font-weight: 700;"></div>
                 </div>
+
+                <!-- PAUSE MODAL OVERLAY -->
+                <div id="pause-modal" style="
+                    display: none; 
+                    position: fixed; 
+                    top: 0; left: 0; 
+                    width: 100%; height: 100%; 
+                    background: rgba(15,23,42,0.95); 
+                    z-index: 10000; 
+                    align-items: center; justify-content: center;
+                    padding: 20px; box-sizing: border-box;
+                ">
+                    <div class="glass-card" style="width: 100%; max-width: 360px; padding: 28px 20px; text-align: center; border-color: var(--tv-gold-primary);">
+                        <div style="font-size: 48px; margin-bottom: 12px;">⏸️</div>
+                        <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 6px;">GAME PAUSED</div>
+                        <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">Your match has been paused. Progress is safely saved.</div>
+                        <button id="btn-pause-resume" style="width: 100%; padding: 14px; background: var(--tv-pitch-green); color: white; border: none; border-radius: 8px; font-weight: 800; margin-bottom: 12px; cursor: pointer;">RESUME MATCH</button>
+                        <button id="btn-pause-leave" style="width: 100%; padding: 14px; background: rgba(239,68,68,0.1); border: 1px solid #EF4444; color: #EF4444; border-radius: 8px; font-weight: 800; cursor: pointer;">LEAVE MATCH</button>
+                    </div>
+                </div>
             </div>
+            
             <style>
                 .option-btn:active:not(:disabled) { transform: scale(0.98); }
                 .option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: #22C55E !important; }
@@ -262,24 +327,23 @@ export class ScoreboardQuestionScreen {
             </style>
         `;
 
-        this._startTimer();
+        this._startTimer(startTimerSec);
         this._bindOptionButtons();
+        this._bindPauseButtons();
     }
 
-    private _startTimer(): void {
+    private _startTimer(startVal: number = 15): void {
         this._stopTimer();
-        this._timeLeftSec = 30;
+        this._timeLeftSec = startVal;
         this._startTimeMs = performance.now();
 
         const timerCircle = document.getElementById('timer-circle');
         const timerText = document.getElementById('timer-text');
 
-        this._timerInterval = setInterval(() => {
-            this._timeLeftSec--;
-            
+        const drawTimer = () => {
             if (timerCircle && timerText) {
                 // Circumference = 2 * PI * 18 = 113.1
-                const offset = 113.1 - (this._timeLeftSec / 30) * 113.1;
+                const offset = 113.1 - (this._timeLeftSec / 15) * 113.1;
                 timerCircle.style.strokeDashoffset = String(offset);
                 
                 timerText.innerText = String(this._timeLeftSec);
@@ -292,6 +356,22 @@ export class ScoreboardQuestionScreen {
                     timerCircle.style.stroke = 'var(--tv-pitch-green)';
                     timerText.style.color = 'white';
                 }
+            }
+        };
+
+        drawTimer();
+
+        this._timerInterval = setInterval(() => {
+            if (this._isPaused) return;
+
+            this._timeLeftSec--;
+            
+            drawTimer();
+
+            // Save remaining time to active session state for resumption auto-save
+            if (this._session) {
+                this._session.timeLeftSec = this._timeLeftSec;
+                GameSessionManager.getInstance().saveSession(this._session);
             }
 
             if (this._timeLeftSec <= 0) {
@@ -308,10 +388,58 @@ export class ScoreboardQuestionScreen {
         }
     }
 
+    private _pauseMatch(): void {
+        this._isPaused = true;
+        this._stopTimer();
+        
+        const modal = document.getElementById('pause-modal');
+        if (modal) modal.style.display = 'flex';
+
+        if (this._session) {
+            this._session.state = 'Paused';
+            GameSessionManager.getInstance().saveSession(this._session);
+        }
+    }
+
+    private _resumeMatch(): void {
+        this._isPaused = false;
+        
+        const modal = document.getElementById('pause-modal');
+        if (modal) modal.style.display = 'none';
+
+        if (this._session) {
+            this._session.state = 'Resumed';
+            GameSessionManager.getInstance().saveSession(this._session);
+        }
+
+        this._startTimer(this._timeLeftSec);
+    }
+
+    private _leaveMatch(): void {
+        if (confirm('Leave Match?\nYour progress will be saved as Abandoned and this match will end.')) {
+            this._stopTimer();
+            if (this._session) {
+                GameSessionManager.getInstance().abandonSession(this._session);
+            }
+            this._callbacks.onExitMatch();
+        }
+    }
+
+    private _bindPauseButtons(): void {
+        document.getElementById('btn-pause-resume')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._resumeMatch();
+        });
+
+        document.getElementById('btn-pause-leave')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._leaveMatch();
+        });
+    }
+
     private _bindOptionButtons(): void {
         document.getElementById('match-exit-btn')?.addEventListener('click', () => {
-            this._stopTimer();
-            this._callbacks.onExitMatch();
+            this._pauseMatch();
         });
 
         const options = document.querySelectorAll('.option-btn');
@@ -330,17 +458,29 @@ export class ScoreboardQuestionScreen {
     }
 
     private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement): void {
-        const choices = JSON.parse(localStorage.getItem('ETHIO_REVIEW_CHOICES') || '[]');
-        choices.push(chosenIndex);
-        localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(choices));
-
         const responseTimeSec = parseFloat(((performance.now() - this._startTimeMs) / 1000).toFixed(1));
         const q = this._questions[this._currentIndex];
-        const result = this._quizEngine.recordAnswer(chosenIndex === q.correctIndex, responseTimeSec);
+        const isCorrect = chosenIndex === q.correctIndex;
+        
+        this._quizEngine.recordAnswer(isCorrect, responseTimeSec);
+        const currentGoals = this._quizEngine.calculateFinalStats().goals;
+
+        // Auto Save progress immediately to local storage
+        if (this._session) {
+            GameSessionManager.getInstance().autoSaveProgress(
+                this._session,
+                this._currentIndex + 1,
+                chosenIndex,
+                responseTimeSec,
+                isCorrect,
+                currentGoals * 100,
+                15
+            );
+        }
 
         const buttons = document.querySelectorAll('.option-btn');
 
-        if (result.isGoal) {
+        if (isCorrect) {
             targetBtn.classList.add('correct');
             this._audioManager.playCorrectAnswer();
             this._audioManager.playGoalCheer();
@@ -396,11 +536,8 @@ export class ScoreboardQuestionScreen {
     }
 
     private _handleTimeOut(): void {
-        const choices = JSON.parse(localStorage.getItem('ETHIO_REVIEW_CHOICES') || '[]');
-        choices.push(-1);
-        localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(choices));
-
-        this._quizEngine.recordAnswer(false, 30);
+        const responseTimeSec = 15;
+        this._quizEngine.recordAnswer(false, responseTimeSec);
         this._audioManager.playWhistle();
         
         const q = this._questions[this._currentIndex];
@@ -408,6 +545,20 @@ export class ScoreboardQuestionScreen {
         const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
         if (correctBtn) {
             correctBtn.classList.add('correct');
+        }
+
+        // Auto Save Timeout Progress
+        const currentGoals = this._quizEngine.calculateFinalStats().goals;
+        if (this._session) {
+            GameSessionManager.getInstance().autoSaveProgress(
+                this._session,
+                this._currentIndex + 1,
+                -1,
+                responseTimeSec,
+                false,
+                currentGoals * 100,
+                15
+            );
         }
 
         this._showFeedbackOverlay(false);
@@ -424,8 +575,39 @@ export class ScoreboardQuestionScreen {
             this._renderQuestion();
         }, 1600);
     }
+
+    private _completeMatch(): void {
+        const stats = this._quizEngine.calculateFinalStats();
+        
+        // Calculate Final Score using User scoring parameters:
+        // Base Score + Accuracy Bonus + Speed Bonus + Perfect Match Bonus = Final Score
+        const baseScore = stats.goals * 100;
+        
+        const accuracyPercent = stats.accuracy; // 0-100
+        const accuracyBonus = accuracyPercent * 5; // e.g. 500 max
+
+        // Speed Bonus: Average remaining time per correct answer * 15 points
+        // Response time is average response time, so remaining is (15 - avgResponseTime)
+        const remainingTimeSec = Math.max(0, 15 - stats.avgResponseTime);
+        const speedBonus = Math.round(remainingTimeSec * stats.goals * 15);
+
+        const perfectBonus = accuracyPercent === 100 ? 500 : 0;
+
+        const finalScore = baseScore + accuracyBonus + speedBonus + perfectBonus;
+
+        // Save session completion to history
+        if (this._session) {
+            GameSessionManager.getInstance().completeSession(this._session, finalScore);
+        }
+
+        // Save review game questions
+        localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(this._questions));
+
+        this._callbacks.onMatchComplete(stats, finalScore);
+    }
     
     public destroy(): void {
         this._stopTimer();
+        document.removeEventListener('visibilitychange', this._visibilityHandler);
     }
 }

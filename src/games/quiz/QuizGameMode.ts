@@ -44,7 +44,7 @@ export class QuizGameMode implements IGameMode {
             comp,
             questions,
             {
-                onMatchComplete: () => this._showMatchStats(comp.id),
+                onMatchComplete: (stats, finalScore) => this._showMatchStats(comp.id, stats, finalScore),
                 onExitMatch: () => this.destroy()
             }
         );
@@ -52,17 +52,35 @@ export class QuizGameMode implements IGameMode {
         this._activeScoreboard.startMatch();
     }
 
+    public async resume(session: any): Promise<void> {
+        const comp = CompetitionRegistry.getById(session.matchType) || CompetitionRegistry.getAll()[0];
+        
+        this._activeScoreboard = new ScoreboardQuestionScreen(
+            this._uiManager,
+            this._audioManager,
+            this._quizEngine,
+            comp,
+            session.questions,
+            {
+                onMatchComplete: (stats, finalScore) => this._showMatchStats(comp.id, stats, finalScore),
+                onExitMatch: () => this.destroy()
+            }
+        );
+
+        this._activeScoreboard.resumeSession(session);
+    }
+
     public setCompetition(compId: string): void {
         this._targetCompetitionId = compId;
     }
 
-    private _showMatchStats(gameId: string): void {
-        const stats = this._quizEngine.calculateFinalStats();
+    private _showMatchStats(gameId: string, stats: any, finalScore: number): void {
         const statsScreen = new MatchStatsScreen(
             this._uiManager,
             this._saveManager,
             this._audioManager,
             stats,
+            finalScore,
             gameId,
             () => {
                 const winAny = window as any;

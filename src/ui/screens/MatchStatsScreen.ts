@@ -11,11 +11,14 @@ export class MatchStatsScreen {
     private _gameId: string;
     private _onContinue: () => void;
 
+    private _finalScore: number;
+
     constructor(
         uiManager: UIManager,
         saveManager: SaveManager,
         audioManager: AudioManager,
         stats: MatchStats,
+        finalScore: number,
         gameId: string,
         onContinue: () => void
     ) {
@@ -23,12 +26,13 @@ export class MatchStatsScreen {
         this._saveManager = saveManager;
         this._audioManager = audioManager;
         this._stats = stats;
+        this._finalScore = finalScore;
         this._gameId = gameId;
         this._onContinue = onContinue;
 
         this._saveManager.addXp(this._stats.xpEarned);
         this._saveManager.addCoins(50); // Add rewards to save
-        this._saveManager.updateHighScore(this._gameId, this._stats.goals * 100);
+        this._saveManager.updateHighScore(this._gameId, this._finalScore);
     }
 
     public render(): void {
@@ -91,7 +95,7 @@ export class MatchStatsScreen {
                         <div style="font-size: 32px; margin-bottom: 2px;">🏆</div>
                         <div style="font-size: 10px; font-weight: 800; color: #94A3B8; letter-spacing: 1.5px; text-transform: uppercase;">Match Result</div>
                         <div style="font-size: 20px; font-weight: 900; color: white; margin-top: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
-                            SCORE: ${correct * 100}
+                            SCORE: ${this._finalScore}
                         </div>
                     </div>
 
