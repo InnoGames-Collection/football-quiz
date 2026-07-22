@@ -51,14 +51,18 @@ export class LeaderboardService {
                 console.warn('[LeaderboardService] RPC query failed, returning local mock data:', err);
             }
         }
+        return [];
+    }
 
-        // Mock Fallback Leaderboard
-        return [
-            { rank: 1, userId: 'u-1', username: 'Abebe Bikila', eloRating: 1850, score: 9400, matchesPlayed: 42, wins: 38 },
-            { rank: 2, userId: 'u-2', username: 'Walia Champion', eloRating: 1720, score: 8200, matchesPlayed: 38, wins: 31 },
-            { rank: 3, userId: 'u-3', username: 'Getaneh Fan', eloRating: 1650, score: 7500, matchesPlayed: 35, wins: 28 },
-            { rank: 4, userId: 'u-4', username: 'Saint George 1968', eloRating: 1580, score: 6900, matchesPlayed: 30, wins: 24 },
-            { rank: 5, userId: 'u-5', username: 'Meskel Square FC', eloRating: 1510, score: 6200, matchesPlayed: 28, wins: 20 }
-        ];
+    public async getUserRank(userId: string, competitionId?: string): Promise<number | null> {
+        if (!userId) return null;
+        try {
+            const leaderboard = await this.getLeaderboard(competitionId);
+            const userEntry = leaderboard.find(entry => entry.userId === userId);
+            if (userEntry) return userEntry.rank;
+        } catch (err) {
+            console.warn('[LeaderboardService] Failed to get user rank:', err);
+        }
+        return null;
     }
 }

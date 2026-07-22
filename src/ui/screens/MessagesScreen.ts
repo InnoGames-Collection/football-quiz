@@ -231,7 +231,8 @@ export class MessagesScreen {
 
         document.getElementById('btn-empty-invite')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            navigator.clipboard.writeText('https://ethiofantasy.com/join?ref=251911223345');
+            const user = AuthManager.getInstance().currentUser;
+            navigator.clipboard.writeText(`https://ethiofantasy.com/join?ref=${user?.phone || 'guest'}`);
             Toast.show('Invitation link copied! Send it to your friends to start chat lobbies.', 'info');
         });
 

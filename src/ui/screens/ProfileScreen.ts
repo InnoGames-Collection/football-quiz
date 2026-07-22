@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
+import { DesignSystem } from '../theme/DesignSystem';
 import { LoaderHelper } from '../components/LoaderHelper';
 import { ProfileService } from '../../networking/services/ProfileService';
 import { PullToRefresh } from '../components/PullToRefresh';
@@ -48,7 +49,7 @@ export class ProfileScreen {
         const root = this._uiManager.container;
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);
-        const msisdn = this._maskPhone(profile.phone || '251911223345');
+        const msisdn = profile.phone ? this._maskPhone(profile.phone) : 'Guest Player';
 
         const listTile = (icon: string, title: string, action: string, hasArrow: boolean = true) => `
             <div class="list-tile profile-menu-tile" data-action="${action}" style="
@@ -217,13 +218,14 @@ export class ProfileScreen {
                             <div style="font-size: 40px; margin-bottom: 12px;">👥</div>
                             <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 8px; text-transform: uppercase;">Invite Friends</div>
                             <div style="font-size: 13px; color: #CBD5E1; margin-bottom: 16px;">Share EthioFantasy with your friends and win 100 free coins on their first game!</div>
-                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); font-size: 12px; color: var(--tv-gold-primary); font-family: monospace; margin-bottom: 16px; word-break: break-all;">https://ethiofantasy.com/join?ref=251911223345</div>
-                            <button id="btn-copy-invite-p" style="width: 100%; padding: 12px; background: var(--tv-pitch-green); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">COPY LINK</button>
+                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); font-size: 12px; color: var(--tv-gold-primary); font-family: monospace; margin-bottom: 16px; word-break: break-all;">https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}</div>
+                            ${DesignSystem.Button({ id: 'btn-copy-ref', text: 'COPY LINK', variant: 'green', fullWidth: true })}
                         `);
-                        document.getElementById('btn-copy-invite-p')?.addEventListener('click', () => {
+
+                        document.getElementById('btn-copy-ref')?.addEventListener('click', () => {
                             this._audioManager.playClick();
-                            navigator.clipboard.writeText('https://ethiofantasy.com/join?ref=251911223345');
-                            const btn = document.getElementById('btn-copy-invite-p');
+                            navigator.clipboard.writeText(`https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}`);
+                            const btn = document.getElementById('btn-copy-ref');
                             if (btn) btn.innerText = 'COPIED ✅';
                         });
                         break;
@@ -323,8 +325,10 @@ export class ProfileScreen {
 
     private _maskPhone(phone: string): string {
         let clean = phone.replace(/[^0-9]/g, '');
-        if (clean.length < 10) {
-            clean = '251911223345';
+        if (phone.startsWith('+')) {
+            clean = phone.substring(1);
+        } else {
+            clean = phone;
         }
         if (!clean.startsWith('251')) {
             clean = '251' + clean.replace(/^0+/, '');

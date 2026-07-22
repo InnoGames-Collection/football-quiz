@@ -158,7 +158,7 @@ export class SettingsScreen {
 
     private _renderMainScreen(root: HTMLElement, locale: string): void {
         const profile = this._saveManager.profile;
-        const maskedMsisdn = this._maskPhone(profile.phone || '251911223345');
+        const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : 'Guest Player';
 
         const listTile = (icon: string, title: string, subtitle: string, hasChevron: boolean = true, id: string) => `
             <div id="${id}" class="settings-tile" style="
@@ -312,7 +312,7 @@ export class SettingsScreen {
 
     private _renderProfileScreen(root: HTMLElement, locale: string, header: Function): void {
         const profile = this._saveManager.profile;
-        const maskedMsisdn = this._maskPhone(profile.phone || '251911223345');
+        const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : 'Guest Player';
         const regDate = 'July 22, 2026';
         const subStatus = profile.eloRating && profile.eloRating > 1400 ? 'Active Premium' : 'Active Basic';
 
@@ -1091,11 +1091,11 @@ export class SettingsScreen {
     }
 
     private _maskPhone(phone: string): string {
-        let clean = phone.replace(/[^0-9]/g, '');
-        if (clean.length < 10) {
-            clean = '251911223345';
+        let clean = phone.replace(/[^0-9+]/g, '');
+        if (clean.startsWith('+')) {
+            clean = clean.substring(1);
         }
-        if (!clean.startsWith('251')) {
+        if (clean.startsWith('251')) {
             clean = '251' + clean.replace(/^0+/, '');
         }
         return clean.substring(0, 4) + '****' + clean.substring(clean.length - 2);

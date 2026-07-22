@@ -222,10 +222,12 @@ export class LeaderboardScreen {
 
     private _maskPhone(phone: string): string {
         let clean = phone.replace(/[^0-9]/g, '');
-        if (clean.length < 10) {
-            clean = '251911223345';
+        if (phone.startsWith('+')) {
+            clean = phone.substring(1);
+        } else {
+            clean = phone;
         }
-        if (!clean.startsWith('251')) {
+        if (clean.startsWith('251')) {
             clean = '251' + clean.replace(/^0+/, '');
         }
         return clean.substring(0, 4) + '****' + clean.substring(clean.length - 2);

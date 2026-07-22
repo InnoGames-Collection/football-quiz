@@ -1,7 +1,10 @@
 import { SaveManager } from '../../core/managers/SaveManager';
+import { AuthManager } from '../../core/auth/AuthManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { UIManager } from '../../core/managers/UIManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
+import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
+import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { Toast } from '../components/Toast';
 import { ReturningPlayerModal } from '../components/ReturningPlayerModal';
 import { PullToRefresh } from '../components/PullToRefresh';
@@ -60,7 +63,7 @@ export class FootballLeagueHome {
                         </div>
                         <div>
                             <div style="font-size: 9px; font-weight: 800; color: #009A44; text-transform: uppercase; letter-spacing: 1px;">ETHIO TELECOM VAS</div>
-                            <div style="font-weight: 900; font-size: 14px; color: white; font-family: var(--fds-font-mono);">${this._maskPhone(profile.phone || '251911223345')}</div>
+                            <div style="font-weight: 900; font-size: 14px; color: white; font-family: var(--fds-font-mono);">${profile.phone ? this._maskPhone(profile.phone) : 'Guest'}</div>
                         </div>
                     </div>
 
@@ -85,7 +88,7 @@ export class FootballLeagueHome {
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
                         <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Global Rank</div>
-                        <div style="font-size: 13px; font-weight: 900; color: white; margin-top: 2px;">#4 In Premier</div>
+                        <div id="global-rank-display" style="font-size: 13px; font-weight: 900; color: white; margin-top: 2px;">Loading...</div>
                     </div>
                     <div>
                         <div style="font-size: 9px; color: #94A3B8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Total Points</div>
@@ -112,11 +115,11 @@ export class FootballLeagueHome {
 
                         <!-- Badge Row -->
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <span class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
-                                🟢 LIVE MATCH • 1,420 PLAYERS
+                            <span id="daily-players-count" class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
+                                🟢 LIVE MATCH
                             </span>
                             <span style="font-size: 11px; font-weight: 900; color: var(--fds-gold-primary); font-family: var(--fds-font-mono);" id="daily-countdown">
-                                ⏱️ 14h : 22m : 45s
+                                ⏱️ Loading...
                             </span>
                         </div>
 
@@ -132,7 +135,7 @@ export class FootballLeagueHome {
 
                         <!-- Hero Primary Action Button -->
                         <button id="btn-daily-match" class="m3-btn m3-btn-gold" style="width: 100%; min-height: 52px; font-size: 16px; font-weight: 900; color: #0F172A; border-radius: 12px; background: linear-gradient(135deg, #FFD700 0%, #FF8C00 100%); box-shadow: 0 8px 30px rgba(255, 215, 0, 0.45); cursor: pointer;">
-                            ⚡ KICK OFF NOW (+500 XP)
+                            <span id="daily-play-btn-text">⚡ KICK OFF NOW</span>
                         </button>
                     </div>
 
@@ -191,19 +194,8 @@ export class FootballLeagueHome {
                     <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->
                     <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
                         <div style="font-size: 11px; font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🎖️ Current Tournament Leaders</div>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,215,0,0.05); padding: 8px 12px; border-radius: 8px;">
-                                <span style="font-size: 13px; font-weight: 800; color: white;">🥇 Abebe K. (Addis Ababa)</span>
-                                <span style="font-size: 12px; font-weight: 900; color: var(--fds-gold-primary);">5,800 pts</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px;">
-                                <span style="font-size: 13px; font-weight: 700; color: #CBD5E1;">🥈 Yonas M. (Hawassa)</span>
-                                <span style="font-size: 12px; font-weight: 800; color: #94A3B8;">5,100 pts</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px;">
-                                <span style="font-size: 13px; font-weight: 700; color: #94A3B8;">🥉 Biruk T. (Bahir Dar)</span>
-                                <span style="font-size: 12px; font-weight: 800; color: #64748B;">4,950 pts</span>
-                            </div>
+                        <div id="home-leaderboard-preview" style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="font-size: 12px; color: #94A3B8; text-align: center;">Loading leaderboard...</div>
                         </div>
                     </div>
                 </div>
@@ -212,6 +204,8 @@ export class FootballLeagueHome {
 
         this._startCountdownTimer();
         this._bindEvents();
+        const userId = AuthManager.getInstance().currentUser?.id || '';
+        this._fetchDynamicData(userId, division.name);
 
         // Attach Pull to Refresh behavior (REQ 11-15 Refresh strategy)
         const container = root.querySelector('.stadium-container') as HTMLElement;
@@ -228,16 +222,72 @@ export class FootballLeagueHome {
         ReturningPlayerModal.checkAndShow(this._uiManager, this._saveManager, this._audioManager);
     }
 
+    private async _fetchDynamicData(userId: string, divisionName: string) {
+        // Fetch User Rank
+        const rank = await LeaderboardService.getInstance().getUserRank(userId);
+        const rankEl = document.getElementById('global-rank-display');
+        if (rankEl) {
+            rankEl.innerText = rank ? `#${rank} In ${divisionName}` : 'Unranked';
+        }
+
+        // Fetch Live Matches / Top 3 Leaderboard
+        const liveComps = CompetitionRegistry.getAll().filter(c => c.status === 'live');
+        const dailyComp = liveComps.find(c => c.id === 'daily') || liveComps[0];
+        
+        const playersEl = document.getElementById('daily-players-count');
+        const playBtnEl = document.getElementById('daily-play-btn-text');
+
+        if (dailyComp) {
+            if (playersEl) playersEl.innerHTML = `🟢 LIVE MATCH • ${(dailyComp.participants || 0).toLocaleString()} PLAYERS`;
+            if (playBtnEl) playBtnEl.innerText = `⚡ KICK OFF NOW (+${dailyComp.prize_pool || 0} XP)`;
+        } else {
+            if (playersEl) playersEl.innerHTML = `⚪ NO LIVE MATCHES`;
+            if (playBtnEl) playBtnEl.innerText = `⚡ PLAY CASUAL MATCH`;
+        }
+
+        // Fetch Leaderboard Preview
+        try {
+            const lb = await LeaderboardService.getInstance().getLeaderboard(undefined, 'all_time', 3);
+            const previewEl = document.getElementById('home-leaderboard-preview');
+            if (previewEl && lb.length > 0) {
+                const medals = ['🥇', '🥈', '🥉'];
+                const bgColors = ['rgba(255,215,0,0.05)', 'rgba(255,255,255,0.03)', 'rgba(255,255,255,0.03)'];
+                const textColors = ['white', '#CBD5E1', '#94A3B8'];
+                
+                previewEl.innerHTML = lb.map((entry, idx) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: ${bgColors[idx]}; padding: 8px 12px; border-radius: 8px;">
+                        <span style="font-size: 13px; font-weight: ${idx === 0 ? '800' : '700'}; color: ${textColors[idx]};">${medals[idx]} ${entry.username}</span>
+                        <span style="font-size: 12px; font-weight: ${idx === 0 ? '900' : '800'}; color: ${idx === 0 ? 'var(--fds-gold-primary)' : '#94A3B8'};">${entry.score.toLocaleString()} pts</span>
+                    </div>
+                `).join('');
+            } else if (previewEl) {
+                previewEl.innerHTML = `<div style="font-size: 12px; color: #94A3B8; text-align: center;">No ranked players yet</div>`;
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
     private _startCountdownTimer(): void {
         if (this._timerInterval) {
             clearInterval(this._timerInterval);
         }
 
-        let secondsRemaining = 14 * 3600 + 22 * 60 + 45;
+        // Find actual end time if a daily comp exists
+        const comps = CompetitionRegistry.getAll().filter(c => c.status === 'live');
+        const daily = comps.find(c => c.id === 'daily') || comps[0];
+        
+        let targetTime = new Date().getTime() + (14 * 3600 + 22 * 60 + 45) * 1000;
+        if (daily && daily.end_time) {
+            targetTime = new Date(daily.end_time).getTime();
+        }
 
         this._timerInterval = window.setInterval(() => {
-            secondsRemaining--;
-            if (secondsRemaining < 0) secondsRemaining = 86400;
+            let secondsRemaining = Math.floor((targetTime - new Date().getTime()) / 1000);
+            
+            if (secondsRemaining < 0) {
+                secondsRemaining = 0;
+            }
 
             const h = Math.floor(secondsRemaining / 3600);
             const m = Math.floor((secondsRemaining % 3600) / 60);
@@ -316,12 +366,11 @@ export class FootballLeagueHome {
     }
 
     private _maskPhone(phone: string): string {
-        let clean = phone.replace(/[^0-9]/g, '');
-        if (clean.length < 10) {
-            clean = '251911223345';
-        }
-        if (!clean.startsWith('251')) {
-            clean = '251' + clean.replace(/^0+/, '');
+        let clean: string;
+        if (phone.startsWith('+')) {
+            clean = phone.substring(1);
+        } else {
+            clean = phone;
         }
         return clean.substring(0, 4) + '****' + clean.substring(clean.length - 2);
     }

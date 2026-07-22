@@ -12,6 +12,11 @@ export interface Competition {
     description: string;
     color: string;
     questionCount: number;
+    status?: string;
+    participants?: number;
+    prize_pool?: number;
+    start_time?: string;
+    end_time?: string;
 }
 
 export class CompetitionRegistry {
