@@ -1,12 +1,11 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const DEFAULT_URL = 'https://eywvrsqiqvmiktovaxmq.supabase.co';
+const DEFAULT_ANON_KEY = 'sb_publishable_vSzKiN0dx8mgRRb3jsDonQ_BesE-gSx';
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.warn('[SupabaseClient] Missing Supabase credentials. Running in offline mode.');
-}
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string) || DEFAULT_URL;
+const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || DEFAULT_ANON_KEY;
 
 /**
  * Singleton Supabase client for the Football Quiz League platform.
@@ -18,19 +17,26 @@ class SupabaseService {
 
     private constructor() {
         if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-            this._client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: {
-                    autoRefreshToken: true,
-                    persistSession: true,
-                    detectSessionInUrl: true
-                },
-                realtime: {
-                    params: {
-                        eventsPerSecond: 10
+            try {
+                this._client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    },
+                    realtime: {
+                        params: {
+                            eventsPerSecond: 10
+                        }
                     }
-                }
-            });
-            console.log('[SupabaseClient] Initialized successfully.');
+                });
+                console.log('[SupabaseClient] Initialized successfully with URL:', SUPABASE_URL);
+            } catch (err) {
+                console.error('[SupabaseClient] Failed to initialize Supabase client:', err);
+                this._client = null;
+            }
+        } else {
+            console.warn('[SupabaseClient] Missing Supabase credentials.');
         }
     }
 
