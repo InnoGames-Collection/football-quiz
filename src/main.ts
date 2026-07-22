@@ -1,5 +1,6 @@
 import './style.css';
 import './ui/theme/BroadcastStyles.css';
+import './ui/theme/DesignSystem.css';
 import { bootstrapFootballLeague } from './core/engine/Bootstrap';
 
 async function bootstrap() {
