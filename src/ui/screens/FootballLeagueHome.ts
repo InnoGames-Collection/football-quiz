@@ -104,12 +104,12 @@ export class FootballLeagueHome {
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
                     
                     <!-- PREMIUM AD BANNER CAROUSEL -->
-                    <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6);">
-                        <div id="ad-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
-                            <img src="/assets/banners/banner1.jpg" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 1">
-                            <img src="/assets/banners/banner2.jpg" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 2">
-                            <img src="/assets/banners/banner3.png" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 3">
-                            <img src="/assets/banners/banner4.png" style="width: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover; aspect-ratio: 16/5;" alt="Ad 4">
+                    <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6); aspect-ratio: 16/5; width: 100%;">
+                        <div id="ad-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%;">
+                            <img src="/assets/banners/banner1.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover;" alt="Ad 1">
+                            <img src="/assets/banners/banner2.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover;" alt="Ad 2">
+                            <img src="/assets/banners/banner3.png" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover;" alt="Ad 3">
+                            <img src="/assets/banners/banner4.png" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: cover;" alt="Ad 4">
                         </div>
                         <!-- Page Indicators -->
                         <div style="position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none;">
