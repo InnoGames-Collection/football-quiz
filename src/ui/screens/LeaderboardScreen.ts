@@ -31,19 +31,18 @@ export class LeaderboardScreen {
         const apiRange: any = this._activeTab === 'tournament' ? 'all_time' : this._activeTab;
         const rawEntries = await LeaderboardService.getInstance().getLeaderboard(undefined, apiRange);
 
-        const mockEntries = rawEntries.map((entry: any, index: number) => {
-            const isMe = entry.username === profile.username || entry.username === 'Me' || index === 3;
+        const processedEntries = rawEntries.map((entry: any) => {
+            const isMe = entry.username === profile.username;
             
-            const isPhone = entry.username.replace(/[^0-9]/g, '').length >= 9;
-            const phoneSeed = isPhone ? entry.username : `2519110000${index + 1}`;
-            const maskedMsisdn = this._maskPhone(phoneSeed);
+            const isPhone = /^\\+?[0-9]{9,}$/.test((entry.username || '').replace(/[^0-9+]/g, ''));
+            const displayName = isPhone ? this._maskPhone(entry.username) : (entry.username || 'Anonymous');
             
-            const score = entry.eloRating || (1800 - index * 60);
-            const points = entry.score || (score * 5);
+            const score = entry.eloRating || 0;
+            const points = entry.score || 0;
             const entryDiv = ProgressionManager.getDivision(points);
 
             return {
-                msisdn: maskedMsisdn,
+                msisdn: displayName,
                 score,
                 points,
                 league: entryDiv.name,
@@ -52,13 +51,13 @@ export class LeaderboardScreen {
         });
 
         // Sort entries by score descending
-        mockEntries.sort((a: any, b: any) => b.score - a.score);
+        processedEntries.sort((a: any, b: any) => b.score - a.score);
 
-        const firstPlace = mockEntries[0] || { msisdn: '25191****11', score: 2450, points: 12250, league: 'Legend' };
-        const secondPlace = mockEntries[1] || { msisdn: '25191****22', score: 2200, points: 11000, league: 'Gold' };
-        const thirdPlace = mockEntries[2] || { msisdn: '25191****33', score: 1980, points: 9900, league: 'Gold' };
+        const firstPlace = processedEntries[0];
+        const secondPlace = processedEntries[1];
+        const thirdPlace = processedEntries[2];
 
-        const remainingEntries = mockEntries.slice(3);
+        const remainingEntries = processedEntries.slice(3);
 
         // Tab style helper
         const tabStyle = (tabId: typeof this._activeTab) => {
@@ -109,9 +108,11 @@ export class LeaderboardScreen {
                     </div>
 
                     <!-- 1. PODIUM CARDS (TOP 3 CHAMPIONS) -->
+                    ${processedEntries.length === 0 ? DesignSystem.EmptyState('🏆', 'No players ranked yet.') : `
                     <div style="display: grid; grid-template-columns: 1fr 1.1fr 1fr; gap: 12px; align-items: end; margin-bottom: 24px; text-align: center;" class="fade-in-up">
                         
                         <!-- 2ND PLACE PODIUM (SILVER) -->
+                        ${secondPlace ? `
                         <div class="glass-card" style="padding: 16px 8px; border-color: #C0C0C0; background: linear-gradient(180deg, rgba(192,192,192,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
                             <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥈</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #E2E8F0; text-transform: uppercase;">2ND</div>
@@ -119,8 +120,10 @@ export class LeaderboardScreen {
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-blue-accent); margin-top: 2px;">${secondPlace.score} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${secondPlace.points} XP</div>
                         </div>
+                        ` : `<div style="visibility: hidden;"></div>`}
 
                         <!-- 1ST PLACE PODIUM (GOLD CHAMPION) -->
+                        ${firstPlace ? `
                         <div class="glass-card" style="padding: 20px 8px; border-color: var(--fds-gold-primary); background: linear-gradient(180deg, rgba(255,215,0,0.25) 0%, rgba(15,23,42,0.95) 100%); border-radius: 20px; box-shadow: 0 10px 30px var(--fds-gold-glow); transform: translateY(-8px);">
                             <div style="font-size: 36px; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));">🥇</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px;">CHAMPION</div>
@@ -128,8 +131,10 @@ export class LeaderboardScreen {
                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary); margin-top: 2px;">${firstPlace.score} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: #FEF08A; margin-top: 2px;">🏆 ${firstPlace.points} XP</div>
                         </div>
+                        ` : `<div style="visibility: hidden;"></div>`}
 
                         <!-- 3RD PLACE PODIUM (BRONZE) -->
+                        ${thirdPlace ? `
                         <div class="glass-card" style="padding: 16px 8px; border-color: #CD7F32; background: linear-gradient(180deg, rgba(205,127,50,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
                             <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥉</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FDBA74; text-transform: uppercase;">3RD</div>
@@ -137,7 +142,9 @@ export class LeaderboardScreen {
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #CD7F32; margin-top: 2px;">${thirdPlace.score} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${thirdPlace.points} XP</div>
                         </div>
+                        ` : `<div style="visibility: hidden;"></div>`}
                     </div>
+                    `}
 
                     <!-- 2. CURRENT USER STATS BANNER -->
                     <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: var(--fds-green-pitch); background: rgba(34,197,94,0.12); margin-bottom: 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center;">

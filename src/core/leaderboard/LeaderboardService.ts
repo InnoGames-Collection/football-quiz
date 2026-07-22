@@ -48,7 +48,7 @@ export class LeaderboardService {
                     }));
                 }
             } catch (err) {
-                console.warn('[LeaderboardService] RPC query failed, returning local mock data:', err);
+                console.warn('[LeaderboardService] RPC query failed, returning empty list:', err);
             }
         }
         return [];

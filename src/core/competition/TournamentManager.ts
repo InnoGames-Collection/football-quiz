@@ -26,20 +26,7 @@ export class TournamentManager {
             }
         }
 
-        // Mock Fallback Tournament
-        return [{
-            id: 'tourney-1',
-            name_en: 'Champions League Friday Night Knockout',
-            name_am: 'የዓርብ ምሽት ቻምፒየንስ ሊግ',
-            name_om: 'Dorgommii Chaampiyoonsii Jimaata',
-            competition_id: 'champions-league',
-            max_players: 64,
-            bracket_size: 64,
-            status: 'registration',
-            starts_at: new Date(Date.now() + 86400000).toISOString(),
-            prize_coins: 5000,
-            created_at: new Date().toISOString()
-        }];
+        return [];
     }
 
     public async registerForTournament(tournamentId: string, userId: string): Promise<{ success: boolean; error?: string }> {
