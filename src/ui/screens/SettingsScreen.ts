@@ -263,9 +263,16 @@ export class SettingsScreen {
                     </div>
 
                     <!-- Logout -->
-                    <div class="glass-card settings-tile" id="btn-logout" style="border-radius: 12px; padding: 0; text-align: center; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); overflow: hidden;">
+                    <div class="glass-card settings-tile" id="btn-logout" style="margin-bottom: 16px; border-radius: 12px; padding: 0; text-align: center; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); overflow: hidden;">
                         <div style="padding: 16px; font-size: 15px; font-weight: 800; color: #EF4444; cursor: pointer; letter-spacing: 0.5px;">
                             ${str.logout.toUpperCase()}
+                        </div>
+                    </div>
+
+                    <!-- Developer / Advanced Reset -->
+                    <div class="glass-card settings-tile" id="btn-reset-data" style="border-radius: 12px; padding: 0; text-align: center; border-color: rgba(255, 165, 0, 0.3); background: rgba(255, 165, 0, 0.05); overflow: hidden;">
+                        <div style="padding: 16px; font-size: 15px; font-weight: 800; color: #FFA500; cursor: pointer; letter-spacing: 0.5px;">
+                            RESET LOCAL DATA & SYNC
                         </div>
                     </div>
 
@@ -305,6 +312,14 @@ export class SettingsScreen {
             this._audioManager.playClick();
             if (confirm(locale === 'am' ? 'በእርግጥ መውጣት ይፈልጋሉ?' : (locale === 'om' ? 'Dhuguma ba\'uu barbaadduu?' : 'Are you sure you want to log out?'))) {
                 await AuthManager.getInstance().signOut();
+                window.location.reload();
+            }
+        });
+
+        document.getElementById('btn-reset-data')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            if (confirm('WARNING: This will wipe all local app data and force a fresh sync from the database. Continue?')) {
+                localStorage.clear();
                 window.location.reload();
             }
         });
