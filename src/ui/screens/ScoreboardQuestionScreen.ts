@@ -1,7 +1,6 @@
 import { DesignSystem } from "../theme/DesignSystem";
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { t } from '../../localization/i18n';
 import { QuizEngine, MatchStats } from '../../core/quiz/QuizEngine';
 import { Competition } from '../../core/quiz/CompetitionRegistry';
