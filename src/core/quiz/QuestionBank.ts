@@ -140,7 +140,7 @@ export class QuestionBank {
 
                 if (!error && data && data.questions && data.questions.length > 0) {
                     console.log('[QuestionBank] Fetched server-authored questions via Edge Function.');
-                    return data.questions as ExtendedQuestionData[];
+                    return this._selectQuestions(data.questions as ExtendedQuestionData[], count);
                 }
             } catch(e) {
                 console.warn('[QuestionBank] Edge Function failed.', e);
@@ -159,9 +159,10 @@ export class QuestionBank {
                 }
 
                 const { data, error } = await query.limit(50);
-
+                
                 if (!error && data && data.length > 0) {
-                    const mapped = data.map((row: QuestionRow) => this._mapQuestionRow(row, locale));
+                    console.log('[QuestionBank] Fetched questions directly from Supabase DB.');
+                    const mapped = data.map((row: any) => this._mapQuestionRow(row, locale));
                     return this._selectQuestions(mapped, count);
                 }
             } catch (err) {
