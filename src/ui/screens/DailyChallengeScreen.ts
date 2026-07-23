@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { DailyChallengeManager, DailyChallengeInfo } from '../../core/competition/DailyChallengeManager';
 import { DesignSystem } from '../theme/DesignSystem';
+import { i18n } from '../../localization/i18n';
 
 export class DailyChallengeScreen {
     private _uiManager: UIManager;
@@ -31,9 +32,27 @@ export class DailyChallengeScreen {
         
         // Static history of challenges
         const historyList = [
-            { date: 'July 21, 2026', title: 'CAF Champions League Trivia', score: '9/10 Goals', status: 'Completed', badge: '🌍' },
-            { date: 'July 20, 2026', title: 'World Cup Legends', score: '10/10 Goals', status: 'Completed', badge: '🏆' },
-            { date: 'July 19, 2026', title: 'English Premier League Transfers', score: '7/10 Goals', status: 'Completed', badge: '💰' }
+            { 
+                date: i18n.currentLocale === 'am' ? 'ጁላይ 21, 2026' : (i18n.currentLocale === 'om' ? 'Adoolessa 21, 2026' : 'July 21, 2026'), 
+                title: i18n.currentLocale === 'am' ? 'የካፍ ቻምፒየንስ ሊግ ጥያቄዎች' : (i18n.currentLocale === 'om' ? 'Qorannoo Liigii Chaampiyoonaa CAF' : 'CAF Champions League Trivia'), 
+                score: i18n.currentLocale === 'am' ? '9/10 ግቦች' : (i18n.currentLocale === 'om' ? '9/10 Galchii' : '9/10 Goals'), 
+                status: i18n.currentLocale === 'am' ? 'ተጠናቋል' : (i18n.currentLocale === 'om' ? 'Xumurame' : 'Completed'), 
+                badge: '🌍' 
+            },
+            { 
+                date: i18n.currentLocale === 'am' ? 'ጁላይ 20, 2026' : (i18n.currentLocale === 'om' ? 'Adoolessa 20, 2026' : 'July 20, 2026'), 
+                title: i18n.currentLocale === 'am' ? 'የዓለም ዋንጫ ጀግኖች' : (i18n.currentLocale === 'om' ? 'Seenaa Waancaa Addunyaa' : 'World Cup Legends'), 
+                score: i18n.currentLocale === 'am' ? '10/10 ግቦች' : (i18n.currentLocale === 'om' ? '10/10 Galchii' : '10/10 Goals'), 
+                status: i18n.currentLocale === 'am' ? 'ተጠናቋል' : (i18n.currentLocale === 'om' ? 'Xumurame' : 'Completed'), 
+                badge: '🏆' 
+            },
+            { 
+                date: i18n.currentLocale === 'am' ? 'ጁላይ 19, 2026' : (i18n.currentLocale === 'om' ? 'Adoolessa 19, 2026' : 'July 19, 2026'), 
+                title: i18n.currentLocale === 'am' ? 'የእንግሊዝ ፕሪሚየር ሊግ ዝውውሮች' : (i18n.currentLocale === 'om' ? 'Jijjiarraa Liigii Piriimiyara Ingilizi' : 'English Premier League Transfers'), 
+                score: i18n.currentLocale === 'am' ? '7/10 ግቦች' : (i18n.currentLocale === 'om' ? '7/10 Galchii' : '7/10 Goals'), 
+                status: i18n.currentLocale === 'am' ? 'ተጠናቋል' : (i18n.currentLocale === 'om' ? 'Xumurame' : 'Completed'), 
+                badge: '💰' 
+            }
         ];
 
         const historyHtml = historyList.map(h => `
@@ -58,7 +77,7 @@ export class DailyChallengeScreen {
                 <!-- Top App Bar -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
                     <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
-                        <span>📅</span> DAILY CHALLENGE
+                        <span>📅</span> ${i18n.currentLocale === 'am' ? 'የዕለቱ ፈተና' : (i18n.currentLocale === 'om' ? 'QORMAATA GUYYAA' : 'DAILY CHALLENGE')}
                     </div>
                     <button id="dc-close-btn" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 20px;">✕</button>
                 </div>
@@ -88,42 +107,42 @@ export class DailyChallengeScreen {
                             color: ${isCompleted ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)'};
                             border: 1px solid ${isCompleted ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)'};
                         ">
-                            ${isCompleted ? '🟢 COMPLETED' : '🔴 PENDING'}
+                            ${isCompleted ? `🟢 ${i18n.currentLocale === 'am' ? 'ተጠናቋል' : (i18n.currentLocale === 'om' ? 'XUMURAME' : 'COMPLETED')}` : `🔴 ${i18n.currentLocale === 'am' ? 'በመጠባበቅ ላይ' : (i18n.currentLocale === 'om' ? 'HAFFE' : 'PENDING')}`}
                         </div>
 
                         <div style="font-size: 48px; margin-bottom: 12px; margin-top: 12px;">⚽</div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Today's Match Topic</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'የዛሬው የጨዋታ ርዕስ' : (i18n.currentLocale === 'om' ? 'Mata Duree Tapha Har\'aa' : "Today's Match Topic")}</div>
                         <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 12px; line-height: 1.4;">
-                            ${this._challengeInfo?.themeEn || 'Ethiopian Premier League Derby'}
+                            ${i18n.currentLocale === 'am' ? (this._challengeInfo?.themeAm || this._challengeInfo?.themeEn || 'የኢትዮጵያ ፕሪሚየር ሊግ ዴርቢ') : (i18n.currentLocale === 'om' ? (this._challengeInfo?.themeOm || this._challengeInfo?.themeEn || 'Derby Liigii Piriimiyara Itoophiyaa') : (this._challengeInfo?.themeEn || 'Ethiopian Premier League Derby'))}
                         </div>
 
                         <!-- Difficulty & Reward Grid -->
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                             <div>
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</div>
-                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-gold-primary); margin-top: 4px;">⭐⭐⭐ (Medium)</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? 'ከባድነት' : (i18n.currentLocale === 'om' ? 'Ulfaatina' : 'Difficulty')}</div>
+                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-gold-primary); margin-top: 4px;">⭐⭐⭐ (${i18n.currentLocale === 'am' ? 'መካከለኛ' : (i18n.currentLocale === 'om' ? 'Giddu-galeessa' : 'Medium')})</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.08);">
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Reward</div>
-                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-blue-accent); margin-top: 4px;">+500 XP (1.5x Boost)</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? 'ሽልማት' : (i18n.currentLocale === 'om' ? 'Badhaasa' : 'Reward')}</div>
+                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-blue-accent); margin-top: 4px;">+500 XP (${i18n.currentLocale === 'am' ? '1.5x ጭማሪ' : (i18n.currentLocale === 'om' ? '1.5x Daballii' : '1.5x Boost')})</div>
                             </div>
                         </div>
 
                         <!-- Countdown Timer -->
                         <div style="margin-bottom: 24px;">
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Time Remaining</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">${i18n.currentLocale === 'am' ? 'ቀሪ ጊዜ' : (i18n.currentLocale === 'om' ? 'Yeroo Haffe' : 'Time Remaining')}</div>
                             <div id="countdown-timer" style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); font-family: var(--tv-mono); letter-spacing: 1px;">--h --m --s</div>
                         </div>
 
                         <!-- Play Button -->
                         ${isCompleted 
-                            ? `${DesignSystem.Button({ text: 'MATCH COMPLETED FOR TODAY', disabled: true, fullWidth: true, className: 'dc-completed-btn' })}`
-                            : `${DesignSystem.Button({ id: 'btn-start-challenge', text: 'START DAILY CHALLENGE', variant: 'primary', fullWidth: true })}`
+                            ? `${DesignSystem.Button({ text: i18n.currentLocale === 'am' ? 'የዛሬው ጨዋታ ተጠናቋል' : (i18n.currentLocale === 'om' ? 'TAPHI HAR\'AA XUMURAMEERA' : 'MATCH COMPLETED FOR TODAY'), disabled: true, fullWidth: true, className: 'dc-completed-btn' })}`
+                            : `${DesignSystem.Button({ id: 'btn-start-challenge', text: i18n.currentLocale === 'am' ? 'የዕለቱን ፈተና ጀምር' : (i18n.currentLocale === 'om' ? 'QORMAATA GUYYAA EGGI' : 'START DAILY CHALLENGE'), variant: 'primary', fullWidth: true })}`
                         }
                     </div>
 
                     <!-- History Section -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 4px;">⏱️ Match History</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 4px;">⏱️ ${i18n.currentLocale === 'am' ? 'የጨዋታ ታሪክ' : (i18n.currentLocale === 'om' ? 'Seenaa Taphaa' : 'Match History')}</div>
                     <div class="glass-card" style="border-radius: 12px; padding: 12px; border-color: rgba(255,255,255,0.08);">
                         ${historyHtml}
                     </div>

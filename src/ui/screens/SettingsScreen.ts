@@ -125,7 +125,6 @@ export class SettingsScreen {
 
     public render(): void {
         const root = this._uiManager.container;
-        const locale = i18n.currentLocale;
 
         // Custom localized header helper
         const header = (title: string, _backAction?: () => void) => `
@@ -136,29 +135,29 @@ export class SettingsScreen {
         `;
 
         if (this._subScreen === 'main') {
-            this._renderMainScreen(root, locale);
+            this._renderMainScreen(root);
         } else if (this._subScreen === 'profile') {
-            this._renderProfileScreen(root, locale, header);
+            this._renderProfileScreen(root, header);
         } else if (this._subScreen === 'language') {
-            this._renderLanguageScreen(root, locale, header);
+            this._renderLanguageScreen(root, header);
         } else if (this._subScreen === 'notifications') {
-            this._renderNotificationsScreen(root, locale, header);
+            this._renderNotificationsScreen(root, header);
         } else if (this._subScreen === 'sound') {
-            this._renderSoundScreen(root, locale, header);
+            this._renderSoundScreen(root, header);
         } else if (this._subScreen === 'help') {
-            this._renderHelpScreen(root, locale, header);
+            this._renderHelpScreen(root, header);
         } else if (this._subScreen === 'terms') {
-            this._renderTermsScreen(root, locale, header);
+            this._renderTermsScreen(root, header);
         } else if (this._subScreen === 'privacy') {
-            this._renderPrivacyScreen(root, locale, header);
+            this._renderPrivacyScreen(root, header);
         } else if (this._subScreen === 'about') {
-            this._renderAboutScreen(root, locale, header);
+            this._renderAboutScreen(root, header);
         }
     }
 
-    private _renderMainScreen(root: HTMLElement, locale: string): void {
+    private _renderMainScreen(root: HTMLElement): void {
         const profile = this._saveManager.profile;
-        const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : 'Guest Player';
+        const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : `${i18n.currentLocale === 'am' ? 'እንግዳ ተጫዋች' : (i18n.currentLocale === 'om' ? 'Taphataa Keessummaa' : 'Guest Player')}`;
 
         const listTile = (icon: string, title: string, subtitle: string, hasChevron: boolean = true, id: string) => `
             <div id="${id}" class="settings-tile" style="
@@ -177,59 +176,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        const strings: Record<string, any> = {
-            en: {
-                title: 'SETTINGS',
-                account: 'Account & Profile',
-                profile: 'My Profile',
-                language: 'Language',
-                notifications: 'Notifications',
-                sound: 'Sound Effects',
-                legal: 'Support & Legal',
-                help: 'Help & Support',
-                terms: 'Terms & Conditions',
-                privacy: 'Privacy Policy',
-                about: 'About Ethio Fantasy',
-                logout: 'Log Out',
-                soundEnabled: 'Enabled',
-                soundDisabled: 'Muted'
-            },
-            am: {
-                title: 'ቅንብሮች',
-                account: 'መለያ እና መገለጫ',
-                profile: 'የእኔ መገለጫ',
-                language: 'ቋንቋ',
-                notifications: 'ማሳወቂያዎች',
-                sound: 'የድምፅ ተፅእኖዎች',
-                legal: 'እገዛ እና ህጋዊ',
-                help: 'እገዛ እና ድጋፍ',
-                terms: 'ውሎች እና ሁኔታዎች',
-                privacy: 'የግላዊነት ፖሊሲ',
-                about: 'ስለ ኢትዮ ፋንታሲ',
-                logout: 'ውጣ',
-                soundEnabled: 'የበራ',
-                soundDisabled: 'የጠፋ'
-            },
-            om: {
-                title: 'SETTINGS',
-                account: 'Herrega & Profile',
-                profile: 'Profile Koo',
-                language: 'Afaan',
-                notifications: 'Beeksisa',
-                sound: 'Sagaale',
-                legal: 'Gargaarsa & Seera',
-                help: 'Gargaarsa & Deeggarsa',
-                terms: 'Waliigaltee & Haalawwan',
-                privacy: 'Imaammata Dhuunfaa',
-                about: 'Waa\'ee Ethio Fantasy',
-                logout: 'Ba\'i',
-                soundEnabled: 'Kan Baname',
-                soundDisabled: 'Kan Cufame'
-            }
-        };
-
-        const str = strings[locale] || strings['en'];
-        const currentLangLabel = locale === 'am' ? 'አማርኛ' : (locale === 'om' ? 'Afan Oromo' : 'English');
+        const currentLangLabel = i18n.currentLocale === 'am' ? 'አማርኛ' : (i18n.currentLocale === 'om' ? 'Afan Oromo' : 'English');
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
@@ -239,33 +186,33 @@ export class SettingsScreen {
                     <button id="btn-back" style="
                         background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
                     ">❮</button>
-                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">${str.title}</div>
+                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'ቅንብሮች' : (i18n.currentLocale === 'om' ? 'QINDAA\'INOOTA' : 'SETTINGS')}</div>
                 </div>
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
                     <!-- Account Group -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${str.account}</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'መለያ እና መገለጫ' : (i18n.currentLocale === 'om' ? 'HERREGA & PROFILE' : 'ACCOUNT & PROFILE')}</div>
                     <div class="glass-card" style="margin-bottom: 24px; border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('👤', str.profile, maskedMsisdn, true, 'tile-profile')}
-                        ${listTile('🌍', str.language, currentLangLabel, true, 'tile-language')}
-                        ${listTile('🔔', str.notifications, '', true, 'tile-notifications')}
-                        ${listTile('🔊', str.sound, this._settings.soundEffects ? str.soundEnabled : str.soundDisabled, true, 'tile-sound')}
+                        ${listTile('👤', i18n.currentLocale === 'am' ? 'የእኔ መገለጫ' : (i18n.currentLocale === 'om' ? 'Profile Koo' : 'My Profile'), maskedMsisdn, true, 'tile-profile')}
+                        ${listTile('🌍', i18n.currentLocale === 'am' ? 'ቋንቋ' : (i18n.currentLocale === 'om' ? 'Afaan' : 'Language'), currentLangLabel, true, 'tile-language')}
+                        ${listTile('🔔', i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), '', true, 'tile-notifications')}
+                        ${listTile('🔊', i18n.currentLocale === 'am' ? 'የድምፅ ውጤቶች' : (i18n.currentLocale === 'om' ? 'Sagalee' : 'Sound Effects'), this._settings.soundEffects ? (i18n.currentLocale === 'am' ? 'የበራ' : (i18n.currentLocale === 'om' ? 'Kan Baname' : 'Enabled')) : (i18n.currentLocale === 'am' ? 'የጠፋ' : (i18n.currentLocale === 'om' ? 'Kan Cufame' : 'Muted')), true, 'tile-sound')}
                     </div>
 
                     <!-- Legal Group -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${str.legal}</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'እገዛ እና ህጋዊ' : (i18n.currentLocale === 'om' ? 'GARGAARSA & SEERA' : 'SUPPORT & LEGAL')}</div>
                     <div class="glass-card" style="margin-bottom: 32px; border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('❓', str.help, '', true, 'tile-help')}
-                        ${listTile('📜', str.terms, '', true, 'tile-terms')}
-                        ${listTile('🔒', str.privacy, '', true, 'tile-privacy')}
-                        ${listTile('ℹ️', str.about, 'v1.1.0', true, 'tile-about')}
+                        ${listTile('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'Gargaarsa & Deeggarsa' : 'Help & Support'), '', true, 'tile-help')}
+                        ${listTile('📜', i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'Waliigaltee & Haalawwan' : 'Terms & Conditions'), '', true, 'tile-terms')}
+                        ${listTile('🔒', i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'Imaammata Dhuunfaa' : 'Privacy Policy'), '', true, 'tile-privacy')}
+                        ${listTile('ℹ️', i18n.currentLocale === 'am' ? 'ስለ ኢትዮ ፋንታሲ' : (i18n.currentLocale === 'om' ? 'Waa\'ee Ethio Fantasy' : 'About Ethio Fantasy'), 'v1.1.0', true, 'tile-about')}
                     </div>
 
                     <!-- Logout -->
                     <div class="glass-card settings-tile" id="btn-logout" style="margin-bottom: 16px; border-radius: 12px; padding: 0; text-align: center; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); overflow: hidden;">
                         <div style="padding: 16px; font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-red-live); cursor: pointer; letter-spacing: 0.5px;">
-                            ${str.logout.toUpperCase()}
+                            ${i18n.currentLocale === 'am' ? 'ውጣ' : (i18n.currentLocale === 'om' ? 'BA\'I' : 'LOG OUT')}
                         </div>
                     </div>
 
@@ -303,18 +250,20 @@ export class SettingsScreen {
 
         document.getElementById('btn-logout')?.addEventListener('click', async () => {
             this._audioManager.playClick();
-            if (confirm(locale === 'am' ? 'በእርግጥ መውጣት ይፈልጋሉ?' : (locale === 'om' ? 'Dhuguma ba\'uu barbaadduu?' : 'Are you sure you want to log out?'))) {
+            if (confirm(i18n.currentLocale === 'am' ? 'በእርግጥ መውጣት ይፈልጋሉ?' : (i18n.currentLocale === 'om' ? 'Dhuguma ba\'uu barbaadduu?' : 'Are you sure you want to log out?'))) {
                 await AuthManager.getInstance().signOut();
                 window.location.reload();
             }
         });
     }
 
-    private _renderProfileScreen(root: HTMLElement, locale: string, header: Function): void {
+    private _renderProfileScreen(root: HTMLElement, header: Function): void {
         const profile = this._saveManager.profile;
-        const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : 'Guest Player';
+        const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : `${i18n.currentLocale === 'am' ? 'እንግዳ ተጫዋች' : (i18n.currentLocale === 'om' ? 'Taphataa Keessummaa' : 'Guest Player')}`;
         const regDate = 'July 22, 2026';
-        const subStatus = profile.eloRating && profile.eloRating > 1400 ? 'Active Premium' : 'Active Basic';
+        const subStatus = profile.eloRating && profile.eloRating > 1400 
+            ? (i18n.currentLocale === 'am' ? 'የበራ ፕሪሚየም' : (i18n.currentLocale === 'om' ? 'Premium Hojjetu' : 'Active Premium')) 
+            : (i18n.currentLocale === 'am' ? 'የበራ መሰረታዊ' : (i18n.currentLocale === 'om' ? 'Basic Hojjetu' : 'Active Basic'));
 
         const row = (label: string, value: string) => `
             <div style="display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
@@ -323,30 +272,16 @@ export class SettingsScreen {
             </div>
         `;
 
-        const titles: Record<string, string> = {
-            en: 'MY PROFILE',
-            am: 'የእኔ መገለጫ',
-            om: 'PROFILE KOO'
-        };
-
-        const labels: Record<string, Record<string, string>> = {
-            en: { phone: 'Masked MSISDN', status: 'Subscription Status', date: 'Registration Date' },
-            am: { phone: 'የስልክ ቁጥር (MSISDN)', status: 'የምዝገባ ሁኔታ', date: 'የተመዘገቡበት ቀን' },
-            om: { phone: 'Lakkoofsa MSISDN', status: 'Haala Kaffaltii', date: 'Guyyaa Galmee' }
-        };
-
-        const activeLabels = labels[locale] || labels['en'];
-
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'የእኔ መገለጫ' : (i18n.currentLocale === 'om' ? 'PROFILE KOO' : 'MY PROFILE'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${row(activeLabels.phone, maskedMsisdn)}
-                        ${row(activeLabels.status, subStatus)}
+                        ${row(i18n.currentLocale === 'am' ? 'የስልክ ቁጥር (MSISDN)' : (i18n.currentLocale === 'om' ? 'Lakkoofsa MSISDN' : 'Masked MSISDN'), maskedMsisdn)}
+                        ${row(i18n.currentLocale === 'am' ? 'የምዝገባ ሁኔታ' : (i18n.currentLocale === 'om' ? 'Haala Kaffaltii' : 'Subscription Status'), subStatus)}
                         <div style="border-bottom: none;">
-                            ${row(activeLabels.date, regDate)}
+                            ${row(i18n.currentLocale === 'am' ? 'የተመዘገቡበት ቀን' : (i18n.currentLocale === 'om' ? 'Guyyaa Galmee' : 'Registration Date'), regDate)}
                         </div>
                     </div>
                 </div>
@@ -356,9 +291,9 @@ export class SettingsScreen {
         this._bindSubBack();
     }
 
-    private _renderLanguageScreen(root: HTMLElement, locale: string, header: Function): void {
+    private _renderLanguageScreen(root: HTMLElement, header: Function): void {
         const langRow = (code: 'en' | 'am' | 'om', name: string) => {
-            const isSelected = locale === code;
+            const isSelected = i18n.currentLocale === code;
             return `
                 <div class="settings-tile lang-item" data-lang="${code}" style="
                     display: flex; align-items: center; justify-content: space-between; 
@@ -376,15 +311,9 @@ export class SettingsScreen {
             `;
         };
 
-        const titles: Record<string, string> = {
-            en: 'SELECT LANGUAGE',
-            am: 'ቋንቋ ይምረጡ',
-            om: 'AFAAN FILADHU'
-        };
-
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'ቋንቋ ይምረጡ' : (i18n.currentLocale === 'om' ? 'AFAAN FILADHU' : 'SELECT LANGUAGE'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
@@ -415,7 +344,7 @@ export class SettingsScreen {
         });
     }
 
-    private _renderNotificationsScreen(root: HTMLElement, locale: string, header: Function): void {
+    private _renderNotificationsScreen(root: HTMLElement, header: Function): void {
         const notifRow = (key: keyof AppSettings['notifications'], label: string) => {
             const enabled = this._settings.notifications[key];
             return `
@@ -429,54 +358,19 @@ export class SettingsScreen {
             `;
         };
 
-        const titles: Record<string, string> = {
-            en: 'NOTIFICATIONS',
-            am: 'ማሳወቂያዎች',
-            om: 'BEEKSIISAA'
-        };
-
-        const labels: Record<string, Record<string, string>> = {
-            en: {
-                dailyChallenge: 'Daily Challenge',
-                tournament: 'Tournament Updates',
-                rewards: 'Rewards & Bonuses',
-                announcements: 'Announcements',
-                subscription: 'Subscription Alerts',
-                system: 'System Alerts'
-            },
-            am: {
-                dailyChallenge: 'የዕለት ተግዳሮቶች',
-                tournament: 'የሊግ ውድድር ዜናዎች',
-                rewards: 'ሽልማቶች እና ጉርሻዎች',
-                announcements: 'ማስታወቂያዎች',
-                subscription: 'የምዝገባ ማሳወቂያዎች',
-                system: 'የስርዓት ማንቂያዎች'
-            },
-            om: {
-                dailyChallenge: 'Qormaata Guyyaa',
-                tournament: 'Dorgommiiwwan Liigii',
-                rewards: 'Badhaasa & Bonus',
-                announcements: 'Beeksisa Sirnaa',
-                subscription: 'Kaffaltii Addaa',
-                system: 'Gargaarsa Sirnaa'
-            }
-        };
-
-        const activeLabels = labels[locale] || labels['en'];
-
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'BEEKSIISAA' : 'NOTIFICATIONS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${notifRow('dailyChallenge', activeLabels.dailyChallenge)}
-                        ${notifRow('tournament', activeLabels.tournament)}
-                        ${notifRow('rewards', activeLabels.rewards)}
-                        ${notifRow('announcements', activeLabels.announcements)}
-                        ${notifRow('subscription', activeLabels.subscription)}
+                        ${notifRow('dailyChallenge', i18n.currentLocale === 'am' ? 'የዕለት ተግዳሮቶች' : (i18n.currentLocale === 'om' ? 'Qormaata Guyyaa' : 'Daily Challenge'))}
+                        ${notifRow('tournament', i18n.currentLocale === 'am' ? 'የሊግ ውድድር ዜናዎች' : (i18n.currentLocale === 'om' ? 'Dorgommiiwwan Liigii' : 'Tournament Updates'))}
+                        ${notifRow('rewards', i18n.currentLocale === 'am' ? 'ሽልማቶች እና ጉርሻዎች' : (i18n.currentLocale === 'om' ? 'Badhaasa & Bonus' : 'Rewards & Bonuses'))}
+                        ${notifRow('announcements', i18n.currentLocale === 'am' ? 'ማስታወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa Sirnaa' : 'Announcements'))}
+                        ${notifRow('subscription', i18n.currentLocale === 'am' ? 'የምዝገባ ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Kaffaltii Addaa' : 'Subscription Alerts'))}
                         <div style="border-bottom: none;">
-                            ${notifRow('system', activeLabels.system)}
+                            ${notifRow('system', i18n.currentLocale === 'am' ? 'የስርዓት ማንቂያዎች' : (i18n.currentLocale === 'om' ? 'Gargaarsa Sirnaa' : 'System Alerts'))}
                         </div>
                     </div>
                 </div>
@@ -537,7 +431,7 @@ export class SettingsScreen {
         });
     }
 
-    private _renderSoundScreen(root: HTMLElement, locale: string, header: Function): void {
+    private _renderSoundScreen(root: HTMLElement, header: Function): void {
         const soundRow = (value: boolean, label: string) => {
             const isSelected = this._settings.soundEffects === value;
             return `
@@ -557,18 +451,12 @@ export class SettingsScreen {
             `;
         };
 
-        const titles: Record<string, string> = {
-            en: 'SOUND EFFECTS',
-            am: 'የድምፅ ተፅእኖዎች',
-            om: 'SAGAALE TAPHA'
-        };
-
-        const enableLabel = locale === 'am' ? 'ድምፅ አብራ' : (locale === 'om' ? 'Bani' : 'Enable');
-        const disableLabel = locale === 'am' ? 'ድምፅ አጥፋ' : (locale === 'om' ? 'Cufi' : 'Disable');
+        const enableLabel = i18n.currentLocale === 'am' ? 'ድምፅ አብራ' : (i18n.currentLocale === 'om' ? 'Bani' : 'Enable');
+        const disableLabel = i18n.currentLocale === 'am' ? 'ድምፅ አጥፋ' : (i18n.currentLocale === 'om' ? 'Cufi' : 'Disable');
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'የድምፅ ውጤቶች' : (i18n.currentLocale === 'om' ? 'SAGAALE TAPHA' : 'SOUND EFFECTS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
@@ -596,27 +484,21 @@ export class SettingsScreen {
         });
     }
 
-    private _renderHelpScreen(root: HTMLElement, locale: string, header: Function): void {
-        const titles: Record<string, string> = {
-            en: 'HELP & SUPPORT',
-            am: 'እገዛ እና ድጋፍ',
-            om: 'GARGAARSA'
-        };
-
-        const helpCategories: { id: string; name: Record<string, string>; icon: string }[] = [
-            { id: 'account', name: { en: 'Account', am: 'መለያ', om: 'Herrega' }, icon: '👤' },
-            { id: 'subscription', name: { en: 'Subscription', am: 'ምዝገባ', om: 'Kaffaltii' }, icon: '💳' },
-            { id: 'unsubscription', name: { en: 'Unsubscription', am: 'ምዝገባ መሰረዝ', om: 'Haquu' }, icon: '🛑' },
-            { id: 'dailyChallenge', name: { en: 'Daily Challenge', am: 'የዕለት ተግዳሮት', om: 'Qormaata Guyyaa' }, icon: '📅' },
-            { id: 'tournament', name: { en: 'Tournament', am: 'ውድድር', om: 'Dorgommii' }, icon: '🏆' },
-            { id: 'rewards', name: { en: 'Rewards', am: 'ሽልማቶች', om: 'Badhaasa' }, icon: '🎁' },
-            { id: 'gameplay', name: { en: 'Gameplay', am: 'የጨዋታ ሁኔታ', om: 'Tapha' }, icon: '⚽' },
-            { id: 'leaderboard', name: { en: 'Leaderboard', am: 'ደረጃ ሰሌዳ', om: 'Sadarkaa' }, icon: '📊' },
-            { id: 'profile', name: { en: 'Profile', am: 'መገለጫ', om: 'Profile' }, icon: '👤' },
-            { id: 'notifications', name: { en: 'Notifications', am: 'ማሳወቂያዎች', om: 'Beeksisa' }, icon: '🔔' },
-            { id: 'technicalIssues', name: { en: 'Technical Issues', am: 'ቴክኒካዊ ጉዳዮች', om: 'Rakkina Sirnaa' }, icon: '🔧' },
-            { id: 'privacy', name: { en: 'Privacy', am: 'ምስጢራዊነት', om: 'Dhuunfaa' }, icon: '🔒' },
-            { id: 'terms', name: { en: 'Terms', am: 'ውሎች', om: 'Haalawwan' }, icon: '📜' }
+    private _renderHelpScreen(root: HTMLElement, header: Function): void {
+        const helpCategories: { id: string; name: string; icon: string }[] = [
+            { id: 'account', name: i18n.currentLocale === 'am' ? 'መለያ' : (i18n.currentLocale === 'om' ? 'Herrega' : 'Account'), icon: '👤' },
+            { id: 'subscription', name: i18n.currentLocale === 'am' ? 'ምዝገባ' : (i18n.currentLocale === 'om' ? 'Kaffaltii' : 'Subscription'), icon: '💳' },
+            { id: 'unsubscription', name: i18n.currentLocale === 'am' ? 'ምዝገባ መሰረዝ' : (i18n.currentLocale === 'om' ? 'Haquu' : 'Unsubscription'), icon: '🛑' },
+            { id: 'dailyChallenge', name: i18n.currentLocale === 'am' ? 'የዕለት ተግዳሮት' : (i18n.currentLocale === 'om' ? 'Qormaata Guyyaa' : 'Daily Challenge'), icon: '📅' },
+            { id: 'tournament', name: i18n.currentLocale === 'am' ? 'ውድድር' : (i18n.currentLocale === 'om' ? 'Dorgommii' : 'Tournament'), icon: '🏆' },
+            { id: 'rewards', name: i18n.currentLocale === 'am' ? 'ሽልማቶች' : (i18n.currentLocale === 'om' ? 'Badhaasa' : 'Rewards'), icon: '🎁' },
+            { id: 'gameplay', name: i18n.currentLocale === 'am' ? 'የጨዋታ ሁኔታ' : (i18n.currentLocale === 'om' ? 'Tapha' : 'Gameplay'), icon: '⚽' },
+            { id: 'leaderboard', name: i18n.currentLocale === 'am' ? 'ደረጃ ሰሌዳ' : (i18n.currentLocale === 'om' ? 'Sadarkaa' : 'Leaderboard'), icon: '📊' },
+            { id: 'profile', name: i18n.currentLocale === 'am' ? 'መገለጫ' : (i18n.currentLocale === 'om' ? 'Profile' : 'Profile'), icon: '👤' },
+            { id: 'notifications', name: i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), icon: '🔔' },
+            { id: 'technicalIssues', name: i18n.currentLocale === 'am' ? 'ቴክኒካዊ ጉዳዮች' : (i18n.currentLocale === 'om' ? 'Rakkina Sirnaa' : 'Technical Issues'), icon: '🔧' },
+            { id: 'privacy', name: i18n.currentLocale === 'am' ? 'ምስጢራዊነት' : (i18n.currentLocale === 'om' ? 'Dhuunfaa' : 'Privacy'), icon: '🔒' },
+            { id: 'terms', name: i18n.currentLocale === 'am' ? 'ውሎች' : (i18n.currentLocale === 'om' ? 'Haalawwan' : 'Terms'), icon: '📜' }
         ];
 
         const HELP_FAQS: Record<string, { q: string; a: string }[]> = {
@@ -671,29 +553,29 @@ export class SettingsScreen {
         if (this._showContactSupportForm) {
             root.innerHTML = `
                 <div class="stadium-container" style="pointer-events: auto;">
-                    ${header(titles[locale] || titles['en'])}
+                    ${header(i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'GARGAARSA' : 'HELP & SUPPORT'))}
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                         <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--fds-text-main); padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
-                            ⬅️ HELP DIRECTORY
+                            ${i18n.currentLocale === 'am' ? '⬅️ የእገዛ ማውጫ' : (i18n.currentLocale === 'om' ? '⬅️ AALAMA GARGAARSAA' : '⬅️ HELP DIRECTORY')}
                         </button>
                         
                         <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left;" id="support-form-container">
-                            <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-text-main); margin-bottom: 12px; text-transform: uppercase;">✉️ Contact Support</div>
+                            <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-text-main); margin-bottom: 12px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? '✉️ እገዛን ያግኙ' : (i18n.currentLocale === 'om' ? '✉️ Deeggarsa Argaadhu' : '✉️ Contact Support')}</div>
                             <div style="margin-bottom: 12px;">
-                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">ISSUE TYPE</label>
+                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">${i18n.currentLocale === 'am' ? 'የጉዳዩ ዓይነት' : (i18n.currentLocale === 'om' ? 'GOSA RAKKINA' : 'ISSUE TYPE')}</label>
                                 <select id="support-category" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--fds-text-main); outline: none;">
-                                    <option value="Billing & Subscription">Billing & Subscription</option>
-                                    <option value="Technical Issues">Technical Issues</option>
-                                    <option value="Rewards & Points">Rewards & Points</option>
-                                    <option value="General Feedback">General Feedback</option>
+                                    <option value="Billing & Subscription">${i18n.currentLocale === 'am' ? 'ክፍያ እና ምዝገባ' : (i18n.currentLocale === 'om' ? 'Kaffaltii & Galmee' : 'Billing & Subscription')}</option>
+                                    <option value="Technical Issues">${i18n.currentLocale === 'am' ? 'ቴክኒካዊ ጉዳዮች' : (i18n.currentLocale === 'om' ? 'Rakkina Sirnaa' : 'Technical Issues')}</option>
+                                    <option value="Rewards & Points">${i18n.currentLocale === 'am' ? 'ሽልማቶች እና ነጥቦች' : (i18n.currentLocale === 'om' ? 'Badhaasa & Qabxii' : 'Rewards & Points')}</option>
+                                    <option value="General Feedback">${i18n.currentLocale === 'am' ? 'አጠቃላይ አስተያየት' : (i18n.currentLocale === 'om' ? 'Yaada Waligalaa' : 'General Feedback')}</option>
                                 </select>
                             </div>
                             <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">MESSAGE</label>
-                                <textarea id="support-message" placeholder="Describe your issue here..." style="width: 100%; height: 80px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--fds-text-main); outline: none; resize: none; font-family: sans-serif; box-sizing: border-box;"></textarea>
+                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">${i18n.currentLocale === 'am' ? 'መልእክት' : (i18n.currentLocale === 'om' ? 'ERGAA' : 'MESSAGE')}</label>
+                                <textarea id="support-message" placeholder="${i18n.currentLocale === 'am' ? 'ችግርዎን እዚህ ይግለጹ...' : (i18n.currentLocale === 'om' ? 'Rakkina keessan asitti ibsaa...' : 'Describe your issue here...')}" style="width: 100%; height: 80px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--fds-text-main); outline: none; resize: none; font-family: sans-serif; box-sizing: border-box;"></textarea>
                             </div>
-                            ${DesignSystem.Button({ id: 'btn-submit-support', text: 'SUBMIT TICKET', variant: 'primary', fullWidth: true })}
+                            ${DesignSystem.Button({ id: 'btn-submit-support', text: i18n.currentLocale === 'am' ? 'መልእክት ላክ' : (i18n.currentLocale === 'om' ? 'ERGAA ERGI' : 'SUBMIT TICKET'), variant: 'primary', fullWidth: true })}
                         </div>
                     </div>
                 </div>
@@ -713,14 +595,14 @@ export class SettingsScreen {
                 const cat = catSelect ? catSelect.value : 'General Feedback';
                 
                 if (!msg) {
-                    Toast.show('Please enter a message before submitting.', 'warning');
+                    Toast.show(i18n.currentLocale === 'am' ? 'እባክዎን ከማስገባትዎ በፊት መልእክት ያስገቡ።' : (i18n.currentLocale === 'om' ? 'Maree ergamuu dura ergaa galchaa.' : 'Please enter a message before submitting.'), 'warning');
                     return;
                 }
                 const container = document.getElementById('support-form-container');
                 if (container) {
                     container.innerHTML = `
                         <div style="text-align: center; padding: 16px; color: var(--fds-text-dim);">
-                            Submitting ticket to server...
+                            ${i18n.currentLocale === 'am' ? 'ጥያቄዎ ወደ አገልጋይ በመላክ ላይ...' : (i18n.currentLocale === 'om' ? 'Ergaan gara serveritti ergamaa jira...' : 'Submitting ticket to server...')}
                         </div>
                     `;
                     const res = await SupportService.getInstance().createTicket(cat, msg);
@@ -729,8 +611,8 @@ export class SettingsScreen {
                     container.innerHTML = `
                         <div style="text-align: center; padding: 16px;">
                             <div style="font-size: 40px; margin-bottom: 8px;">✅</div>
-                            <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--tv-pitch-green); margin-bottom: 4px;">TICKET SUBMITTED</div>
-                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 12px;">Our support team will respond via SMS shortly.</div>
+                            <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--tv-pitch-green); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ጥያቄዎ ገብቷል' : (i18n.currentLocale === 'om' ? 'ERGAAN ERGAMEERA' : 'TICKET SUBMITTED')}</div>
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 12px;">${i18n.currentLocale === 'am' ? 'የድጋፍ ቡድናችን በቅርቡ በኤስኤምኤስ ምላሽ ይሰጣል።' : (i18n.currentLocale === 'om' ? 'Gareen deeggarsa keenyaa dhiyeenyatti SMSn deebii kenne.' : 'Our support team will respond via SMS shortly.')}</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 700; color: var(--fds-text-main); background: rgba(255,255,255,0.08); padding: 6px; border-radius: 6px; font-family: monospace; display: inline-block;">REF: ${refId}</div>
                         </div>
                     `;
@@ -753,7 +635,8 @@ export class SettingsScreen {
                 </div>
             `).join('');
 
-            const categoryName = helpCategories.find(c => c.id === this._helpCategory)?.name[locale] || this._helpCategory;
+            const catItem = helpCategories.find(c => c.id === this._helpCategory);
+            const categoryName = catItem ? catItem.name : this._helpCategory;
 
             root.innerHTML = `
                 <div class="stadium-container" style="pointer-events: auto;">
@@ -761,11 +644,11 @@ export class SettingsScreen {
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                         <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--fds-text-main); padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
-                            ⬅️ HELP DIRECTORY
+                            ${i18n.currentLocale === 'am' ? '⬅️ የእገዛ ማውጫ' : (i18n.currentLocale === 'om' ? '⬅️ AALAMA GARGAARSAA' : '⬅️ HELP DIRECTORY')}
                         </button>
                         
                         <!-- Search FAQs -->
-                        <input type="text" id="faq-search-input" placeholder="🔍 Search FAQs..." style="
+                        <input type="text" id="faq-search-input" placeholder="${i18n.currentLocale === 'am' ? '🔍 ጥያቄዎችን ይፈልጉ...' : (i18n.currentLocale === 'om' ? '🔍 Gaaffiiwwan Barbaadi...' : '🔍 Search FAQs...')}" style="
                             width: 100%; 
                             padding: 10px 14px; 
                             background: rgba(0,0,0,0.2); 
@@ -837,7 +720,7 @@ export class SettingsScreen {
             ">
                 <div style="display: flex; align-items: center; gap: 16px;">
                     <span style="font-size: var(--fds-font-lg);">${c.icon}</span>
-                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${c.name[locale] || c.name['en']}</div>
+                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${c.name}</div>
                 </div>
                 <span style="color: var(--fds-text-dim);">❯</span>
             </div>
@@ -845,7 +728,7 @@ export class SettingsScreen {
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'GARGAARSA' : 'HELP & SUPPORT'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
@@ -853,7 +736,7 @@ export class SettingsScreen {
                         ${categoriesHtml}
                     </div>
 
-                    ${DesignSystem.Button({ id: 'btn-contact-support', text: 'CONTACT SUPPORT', variant: 'primary', fullWidth: true, icon: '✉️' })}
+                    ${DesignSystem.Button({ id: 'btn-contact-support', text: i18n.currentLocale === 'am' ? 'እገዛን ያግኙ' : (i18n.currentLocale === 'om' ? 'DEEGGARSA ARGAADHU' : 'CONTACT SUPPORT'), variant: 'primary', fullWidth: true, icon: '✉️' })}
                 </div>
             </div>
         `;
@@ -877,19 +760,18 @@ export class SettingsScreen {
                     
                     // Show a quick loader while fetching
                     const wrapper = document.getElementById('faq-list-wrapper');
-                    if (wrapper) wrapper.innerHTML = '<div style="padding: 20px; color: var(--fds-text-dim);">Loading FAQs...</div>';
+                    if (wrapper) wrapper.innerHTML = `<div style="padding: 20px; color: var(--fds-text-dim);">${i18n.currentLocale === 'am' ? 'ጥያቄዎች በመጫን ላይ...' : (i18n.currentLocale === 'om' ? 'Gaaffiiwwan fe\'amaa jiru...' : 'Loading FAQs...')}</div>`;
                     
                     const faqService = FAQService.getInstance();
                     const rawFaqs = await faqService.getFAQsByCategory(catId);
                     
-                    const currentLocale = i18n.currentLocale;
                     this._faqsCache = rawFaqs.map(item => {
                         let q = item.question_en;
                         let a = item.answer_en;
-                        if (currentLocale === 'am' && item.question_am && item.answer_am) {
+                        if (i18n.currentLocale === 'am' && item.question_am && item.answer_am) {
                             q = item.question_am;
                             a = item.answer_am;
-                        } else if (currentLocale === 'om' && item.question_om && item.answer_om) {
+                        } else if (i18n.currentLocale === 'om' && item.question_om && item.answer_om) {
                             q = item.question_om;
                             a = item.answer_om;
                         }
@@ -902,59 +784,58 @@ export class SettingsScreen {
         });
     }
 
-    private _renderTermsScreen(root: HTMLElement, locale: string, header: Function): void {
-        const titles: Record<string, string> = {
-            en: 'TERMS & CONDITIONS',
-            am: 'ውሎች እና ሁኔታዎች',
-            om: 'WALIIGALTEE'
-        };
+    private _renderTermsScreen(root: HTMLElement, header: Function): void {
+        const body = i18n.currentLocale === 'am' ? `
+            <div style="font-family: sans-serif; line-height: 1.6;">
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. መግቢያ እና የኢትዮፋንታሲ ስምምነት</h2>
+                <p>ለኢትዮ ቴሌኮም ደንበኞች ወደተዘጋጀው የኢትዮ ፋንታሲ የእግር ኳስ ጥያቄ ሊግ እንኳን በደህና መጡ። ይህንን ተጨማሪ እሴት አገልግሎት (VAS) በመጠቀም፣ ከኢትዮፋንታሲ እና ከኢትዮ ቴሌኮም ጋር ውል ይገባሉ።</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. የምዝገባ ዕቅድ እና ክፍያ</h2>
+                <p>ለፕሪሚየም አገልግሎት ዕለታዊ ክፍያ 2 ብር ሲሆን፤ መሰረታዊ አገልግሎት ዕለታዊ ክፍያ 1 ብር ነው። የምዝገባ ክፍያው ከኢትዮ ቴሌኮም የሞባይል ሂሳብዎ ላይ በቀጥታ ተቀናሽ ይደረጋል።</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. የጨዋታ እና የደረጃ ሰሌዳ ታማኝነት</h2>
+                <p>ጥያቄዎችን በተሰጠው የጊዜ ገደብ ውስጥ መመለስ ይኖርብዎታል። በጨዋታ ላይ ማጭበርበር ወይም ያልተፈቀዱ ቦቶችን መጠቀም መለያዎ በቋሚነት እንዲታገድ ያደርጋል።</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">4. ሽልማቶች እና የገንዘብ ሽልማት ስርጭት</h2>
+                <p>በዕለታዊ ተግዳሮቶች፣ ውድድሮች እና ጨዋታዎች የተገኙ የሽልማት ነጥቦች (XP እና ሳንቲሞች) የተለየ ካልተገለጸ በስተቀር እውነተኛ የገንዘብ ዋጋ የላቸውም። ኦፊሴላዊ የሳምንታዊ ደረጃ ሰሌዳ የገንዘብ ሽልማቶች በቀጥታ ወደ ተመዝጋቢው የተረጋገጠ የኢትዮ ቴሌኮም ሞባይል ሂሳብ ገቢ ይደረጋሉ።</p>
+            </div>
+        ` : (i18n.currentLocale === 'om' ? `
+            <div style="font-family: sans-serif; line-height: 1.6;">
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Seensa & Waliigaltee EthioFantasy</h2>
+                <p>Gara EthioFantasy, dorgommii gaaffii kubbaa miilaa Itiyo Telekoom fayyadamtootaaf qophaa'eetti baga nagaan dhuftan.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Kaffaltii</h2>
+                <p>Kaffaltiin Premium guyyaatti qarshii 2 yommuu ta'u, kaffaltiin Basic guyyaatti qarshii 1 dha. Kaffaltiin kun herrega bilbila keessanii irraa hir'ifama.</p>
 
-        const body: Record<string, string> = {
-            en: `
-                <div style="font-family: sans-serif; line-height: 1.6;">
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Introduction & EthioFantasy Agreement</h2>
-                    <p>Welcome to EthioFantasy, the premium Football Quiz League developed for Ethio Telecom customers. By accessing this Value Added Service (VAS), you enter into a binding agreement with EthioFantasy and Ethio Telecom.</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Subscription Plans & Billing</h2>
-                    <p>Subscribing to Premium grants unlimited gameplay access, full league entry, and entry into weekly cash pools. Premium subscription billing is 2 Birr/day. Basic subscription is billed at 1 Birr/day. Daily subscription fees are automatically deducted from your Ethio Telecom airtime balance.</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Gameplay & Leaderboard Integrity</h2>
-                    <p>The Football Quiz League requires participants to answer themed questions within the allocated time (30 seconds for Solo, 20 seconds for Live 1v1). Score progression and ELO points are recorded in real-time. Cheating, abusing system vulnerabilities, or using bots is strictly prohibited and results in immediate account termination.</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">4. Rewards & Cash Prize Distribution</h2>
-                    <p>Reward points (XP and coins) gained in Daily Challenges, Tournaments, and matches do not have real cash value unless specified. Official weekly leaderboard cash prizes are credited directly to the subscriber's verified Ethio Telecom mobile account balance. Decision of the EthioFantasy administration on rank calculations is final.</p>
-                </div>
-            `,
-            am: `
-                <div style="font-family: sans-serif; line-height: 1.6;">
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. መግቢያ እና የኢትዮፋንታሲ ስምምነት</h2>
-                    <p>ለኢትዮ ቴሌኮም ደንበኞች ወደተዘጋጀው የኢትዮ ፋንታሲ የእግር ኳስ ጥያቄ ሊግ እንኳን በደህና መጡ። ይህንን ተጨማሪ እሴት አገልግሎት (VAS) በመጠቀም፣ ከኢትዮፋንታሲ እና ከኢትዮ ቴሌኮም ጋር ውል ይገባሉ።</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. የምዝገባ ዕቅድ እና ክፍያ</h2>
-                    <p>ለፕሪሚየም አገልግሎት ዕለታዊ ክፍያ 2 ብር ሲሆን፤ መሰረታዊ አገልግሎት ዕለታዊ ክፍያ 1 ብር ነው። የምዝገባ ክፍያው ከኢትዮ ቴሌኮም የሞባይል ሂሳብዎ ላይ በቀጥታ ተቀናሽ ይደረጋል።</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. የጨዋታ እና የደረጃ ሰሌዳ ታማኝነት</h2>
-                    <p>ጥያቄዎችን በተሰጠው የጊዜ ገደብ ውስጥ መመለስ ይኖርብዎታል። በጨዋታ ላይ ማጭበርበር ወይም ያልተፈቀዱ ቦቶችን መጠቀም መለያዎ በቋሚነት እንዲታገድ ያደርጋል።</p>
-                </div>
-            `,
-            om: `
-                <div style="font-family: sans-serif; line-height: 1.6;">
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Seensa & Waliigaltee EthioFantasy</h2>
-                    <p>Gara EthioFantasy, dorgommii gaaffii kubbaa miilaa Itiyo Telekoom fayyadamtootaaf qophaa'eetti baga nagaan dhuftan.</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Kaffaltii</h2>
-                    <p>Kaffaltiin Premium guyyaatti qarshii 2 yommuu ta'u, kaffaltiin Basic guyyaatti qarshii 1 dha. Kaffaltiin kun herrega bilbila keessanii irraa hir'ifama.</p>
-                </div>
-            `
-        };
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Tapha & Sadarkaa</h2>
+                <p>Gaaffiiwwan yeroo kenname keessatti deebisuu qabdu. Mala dogoggoraa fayyadamuun akaauntii keessan cufsiisa.</p>
+
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">4. Badhaasa Qarshii</h2>
+                <p>Badhaasni torban amanamummaadhaan herrega bilbila keessan irratti kaffalama.</p>
+            </div>
+        ` : `
+            <div style="font-family: sans-serif; line-height: 1.6;">
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Introduction & EthioFantasy Agreement</h2>
+                <p>Welcome to EthioFantasy, the premium Football Quiz League developed for Ethio Telecom customers. By accessing this Value Added Service (VAS), you enter into a binding agreement with EthioFantasy and Ethio Telecom.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Subscription Plans & Billing</h2>
+                <p>Subscribing to Premium grants unlimited gameplay access, full league entry, and entry into weekly cash pools. Premium subscription billing is 2 Birr/day. Basic subscription is billed at 1 Birr/day. Daily subscription fees are automatically deducted from your Ethio Telecom airtime balance.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Gameplay & Leaderboard Integrity</h2>
+                <p>The Football Quiz League requires participants to answer themed questions within the allocated time (30 seconds for Solo, 20 seconds for Live 1v1). Score progression and ELO points are recorded in real-time. Cheating, abusing system vulnerabilities, or using bots is strictly prohibited and results in immediate account termination.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">4. Rewards & Cash Prize Distribution</h2>
+                <p>Reward points (XP and coins) gained in Daily Challenges, Tournaments, and matches do not have real cash value unless specified. Official weekly leaderboard cash prizes are credited directly to the subscriber's verified Ethio Telecom mobile account balance. Decision of the EthioFantasy administration on rank calculations is final.</p>
+            </div>
+        `);
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'WALIIGALTEE' : 'TERMS & CONDITIONS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: var(--fds-text-muted);">
-                        ${body[locale] || body['en']}
+                        ${body}
                     </div>
                 </div>
             </div>
@@ -963,50 +844,49 @@ export class SettingsScreen {
         this._bindSubBack();
     }
 
-    private _renderPrivacyScreen(root: HTMLElement, locale: string, header: Function): void {
-        const titles: Record<string, string> = {
-            en: 'PRIVACY POLICY',
-            am: 'የግላዊነት ፖሊሲ',
-            om: 'IMAAMMATA DHUUNFAA'
-        };
-
-        const body: Record<string, string> = {
-            en: `
-                <div style="font-family: sans-serif; line-height: 1.6;">
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Information We Collect</h2>
-                    <p>We collect subscriber MSISDN (mobile number), device IP address, locale preference, subscription state, and gameplay statistics (scores, response times, ELO ratings) to manage the EthioFantasy service.</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Integration with Ethio Telecom</h2>
-                    <p>Our application integrates directly with Ethio Telecom VAS Gateway APIs. Subscription status checks are executed on every login session to confirm billing and verify eligibility for weekly cash rewards.</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Data Protection & Retainment</h2>
-                    <p>Player statistics and phone numbers are encrypted in transit and at rest. We store player data securely using cloud server clusters. We do not sell or share subscriber data with any third-party organizations.</p>
-                </div>
-            `,
-            am: `
-                <div style="font-family: sans-serif; line-height: 1.6;">
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. የምንሰበስበው መረጃ</h2>
-                    <p>ለጨዋታው አስተዳደር እንዲረዳን የተጠቃሚውን ስልክ ቁጥር (MSISDN)፣ የቋንቋ ምርጫ እና የጨዋታ ነጥቦችን እንሰበስባለን።</p>
-                    
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. ከኢትዮ ቴሌኮም ጋር ያለው ትስስር</h2>
-                    <p>አፕሊኬሽኑ ከኢትዮ ቴሌኮም የቪኤኤስ (VAS) መተግበሪያ ጋር በቀጥታ የተገናኘ ሲሆን፣ ሳምንታዊ ሽልማቶችን ለማረጋገጥ ስልክዎን እንጠቀማለን።</p>
-                </div>
-            `,
-            om: `
-                <div style="font-family: sans-serif; line-height: 1.6;">
-                    <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Odeeffannoo Nyaatamu</h2>
-                    <p>Lakkoofsa bilbilaa fi qabxii tapha keessanii qofa sirnaa keenya keessatti kuusna.</p>
-                </div>
-            `
-        };
+    private _renderPrivacyScreen(root: HTMLElement, header: Function): void {
+        const body = i18n.currentLocale === 'am' ? `
+            <div style="font-family: sans-serif; line-height: 1.6;">
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. የምንሰበስበው መረጃ</h2>
+                <p>ለጨዋታው አስተዳደር እንዲረዳን የተጠቃሚውን ስልክ ቁጥር (MSISDN)፣ የቋንቋ ምርጫ እና የጨዋታ ነጥቦችን እንሰበስባለን።</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. ከኢትዮ ቴሌኮም ጋር ያለው ትስስር</h2>
+                <p>አፕሊኬሽኑ ከኢትዮ ቴሌኮም የቪኤኤስ (VAS) መተግበሪያ ጋር በቀጥታ የተገናኘ ሲሆን፣ ሳምንታዊ ሽልማቶችን ለማረጋገጥ ስልክዎን እንጠቀማለን።</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. የመረጃ ጥበቃ እና ደህንነት</h2>
+                <p>የተጫዋች መረጃ እና የስልክ ቁጥር በከፍተኛ ደህንነት የተጠበቀ ነው። መረጃዎን ለሶስተኛ ወገን አናጋራም።</p>
+            </div>
+        ` : (i18n.currentLocale === 'om' ? `
+            <div style="font-family: sans-serif; line-height: 1.6;">
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Odeeffannoo Nyaatamu</h2>
+                <p>Lakkoofsa bilbilaa fi qabxii tapha keessanii qofa sirnaa keenya keessatti kuusna.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Waliin Hojii Itiyo Telekoom</h2>
+                <p>Sirni keenya kallattiin Itiyo Telekoom VAS waliin kan walqabatu dha.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Eegumsa Odeeffannoo</h2>
+                <p>Odeeffannoon keessan oomisha qaama sadaffaatif hin kennamu.</p>
+            </div>
+        ` : `
+            <div style="font-family: sans-serif; line-height: 1.6;">
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 0;">1. Information We Collect</h2>
+                <p>We collect subscriber MSISDN (mobile number), device IP address, locale preference, subscription state, and gameplay statistics (scores, response times, ELO ratings) to manage the EthioFantasy service.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">2. Integration with Ethio Telecom</h2>
+                <p>Our application integrates directly with Ethio Telecom VAS Gateway APIs. Subscription status checks are executed on every login session to confirm billing and verify eligibility for weekly cash rewards.</p>
+                
+                <h2 style="color: var(--tv-gold-primary); font-size: 18px; margin-top: 20px;">3. Data Protection & Retainment</h2>
+                <p>Player statistics and phone numbers are encrypted in transit and at rest. We store player data securely using cloud server clusters. We do not sell or share subscriber data with any third-party organizations.</p>
+            </div>
+        `);
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'IMAAMMATA DHUUNFAA' : 'PRIVACY POLICY'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: var(--fds-text-muted);">
-                        ${body[locale] || body['en']}
+                        ${body}
                     </div>
                 </div>
             </div>
@@ -1015,16 +895,10 @@ export class SettingsScreen {
         this._bindSubBack();
     }
 
-    private _renderAboutScreen(root: HTMLElement, locale: string, header: Function): void {
-        const titles: Record<string, string> = {
-            en: 'ABOUT ETHIO FANTASY',
-            am: 'ስለ ኢትዮ ፋንታሲ',
-            om: 'WAA\'EE ETHIO FANTASY'
-        };
-
+    private _renderAboutScreen(root: HTMLElement, header: Function): void {
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto;">
-                ${header(titles[locale] || titles['en'])}
+                ${header(i18n.currentLocale === 'am' ? 'ስለ ኢትዮ ፋንታሲ' : (i18n.currentLocale === 'om' ? 'WAA\'EE ETHIO FANTASY' : 'ABOUT ETHIO FANTASY'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px; text-align: center;">
                     <div style="font-size: 64px; margin-bottom: 16px;">⚽</div>
@@ -1032,25 +906,21 @@ export class SettingsScreen {
                     <div style="font-size: var(--fds-font-sm); color: var(--tv-gold-primary); font-weight: 800; margin-bottom: 24px; letter-spacing: 1.5px; text-transform: uppercase;">Ethio Telecom VAS Integration</div>
                     
                     <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: var(--fds-font-sm); line-height: 1.6; color: var(--fds-text-muted); margin-bottom: 24px;">
-                        <p style="margin-top: 0;"><strong>Application Description:</strong><br>EthioFantasy is a premium Football Quiz League platform crafted specifically for football fans in Ethiopia. Play daily trivia matches, challenge other players in live 1v1 showdowns, and climb the league divisions to win cash prizes.</p>
+                        <p style="margin-top: 0;"><strong>${i18n.currentLocale === 'am' ? 'የመተግበሪያ መግለጫ:' : (i18n.currentLocale === 'om' ? 'IBSA APPLIKAASHINII:' : 'Application Description:')}</strong><br>${i18n.currentLocale === 'am' ? 'ኢትዮፋንታሲ በኢትዮጵያ ውስጥ ላሉ የእግር ኳስ አፍቃሪዎች የተዘጋጀ ልዩ የእግር ኳስ ጥያቄዎች ሊግ ነው። ዕለታዊ የትሪቪያ ጨዋታዎችን ይጫወቱ፣ ሌሎች ተጫዋቾችን በቀጥታ 1v1 ይፈትኑ እና የገንዘብ ሽልማቶችን ለማሸነፍ በሊግ ደረጃዎች ይውጡ።' : (i18n.currentLocale === 'om' ? 'EthioFantasy dorgommii gaaffii kubbaa miilaa fayyadamtoota Itoophiyaatif qophaa\'ee dha. Tapha guyyaa taphadhaa, dorgomtoota kan biroo 1v1 irratti falmaa, badhaasa qarshii mo\'achuuf sadarkaa liigii kooraa.' : 'EthioFantasy is a premium Football Quiz League platform crafted specifically for football fans in Ethiopia. Play daily trivia matches, challenge other players in live 1v1 showdowns, and climb the league divisions to win cash prizes.')}</p>
                         
-                        <p style="margin-bottom: 0;"><strong>Key Features:</strong><br>
-                        • Daily themed challenges with score multipliers<br>
-                        • Live 1v1 real-time matchmaking<br>
-                        • Interactive Weekend knockout tournaments<br>
-                        • Professional division promotions & ELO ranking leaderboard<br>
-                        • Integrated billing checking via SMS OTP</p>
+                        <p style="margin-bottom: 0;"><strong>${i18n.currentLocale === 'am' ? 'ዋና ዋና ባህሪያት:' : (i18n.currentLocale === 'om' ? 'AMALA GURGUDDOO:' : 'Key Features:')}</strong><br>
+                        ${i18n.currentLocale === 'am' ? '• የዕለት ተግዳሮቶች ከነጥብ ማባዣዎች ጋር<br>• የቀጥታ 1v1 ጨዋታዎች<br>• የሳምንቱ መጨረሻ ውድድሮች<br>• የደረጃ እድገት እና የ ELO ሰሌዳ<br>• የተቀናጀ የኤስኤምኤስ ክፍያ ማረጋገጫ' : (i18n.currentLocale === 'om' ? '• Qormaata guyyaa qabxii baay\'isu waliin<br>• Tapha 1v1 kallattiin<br>• Dorgommii dhuma torbaniti<br>• Sadarkaa ELO fi guddina liigii<br>• Kaffaltii SMSn mirkanaa\'u' : '• Daily themed challenges with score multipliers<br>• Live 1v1 real-time matchmaking<br>• Interactive Weekend knockout tournaments<br>• Professional division promotions & ELO ranking leaderboard<br>• Integrated billing checking via SMS OTP')}</p>
                     </div>
 
                     <div class="glass-card" style="border-radius: 12px; padding: 16px; border-color: rgba(255,255,255,0.08); text-align: left; font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 24px;">
-                        <div><strong>Version:</strong> 1.1.0</div>
-                        <div style="margin-top: 6px;"><strong>Developer:</strong> InnoGames VAS Team</div>
-                        <div style="margin-top: 6px;"><strong>Ethio Telecom Integration:</strong> VAS Gateway API v3.2</div>
-                        <div style="margin-top: 6px;"><strong>Contact:</strong> support@ethiofantasy.com</div>
+                        <div><strong>${i18n.currentLocale === 'am' ? 'ስሪት:' : (i18n.currentLocale === 'om' ? 'Gosa:' : 'Version:')}</strong> 1.1.0</div>
+                        <div style="margin-top: 6px;"><strong>${i18n.currentLocale === 'am' ? 'አልሚ:' : (i18n.currentLocale === 'om' ? 'Oomishaa:' : 'Developer:')}</strong> InnoGames VAS Team</div>
+                        <div style="margin-top: 6px;"><strong>${i18n.currentLocale === 'am' ? 'የኢትዮ ቴሌኮም ትስስር:' : (i18n.currentLocale === 'om' ? 'Waliin Hojii Itiyo Telekoom:' : 'Ethio Telecom Integration:')}</strong> VAS Gateway API v3.2</div>
+                        <div style="margin-top: 6px;"><strong>${i18n.currentLocale === 'am' ? 'ግንኙነት:' : (i18n.currentLocale === 'om' ? 'Qunnamtii:' : 'Contact:')}</strong> support@ethiofantasy.com</div>
                     </div>
 
                     <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700;">
-                        © 2026 Ethio Telecom VAS. All Rights Reserved.
+                        ${i18n.currentLocale === 'am' ? '© 2026 ኢትዮ ቴሌኮም VAS። መብቱ በህግ የተጠበቀ ነው።' : (i18n.currentLocale === 'om' ? '© 2026 Itiyo Telekoom VAS. Mirgi Hunduu Seeraan Kan Eegame.' : '© 2026 Ethio Telecom VAS. All Rights Reserved.')}
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { DesignSystem } from '../theme/DesignSystem';
 import { ProfileService } from '../../networking/services/ProfileService';
 import { PullToRefresh } from '../components/PullToRefresh';
+import { i18n } from '../../localization/i18n';
 
 
 export interface ProfileCallbacks {
@@ -39,7 +40,7 @@ export class ProfileScreen {
 
     public render(): void {
         const root = this._uiManager.container;
-        root.innerHTML = DesignSystem.LoadingState('Loading profile...');
+        root.innerHTML = DesignSystem.LoadingState(`${i18n.currentLocale === 'am' ? 'መገለጫ በመጫን ላይ...' : (i18n.currentLocale === 'om' ? "Pirofaayilii fe'aa jira..." : 'Loading profile...')}`);
         
         setTimeout(() => {
             this._renderActual();
@@ -50,7 +51,7 @@ export class ProfileScreen {
         const root = this._uiManager.container;
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);
-        const msisdn = profile.phone ? this._maskPhone(profile.phone) : 'Guest Player';
+        const msisdn = profile.phone ? this._maskPhone(profile.phone) : `${i18n.currentLocale === 'am' ? 'እንግዳ ተጫዋች' : (i18n.currentLocale === 'om' ? 'Tapaataa Keessummaa' : 'Guest Player')}`;
 
         const listTile = (icon: string, title: string, action: string, hasArrow: boolean = true) => `
             <div class="list-tile profile-menu-tile" data-action="${action}" style="
@@ -105,15 +106,15 @@ export class ProfileScreen {
                     text-align: center;
                 ">
                     <div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">LEAGUE</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ሊግ' : (i18n.currentLocale === 'om' ? 'LIIGII' : 'LEAGUE')}</div>
                         <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${division.color};">${division.name}</div>
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">RANK</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK')}</div>
                         <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">#4</div>
                     </div>
                     <div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">POINTS</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ነጥቦች' : (i18n.currentLocale === 'om' ? 'QABXII' : 'POINTS')}</div>
                         <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-gold-primary);">${profile.xp} XP</div>
                     </div>
                 </div>
@@ -123,24 +124,24 @@ export class ProfileScreen {
                     
                     <!-- Group 1: Stats & Achievements -->
                     <div class="glass-card" style="border-radius: 12px; margin-bottom: 20px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('📊', 'Statistics', 'stats')}
-                        ${listTile('🏆', 'Achievements', 'achievements')}
-                        ${listTile('🏅', 'My Awards', 'awards')}
-                        <div style="border-bottom: none;">${listTile('📈', 'Leaderboard', 'leaderboard')}</div>
+                        ${listTile('📊', i18n.currentLocale === 'am' ? 'ስታቲስቲክስ' : (i18n.currentLocale === 'om' ? 'Istaatistiiksii' : 'Statistics'), 'stats')}
+                        ${listTile('🏆', i18n.currentLocale === 'am' ? 'ስኬቶች' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina' : 'Achievements'), 'achievements')}
+                        ${listTile('🏅', i18n.currentLocale === 'am' ? 'የእኔ ሽልማቶች' : (i18n.currentLocale === 'om' ? 'Badhaasa Koo' : 'My Awards'), 'awards')}
+                        <div style="border-bottom: none;">${listTile('📈', i18n.currentLocale === 'am' ? 'የመሪዎች ሰሌዳ' : (i18n.currentLocale === 'om' ? 'Gabatee Geggeessitootaa' : 'Leaderboard'), 'leaderboard')}</div>
                     </div>
 
                     <!-- Group 2: Invite & Subs -->
                     <div class="glass-card" style="border-radius: 12px; margin-bottom: 20px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('👥', 'Invite Friends', 'invite')}
-                        ${listTile('⭐', 'Subscription', 'subscription')}
-                        <div style="border-bottom: none;">${listTile('💬', 'Messages', 'messages')}</div>
+                        ${listTile('👥', i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : (i18n.currentLocale === 'om' ? 'Hiriyoota Affeeri' : 'Invite Friends'), 'invite')}
+                        ${listTile('⭐', i18n.currentLocale === 'am' ? 'ምዝገባ' : (i18n.currentLocale === 'om' ? 'Galmee' : 'Subscription'), 'subscription')}
+                        <div style="border-bottom: none;">${listTile('💬', i18n.currentLocale === 'am' ? 'መልዕክቶች' : (i18n.currentLocale === 'om' ? 'Ergaawwan' : 'Messages'), 'messages')}</div>
                     </div>
 
                     <!-- Group 3: Utility -->
                     <div class="glass-card" style="border-radius: 12px; margin-bottom: 20px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('⚙️', 'Settings', 'settings')}
-                        ${listTile('❓', 'Help & Support', 'help')}
-                        <div style="border-bottom: none;">${listTile('ℹ️', 'About', 'about')}</div>
+                        ${listTile('⚙️', i18n.currentLocale === 'am' ? 'ቅንብሮች' : (i18n.currentLocale === 'om' ? 'Qindaa\'inoota' : 'Settings'), 'settings')}
+                        ${listTile('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'Gargaarsa & Deeggarsa' : 'Help & Support'), 'help')}
+                        <div style="border-bottom: none;">${listTile('ℹ️', i18n.currentLocale === 'am' ? 'ስለ እኛ' : (i18n.currentLocale === 'om' ? 'Waa\'ee' : 'About'), 'about')}</div>
                     </div>
 
                 </div>
@@ -223,26 +224,26 @@ export class ProfileScreen {
                     case 'invite':
                         showModal(`
                             <div style="font-size: 40px; margin-bottom: 12px;">👥</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px; text-transform: uppercase;">Invite Friends</div>
-                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 16px;">Earn coins when friends play.</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : (i18n.currentLocale === 'om' ? 'Hiriyoota Affeeri' : 'Invite Friends')}</div>
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 16px;">${i18n.currentLocale === 'am' ? 'ጓደኞች ሲጫወቱ ሳንቲሞችን ያግኙ።' : (i18n.currentLocale === 'om' ? 'Yoo hiriyoonni taphatan saantima argadhu.' : 'Earn coins when friends play.')}</div>
                             <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); font-size: var(--fds-font-xs); color: var(--tv-gold-primary); font-family: monospace; margin-bottom: 16px; word-break: break-all;">https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}</div>
-                            ${DesignSystem.Button({ id: 'btn-copy-ref', text: 'COPY LINK', variant: 'primary', fullWidth: true })}
+                            ${DesignSystem.Button({ id: 'btn-copy-ref', text: i18n.currentLocale === 'am' ? 'ሊንክ ቅዳ' : (i18n.currentLocale === 'om' ? 'LIINKII WARAABBI' : 'COPY LINK'), variant: 'primary', fullWidth: true })}
                         `);
 
                         document.getElementById('btn-copy-ref')?.addEventListener('click', () => {
                             this._audioManager.playClick();
                             navigator.clipboard.writeText(`https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}`);
                             const btn = document.getElementById('btn-copy-ref');
-                            if (btn) btn.innerText = 'COPIED ✅';
+                            if (btn) btn.innerText = i18n.currentLocale === 'am' ? 'ተቀድቷል ✅' : (i18n.currentLocale === 'om' ? 'WARAABAMEERA ✅' : 'COPIED ✅');
                         });
                         break;
 
                     case 'achievements':
                         showModal(`
                             <div style="font-size: 32px; margin-bottom: 12px;">🏆</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">Achievements</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'ስኬቶች' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina' : 'Achievements')}</div>
                             <div id="achievements-content" style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
-                                ${DesignSystem.LoadingState('Loading achievements...')}
+                                ${DesignSystem.LoadingState(i18n.currentLocale === 'am' ? 'ስኬቶችን በመጫን ላይ...' : (i18n.currentLocale === 'om' ? 'Milkaa\'inota fe\'aa jira...' : 'Loading achievements...'))}
                             </div>
                         `);
                         
@@ -253,7 +254,7 @@ export class ProfileScreen {
                             
                             if (!achievements || achievements.length === 0) {
                                 content.innerHTML = `
-                                    ${DesignSystem.EmptyState('🎯', 'No Achievements', 'Play more matches to earn achievements!')}
+                                    ${DesignSystem.EmptyState('🎯', i18n.currentLocale === 'am' ? 'ምንም ስኬቶች የሉም' : (i18n.currentLocale === 'om' ? 'Milkaa\'inni Hin Jiru' : 'No Achievements'), i18n.currentLocale === 'am' ? 'ስኬቶችን ለማግኘት ተጨማሪ ጨዋታዎችን ይጫወቱ!' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina argachuuf tapha dabalata taphadha!' : 'Play more matches to earn achievements!'))}
                                 `;
                                 return;
                             }
@@ -264,7 +265,7 @@ export class ProfileScreen {
                                     <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                                         <span style="font-size: 24px;">${ach.icon || '🎯'}</span>
                                         <div>
-                                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${ach.name_en || ach.name || 'Achievement'} ✅</div>
+                                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${ach.name_en || ach.name || (i18n.currentLocale === 'am' ? 'ስኬት' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina' : 'Achievement'))} ✅</div>
                                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${ach.description_en || ach.description || ''}</div>
                                         </div>
                                     </div>
@@ -279,10 +280,10 @@ export class ProfileScreen {
                     case 'awards':
                         showModal(`
                             <div style="font-size: 32px; margin-bottom: 12px;">🏅</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">Trophy Cabinet</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የዋንጫ ካቢኔ' : (i18n.currentLocale === 'om' ? 'Saanduqa Waancaa' : 'Trophy Cabinet')}</div>
                             <div id="awards-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                                 <div style="grid-column: span 2;">
-                                    ${DesignSystem.LoadingState('Loading awards...')}
+                                    ${DesignSystem.LoadingState(i18n.currentLocale === 'am' ? 'ሽልማቶችን በመጫን ላይ...' : (i18n.currentLocale === 'om' ? 'Badhaasota fe\'aa jira...' : 'Loading awards...'))}
                                 </div>
                             </div>
                         `);
@@ -294,7 +295,7 @@ export class ProfileScreen {
                             if (!rewards || rewards.length === 0) {
                                 content.innerHTML = `
                                     <div style="grid-column: span 2;">
-                                        ${DesignSystem.EmptyState('🏅', 'No Awards', 'Compete in tournaments to earn awards!')}
+                                        ${DesignSystem.EmptyState('🏅', i18n.currentLocale === 'am' ? 'ምንም ሽልማቶች የሉም' : (i18n.currentLocale === 'om' ? 'Badhaasni Hin Jiru' : 'No Awards'), i18n.currentLocale === 'am' ? 'ሽልማቶችን ለማግኘት በውድድሮች ይወዳደሩ!' : (i18n.currentLocale === 'om' ? 'Badhaasa argachuuf dorgommii irratti hirmaadhaa!' : 'Compete in tournaments to earn awards!'))}
                                     </div>
                                 `;
                                 return;
@@ -303,7 +304,7 @@ export class ProfileScreen {
                             content.innerHTML = rewards.map(reward => `
                                 <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); padding: 16px 8px; border-radius: 8px;">
                                     <span style="font-size: 32px;">🏆</span>
-                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-main); margin-top: 8px;">${reward.name || 'Award'}</div>
+                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-main); margin-top: 8px;">${reward.name || (i18n.currentLocale === 'am' ? 'ሽልማት' : (i18n.currentLocale === 'om' ? 'Badhaasa' : 'Award'))}</div>
                                     <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${reward.source_type}</div>
                                 </div>
                             `).join('');

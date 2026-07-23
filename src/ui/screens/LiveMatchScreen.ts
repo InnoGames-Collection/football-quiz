@@ -6,6 +6,7 @@ import { ELORatingSystem } from '../../networking/multiplayer/ELORatingSystem';
 import type { ExtendedQuestionData } from '../../core/quiz/QuestionBank';
 import type { UserRow } from '../../networking/supabase/types';
 import { DesignSystem } from '../theme/DesignSystem';
+import { i18n } from '../../localization/i18n';
 
 export class LiveMatchScreen {
     private _uiManager: UIManager;
@@ -67,6 +68,9 @@ export class LiveMatchScreen {
             return;
         }
 
+        const promptText = i18n.currentLocale === 'am' ? (q.promptAm || q.promptEn || q.prompt) : (i18n.currentLocale === 'om' ? (q.promptOm || q.promptEn || q.prompt) : (q.promptEn || q.prompt));
+        const optionsList = i18n.currentLocale === 'am' ? (q.optionsAm && q.optionsAm.length === q.options.length ? q.optionsAm : q.options) : (i18n.currentLocale === 'om' ? (q.optionsOm && q.optionsOm.length === q.options.length ? q.optionsOm : q.options) : (q.optionsEn && q.optionsEn.length === q.options.length ? q.optionsEn : q.options));
+
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto; display: flex; flex-direction: column;">
                 
@@ -81,8 +85,8 @@ export class LiveMatchScreen {
                     border-bottom: 1px solid rgba(255,255,255,0.05);
                 ">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="background: #EF4444; color: var(--fds-text-main); font-size: var(--fds-font-xs); font-weight: 900; padding: 4px 8px; border-radius: 4px; letter-spacing: 1px;">LIVE 1v1</span>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">ROUND ${this._currentIndex + 1} OF ${this._questions.length}</div>
+                        <span style="background: #EF4444; color: var(--fds-text-main); font-size: var(--fds-font-xs); font-weight: 900; padding: 4px 8px; border-radius: 4px; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'ቀጥታ 1v1' : (i18n.currentLocale === 'om' ? 'KALLATTII 1v1' : 'LIVE 1v1')}</span>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${i18n.currentLocale === 'am' ? `ዙር ${this._currentIndex + 1} ከ ${this._questions.length}` : (i18n.currentLocale === 'om' ? `MARSAA ${this._currentIndex + 1} / ${this._questions.length}` : `ROUND ${this._currentIndex + 1} OF ${this._questions.length}`)}</div>
                     </div>
                     <button id="live-exit-btn" style="background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                 </div>
@@ -95,13 +99,13 @@ export class LiveMatchScreen {
                 <!-- Scoreboard vs Opponent -->
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; background: rgba(0,0,0,0.4);">
                     <div style="text-align: left;">
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">YOU</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'እርስዎ' : (i18n.currentLocale === 'om' ? 'ISIN' : 'YOU')}</div>
                         <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-bottom: 4px;">${myProfile.username}</div>
                         <div id="my-score" style="font-size: 24px; font-weight: 900; color: var(--tv-pitch-green);">${this._myScore}</div>
                     </div>
                     <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-red-live); background: rgba(239,68,68,0.15); padding: 8px 16px; border-radius: 20px;">VS</div>
                     <div style="text-align: right;">
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">OPPONENT</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ተፎካካሪ' : (i18n.currentLocale === 'om' ? 'DORMAA' : 'OPPONENT')}</div>
                         <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-bottom: 4px;">${this._opponent.username}</div>
                         <div id="opponent-score" style="font-size: 24px; font-weight: 900; color: #F59E0B;">${this._opponentScore}</div>
                     </div>
@@ -128,11 +132,11 @@ export class LiveMatchScreen {
                         line-height: 1.4;
                         margin-bottom: 40px;
                         text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-                    ">${q.prompt}</div>
+                    ">${promptText}</div>
 
                     <!-- Large Answer Buttons -->
                     <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
-                        ${q.options.map((opt, i) => `
+                        ${optionsList.map((opt, i) => `
                             <button class="live-option-btn" data-index="${i}" style="
                                 display: flex;
                                 align-items: center;
@@ -310,7 +314,9 @@ export class LiveMatchScreen {
             overlay.style.color = isGoal ? 'var(--tv-pitch-green)' : '#EF4444';
             
             icon.innerText = isGoal ? '⚽' : '🧤';
-            text.innerText = isGoal ? 'GOAL!!!!!' : 'GOAL SAVED!';
+            text.innerText = isGoal 
+                ? (i18n.currentLocale === 'am' ? 'ግብ!!!!!' : (i18n.currentLocale === 'om' ? 'GALCHII!!!!!' : 'GOAL!!!!!'))
+                : (i18n.currentLocale === 'am' ? 'ግብ ተከለከለ!' : (i18n.currentLocale === 'om' ? 'GALCHII QABAME!' : 'GOAL SAVED!'));
             
             overlay.style.opacity = '1';
             overlay.style.transform = 'translateX(-50%) scale(1)';
@@ -372,28 +378,28 @@ export class LiveMatchScreen {
                         ${isWinner ? '🏆' : isDraw ? '🤝' : '🧤'}
                     </div>
                     <div style="font-size: 32px; font-weight: 900; color: ${isWinner ? 'var(--tv-gold-primary)' : (isDraw ? '#60A5FA' : '#EF4444')}; margin-bottom: 8px;">
-                        ${isWinner ? 'VICTORY' : isDraw ? 'DRAW' : 'DEFEAT'}
+                        ${isWinner ? (i18n.currentLocale === 'am' ? 'ድል' : (i18n.currentLocale === 'om' ? 'INJIFANNOO' : 'VICTORY')) : (isDraw ? (i18n.currentLocale === 'am' ? 'አቻ' : (i18n.currentLocale === 'om' ? 'QIXAA' : 'DRAW')) : (i18n.currentLocale === 'am' ? 'ሽነፋ' : (i18n.currentLocale === 'om' ? "MO'AMUU" : 'DEFEAT')))}
                     </div>
                     <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-dim); margin-bottom: 32px;">
-                        FINAL SCORE: ${this._myScore} - ${this._opponentScore}
+                        ${i18n.currentLocale === 'am' ? 'የመጨረሻ ውጤት' : (i18n.currentLocale === 'om' ? 'FIIXAAN GA\'II' : 'FINAL SCORE')}: ${this._myScore} - ${this._opponentScore}
                     </div>
 
                     <div style="display: flex; gap: 16px; margin-bottom: 32px;">
                         <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px;">
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">RATING</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RATING')}</div>
                             <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-blue-accent);">
                                 ${eloResult.winnerNewElo} <span style="font-size: var(--fds-font-xs);">(${eloResult.winnerEloChange >= 0 ? '+' : ''}${eloResult.winnerEloChange})</span>
                             </div>
                         </div>
                         <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px;">
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">COINS</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ሳንቲሞች' : (i18n.currentLocale === 'om' ? 'SANTIMA' : 'COINS')}</div>
                             <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--tv-gold-primary);">
                                 +${isWinner ? 300 : 100}
                             </div>
                         </div>
                     </div>
 
-                    ${DesignSystem.Button({ id: 'live-finish-btn', text: 'RETURN TO LEAGUE HUB', variant: 'primary', fullWidth: true })}
+                    ${DesignSystem.Button({ id: 'live-finish-btn', text: i18n.currentLocale === 'am' ? 'ወደ ሊግ ማዕከል ተመለስ' : (i18n.currentLocale === 'om' ? 'GARA WALTOMMII LIIGII DEEBI\'I' : 'RETURN TO LEAGUE HUB'), variant: 'primary', fullWidth: true })}
                 </div>
             </div>
             <style>

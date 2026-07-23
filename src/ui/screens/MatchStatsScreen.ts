@@ -5,6 +5,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { MatchStats } from '../../core/quiz/QuizEngine';
 import { Toast } from '../components/Toast';
 import { RollingCounter } from '../components/RollingCounter';
+import { i18n } from '../../localization/i18n';
 
 export class MatchStatsScreen {
     private _uiManager: UIManager;
@@ -43,7 +44,7 @@ export class MatchStatsScreen {
 
         root.innerHTML = `
             <div class="stadium-container" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
-                <div style="color: var(--fds-text-main); font-weight: bold;">Loading Rewards...</div>
+                <div style="color: var(--fds-text-main); font-weight: bold;">${i18n.currentLocale === 'am' ? 'ሽልማቶችን በመጫን ላይ...' : (i18n.currentLocale === 'om' ? 'Badhaasa Fe\'aa Jira...' : 'Loading Rewards...')}</div>
             </div>
         `;
 
@@ -84,17 +85,21 @@ export class MatchStatsScreen {
                 ">
                     <!-- Header -->
                     <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--tv-gold-primary); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">
-                        Match Complete
+                        ${i18n.currentLocale === 'am' ? 'ጨዋታው ተጠናቋል' : (i18n.currentLocale === 'om' ? 'Tapha Xumurame' : 'Match Complete')}
                     </div>
                     
                     <!-- Sub-header Message -->
                     <div id="match-message" style="font-size: 24px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 24px; letter-spacing: 1px; text-transform: uppercase;">
-                        ${this._stats.accuracy >= 50 ? 'Excellent' : 'Well Played'}
+                        ${this._stats.accuracy >= 50 
+                            ? (i18n.currentLocale === 'am' ? 'በጣም ጥሩ' : (i18n.currentLocale === 'om' ? 'Baay\'ee Gaarii' : 'Excellent'))
+                            : (i18n.currentLocale === 'am' ? 'ጥሩ ተጫውተዋል' : (i18n.currentLocale === 'om' ? 'Gaarii Taphatte' : 'Well Played'))}
                     </div>
 
                     <!-- Final Score (LARGE) -->
                     <div style="margin-bottom: 32px; position: relative;">
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Overview</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                            ${i18n.currentLocale === 'am' ? 'አጠቃላይ እይታ' : (i18n.currentLocale === 'om' ? 'Waliigala' : 'Overview')}
+                        </div>
                         <div style="font-size: 56px; font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 4px 16px rgba(255,215,0,0.4); line-height: 1;">
                             <span id="final-score-rolling">0</span>
                         </div>
@@ -104,36 +109,42 @@ export class MatchStatsScreen {
                     <div style="width: 100%; display: flex; justify-content: center; gap: 16px; margin-bottom: 32px;">
                         <div style="text-align: center;">
                             <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-green-pitch);">${correct}</div>
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">Correct</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">
+                                ${i18n.currentLocale === 'am' ? 'ትክክል' : (i18n.currentLocale === 'om' ? 'Sirrii' : 'Correct')}
+                            </div>
                         </div>
                         <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
                         <div style="text-align: center;">
                             <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-red-live);">${wrong}</div>
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">Wrong</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">
+                                ${i18n.currentLocale === 'am' ? 'የተሳሳተ' : (i18n.currentLocale === 'om' ? 'Dogoggora' : 'Wrong')}
+                            </div>
                         </div>
                         <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
                         <div style="text-align: center;">
                             <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-blue-accent);">${this._stats.accuracy}%</div>
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">Accuracy</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">
+                                ${i18n.currentLocale === 'am' ? 'ትክክለኛነት' : (i18n.currentLocale === 'om' ? 'Sirriantummaa' : 'Accuracy')}
+                            </div>
                         </div>
                     </div>
 
                     <!-- Action Buttons (SMALL) -->
                     <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                         <div style="grid-column: span 2;">
-                            ${DesignSystem.Button({ id: 'btn-play-again', text: 'Play Again', variant: 'primary', fullWidth: true, icon: '🔄' })}
+                            ${DesignSystem.Button({ id: 'btn-play-again', text: i18n.currentLocale === 'am' ? 'ድጋሚ ተጫወት' : (i18n.currentLocale === 'om' ? 'Ammas Taphadhu' : 'Play Again'), variant: 'primary', fullWidth: true, icon: '🔄' })}
                         </div>
                         
                         <div>
-                            ${DesignSystem.Button({ id: 'btn-review-game', text: 'Review', variant: 'secondary', fullWidth: true, icon: '🔍' })}
+                            ${DesignSystem.Button({ id: 'btn-review-game', text: i18n.currentLocale === 'am' ? 'ከልስ' : (i18n.currentLocale === 'om' ? 'Irra Deebi\'i' : 'Review'), variant: 'secondary', fullWidth: true, icon: '🔍' })}
                         </div>
 
                         <div>
-                            ${DesignSystem.Button({ id: 'btn-leaderboard', text: 'Rank', variant: 'secondary', fullWidth: true, icon: '📊' })}
+                            ${DesignSystem.Button({ id: 'btn-leaderboard', text: i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'Sadarkaa' : 'Rank'), variant: 'secondary', fullWidth: true, icon: '📊' })}
                         </div>
 
                         <div style="grid-column: span 2;">
-                            ${DesignSystem.Button({ id: 'btn-home', text: 'Home', variant: 'secondary', fullWidth: true, icon: '🏠' })}
+                            ${DesignSystem.Button({ id: 'btn-home', text: i18n.currentLocale === 'am' ? 'መነሻ' : (i18n.currentLocale === 'om' ? 'Manattii' : 'Home'), variant: 'secondary', fullWidth: true, icon: '🏠' })}
                         </div>
                     </div>
                 </div>
@@ -155,7 +166,7 @@ export class MatchStatsScreen {
             ">
                 <!-- Modal Top Bar -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; flex-shrink: 0; position: relative;">
-                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px;">REVIEW GAME</div>
+                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? 'ጨዋታውን ይከልሱ' : (i18n.currentLocale === 'om' ? 'TAPHA IRRA DEEBI\'I' : 'REVIEW GAME')}</div>
                     <button id="btn-close-review" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 20px;">✕</button>
                 </div>
 
@@ -245,7 +256,7 @@ export class MatchStatsScreen {
         if (questions.length === 0) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 48px; color: var(--fds-text-dim);">
-                    No questions to review.
+                    ${i18n.currentLocale === 'am' ? 'የሚከለሱ ጥያቄዎች የሉም።' : (i18n.currentLocale === 'om' ? 'Gaaffiin irra deebi\'amu hin jiru.' : 'No questions to review.')}
                 </div>
             `;
             return;
@@ -253,7 +264,7 @@ export class MatchStatsScreen {
 
         container.innerHTML = questions.map((q: any, idx: number) => {
             const chosenIdx = choices[idx] !== undefined ? choices[idx] : -1;
-            const chosenOpt = chosenIdx >= 0 ? q.options[chosenIdx] : 'Timeout / Unanswered';
+            const chosenOpt = chosenIdx >= 0 ? q.options[chosenIdx] : (i18n.currentLocale === 'am' ? 'ጊዜ አልቋል / ያልተመለሰ' : (i18n.currentLocale === 'om' ? 'Yeroon dhumate / Hin deebine' : 'Timeout / Unanswered'));
             
             const isCorrect = chosenIdx === q.correctIndex;
             const chosenColor = isCorrect ? '#22C55E' : '#EF4444';
@@ -262,9 +273,13 @@ export class MatchStatsScreen {
             return `
                 <div class="glass-card" style="border-radius: 12px; padding: 16px; margin-bottom: 16px; border-color: ${chosenColor}; text-align: left;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">Question ${idx + 1}</span>
+                        <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">
+                            ${i18n.currentLocale === 'am' ? `ጥያቄ ${idx + 1}` : (i18n.currentLocale === 'om' ? `Gaaffii ${idx + 1}` : `Question ${idx + 1}`)}
+                        </span>
                         <span style="font-size: var(--fds-font-xs); font-weight: 900; color: ${chosenColor}; background: ${isCorrect ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}; padding: 2px 8px; border-radius: 4px;">
-                            ${isCorrect ? '✓ Correct' : '✗ Wrong'}
+                            ${isCorrect 
+                                ? (i18n.currentLocale === 'am' ? '✓ ትክክል' : (i18n.currentLocale === 'om' ? '✓ Sirrii' : '✓ Correct'))
+                                : (i18n.currentLocale === 'am' ? '✗ የተሳሳተ' : (i18n.currentLocale === 'om' ? '✗ Dogoggora' : '✗ Wrong'))}
                         </span>
                     </div>
 
@@ -272,20 +287,22 @@ export class MatchStatsScreen {
 
                     <!-- Answers status box (Only user selection & status, NO correct answer revealed!) -->
                     <div style="background: rgba(0,0,0,0.3); padding: 10px 12px; border-radius: 8px; font-size: var(--fds-font-sm); margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                        <div style="color: var(--fds-text-dim); font-size: var(--fds-font-xs); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">YOUR SELECTED ANSWER</div>
+                        <div style="color: var(--fds-text-dim); font-size: var(--fds-font-xs); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">
+                            ${i18n.currentLocale === 'am' ? 'የመረጡት መልስ' : (i18n.currentLocale === 'om' ? 'DEEBII ISIN FILATTAN' : 'YOUR SELECTED ANSWER')}
+                        </div>
                         <div style="color: var(--fds-text-main); font-weight: 800; font-size: var(--fds-font-sm);">${chosenOpt}</div>
                     </div>
 
                     <!-- In-App Interactions Row (REQ 14) -->
                     <div style="display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
                         <button class="review-action-btn btn-review-like" data-q-idx="${idx}" style="flex: 1; padding: 10px 4px; background: transparent; border: none; color: var(--fds-text-dim); font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.15s, color 0.15s;">
-                            <span class="heart-icon" style="font-size: var(--fds-font-md); transition: transform 0.2s;">❤️</span> <span class="like-label">Like</span>
+                            <span class="heart-icon" style="font-size: var(--fds-font-md); transition: transform 0.2s;">❤️</span> <span class="like-label">${i18n.currentLocale === 'am' ? 'ውደድ' : (i18n.currentLocale === 'om' ? 'Jaalladhu' : 'Like')}</span>
                         </button>
                         <button class="review-action-btn btn-review-comment" data-q-idx="${idx}" style="flex: 1; padding: 10px 4px; background: transparent; border: none; color: var(--fds-text-dim); font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.15s, color 0.15s;">
-                            <span style="font-size: var(--fds-font-md);">💬</span> Comment
+                            <span style="font-size: var(--fds-font-md);">💬</span> ${i18n.currentLocale === 'am' ? 'አስተያየት' : (i18n.currentLocale === 'om' ? 'Yaada' : 'Comment')}
                         </button>
                         <button class="review-action-btn btn-review-share" data-q-idx="${idx}" style="flex: 1; padding: 10px 4px; background: transparent; border: none; color: var(--fds-text-dim); font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: transform 0.15s, color 0.15s;">
-                            <span style="font-size: var(--fds-font-md);">⚽</span> Invite
+                            <span style="font-size: var(--fds-font-md);">⚽</span> ${i18n.currentLocale === 'am' ? 'ጋብዝ' : (i18n.currentLocale === 'om' ? 'Affeeri' : 'Invite')}
                         </button>
                     </div>
 
@@ -293,12 +310,12 @@ export class MatchStatsScreen {
                     <div class="comment-box-drawer" id="comment-drawer-${idx}" style="display: none; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
                         <div class="comment-list" id="comment-list-${idx}" style="max-height: 120px; overflow-y: auto; margin-bottom: 8px; font-size: var(--fds-font-xs); color: var(--fds-text-muted); display: flex; flex-direction: column; gap: 6px;">
                             <div style="background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;">
-                                <strong style="color: var(--fds-gold-primary);">Abebe M.:</strong> Great question! Really challenged my knowledge. <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); float: right;">2m ago</span>
+                                <strong style="color: var(--fds-gold-primary);">Abebe M.:</strong> ${i18n.currentLocale === 'am' ? 'በጣም ጥሩ ጥያቄ! እውቀቴን በእውነት ፈትኖታል።' : (i18n.currentLocale === 'om' ? 'Gaaffii baay\'ee gaarii! Beekuumsakoo dhugumaan qoreera.' : 'Great question! Really challenged my knowledge.')} <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); float: right;">2m ago</span>
                             </div>
                         </div>
                         <div style="display: flex; gap: 6px;">
-                            <input type="text" id="comment-input-${idx}" placeholder="Write a comment..." style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; color: var(--fds-text-main); font-size: var(--fds-font-xs);" />
-                            <button class="btn-send-comment" data-q-idx="${idx}" style="background: #009A44; border: none; color: var(--fds-text-main); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: var(--fds-font-xs); cursor: pointer;">Post</button>
+                            <input type="text" id="comment-input-${idx}" placeholder="${i18n.currentLocale === 'am' ? 'አስተያየት ይፃፉ...' : (i18n.currentLocale === 'om' ? 'Yaada barreessi...' : 'Write a comment...')}" style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; color: var(--fds-text-main); font-size: var(--fds-font-xs);" />
+                            <button class="btn-send-comment" data-q-idx="${idx}" style="background: #009A44; border: none; color: var(--fds-text-main); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: var(--fds-font-xs); cursor: pointer;">${i18n.currentLocale === 'am' ? 'ለጥፍ' : (i18n.currentLocale === 'om' ? 'Maxxansi' : 'Post')}</button>
                         </div>
                     </div>
                 </div>
@@ -318,11 +335,11 @@ export class MatchStatsScreen {
                 if (likeBtn.classList.contains('liked')) {
                     likeBtn.classList.remove('liked');
                     likeBtn.style.color = '#94A3B8';
-                    labelSpan.innerText = 'Like';
+                    labelSpan.innerText = i18n.currentLocale === 'am' ? 'ውደድ' : (i18n.currentLocale === 'om' ? 'Jaalladhu' : 'Like');
                 } else {
                     likeBtn.classList.add('liked');
                     likeBtn.style.color = '#EF4444';
-                    labelSpan.innerText = 'Liked';
+                    labelSpan.innerText = i18n.currentLocale === 'am' ? 'ተወዷል' : (i18n.currentLocale === 'om' ? 'Jaallatameera' : 'Liked');
                     if (heartIcon) {
                         heartIcon.style.transform = 'scale(1.3)';
                         setTimeout(() => heartIcon.style.transform = 'scale(1)', 200);
@@ -349,23 +366,29 @@ export class MatchStatsScreen {
                 this._audioManager.playClick();
                 const text = input?.value.trim();
                 if (!text) {
-                    Toast.show('Comment cannot be empty.', 'info');
+                    Toast.show(i18n.currentLocale === 'am' ? 'አስተያየት ባዶ ሊሆን አይችልም።' : (i18n.currentLocale === 'om' ? 'Yaadni duwwaa ta\'uu hin danda\'u.' : 'Comment cannot be empty.'), 'info');
                     return;
                 }
                 const newComment = document.createElement('div');
                 newComment.style.cssText = 'background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px;';
-                newComment.innerHTML = `<strong style="color: #4ADE80;">You:</strong> ${text} <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); float: right;">Just now</span>`;
+                const userTag = i18n.currentLocale === 'am' ? 'እርስዎ:' : (i18n.currentLocale === 'om' ? 'Isin:' : 'You:');
+                const nowTag = i18n.currentLocale === 'am' ? 'አሁን' : (i18n.currentLocale === 'om' ? 'Amma' : 'Just now');
+                newComment.innerHTML = `<strong style="color: #4ADE80;">${userTag}</strong> ${text} <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); float: right;">${nowTag}</span>`;
                 list.appendChild(newComment);
                 input.value = '';
                 list.scrollTop = list.scrollHeight;
-                Toast.show('Comment posted!', 'success');
+                Toast.show(i18n.currentLocale === 'am' ? 'አስተያየት ተለጥፏል!' : (i18n.currentLocale === 'om' ? 'Yaadni maxxanfameera!' : 'Comment posted!'), 'success');
             });
 
             // REQ 14: SHARE / FOOTBALL INVITATION
             const shareBtn = card.querySelector('.btn-review-share') as HTMLButtonElement;
             shareBtn?.addEventListener('click', async () => {
                 this._audioManager.playClick();
-                const shareText = `⚽ I'm competing in the Ethio Telecom Football Tournament!\nCan you beat my score of ${this._finalScore} PTS?\nJoin the competition and challenge me now!`;
+                const shareText = i18n.currentLocale === 'am'
+                    ? `⚽ በኢትዮ ቴሌኮም የእግር ኳስ ውድድር ላይ እየተወዳደርኩ ነው!\nየ ${this._finalScore} ነጥቤን ማሸነፍ ትችላለህ?\nአሁኑኑ ውድድሩን ተቀላቀል እና ተፎካከረኝ!`
+                    : (i18n.currentLocale === 'om'
+                        ? `⚽ Dorgoommii Kubbaa Miilaa Itooyyo Telekoom irratti dorgomaan jira!\nQabxii koo ${this._finalScore} mo'achuu dandeessa?\nAmma dorgommiitti makamii na qori!`
+                        : `⚽ I'm competing in the Ethio Telecom Football Tournament!\nCan you beat my score of ${this._finalScore} PTS?\nJoin the competition and challenge me now!`);
                 
                 if (navigator.share) {
                     try {
@@ -377,9 +400,17 @@ export class MatchStatsScreen {
                     } catch (e) {}
                 } else {
                     await navigator.clipboard.writeText(`${shareText}\n${window.location.href}`);
-                    Toast.show('Football invitation link copied to clipboard! Share with friends to challenge them.', 'success');
+                    Toast.show(
+                        i18n.currentLocale === 'am'
+                            ? 'የእግር ኳስ መጋበዣ ሊንክ ወደ ቅሊፕቦርድ ተገልብጧል! ለመፎካከር ለጓደኞችዎ ያጋሩ።'
+                            : (i18n.currentLocale === 'om'
+                                ? 'Geessituun affeerraa kubbaa miilaa kooppii ta\'eera! Hiriyoota keetiif qooduun isaan qori.'
+                                : 'Football invitation link copied to clipboard! Share with friends to challenge them.'),
+                        'success'
+                    );
                 }
             });
         });
     }
 }
+

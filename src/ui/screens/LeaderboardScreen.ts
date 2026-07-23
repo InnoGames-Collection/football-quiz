@@ -1,5 +1,6 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
+import { i18n } from '../../localization/i18n';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
@@ -22,7 +23,7 @@ export class LeaderboardScreen {
 
     public async render(): Promise<void> {
         const root = this._uiManager.container;
-        root.innerHTML = DesignSystem.LoadingState('Loading rankings...');
+        root.innerHTML = DesignSystem.LoadingState(i18n.currentLocale === 'am' ? 'ደረጃዎችን በማስገባት ላይ...' : (i18n.currentLocale === 'om' ? "Sadarkaa fe'aa jira..." : 'Loading rankings...'));
         
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);
@@ -35,7 +36,7 @@ export class LeaderboardScreen {
             const isMe = entry.username === profile.username;
             
             const isPhone = /^\\+?[0-9]{9,}$/.test((entry.username || '').replace(/[^0-9+]/g, ''));
-            const displayName = isPhone ? this._maskPhone(entry.username) : (entry.username || 'Anonymous');
+            const displayName = isPhone ? this._maskPhone(entry.username) : (entry.username || (i18n.currentLocale === 'am' ? 'ያልታወቀ' : (i18n.currentLocale === 'om' ? 'Namummaa Hin Beekamne' : 'Anonymous')));
             
             const score = entry.eloRating || 0;
             const points = entry.score || 0;
@@ -91,7 +92,7 @@ export class LeaderboardScreen {
                         <span style="font-size: 24px;">🏆</span>
                         <div style="text-align: left;">
                             <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-ethio-green); text-transform: uppercase; letter-spacing: 1px;">ETHIOFANTASY</div>
-                            <h1 style="margin: 0; font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main);">RANK</h1>
+                            <h1 style="margin: 0; font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main);">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK')}</h1>
                         </div>
                     </div>
                     <button id="lb-close-btn" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
@@ -101,21 +102,21 @@ export class LeaderboardScreen {
                     
                     <!-- PERIOD TABS -->
                     <div style="display: flex; gap: 8px; margin-bottom: 20px;" class="fade-in-up">
-                        <button class="lb-tab-btn" data-tab="daily" style="${tabStyle('daily')}">DAILY</button>
-                        <button class="lb-tab-btn" data-tab="weekly" style="${tabStyle('weekly')}">WEEKLY</button>
-                        <button class="lb-tab-btn" data-tab="monthly" style="${tabStyle('monthly')}">MONTHLY</button>
-                        <button class="lb-tab-btn" data-tab="tournament" style="${tabStyle('tournament')}">SEASON PASS</button>
+                        <button class="lb-tab-btn" data-tab="daily" style="${tabStyle('daily')}">${i18n.currentLocale === 'am' ? 'ዕለታዊ' : (i18n.currentLocale === 'om' ? 'GUYYAA' : 'DAILY')}</button>
+                        <button class="lb-tab-btn" data-tab="weekly" style="${tabStyle('weekly')}">${i18n.currentLocale === 'am' ? 'ሳምንታዊ' : (i18n.currentLocale === 'om' ? 'TORBEE' : 'WEEKLY')}</button>
+                        <button class="lb-tab-btn" data-tab="monthly" style="${tabStyle('monthly')}">${i18n.currentLocale === 'am' ? 'ወርሃዊ' : (i18n.currentLocale === 'om' ? "JI'A" : 'MONTHLY')}</button>
+                        <button class="lb-tab-btn" data-tab="tournament" style="${tabStyle('tournament')}">${i18n.currentLocale === 'am' ? 'የውድድር ዘመን' : (i18n.currentLocale === 'om' ? 'SEESON PAAS' : 'SEASON PASS')}</button>
                     </div>
 
                     <!-- 1. PODIUM CARDS (TOP 3 CHAMPIONS) -->
-                    ${processedEntries.length === 0 ? DesignSystem.EmptyState('🏆', 'No players ranked yet.') : `
+                    ${processedEntries.length === 0 ? DesignSystem.EmptyState('🏆', i18n.currentLocale === 'am' ? 'እስካሁን የተሰለፈ ተጫዋች የለም።' : (i18n.currentLocale === 'om' ? 'Hamma ammaatti taphataan sadarkaa qabate hin jiru.' : 'No players ranked yet.')) : `
                     <div style="display: grid; grid-template-columns: 1fr 1.1fr 1fr; gap: 12px; align-items: end; margin-bottom: 24px; text-align: center;" class="fade-in-up">
                         
                         <!-- 2ND PLACE PODIUM (SILVER) -->
                         ${secondPlace ? `
                         <div class="glass-card" style="padding: 16px 8px; border-color: #C0C0C0; background: linear-gradient(180deg, rgba(192,192,192,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
                             <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥈</div>
-                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #E2E8F0; text-transform: uppercase;">2ND</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #E2E8F0; text-transform: uppercase;">${i18n.currentLocale === 'am' ? '2ኛ' : (i18n.currentLocale === 'om' ? '2FFAA' : '2ND')}</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main); margin-top: 4px;">${secondPlace.msisdn}</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-blue-accent); margin-top: 2px;">${secondPlace.score} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${secondPlace.points} XP</div>
@@ -126,7 +127,7 @@ export class LeaderboardScreen {
                         ${firstPlace ? `
                         <div class="glass-card" style="padding: 20px 8px; border-color: var(--fds-gold-primary); background: linear-gradient(180deg, rgba(255,215,0,0.25) 0%, rgba(15,23,42,0.95) 100%); border-radius: 20px; box-shadow: 0 10px 30px var(--fds-gold-glow); transform: translateY(-8px);">
                             <div style="font-size: 36px; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));">🥇</div>
-                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px;">CHAMPION</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'ሻምፒዮን' : (i18n.currentLocale === 'om' ? 'CHAAMPIYOONA' : 'CHAMPION')}</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${firstPlace.msisdn}</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary); margin-top: 2px;">${firstPlace.score} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: #FEF08A; margin-top: 2px;">🏆 ${firstPlace.points} XP</div>
@@ -137,7 +138,7 @@ export class LeaderboardScreen {
                         ${thirdPlace ? `
                         <div class="glass-card" style="padding: 16px 8px; border-color: #CD7F32; background: linear-gradient(180deg, rgba(205,127,50,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
                             <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥉</div>
-                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FDBA74; text-transform: uppercase;">3RD</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FDBA74; text-transform: uppercase;">${i18n.currentLocale === 'am' ? '3ኛ' : (i18n.currentLocale === 'om' ? '3FFAA' : '3RD')}</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main); margin-top: 4px;">${thirdPlace.msisdn}</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #CD7F32; margin-top: 2px;">${thirdPlace.score} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${thirdPlace.points} XP</div>
@@ -151,8 +152,8 @@ export class LeaderboardScreen {
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 24px;">⚽</span>
                             <div>
-                                <div style="font-size: var(--fds-font-xs); color: #4ADE80; font-weight: 800; text-transform: uppercase;">YOUR RANK POSITION</div>
-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">#4 In ${division.name} League</div>
+                                <div style="font-size: var(--fds-font-xs); color: #4ADE80; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የእርስዎ የደረጃ ቦታ' : (i18n.currentLocale === 'om' ? 'SADARKAA KEE' : 'YOUR RANK POSITION')}</div>
+                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">${i18n.currentLocale === 'am' ? `#4 በ ${division.name} ሊግ` : (i18n.currentLocale === 'om' ? `#4 Liigii ${division.name} Keessatti` : `#4 In ${division.name} League`)}</div>
                             </div>
                         </div>
                         <div style="text-align: right;">
@@ -180,9 +181,9 @@ export class LeaderboardScreen {
                                         <span style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-dim); min-width: 24px;">#${rank}</span>
                                         <div>
                                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${isMe ? '#4ADE80' : 'white'};">
-                                                ${entry.msisdn} ${isMe ? '<span style="background: #22C55E; color: black; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 6px;">YOU</span>' : ''}
+                                                ${entry.msisdn} ${isMe ? `<span style="background: #22C55E; color: black; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 6px;">${i18n.currentLocale === 'am' ? 'እርስዎ' : (i18n.currentLocale === 'om' ? 'ATI' : 'YOU')}</span>` : ''}
                                             </div>
-                                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">${entry.league} League</div>
+                                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">${i18n.currentLocale === 'am' ? `${entry.league} ሊግ` : (i18n.currentLocale === 'om' ? `Liigii ${entry.league}` : `${entry.league} League`)}</div>
                                         </div>
                                     </div>
                                     <div style="text-align: right;">

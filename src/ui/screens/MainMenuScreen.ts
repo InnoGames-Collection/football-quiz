@@ -3,6 +3,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { DesignSystem } from '../theme/DesignSystem';
+import { i18n } from '../../localization/i18n';
 
 export class MainMenuScreen {
     private _registry: GameRegistry;
@@ -70,7 +71,7 @@ export class MainMenuScreen {
                     color: var(--fds-text-main);
                     font-weight: bold;
                     cursor: pointer;
-                ">${this._audioManager.isMuted ? '🔇 MUTED' : '🔊 SOUND ON'}</button>
+                ">${this._audioManager.isMuted ? `${i18n.currentLocale === 'am' ? '🔇 ድምፅ ተዘግቷል' : (i18n.currentLocale === 'om' ? '🔇 SAGALEE CULULAMEE' : '🔇 MUTED')}` : `${i18n.currentLocale === 'am' ? '🔊 ድምፅ በርቷል' : (i18n.currentLocale === 'om' ? '🔊 SAGALEE BANAMEERA' : '🔊 SOUND ON')}`}</button>
 
                 <!-- Header Title -->
                 <div style="text-align: center; margin-bottom: 30px; margin-top: 40px;">
@@ -83,8 +84,8 @@ export class MainMenuScreen {
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
                         text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-                    ">FOOTBALL QUIZ LEAGUE</h1>
-                    <p style="color: var(--fds-text-dim); margin-top: 8px; font-size: var(--fds-font-md);">ETHIO TELECOM VAS PLATFORM</p>
+                    ">${i18n.currentLocale === 'am' ? 'የእግር ኳስ ጥያቄዎች ሊግ' : (i18n.currentLocale === 'om' ? 'LIIGII GAAFFII KUPPAA MIILAA' : 'FOOTBALL QUIZ LEAGUE')}</h1>
+                    <p style="color: var(--fds-text-dim); margin-top: 8px; font-size: var(--fds-font-md);">${i18n.currentLocale === 'am' ? 'የኢትዮ ቴሌኮም VAS ፕላትፎርም' : (i18n.currentLocale === 'om' ? 'PLAATFOORMI VAS ETHIO TELECOM' : 'ETHIO TELECOM VAS PLATFORM')}</p>
                 </div>
 
                 <!-- Quiz Games Grid -->
@@ -118,14 +119,14 @@ export class MainMenuScreen {
                                             background: rgba(168, 85, 247, 0.2);
                                             color: #C084FC;
                                             border: 1px solid #A855F7;
-                                        ">QUIZ</span>
-                                        <span style="font-size: var(--fds-font-sm); color: var(--fds-gold-primary); font-weight: bold;">BEST: ${highScore} PTS</span>
+                                        ">${i18n.currentLocale === 'am' ? 'ጥያቄዎች' : (i18n.currentLocale === 'om' ? 'QORANNOO' : 'QUIZ')}</span>
+                                        <span style="font-size: var(--fds-font-sm); color: var(--fds-gold-primary); font-weight: bold;">${i18n.currentLocale === 'am' ? `ምርጥ: ${highScore} ነጥብ` : (i18n.currentLocale === 'om' ? `OLAANAA: ${highScore} QABXII` : `BEST: ${highScore} PTS`)}</span>
                                     </div>
                                     <h3 style="margin: 0 0 8px 0; font-size: var(--fds-font-lg); font-weight: bold; color: #F8FAFC;">${game.metadata.name}</h3>
                                     <p style="margin: 0; font-size: var(--fds-font-sm); color: var(--fds-text-dim); line-height: 1.5;">${game.metadata.description}</p>
                                 </div>
 
-                                ${DesignSystem.Button({ text: 'PLAY', variant: 'primary', fullWidth: true, className: 'launch-btn', dataAttrs: `data-game-id="${game.metadata.id}"` })}
+                                ${DesignSystem.Button({ text: i18n.currentLocale === 'am' ? 'ተጫወት' : (i18n.currentLocale === 'om' ? 'TAPHA' : 'PLAY'), variant: 'primary', fullWidth: true, className: 'launch-btn', dataAttrs: `data-game-id="${game.metadata.id}"` })}
                             </div>
                         `;
                     }).join('')}
@@ -154,7 +155,7 @@ export class MainMenuScreen {
 
     private _renderHomeButton(): void {
         const homeBtn = document.createElement('button');
-        homeBtn.innerText = '🏠 MENU';
+        homeBtn.innerText = i18n.currentLocale === 'am' ? '🏠 ማውጫ' : (i18n.currentLocale === 'om' ? '🏠 MEENYUU' : '🏠 MENU');
         homeBtn.style.position = 'absolute';
         homeBtn.style.top = '20px';
         homeBtn.style.right = '20px';
