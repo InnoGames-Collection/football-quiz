@@ -194,13 +194,23 @@ export class QuestionBank {
             options = row.options_om;
         }
 
+        // Shuffle options dynamically so the correct answer isn't always at `correct_index`
+        const indices = [0, 1, 2, 3];
+        for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+
+        const shuffledOptions = indices.map(i => options[i]);
+        const newCorrectIndex = indices.indexOf(row.correct_index);
+
         return {
             id: row.id,
             category: row.category,
             difficulty: row.difficulty,
             prompt,
-            options,
-            correctIndex: row.correct_index
+            options: shuffledOptions,
+            correctIndex: newCorrectIndex
         };
     }
 
