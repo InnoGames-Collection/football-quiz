@@ -34,6 +34,7 @@ export class ScoreboardQuestionScreen {
     
     private _session: GameSession | null = null;
     private _isPaused: boolean = false;
+    private _isDestroyed: boolean = false;
     private _visibilityHandler: () => void;
     private _networkOfflineHandler: () => void;
     private _networkOnlineHandler: () => void;
@@ -139,6 +140,7 @@ export class ScoreboardQuestionScreen {
 
         root.innerHTML = `
             <div class="stadium-container" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                 <div class="glass-card" style="
                     width: 100%;
                     max-width: 400px;
@@ -180,6 +182,7 @@ export class ScoreboardQuestionScreen {
     }
 
     private _renderQuestion(startTimerSec: number = 15): void {
+        if (this._isDestroyed) return;
         if (!this._hasKickedOff) {
             this._renderKickOffScreen();
             return;
@@ -197,7 +200,8 @@ export class ScoreboardQuestionScreen {
         const currentXP = currentGoals * 100;
         
         root.innerHTML = `
-            <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; display: flex; flex-direction: column; min-height: 100vh;">
+            <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; display: flex; flex-direction: column; min-height: 100vh; position: relative;">
+                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                 
                 <!-- PREMIUM GAMING HEADER -->
                 <div style="
@@ -228,9 +232,6 @@ export class ScoreboardQuestionScreen {
 
                         <!-- Question -->
                         <div style="text-align: right; flex: 1; position: relative;">
-                            <div style="position: absolute; top: -10px; right: 0;">
-                                <button id="match-exit-btn" class="m3-btn m3-btn-icon" style="width: 24px; height: 24px; min-height: 24px; background: transparent; color: var(--fds-text-dim); font-size: var(--fds-font-sm); border: none; padding: 0;">✕</button>
-                            </div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Question</div>
                             <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main);">
                                 ${this._currentIndex + 1}/${this._questions.length}
@@ -581,6 +582,7 @@ export class ScoreboardQuestionScreen {
         }
 
         setTimeout(() => {
+            if (this._isDestroyed) return;
             this._hideFeedbackOverlay();
             this._currentIndex++;
             this._renderQuestion();
@@ -654,6 +656,7 @@ export class ScoreboardQuestionScreen {
         }
 
         setTimeout(() => {
+            if (this._isDestroyed) return;
             this._hideFeedbackOverlay();
             this._currentIndex++;
             this._renderQuestion();
@@ -693,6 +696,7 @@ export class ScoreboardQuestionScreen {
     }
     
     public destroy(): void {
+        this._isDestroyed = true;
         this._stopTimer();
         document.removeEventListener('visibilitychange', this._visibilityHandler);
         window.removeEventListener('ethio-network-offline', this._networkOfflineHandler);

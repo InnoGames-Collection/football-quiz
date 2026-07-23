@@ -102,5 +102,9 @@ export class QuizGameMode implements IGameMode {
         }
         this._uiManager.clear();
         console.log('[QuizGameMode] Destroyed.');
+        const winAny = window as any;
+        if (winAny.ethioReloadHome) {
+            winAny.ethioReloadHome();
+        }
     }
 }
