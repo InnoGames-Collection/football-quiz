@@ -136,17 +136,18 @@ export class AuthManager {
                         locale: 'en',
                         elo_rating: 1200,
                         coins: 500,
-                        displayName: 'Fan_' + Math.floor(Math.random() * 10000),
                         xp: 0,
-                        rank: 'Unranked',
                         total_matches: 5,
                         total_wins: 3,
                         subscription_tier: 'premium',
                         streak_count: 3,
                         streak_last_date: new Date().toISOString().split('T')[0],
+                        role: 'player',
+                        referral_code: null,
+                        referred_by: null,
                         created_at: new Date().toISOString(),
                         last_active: new Date().toISOString()
-                    } as UserRow;
+                    };
                     this._saveManager.syncWithCloudUser(this._currentUser);
                     this._notifyListeners();
                     return { success: true };
