@@ -1,6 +1,8 @@
 import { DesignSystem } from "../theme/DesignSystem";
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
+import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
+import { t } from '../../localization/i18n';
 import { QuizEngine, MatchStats } from '../../core/quiz/QuizEngine';
 import { Competition } from '../../core/quiz/CompetitionRegistry';
 import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionManager';
@@ -365,14 +367,14 @@ export class ScoreboardQuestionScreen {
                         border: 1px solid rgba(255,255,255,0.1);
                         box-shadow: 0 16px 40px rgba(0,0,0,0.5);
                     ">
-                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">Leave Match?</div>
-                        <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px;">Your progress will be abandoned.</div>
+                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">${t('match.leaveMatch')}</div>
+                        <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px;">${t('match.leaveWarning')}</div>
                         <div style="display: flex; gap: 12px;">
                             <div style="flex: 1;">
-                                ${DesignSystem.Button({ id: 'btn-pause-leave', text: 'Leave', variant: 'secondary', fullWidth: true })}
+                                ${DesignSystem.Button({ id: 'btn-pause-leave', text: t('match.leaveBtn'), variant: 'secondary', fullWidth: true })}
                             </div>
                             <div style="flex: 1;">
-                                ${DesignSystem.Button({ id: 'btn-pause-resume', text: 'Continue', variant: 'primary', fullWidth: true })}
+                                ${DesignSystem.Button({ id: 'btn-pause-resume', text: t('match.continueBtn'), variant: 'primary', fullWidth: true })}
                             </div>
                         </div>
                     </div>

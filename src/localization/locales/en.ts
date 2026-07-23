@@ -19,7 +19,17 @@ export const en = {
     admin: "⚙️ ADMIN",
     streak: "🔥 {count} DAY STREAK",
     coins: "🪙 {coins} COINS",
-    level: "LVL {level}"
+    level: "LVL {level}",
+    invite: "Invite",
+    inviteDesc: "+200 XP per friend.",
+    copyLink: "Copy Link",
+    performance: "📊 Performance",
+    details: "DETAILS",
+    matches: "MATCHES",
+    points: "POINTS",
+    score: "SCORE",
+    lobbies: "⚽ Lobbies",
+    championship: "🏆 ETHIOFANTASY CHAMPIONSHIP"
   },
   match: {
     questionCount: "QUESTION {current} OF {total}",
@@ -34,7 +44,11 @@ export const en = {
     maxCombo: "MAX COMBO",
     coinsEarned: "COINS EARNED",
     xpEarned: "XP EARNED",
-    continue: "CONTINUE TO HUB"
+    continue: "CONTINUE TO HUB",
+    leaveMatch: "Leave Match?",
+    leaveWarning: "Your progress will be abandoned.",
+    leaveBtn: "Leave",
+    continueBtn: "Continue"
   },
   multiplayer: {
     matchmakingTitle: "LIVE MULTIPLAYER MATCHMAKING",

@@ -17,9 +17,19 @@ export const om = {
     leaderboard: "📊 SADARKAA",
     badges: "🎖️ BAADJIIWWAN",
     admin: "⚙️ ADMIIN",
-    streak: "🔥 GUYYAA {count} WAL-IRRAA",
-    coins: "🪙 SANTIIMA {coins}",
-    level: "SADARKAA {level}"
+    streak: "🔥 {count} GUYYAA WALITTI AANEE",
+    coins: "🪙 {coins} SAAKKATOO",
+    level: "SADARKAA {level}",
+    invite: "Afeeri",
+    inviteDesc: "+200 XP hiriyaa tokkoon",
+    copyLink: "Liinkii Kopi godhi",
+    performance: "📊 Raawwii",
+    details: "BAL'INA",
+    matches: "TAPHOOTA",
+    points: "QABXII",
+    score: "FIRI",
+    lobbies: "⚽ Lobbies",
+    championship: "🏆 CHAMPIONSHIP ETHIOFANTASY"
   },
   match: {
     questionCount: "GAAFFII {current} KEESSAA {total}",
@@ -33,8 +43,12 @@ export const om = {
     accuracy: "SIREESSUU",
     maxCombo: "WAL-IRRAA OLAANAA",
     coinsEarned: "SANTIIMA ARGAME",
-    xpEarned: "XP ARGAME",
-    continue: "GARA MAASII WALIIGALAATTI"
+    xpEarned: "XP ARGATAME",
+    continue: "GARA FUULA DURAA DEEBI'I",
+    leaveMatch: "Tapha Dhiiftee Baataa?",
+    leaveWarning: "Guddinni kee ni bada.",
+    leaveBtn: "Bahi",
+    continueBtn: "Itti Fufi"
   },
   multiplayer: {
     matchmakingTitle: "TAPHA KALLATTII DORGOMAA",

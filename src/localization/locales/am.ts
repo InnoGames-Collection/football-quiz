@@ -19,7 +19,17 @@ export const am = {
     admin: "⚙️ አድሚን",
     streak: "🔥 {count} ቀን ተከታታይ",
     coins: "🪙 {coins} ሳንቲም",
-    level: "ደረጃ {level}"
+    level: "ደረጃ {level}",
+    invite: "ጋብዝ",
+    inviteDesc: "+200 XP በአንድ ጓደኛ",
+    copyLink: "ሊንክ ኮፒ አድርግ",
+    performance: "📊 አፈጻጸም",
+    details: "ዝርዝር",
+    matches: "ጨዋታዎች",
+    points: "ነጥቦች",
+    score: "ውጤት",
+    lobbies: "⚽ ሎቢ",
+    championship: "🏆 የኢትዮፋንታሲ ሻምፒዮና"
   },
   match: {
     questionCount: "ጥያቄ {current} ከ {total}",
@@ -34,7 +44,11 @@ export const am = {
     maxCombo: "ከፍተኛ ተከታታይ",
     coinsEarned: "የተገኘ ሳንቲም",
     xpEarned: "የተገኘ XP",
-    continue: "ወደ መነሻ ገጽ ተመለስ"
+    continue: "ወደ መነሻ ገጽ ተመለስ",
+    leaveMatch: "ጨዋታውን ትተህ ውጣ?",
+    leaveWarning: "ያለዎት እድገት ይጠፋል።",
+    leaveBtn: "ውጣ",
+    continueBtn: "ቀጥል"
   },
   multiplayer: {
     matchmakingTitle: "ቀጥታ ባለብዙ ተጫዋች ጨዋታ",

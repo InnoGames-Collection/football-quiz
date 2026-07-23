@@ -8,6 +8,7 @@ import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { Toast } from '../components/Toast';
 import { ReturningPlayerModal } from '../components/ReturningPlayerModal';
+import { t } from '../../localization/i18n';
 import { PullToRefresh } from '../components/PullToRefresh';
 
 export interface FootballHomeCallbacks {
@@ -136,7 +137,7 @@ export class FootballLeagueHome {
                         <!-- Badge Row -->
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <span id="daily-players-count" class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
-                                🟢 LIVE MATCH
+                                ${t('home.liveMatch')}
                             </span>
                                 ${DesignSystem.LoadingState('', true)}
                         </div>
@@ -144,24 +145,24 @@ export class FootballLeagueHome {
                         <!-- Title & Description -->
                         <div style="text-align: left; margin-bottom: 16px;">
                             <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                                🏆 ETHIOFANTASY CHAMPIONSHIP
+                                ${t('home.championship')}
                             </h2>
                         </div>
 
                         <!-- Hero Primary Action Button -->
-                        ${DesignSystem.Button({ id: 'btn-daily-match', text: 'DAILY CHALLENGE', variant: 'primary', fullWidth: true, icon: '⚡' })}
+                        ${DesignSystem.Button({ id: 'btn-daily-match', text: t('home.dailyChallenge'), variant: 'primary', fullWidth: true })}
                     </div>
 
                     <!-- 2. QUICK GAME MODES & ACTIONS GRID -->
                     <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); margin-left: 4px; text-transform: uppercase; letter-spacing: 1px;" class="fade-in-up">
-                        ⚽ Lobbies
+                        ${t('home.lobbies')}
                     </div>
                     <div style="display: flex; gap: 12px; margin-bottom: 24px;" class="fade-in-up">
                         <div style="flex: 1;">
-                            ${DesignSystem.Button({ id: 'btn-action-kickoff', text: 'KICK OFF', variant: 'primary', fullWidth: true, icon: '⚽' })}
+                            ${DesignSystem.Button({ id: 'btn-action-kickoff', text: t('home.soloMatch'), variant: 'primary', fullWidth: true })}
                         </div>
                         <div style="flex: 1;">
-                            ${DesignSystem.Button({ id: 'btn-action-leaderboard', text: 'RANKINGS', variant: 'secondary', fullWidth: true, icon: '🏆' })}
+                            ${DesignSystem.Button({ id: 'btn-action-leaderboard', text: t('home.leaderboard'), variant: 'secondary', fullWidth: true })}
                         </div>
                     </div>
                     
@@ -169,36 +170,36 @@ export class FootballLeagueHome {
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="font-size: var(--fds-font-xl); filter: drop-shadow(0 2px 4px rgba(192,132,252,0.4));">🎁</div>
                             <div style="text-align: left;">
-                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); letter-spacing: 0.5px; text-transform: uppercase;">Invite</div>
-                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; margin-top: 2px;">+200 XP per friend.</div>
+                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); letter-spacing: 0.5px; text-transform: uppercase;">${t('home.invite')}</div>
+                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; margin-top: 2px;">${t('home.inviteDesc')}</div>
                             </div>
                         </div>
                         <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #C084FC; background: rgba(192,132,252,0.15); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Copy Link
+                            ${t('home.copyLink')}
                         </div>
                     </div>
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
                     <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.12); border-radius: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">📊 Performance</div>
-                            <button id="btn-view-all-stats" style="background: none; border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; text-decoration: underline;">DETAILS</button>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">${t('home.performance')}</div>
+                            <button id="btn-view-all-stats" style="background: none; border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; text-decoration: underline;">${t('home.details')}</button>
                         </div>
                         <div style="display: grid; grid-template-columns: repeat(4, 1fr); text-align: center;">
                             <div>
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">MATCHES</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.matches')}</div>
                                 <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${gamesPlayed}</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.06);">
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">ACCURACY</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('match.accuracy')}</div>
                                 <div style="font-size: var(--fds-font-md); font-weight: 900; color: #4ADE80; margin-top: 4px;">${winRate}%</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.06);">
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">POINTS</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.points')}</div>
                                 <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${profile.xp}</div>
                             </div>
                             <div style="border-left: 1px solid rgba(255,255,255,0.06);">
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">SCORE</div>
+                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.score')}</div>
                                 <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">${profile.eloRating || 0}</div>
                             </div>
                         </div>
@@ -206,9 +207,9 @@ export class FootballLeagueHome {
 
                     <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->
                     <div class="glass-card fade-in-up" style="padding: 20px 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">🎖️ Rankings</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">${t('home.rankingsTitle')}</div>
                         <div id="home-leaderboard-preview" style="display: flex; flex-direction: column;">
-                            ${DesignSystem.LoadingState('Loading Rankings')}
+                            ${DesignSystem.LoadingState(t('home.loadingRankings'))}
                         </div>
                     </div>
                 </div>
