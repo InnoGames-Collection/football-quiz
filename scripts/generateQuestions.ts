@@ -13,12 +13,12 @@ dotenv.config({ path: path.join(__dirname, '..', '.env.script') });
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || '';
-// Use service role key for bypassing RLS during seed, or anon key if RLS allows
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+// Use secret / service role key for bypassing RLS during seed, or anon key if RLS allows
+const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 const GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY || '';
 
 if (!SUPABASE_URL || !SUPABASE_KEY || !GEMINI_API_KEY) {
-    console.error('Missing required environment variables (VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY/VITE_SUPABASE_ANON_KEY, VITE_GEMINI_API_KEY)');
+    console.error('Missing required environment variables (VITE_SUPABASE_URL, SUPABASE_SECRET_KEY/SUPABASE_SERVICE_ROLE_KEY/VITE_SUPABASE_ANON_KEY, VITE_GEMINI_API_KEY)');
     process.exit(1);
 }
 
