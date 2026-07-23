@@ -7,6 +7,7 @@ import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
 import { QuestionBank } from '../../core/quiz/QuestionBank';
 import { ScoreboardQuestionScreen } from '../../ui/screens/ScoreboardQuestionScreen';
 import { MatchStatsScreen } from '../../ui/screens/MatchStatsScreen';
+import { i18n } from '../../localization/i18n';
 
 export class QuizGameMode implements IGameMode {
     public readonly metadata: GameModeMetadata = {
@@ -34,8 +35,8 @@ export class QuizGameMode implements IGameMode {
     public async start(): Promise<void> {
         const comp = CompetitionRegistry.getById(this._targetCompetitionId) || CompetitionRegistry.getAll()[0];
         
-        // Fetch questions from QuestionBank (Supabase + fallback)
-        const questions = await QuestionBank.getInstance().fetchQuestions(comp.id, 10, 'en');
+        // Fetch 10 questions for this competition in the user's current locale
+        const questions = await QuestionBank.getInstance().fetchQuestions(comp.id, 10, i18n.currentLocale as any);
 
         this._activeScoreboard = new ScoreboardQuestionScreen(
             this._uiManager,

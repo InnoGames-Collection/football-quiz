@@ -18,6 +18,7 @@ import { NotificationScreen } from '../../ui/screens/NotificationScreen';
 import { DailyChallengeManager } from '../competition/DailyChallengeManager';
 import { GameSessionManager } from '../quiz/GameSessionManager';
 import { PlayScreen } from '../../ui/screens/PlayScreen';
+import { i18n } from '../../localization/i18n';
 import { DetailedStatsScreen } from '../../ui/screens/DetailedStatsScreen';
 import { MessagesScreen } from '../../ui/screens/MessagesScreen';
 import { SubscriptionScreen } from '../../ui/screens/SubscriptionScreen';
@@ -247,7 +248,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     handleBack();
                     return;
                 }
-                const questions = await QuestionBank.getInstance().fetchQuestions(undefined, 10);
+                const questions = await QuestionBank.getInstance().fetchQuestions(undefined, 10, i18n.currentLocale as any);
                 const liveMatch = new LiveMatchScreen(
                     game.uiManager, game.audioManager, game.saveManager,
                     matchInfo.liveMatchId, matchInfo.opponent, questions,

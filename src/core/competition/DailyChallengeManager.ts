@@ -1,6 +1,7 @@
 import { supabase, supabaseService } from '../../networking/supabase/SupabaseClient';
 import type { ExtendedQuestionData } from '../quiz/QuestionBank';
 import { QuestionBank } from '../quiz/QuestionBank';
+import { i18n } from '../../localization/i18n';
 
 export interface DailyChallengeInfo {
     id?: string;
@@ -30,7 +31,7 @@ export class DailyChallengeManager {
                 if (!error && data) {
                     const res = data as any;
                     if (res.available) {
-                        const questions = await QuestionBank.getInstance().fetchQuestions(undefined, 5);
+                        const questions = await QuestionBank.getInstance().fetchQuestions(undefined, 5, i18n.currentLocale as any);
                         return {
                             id: res.id,
                             themeEn: res.theme_en || 'Daily Football Quiz Challenge',
@@ -48,7 +49,7 @@ export class DailyChallengeManager {
         }
 
         // Offline / Default Daily Challenge
-        const questions = await QuestionBank.getInstance().fetchQuestions('world-cup', 5);
+        const questions = await QuestionBank.getInstance().fetchQuestions('world-cup', 5, i18n.currentLocale as any);
         return {
             themeEn: "Daily Champions Challenge",
             themeAm: "የዕለቱ የሻምፒዮኖች ተግዳሮት",

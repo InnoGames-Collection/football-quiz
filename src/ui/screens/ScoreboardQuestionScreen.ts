@@ -154,7 +154,7 @@ export class ScoreboardQuestionScreen {
                 ">
                     <div style="font-size: 64px; margin-bottom: 16px;">${this._competition.badge}</div>
                     <div style="font-size: 24px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">${this._competition.name}</div>
-                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-dim); margin-bottom: 32px;">Ready to test your knowledge, ${playerName}?</div>
+                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-dim); margin-bottom: 32px;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
                     
                     <button id="kick-off-btn" style="
                         width: 100%; 
@@ -170,7 +170,7 @@ export class ScoreboardQuestionScreen {
                         transition: transform 0.2s;
                         text-transform: uppercase;
                         letter-spacing: 1px;
-                    ">KICK OFF</button>
+                    ">${i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF')}</button>
                 </div>
             </div>
             <style>
@@ -236,7 +236,7 @@ export class ScoreboardQuestionScreen {
 
                         <!-- Question -->
                         <div style="text-align: right; flex: 1; position: relative;">
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Question</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">${i18n.currentLocale === 'am' ? 'ጥያቄ' : (i18n.currentLocale === 'om' ? 'Gaaffii' : 'Question')}</div>
                             <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main);">
                                 ${this._currentIndex + 1}/${this._questions.length}
                             </div>
