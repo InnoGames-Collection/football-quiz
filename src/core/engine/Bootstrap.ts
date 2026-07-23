@@ -490,7 +490,11 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     });
 
     // 3. Login Refresh (Auth state change listener)
+    let previousUserId: string | null = null;
     authManager.subscribe((user) => {
+        const isStateChange = user?.id !== previousUserId;
+        previousUserId = user?.id || null;
+
         if (!user) {
             console.log('[Bootstrap] User signed out. Invalidating cache.');
             cacheManager.clear();
@@ -506,44 +510,46 @@ export async function bootstrapFootballLeague(): Promise<Game> {
             RealtimeService.getInstance().initUserChannels(user.id);
             eventBus.emit('PROFILE_UPDATED', user);
 
-            const activeSession = GameSessionManager.getInstance().getActiveSession();
-            if (activeSession) {
-                const recoveryOverlay = document.createElement('div');
-                recoveryOverlay.id = 'session-recovery-overlay';
-                recoveryOverlay.style.cssText = `
-                    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-                    background: rgba(15,23,42,0.95); z-index: 20000; display: flex;
-                    align-items: center; justify-content: center; padding: 20px;
-                    box-sizing: border-box; pointer-events: auto;
-                `;
-                recoveryOverlay.innerHTML = `
-                    <div class="glass-card fade-in-up" style="width: 100%; max-width: 360px; padding: 28px 20px; text-align: center; border-color: var(--fds-gold-primary);">
-                        <div style="font-size: 48px; margin-bottom: 12px;">⚽⏱️</div>
-                        <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 6px;">RESUME MATCH?</div>
-                        <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">An active match session was found. Would you like to resume it?</div>
-                        <button id="btn-recovery-resume" class="m3-btn m3-btn-primary" style="width: 100%; margin-bottom: 12px;">Resume Match</button>
-                        <button id="btn-recovery-discard" class="m3-btn m3-btn-secondary" style="width: 100%; border-color: #EF4444; color: #EF4444;">Discard Match</button>
-                    </div>
-                `;
-                document.body.appendChild(recoveryOverlay);
+            if (isStateChange) {
+                const activeSession = GameSessionManager.getInstance().getActiveSession();
+                if (activeSession) {
+                    const recoveryOverlay = document.createElement('div');
+                    recoveryOverlay.id = 'session-recovery-overlay';
+                    recoveryOverlay.style.cssText = `
+                        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                        background: rgba(15,23,42,0.95); z-index: 20000; display: flex;
+                        align-items: center; justify-content: center; padding: 20px;
+                        box-sizing: border-box; pointer-events: auto;
+                    `;
+                    recoveryOverlay.innerHTML = `
+                        <div class="glass-card fade-in-up" style="width: 100%; max-width: 360px; padding: 28px 20px; text-align: center; border-color: var(--fds-gold-primary);">
+                            <div style="font-size: 48px; margin-bottom: 12px;">⚽⏱️</div>
+                            <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 6px;">RESUME MATCH?</div>
+                            <div style="font-size: 14px; color: #94A3B8; margin-bottom: 24px;">An active match session was found. Would you like to resume it?</div>
+                            <button id="btn-recovery-resume" class="m3-btn m3-btn-primary" style="width: 100%; margin-bottom: 12px;">Resume Match</button>
+                            <button id="btn-recovery-discard" class="m3-btn m3-btn-secondary" style="width: 100%; border-color: #EF4444; color: #EF4444;">Discard Match</button>
+                        </div>
+                    `;
+                    document.body.appendChild(recoveryOverlay);
 
-                document.getElementById('btn-recovery-resume')?.addEventListener('click', async () => {
-                    game.audioManager.playClick();
-                    recoveryOverlay.remove();
-                    cacheManager.setQuizActive(true);
-                    const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-                    await registry.launchGame('football-quiz');
-                    await quizMode.resume(activeSession);
-                });
+                    document.getElementById('btn-recovery-resume')?.addEventListener('click', async () => {
+                        game.audioManager.playClick();
+                        recoveryOverlay.remove();
+                        cacheManager.setQuizActive(true);
+                        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                        await registry.launchGame('football-quiz');
+                        await quizMode.resume(activeSession);
+                    });
 
-                document.getElementById('btn-recovery-discard')?.addEventListener('click', () => {
-                    game.audioManager.playClick();
-                    recoveryOverlay.remove();
-                    GameSessionManager.getInstance().clearSession();
+                    document.getElementById('btn-recovery-discard')?.addEventListener('click', () => {
+                        game.audioManager.playClick();
+                        recoveryOverlay.remove();
+                        GameSessionManager.getInstance().clearSession();
+                        navigateToTab('home');
+                    });
+                } else {
                     navigateToTab('home');
-                });
-            } else {
-                navigateToTab('home');
+                }
             }
         }
     });
