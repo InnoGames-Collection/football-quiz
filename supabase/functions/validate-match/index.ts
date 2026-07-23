@@ -50,6 +50,45 @@ serve(async (req) => {
     const coinsEarned = anomalyDetected ? 0 : correctCount * 100;
     const xpEarned = anomalyDetected ? 0 : correctCount * 20;
 
+    const authHeader = req.headers.get('Authorization');
+    const token = authHeader ? authHeader.replace('Bearer ', '') : '';
+    let userId = null;
+
+    if (token) {
+      const { data: { user } } = await supabase.auth.getUser(token);
+      if (user) {
+        userId = user.id;
+      }
+    }
+
+    if (userId && !anomalyDetected) {
+      // 1. Insert Match Record
+      await supabase.from('matches').insert({
+        user_id: userId,
+        competition_id: competitionId || null,
+        match_type: matchType || 'solo',
+        goals: correctCount,
+        correct_answers: correctCount,
+        total_questions: answers.length,
+        accuracy: accuracy,
+        avg_response_time: totalTime / (answers.length || 1) / 1000,
+        coins_earned: coinsEarned,
+        xp_earned: xpEarned,
+        answers: answers
+      });
+
+      // 2. Update User Profile XP and Coins
+      const { data: profile } = await supabase.from('users').select('xp, coins, total_matches').eq('id', userId).single();
+      if (profile) {
+        await supabase.from('users').update({
+          xp: (profile.xp || 0) + xpEarned,
+          coins: (profile.coins || 0) + coinsEarned,
+          total_matches: (profile.total_matches || 0) + 1,
+          last_active: new Date().toISOString()
+        }).eq('id', userId);
+      }
+    }
+
     return new Response(JSON.stringify({
       valid: !anomalyDetected,
       correctCount,

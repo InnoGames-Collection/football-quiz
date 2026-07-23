@@ -6,6 +6,7 @@ import { Competition } from '../../core/quiz/CompetitionRegistry';
 import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionManager';
 import { ConfettiCanvas } from '../components/ConfettiCanvas';
 import { RollingCounter } from '../components/RollingCounter';
+import { EdgeFunctionClient } from '../../networking/supabase/EdgeFunctionClient';
 
 export interface ScoreboardCallbacks {
     onMatchComplete: (stats: MatchStats, finalScore: number) => void;
@@ -529,19 +530,31 @@ export class ScoreboardQuestionScreen {
         });
     }
 
-    private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement): void {
+    private async _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement): Promise<void> {
         let responseTimeSec = parseFloat(((performance.now() - this._startTimeMs) / 1000).toFixed(1));
         
         // Anti-cheat: prevent timer manipulation (> 15.5s)
         if (responseTimeSec > 15.5) {
-            this._handleTimeOut();
+            await this._handleTimeOut();
             return;
         }
 
         const q = this._questions[this._currentIndex];
-        const isCorrect = chosenIndex === q.correctIndex;
+        // Find correct index (supporting both plain and hashed anti-cheat modes)
+        let correctIdx = q.correctIndex;
+        if (correctIdx === undefined && (q as any).answerHash) {
+            for (let i = 0; i < 4; i++) {
+                const hash = await this._sha256(`${q.id}:${i}:ethio-secret-salt`);
+                if (hash === (q as any).answerHash) {
+                    correctIdx = i;
+                    break;
+                }
+            }
+        }
+
+        const isCorrect = chosenIndex === correctIdx;
         
-        this._quizEngine.recordAnswer(isCorrect, responseTimeSec);
+        this._quizEngine.recordAnswer(isCorrect, responseTimeSec, q.id, chosenIndex);
         const currentGoals = this._quizEngine.calculateFinalStats().goals;
 
         // Auto Save progress immediately to local storage
@@ -573,9 +586,11 @@ export class ScoreboardQuestionScreen {
             }
         } else {
             targetBtn.classList.add('wrong');
-            const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
-            if (correctBtn) {
-                correctBtn.classList.add('correct');
+            if (correctIdx !== undefined) {
+                const correctBtn = buttons[correctIdx] as HTMLButtonElement;
+                if (correctBtn) {
+                    correctBtn.classList.add('correct');
+                }
             }
             this._audioManager.playKeeperSave();
             this._showFeedbackOverlay(false);
@@ -663,24 +678,46 @@ export class ScoreboardQuestionScreen {
         }, 1600);
     }
 
-    private _completeMatch(): void {
-        const stats = this._quizEngine.calculateFinalStats();
-        
-        // Calculate Final Score using User scoring parameters:
-        // Base Score + Accuracy Bonus + Speed Bonus + Perfect Match Bonus = Final Score
-        const baseScore = stats.goals * 100;
-        
-        const accuracyPercent = stats.accuracy; // 0-100
-        const accuracyBonus = accuracyPercent * 5; // e.g. 500 max
+    private async _completeMatch(): Promise<void> {
+        // Show loading state while validating with server
+        this._showFeedbackOverlay(false);
+        const text = document.getElementById('feedback-text');
+        const sub = document.getElementById('feedback-subtext');
+        if (text && sub) {
+            text.innerText = 'VALIDATING...';
+            sub.innerText = 'Checking score with server';
+        }
 
-        // Speed Bonus: Average remaining time per correct answer * 15 points
-        // Response time is average response time, so remaining is (15 - avgResponseTime)
-        const remainingTimeSec = Math.max(0, 15 - stats.avgResponseTime);
-        const speedBonus = Math.round(remainingTimeSec * stats.goals * 15);
+        let stats = this._quizEngine.calculateFinalStats();
+        let finalScore = (stats.goals * 100) + (stats.accuracy * 5) + Math.round(Math.max(0, 15 - stats.avgResponseTime) * stats.goals * 15);
+        if (stats.accuracy === 100) finalScore += 500;
 
-        const perfectBonus = accuracyPercent === 100 ? 500 : 0;
+        // Strict Edge Function Anti-Cheat Validation
+        if (this._session) {
+            const { data, error } = await EdgeFunctionClient.invoke('validate-match', {
+                matchType: this._session.matchType,
+                competitionId: this._competitionId,
+                answers: this._quizEngine.answerSubmissions
+            });
 
-        const finalScore = baseScore + accuracyBonus + speedBonus + perfectBonus;
+            if (!error && data) {
+                if (!data.valid || data.anomalyDetected) {
+                    console.error('[Anti-Cheat] Match rejected by server!');
+                    finalScore = 0;
+                    stats.goals = 0;
+                    stats.coinsEarned = 0;
+                    stats.xpEarned = 0;
+                } else {
+                    console.log('[Anti-Cheat] Match validated successfully.');
+                    // Overwrite local stats with server authoritative stats
+                    stats.goals = data.correctCount;
+                    stats.correctAnswers = data.correctCount;
+                    stats.coinsEarned = data.coinsEarned;
+                    stats.xpEarned = data.xpEarned;
+                    stats.accuracy = data.accuracy;
+                }
+            }
+        }
 
         // Save session completion to history
         if (this._session) {
@@ -690,6 +727,9 @@ export class ScoreboardQuestionScreen {
         // Save review game questions and choices
         localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(this._questions));
         localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(this._session ? this._session.choices : []));
+
+        // Refresh cloud profile stats asynchronously
+        import('../../core/auth/AuthManager').then(m => m.AuthManager.getInstance().refreshProfile());
 
         (window as any).ethioOnBackPress = null;
         this._callbacks.onMatchComplete(stats, finalScore);
@@ -701,5 +741,12 @@ export class ScoreboardQuestionScreen {
         document.removeEventListener('visibilitychange', this._visibilityHandler);
         window.removeEventListener('ethio-network-offline', this._networkOfflineHandler);
         window.removeEventListener('ethio-network-online', this._networkOnlineHandler);
+    }
+    
+    private async _sha256(str: string): Promise<string> {
+        const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+        return Array.from(new Uint8Array(buf))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
     }
 }

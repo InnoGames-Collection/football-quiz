@@ -57,6 +57,12 @@ export class AuthManager {
         });
     }
 
+    public async refreshProfile(): Promise<void> {
+        if (this._currentUser) {
+            await this._fetchUserProfile(this._currentUser.id);
+        }
+    }
+
     private async _fetchUserProfile(userId: string): Promise<void> {
         if (!supabase) return;
 
