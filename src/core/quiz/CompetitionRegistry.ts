@@ -36,7 +36,10 @@ export class CompetitionRegistry {
                 badge: cat.badge,
                 description: cat.description,
                 color: '#FFD700',
-                questionCount: 10
+                questionCount: 10,
+                status: 'live',
+                participants: 0,
+                prize_pool: 0
             });
         });
 
@@ -86,7 +89,10 @@ export class CompetitionRegistry {
                             badge: row.badge,
                             description: row.description_en || '',
                             color: row.color || '#FFD700',
-                            questionCount: row.question_count || 10
+                            questionCount: row.question_count || 10,
+                            status: 'live',
+                            participants: 0,
+                            prize_pool: 0
                         });
                     });
                 }

@@ -47,40 +47,9 @@ export class MatchmakingService {
             return { success: true };
         }
 
-        // Offline / Simulated Matchmaking Fallback
-        setTimeout(() => {
-            if (this._inQueue) {
-                const mockOpponent: UserRow = {
-                    id: 'bot-1',
-                    role: 'player',
-                    username: 'Solomon_Walia',
-                    phone: null,
-                    avatar_url: null,
-                    locale: 'en',
-                    elo_rating: 1220,
-                    coins: 500,
-                    xp: 1200,
-                    total_matches: 15,
-                    total_wins: 10,
-                    subscription_tier: 'free',
-                    streak_count: 5,
-                    streak_last_date: null,
-                    created_at: new Date().toISOString(),
-                    last_active: new Date().toISOString(),
-                    referral_code: null,
-                    referred_by: null
-                };
-
-                this._notifyMatchFound({
-                    liveMatchId: 'mock-live-match-1',
-                    opponent: mockOpponent,
-                    questionIds: []
-                });
-                this.leaveQueue(user.id);
-            }
-        }, 2500);
-
-        return { success: true };
+        // Offline / Failed Matchmaking
+        console.warn('[MatchmakingService] Offline or unavailable. Queueing locally.');
+        return { success: false, error: 'Matchmaking is currently unavailable.' };
     }
 
     private _subscribeToCdc(userId: string): void {
