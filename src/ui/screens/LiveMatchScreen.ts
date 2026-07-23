@@ -84,6 +84,7 @@ export class LiveMatchScreen {
                         <span style="background: #EF4444; color: var(--fds-text-main); font-size: var(--fds-font-xs); font-weight: 900; padding: 4px 8px; border-radius: 4px; letter-spacing: 1px;">LIVE 1v1</span>
                         <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">ROUND ${this._currentIndex + 1} OF ${this._questions.length}</div>
                     </div>
+                    <button id="live-exit-btn" style="background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                 </div>
 
                 <!-- Smooth Progress Timer -->
@@ -251,6 +252,16 @@ export class LiveMatchScreen {
                 this._onOptionSelected(chosenIdx, target, q);
             });
         });
+
+        const exitBtn = document.getElementById('live-exit-btn');
+        if (exitBtn) {
+            exitBtn.addEventListener('click', () => {
+                this._audioManager.playClick();
+                this._client.disconnect();
+                this._stopTimer();
+                this._onComplete();
+            });
+        }
     }
 
     private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement, q: ExtendedQuestionData): void {

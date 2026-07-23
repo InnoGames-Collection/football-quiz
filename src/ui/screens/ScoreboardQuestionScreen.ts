@@ -682,7 +682,7 @@ export class ScoreboardQuestionScreen {
         const sub = document.getElementById('feedback-subtext');
         if (text && sub) {
             text.innerText = 'VALIDATING...';
-            sub.innerText = 'Checking score with server';
+            sub.innerText = '';
         }
 
         let stats = this._quizEngine.calculateFinalStats();

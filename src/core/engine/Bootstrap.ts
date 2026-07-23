@@ -294,6 +294,9 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         renderRoute(tabId as RouteName);
     };
 
+    winAny.ethioReloadHome = () => navigateToTab('home');
+    winAny.ethioHandleBack = () => handleBack();
+
     // Listen for EventBus view reload events
     eventBus.on('RELOAD_CURRENT_VIEW', () => {
         if (!cacheManager.isQuizActive) {

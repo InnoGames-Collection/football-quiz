@@ -84,11 +84,12 @@ export class QuizGameMode implements IGameMode {
             gameId,
             () => {
                 const winAny = window as any;
-                if (winAny.ethioReloadHome) {
+                if (winAny.ethioHandleBack) {
+                    winAny.ethioHandleBack();
+                } else if (winAny.ethioReloadHome) {
                     winAny.ethioReloadHome();
                 }
-            },
-            this._quizEngine
+            }
         );
         statsScreen.render();
     }
@@ -103,7 +104,9 @@ export class QuizGameMode implements IGameMode {
         this._uiManager.clear();
         console.log('[QuizGameMode] Destroyed.');
         const winAny = window as any;
-        if (winAny.ethioReloadHome) {
+        if (winAny.ethioHandleBack) {
+            winAny.ethioHandleBack();
+        } else if (winAny.ethioReloadHome) {
             winAny.ethioReloadHome();
         }
     }

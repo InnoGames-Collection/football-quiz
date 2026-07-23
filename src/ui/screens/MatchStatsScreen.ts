@@ -3,8 +3,6 @@ import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { MatchStats } from '../../core/quiz/QuizEngine';
-import { MatchSubmissionService } from '../../networking/api/MatchSubmissionService';
-import { QuizEngine } from '../../core/quiz/QuizEngine';
 import { Toast } from '../components/Toast';
 import { RollingCounter } from '../components/RollingCounter';
 
@@ -17,7 +15,6 @@ export class MatchStatsScreen {
     private _onContinue: () => void;
 
     private _finalScore: number;
-    private _quizEngine?: QuizEngine;
 
     constructor(
         uiManager: UIManager,
@@ -26,8 +23,7 @@ export class MatchStatsScreen {
         stats: MatchStats,
         finalScore: number,
         gameId: string,
-        onContinue: () => void,
-        quizEngine?: QuizEngine
+        onContinue: () => void
     ) {
         this._uiManager = uiManager;
         this._saveManager = saveManager;
@@ -36,7 +32,6 @@ export class MatchStatsScreen {
         this._finalScore = finalScore;
         this._gameId = gameId;
         this._onContinue = onContinue;
-        this._quizEngine = quizEngine;
 
         this._saveManager.updateHighScore(this._gameId, this._finalScore);
     }
@@ -58,23 +53,6 @@ export class MatchStatsScreen {
     private async _submitAndRender(root: HTMLElement, correct: number, wrong: number): Promise<void> {
         let earnedXp = this._stats.xpEarned;
         let earnedCoins = this._stats.coinsEarned;
-
-        if (this._quizEngine) {
-            try {
-                const result = await MatchSubmissionService.getInstance().submitMatch({
-                    matchType: 'solo',
-                    competitionId: this._gameId,
-                    answers: this._quizEngine.answerSubmissions
-                });
-                if (result.success) {
-                    earnedXp = result.xp ?? earnedXp;
-                    earnedCoins = result.coins ?? earnedCoins;
-                    console.log('Match submitted successfully', result);
-                }
-            } catch (err) {
-                console.warn('Failed to submit match to backend, using local stats', err);
-            }
-        }
 
         // Apply to local save to keep UI updated
         this._saveManager.addXp(earnedXp);
