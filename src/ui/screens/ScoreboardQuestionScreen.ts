@@ -14,9 +14,11 @@ export interface ScoreboardCallbacks {
 }
 
 export interface QuestionData {
+    id?: string;
+    answerHash?: string;
     prompt: string;
     options: string[];
-    correctIndex: number;
+    correctIndex?: number;
 }
 
 export class ScoreboardQuestionScreen {
@@ -540,17 +542,7 @@ export class ScoreboardQuestionScreen {
         }
 
         const q = this._questions[this._currentIndex];
-        // Find correct index (supporting both plain and hashed anti-cheat modes)
-        let correctIdx = q.correctIndex;
-        if (correctIdx === undefined && (q as any).answerHash) {
-            for (let i = 0; i < 4; i++) {
-                const hash = await this._sha256(`${q.id}:${i}:ethio-secret-salt`);
-                if (hash === (q as any).answerHash) {
-                    correctIdx = i;
-                    break;
-                }
-            }
-        }
+        const correctIdx = await this._findCorrectIndex(q);
 
         const isCorrect = chosenIndex === correctIdx;
         
@@ -636,16 +628,21 @@ export class ScoreboardQuestionScreen {
         }
     }
 
-    private _handleTimeOut(): void {
+    private async _handleTimeOut(): Promise<void> {
         const responseTimeSec = 15;
-        this._quizEngine.recordAnswer(false, responseTimeSec);
-        this._audioManager.playWhistle();
         
         const q = this._questions[this._currentIndex];
+        const correctIdx = await this._findCorrectIndex(q);
+
+        this._quizEngine.recordAnswer(false, responseTimeSec, q.id, -1);
+        this._audioManager.playWhistle();
+        
         const buttons = document.querySelectorAll('.option-btn');
-        const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
-        if (correctBtn) {
-            correctBtn.classList.add('correct');
+        if (correctIdx !== undefined) {
+            const correctBtn = buttons[correctIdx] as HTMLButtonElement;
+            if (correctBtn) {
+                correctBtn.classList.add('correct');
+            }
         }
 
         // Auto Save Timeout Progress
@@ -696,7 +693,7 @@ export class ScoreboardQuestionScreen {
         if (this._session) {
             const { data, error } = await EdgeFunctionClient.invoke('validate-match', {
                 matchType: this._session.matchType,
-                competitionId: this._competitionId,
+                competitionId: this._competition.id,
                 answers: this._quizEngine.answerSubmissions
             });
 
@@ -741,6 +738,19 @@ export class ScoreboardQuestionScreen {
         document.removeEventListener('visibilitychange', this._visibilityHandler);
         window.removeEventListener('ethio-network-offline', this._networkOfflineHandler);
         window.removeEventListener('ethio-network-online', this._networkOnlineHandler);
+    }
+
+    private async _findCorrectIndex(q: QuestionData): Promise<number | undefined> {
+        let correctIdx = q.correctIndex;
+        if (correctIdx === undefined && (q as any).answerHash) {
+            for (let i = 0; i < 4; i++) {
+                const hash = await this._sha256(`${q.id}:${i}:ethio-secret-salt`);
+                if (hash === (q as any).answerHash) {
+                    return i;
+                }
+            }
+        }
+        return correctIdx;
     }
     
     private async _sha256(str: string): Promise<string> {

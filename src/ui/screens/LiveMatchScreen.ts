@@ -268,9 +268,11 @@ export class LiveMatchScreen {
             this._showFeedbackOverlay(true);
         } else {
             targetBtn.classList.add('wrong');
-            const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
-            if (correctBtn) {
-                correctBtn.classList.add('correct');
+            if (q.correctIndex !== undefined) {
+                const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
+                if (correctBtn) {
+                    correctBtn.classList.add('correct');
+                }
             }
             this._audioManager.playWrongAnswer();
             this._audioManager.playWhistle();
@@ -318,9 +320,11 @@ export class LiveMatchScreen {
         this._audioManager.playWhistle();
         
         const buttons = document.querySelectorAll('.live-option-btn');
-        const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
-        if (correctBtn) {
-            correctBtn.classList.add('correct');
+        if (q.correctIndex !== undefined) {
+            const correctBtn = buttons[q.correctIndex] as HTMLButtonElement;
+            if (correctBtn) {
+                correctBtn.classList.add('correct');
+            }
         }
 
         setTimeout(() => {
