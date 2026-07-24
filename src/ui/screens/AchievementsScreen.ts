@@ -65,6 +65,7 @@ export class AchievementsScreen {
                     cursor: pointer;
                     white-space: nowrap;
                     transition: all 0.2s;
+                    flex-shrink: 0;
                 }
                 .ach-tab.active {
                     background: var(--tv-gold-primary);
