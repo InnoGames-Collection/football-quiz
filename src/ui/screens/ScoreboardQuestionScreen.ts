@@ -227,7 +227,7 @@ export class ScoreboardQuestionScreen {
                     z-index: 10;
                 ">
                     <!-- Top Bar Info Row -->
-                    <div style="
+                    <div class="top-bar-row" style="
                         display: flex; 
                         align-items: center; 
                         justify-content: space-between; 
@@ -237,7 +237,7 @@ export class ScoreboardQuestionScreen {
                         box-sizing: border-box;
                     ">
                         <!-- Leave Button -->
-                        <button id="match-exit-btn" style="
+                        <button id="match-exit-btn" class="top-bar-chip" style="
                             background: rgba(255,255,255,0.1); 
                             border: 1px solid rgba(255,255,255,0.15); 
                             color: white; 
@@ -253,11 +253,11 @@ export class ScoreboardQuestionScreen {
                             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                             transition: background 0.2s;
                         ">
-                            <span style="font-size: 16px;">←</span> Leave
+                            <span class="top-bar-icon" style="font-size: 16px;">←</span> <span class="top-bar-text">Leave</span>
                         </button>
                         
                         <!-- Score Chip -->
-                        <div style="
+                        <div class="top-bar-chip" style="
                             background: rgba(0,0,0,0.4);
                             border: 1px solid rgba(255,255,255,0.1);
                             padding: 6px 14px;
@@ -267,12 +267,12 @@ export class ScoreboardQuestionScreen {
                             gap: 6px;
                             white-space: nowrap;
                         ">
-                            <span style="font-size: 16px;">⚽</span>
-                            <span id="match-score" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${currentXP}</span>
+                            <span class="top-bar-icon" style="font-size: 16px;">⚽</span>
+                            <span id="match-score" class="top-bar-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${currentXP}</span>
                         </div>
 
                         <!-- Timer Chip -->
-                        <div id="timer-chip" style="
+                        <div id="timer-chip" class="top-bar-chip" style="
                             background: rgba(0,0,0,0.4);
                             border: 1px solid rgba(255,255,255,0.1);
                             padding: 6px 14px;
@@ -283,14 +283,14 @@ export class ScoreboardQuestionScreen {
                             white-space: nowrap;
                             transition: all 0.3s ease;
                         ">
-                            <span style="font-size: 16px;">⏱️</span>
-                            <span id="timer-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums;">
+                            <span class="top-bar-icon" style="font-size: 16px;">⏱️</span>
+                            <span id="timer-text" class="top-bar-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums;">
                                 ${String(startTimerSec)}s
                             </span>
                         </div>
 
                         <!-- Progress Chip -->
-                        <div style="
+                        <div class="top-bar-chip" style="
                             background: rgba(0,0,0,0.4);
                             border: 1px solid rgba(255,255,255,0.1);
                             padding: 6px 14px;
@@ -300,8 +300,8 @@ export class ScoreboardQuestionScreen {
                             gap: 6px;
                             white-space: nowrap;
                         ">
-                            <span style="font-size: 16px;">📝</span>
-                            <span style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white;">
+                            <span class="top-bar-icon" style="font-size: 16px;">📝</span>
+                            <span class="top-bar-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white;">
                                 ${this._currentIndex + 1}/${this._questions.length}
                             </span>
                         </div>
@@ -470,6 +470,23 @@ export class ScoreboardQuestionScreen {
                 }
                 .time-low span {
                     color: #F59E0B !important;
+                }
+                
+                @media (max-width: 420px) {
+                    .top-bar-row {
+                        padding: 8px 4px !important;
+                        gap: 4px !important;
+                    }
+                    .top-bar-chip {
+                        padding: 4px 6px !important;
+                        gap: 4px !important;
+                    }
+                    .top-bar-icon {
+                        font-size: 13px !important;
+                    }
+                    .top-bar-text {
+                        font-size: 13px !important;
+                    }
                 }
             </style>
         `;
