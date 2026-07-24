@@ -1037,16 +1037,18 @@ export class ScoreboardQuestionScreen {
     }
 
     private async _findCorrectIndex(q: QuestionData): Promise<number | undefined> {
-        let correctIdx = q.correctIndex;
-        if (correctIdx === undefined && (q as any).answerHash) {
+        if (q.correctIndex !== undefined) return q.correctIndex;
+
+        if ((q as any).answerHash) {
             for (let i = 0; i < 4; i++) {
                 const hash = await this._sha256(`${q.id}:${i}:ethio-secret-salt`);
                 if (hash === (q as any).answerHash) {
+                    q.correctIndex = i; // Save permanently for the review screen
                     return i;
                 }
             }
         }
-        return correctIdx;
+        return undefined;
     }
     
     private async _sha256(str: string): Promise<string> {

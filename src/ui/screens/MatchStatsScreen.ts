@@ -359,8 +359,6 @@ export class MatchStatsScreen {
 
         container.innerHTML = questions.map((q: any, idx: number) => {
             const chosenIdx = choices[idx] !== undefined ? choices[idx] : -1;
-            const chosenOpt = chosenIdx >= 0 ? q.options[chosenIdx] : (i18n.currentLocale === 'am' ? 'ጊዜ አልቋል / ያልተመለሰ' : (i18n.currentLocale === 'om' ? 'Yeroon dhumate / Hin deebine' : 'Timeout / Unanswered'));
-            
             const isCorrect = chosenIdx === q.correctIndex;
             
             let badgeHtml = '';
@@ -382,19 +380,6 @@ export class MatchStatsScreen {
                 </span>`;
             }
 
-            const actualCorrectOpt = q.options[q.correctIndex];
-            
-            let correctAnswerBoxHtml = '';
-            if (!isCorrect) {
-                correctAnswerBoxHtml = `
-                    <div style="background: rgba(34,197,94,0.1); border: 1px solid #22C55E; box-shadow: 0 0 10px rgba(34,197,94,0.2); padding: 10px 12px; border-radius: 8px; font-size: var(--fds-font-sm); margin-bottom: 12px;">
-                        <div style="color: #4ADE80; font-size: var(--fds-font-xs); font-weight: 700; text-transform: uppercase; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
-                            <span style="font-size: 14px;">✨</span> ${i18n.currentLocale === 'am' ? 'ትክክለኛው መልስ' : (i18n.currentLocale === 'om' ? 'Deebii Sirrii' : 'Correct Answer')}
-                        </div>
-                        <div style="color: white; font-weight: 800; font-size: var(--fds-font-sm);">${actualCorrectOpt}</div>
-                    </div>
-                `;
-            }
 
             const optionsHtml = q.options.map((opt: string, optIdx: number) => {
                 const isThisCorrect = optIdx === q.correctIndex;
@@ -479,15 +464,6 @@ export class MatchStatsScreen {
 
                     <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-text-main); margin-bottom: 12px; line-height: 1.4;">${q.prompt}</div>
 
-                    <!-- Answers status box -->
-                    <div style="background: rgba(0,0,0,0.3); padding: 10px 12px; border-radius: 8px; font-size: var(--fds-font-sm); margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                        <div style="color: var(--fds-text-dim); font-size: var(--fds-font-xs); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">
-                            ${i18n.currentLocale === 'am' ? 'የመረጡት መልስ' : (i18n.currentLocale === 'om' ? 'DEEBII ISIN FILATTAN' : 'YOUR SELECTED ANSWER')}
-                        </div>
-                        <div style="color: var(--fds-text-main); font-weight: 800; font-size: var(--fds-font-sm);">${chosenOpt}</div>
-                    </div>
-                    
-                    ${correctAnswerBoxHtml}
                     
                     <div style="margin-bottom: 12px;">
                         ${optionsHtml}
