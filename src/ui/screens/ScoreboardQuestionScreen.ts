@@ -249,76 +249,33 @@ export class ScoreboardQuestionScreen {
                         align-items: center; 
                         justify-content: space-between; 
                         gap: 8px;
-                        padding: 12px 16px;
+                        padding: clamp(8px, 1.5vh, 12px) 16px;
                         width: 100%;
                         box-sizing: border-box;
                     ">
                         <!-- Leave Button -->
-                        <button id="match-exit-btn" class="top-bar-chip" style="
-                            background: rgba(255,255,255,0.1); 
-                            border: 1px solid rgba(255,255,255,0.15); 
-                            color: white; 
-                            font-weight: 800; 
-                            font-size: clamp(12px, 3.5vw, 14px); 
-                            padding: 8px 14px; 
-                            border-radius: 20px;
-                            cursor: pointer;
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            white-space: nowrap;
-                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                            transition: background 0.2s;
-                        ">
+                        <button id="match-exit-btn" class="top-bar-chip">
                             <span class="top-bar-icon" style="font-size: 16px;">←</span> <span class="top-bar-text">Leave</span>
                         </button>
                         
                         <!-- Score Chip -->
-                        <div class="top-bar-chip" style="
-                            background: rgba(0,0,0,0.4);
-                            border: 1px solid rgba(255,255,255,0.1);
-                            padding: 6px 14px;
-                            border-radius: 20px;
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            white-space: nowrap;
-                        ">
+                        <div class="top-bar-chip">
                             <span class="top-bar-icon" style="font-size: 16px;">⚽</span>
-                            <span id="match-score" class="top-bar-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${currentXP}</span>
+                            <span id="match-score" class="top-bar-text" style="color: var(--tv-gold-primary);">${currentXP}</span>
                         </div>
 
                         <!-- Timer Chip -->
-                        <div id="timer-chip" class="top-bar-chip" style="
-                            background: rgba(0,0,0,0.4);
-                            border: 1px solid rgba(255,255,255,0.1);
-                            padding: 6px 14px;
-                            border-radius: 20px;
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            white-space: nowrap;
-                            transition: all 0.3s ease;
-                        ">
+                        <div id="timer-chip" class="top-bar-chip">
                             <span class="top-bar-icon" style="font-size: 16px;">⏱️</span>
-                            <span id="timer-text" class="top-bar-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums;">
+                            <span id="timer-text" class="top-bar-text" style="font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums;">
                                 ${String(startTimerSec)}s
                             </span>
                         </div>
 
                         <!-- Progress Chip -->
-                        <div class="top-bar-chip" style="
-                            background: rgba(0,0,0,0.4);
-                            border: 1px solid rgba(255,255,255,0.1);
-                            padding: 6px 14px;
-                            border-radius: 20px;
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            white-space: nowrap;
-                        ">
+                        <div class="top-bar-chip">
                             <span class="top-bar-icon" style="font-size: 16px;">📝</span>
-                            <span class="top-bar-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white;">
+                            <span class="top-bar-text">
                                 ${this._currentIndex + 1}/${this._questions.length}
                             </span>
                         </div>
@@ -340,54 +297,55 @@ export class ScoreboardQuestionScreen {
                     flex: 1;
                     display: flex;
                     flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 20px;
+                    padding: clamp(12px, 2vh, 20px);
                     max-width: 600px;
                     margin: 0 auto;
                     width: 100%;
                     box-sizing: border-box;
                     z-index: 10;
                     position: relative;
+                    overflow-y: auto;
                 ">
-                    <!-- High-Focus Responsive Question Text -->
-                    <div class="anim-question-in" style="
-                        width: 100%;
-                        max-width: 90%;
-                        margin: 0 auto 24px auto;
-                        padding: 32px 24px;
-                        background: rgba(7, 27, 45, 0.85);
-                        backdrop-filter: blur(12px);
-                        border: 1px solid rgba(255,255,255,0.08);
-                        border-radius: 22px;
-                        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-                        text-align: center;
-                        box-sizing: border-box;
-                    ">
-                        <h2 style="
-                            font-size: clamp(22px, 5vw, 28px); 
-                            font-weight: 700; 
-                            color: white; 
-                            line-height: 1.35; 
-                            letter-spacing: 0.2px; 
-                            margin: 0; 
-                            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-                            word-wrap: break-word;
-                            overflow-wrap: break-word;
+                    <div style="margin: auto 0; width: 100%; display: flex; flex-direction: column;">
+                        <!-- High-Focus Responsive Question Text -->
+                        <div class="anim-question-in" style="
+                            width: 100%;
+                            margin: 0 auto clamp(16px, 3vh, 24px) auto;
+                            padding: clamp(16px, 3vh, 22px) 28px;
+                            background: rgba(7, 27, 45, 0.75);
+                            backdrop-filter: blur(12px);
+                            border: 1px solid rgba(255,255,255,0.15);
+                            border-radius: 24px;
+                            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                            text-align: center;
+                            box-sizing: border-box;
+                            flex-shrink: 0;
                         ">
-                            ${q.prompt}
-                        </h2>
-                    </div>
+                            <h2 style="
+                                font-size: clamp(20px, 4vh, 28px); 
+                                font-weight: 700; 
+                                color: white; 
+                                line-height: 1.35; 
+                                letter-spacing: 0.2px; 
+                                margin: 0; 
+                                text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                                word-wrap: break-word;
+                                overflow-wrap: break-word;
+                            ">
+                                ${q.prompt}
+                            </h2>
+                        </div>
 
-                    <!-- ANSWERS GRID -->
-                    <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
-                        ${q.options.map((opt, i) => `
-                            <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
-                                <span class="option-badge">${String.fromCharCode(65 + i)}</span>
-                                <span class="option-text">${opt}</span>
-                                <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
-                            </button>
-                        `).join('')}
+                        <!-- ANSWERS GRID -->
+                        <div style="display: flex; flex-direction: column; gap: clamp(10px, 2vh, 14px); width: 100%; padding-bottom: 24px;">
+                            ${q.options.map((opt, i) => `
+                                <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
+                                    <span class="option-badge">${String.fromCharCode(65 + i)}</span>
+                                    <span class="option-text">${opt}</span>
+                                    <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
+                                </button>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
                 
@@ -467,12 +425,61 @@ export class ScoreboardQuestionScreen {
             </div>
             
             <style>
+                .top-bar-chip {
+                    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+                    border: 1px solid rgba(255,255,255,0.15);
+                    border-radius: 18px;
+                    padding: clamp(6px, 1vh, 8px) clamp(10px, 2vw, 16px);
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    white-space: nowrap;
+                    box-shadow: 
+                        inset 0 1px 1px rgba(255,255,255,0.2), 
+                        inset 0 -2px 4px rgba(0,0,0,0.3),
+                        0 4px 12px rgba(0,0,0,0.4);
+                    transition: all 0.2s ease;
+                    position: relative;
+                    overflow: hidden;
+                    color: white;
+                    font-weight: 800;
+                    cursor: pointer;
+                }
+                .top-bar-chip::after {
+                    content: '';
+                    position: absolute;
+                    top: 0; left: 0; right: 0; height: 40%;
+                    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+                    pointer-events: none;
+                }
+                .top-bar-chip:active {
+                    transform: scale(0.96);
+                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4);
+                }
+                @media (hover: hover) {
+                    .top-bar-chip:hover {
+                        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+                        border-color: rgba(255,255,255,0.3);
+                    }
+                }
+                .top-bar-text {
+                    font-size: clamp(13px, 3.5vw, 16px);
+                    font-weight: 900;
+                    color: white;
+                    position: relative;
+                    z-index: 2;
+                }
+                .top-bar-icon {
+                    position: relative;
+                    z-index: 2;
+                }
+                
                 .option-btn {
                     width: 100%;
-                    min-height: 68px;
-                    padding: 18px 22px;
-                    background: linear-gradient(180deg, #12A64B 0%, #0A7C45 100%);
-                    border: 2px solid rgba(255,255,255,0.12);
+                    min-height: clamp(56px, 8vh, 76px);
+                    padding: clamp(12px, 2vh, 18px) 24px;
+                    background: linear-gradient(180deg, #19C15B 0%, #0A7C45 100%);
+                    border: 1px solid rgba(255,255,255,0.2);
                     border-radius: 18px;
                     color: white;
                     text-align: left;
@@ -481,40 +488,49 @@ export class ScoreboardQuestionScreen {
                     display: flex;
                     align-items: center;
                     gap: 16px;
-                    box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 10px 30px rgba(0,0,0,0.25);
+                    box-shadow: 
+                        inset 0 2px 4px rgba(255,255,255,0.4),
+                        inset 0 -4px 8px rgba(0,0,0,0.2), 
+                        0 8px 24px rgba(0,0,0,0.3);
                     position: relative;
                     overflow: hidden;
                     box-sizing: border-box;
+                    flex-shrink: 1;
                 }
                 .option-btn::after {
                     content: '';
                     position: absolute;
                     top: 0; left: 0; right: 0; height: 40%;
-                    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+                    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
                     border-radius: 16px 16px 0 0;
                     pointer-events: none;
                 }
                 .option-badge {
-                    width: 34px; height: 34px; 
+                    width: 38px; height: 38px; 
                     border-radius: 50%; 
-                    background: rgba(255,255,255,0.12); 
+                    background: rgba(255,255,255,0.15); 
                     display: flex; align-items: center; justify-content: center; 
                     font-size: 18px; font-weight: bold; color: white;
                     flex-shrink: 0;
+                    box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+                    position: relative;
+                    z-index: 2;
                 }
                 .option-text {
                     flex: 1; 
-                    font-size: 18px; 
+                    font-size: clamp(16px, 3vh, 18px); 
                     font-weight: 600; 
                     color: white; 
                     line-height: 1.3; 
                     word-wrap: break-word; 
                     overflow-wrap: break-word;
+                    position: relative;
+                    z-index: 2;
                 }
                 .option-btn:active:not(:disabled) { 
                     transform: scale(0.98); 
-                    background: linear-gradient(180deg, #0f8c3f 0%, #086136 100%);
-                    box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.2);
+                    box-shadow: inset 0 4px 12px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.2);
+                    background: linear-gradient(180deg, #15a34d 0%, #086136 100%);
                 }
                 .option-btn.selected {
                     border-color: #FFD54F !important;
@@ -590,7 +606,7 @@ export class ScoreboardQuestionScreen {
                 
                 @media (max-width: 420px) {
                     .top-bar-row {
-                        padding: 8px 4px !important;
+                        padding: 6px 4px !important;
                         gap: 4px !important;
                     }
                     .top-bar-chip {
