@@ -21,7 +21,13 @@ export class TournamentLobbyScreen {
         this._tournaments = await TournamentManager.getInstance().getUpcomingTournaments();
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; overflow-y: auto; padding: 30px 20px;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; overflow-y: auto; padding: 30px 20px;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 <div class="floodlight floodlight-left"></div>
                 <div class="floodlight floodlight-right"></div>
 

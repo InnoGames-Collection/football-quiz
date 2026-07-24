@@ -187,6 +187,87 @@
   100% { transform: translateY(-20px) rotate(30deg); }
 }
 
+/* -------------------------------------------------------------
+ * ETHIOFANTASY PREMIUM VISUAL SYSTEM 
+ * ------------------------------------------------------------- */
+
+/* Base Backgrounds */
+.ethio-bg-main {
+  background-image: url('/assets/images/background_main.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #0b1120;
+  background-attachment: fixed;
+}
+
+.ethio-bg-quiz {
+  background-image: url('/assets/images/background_quiz.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #0b1120;
+  background-attachment: fixed;
+}
+
+.ethio-bg-result {
+  background-image: url('/assets/images/background_result.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #0b1120;
+  background-attachment: fixed;
+}
+
+/* Layering System */
+.ethio-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.ethio-layer-pitch {
+  background-image: url('/assets/images/pitch_texture.png');
+  z-index: 1;
+  opacity: 0.15; /* Subtle texture */
+}
+
+.ethio-layer-overlay {
+  background-image: url('/assets/images/stadium_overlay.png');
+  z-index: 2;
+  opacity: 0.8; /* Cinematic depth */
+}
+
+.ethio-layer-lights {
+  background-image: url('/assets/images/stadium_lights.png');
+  z-index: 3;
+  opacity: 0.6; /* Light atmosphere */
+  mix-blend-mode: screen; /* Makes lights blend well */
+}
+
+/* Clickable Image Cards */
+.ethio-image-card {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.2s ease;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ethio-image-card:hover, .ethio-image-card:active {
+  transform: scale(1.03);
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,0.6));
+}
+
+
 /* Entrance Animation Utilities */
 .fade-in-up {
   opacity: 0;

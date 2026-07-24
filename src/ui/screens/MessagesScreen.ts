@@ -93,7 +93,13 @@ export class MessagesScreen {
         }).join('') : DesignSystem.EmptyState('💬', 'No Messages');
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 
                 <!-- App Bar -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">

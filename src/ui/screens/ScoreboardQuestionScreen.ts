@@ -143,11 +143,16 @@ export class ScoreboardQuestionScreen {
         const playerName = localStorage.getItem('ETHIO_FOOTBALL_USERNAME') || 'Player';
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px;">
-                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
+            <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; min-height: 100vh;">
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
+                <!-- Content -->
+                <div style="position: relative; z-index: 10; width: 100%; max-width: 400px;">
+                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: rgba(0,0,0,0.5); border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">✕</button>
                 <div class="glass-card" style="
                     width: 100%;
-                    max-width: 400px;
                     padding: 32px 24px;
                     text-align: center;
                     border-color: var(--tv-pitch-green);
@@ -204,8 +209,12 @@ export class ScoreboardQuestionScreen {
         const currentXP = currentGoals * 100;
         
         root.innerHTML = `
-            <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; display: flex; flex-direction: column; min-height: 100vh; position: relative;">
-                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
+            <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; flex-direction: column; min-height: 100vh; position: relative;">
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
+                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: rgba(0,0,0,0.5); border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">✕</button>
                 
                 <!-- PREMIUM GAMING HEADER -->
                 <div style="
@@ -267,6 +276,8 @@ export class ScoreboardQuestionScreen {
                     margin: 0 auto;
                     width: 100%;
                     box-sizing: border-box;
+                    z-index: 10;
+                    position: relative;
                 ">
                     <!-- High-Focus Responsive Question Text -->
                     <div style="

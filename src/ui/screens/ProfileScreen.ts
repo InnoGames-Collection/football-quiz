@@ -72,7 +72,13 @@ export class ProfileScreen {
         `;
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; overflow-y: auto; padding-bottom: 120px;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; overflow-y: auto; padding-bottom: 120px;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 
                 <!-- TOP HEADER -->
                 <div style="

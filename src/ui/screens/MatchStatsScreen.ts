@@ -69,10 +69,17 @@ export class MatchStatsScreen {
         }
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; height: 100vh; overflow: hidden; background: radial-gradient(circle at center, rgba(15,23,42,0.85) 0%, rgba(2,6,23,0.98) 100%);">
+            <div class="stadium-container ethio-bg-result" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; height: 100vh; overflow: hidden; position: relative;">
                 
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 <!-- Main Result Card -->
                 <div class="glass-card result-card-anim" style="
+                    position: relative;
+                    z-index: 10;
                     width: 100%; 
                     max-width: 380px; 
                     padding: 32px 24px; 

@@ -80,7 +80,13 @@ export class LeaderboardScreen {
         };
 
         root.innerHTML = `
-            <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; padding-bottom: 60px; overflow-y: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; padding-bottom: 60px; overflow-y: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 
                 <!-- STADIUM LIGHT BEAMS -->
                 <div class="stadium-beam stadium-beam-left"></div>

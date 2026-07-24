@@ -72,7 +72,13 @@ export class LiveMatchScreen {
         const optionsList = i18n.currentLocale === 'am' ? (q.optionsAm && q.optionsAm.length === q.options.length ? q.optionsAm : q.options) : (i18n.currentLocale === 'om' ? (q.optionsOm && q.optionsOm.length === q.options.length ? q.optionsOm : q.options) : (q.optionsEn && q.optionsEn.length === q.options.length ? q.optionsEn : q.options));
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; display: flex; flex-direction: column;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; display: flex; flex-direction: column;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 
                 <!-- Live Header -->
                 <div style="
@@ -366,7 +372,13 @@ export class LiveMatchScreen {
         this._saveManager.addCoins(isWinner ? 300 : 100);
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 <div class="glass-card" style="
                     width: 100%;
                     max-width: 480px;

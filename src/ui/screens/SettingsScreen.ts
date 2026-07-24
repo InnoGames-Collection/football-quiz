@@ -179,7 +179,13 @@ export class SettingsScreen {
         const currentLangLabel = i18n.currentLocale === 'am' ? 'አማርኛ' : (i18n.currentLocale === 'om' ? 'Afan Oromo' : 'English');
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 
                 <!-- App Bar -->
                 <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
@@ -273,7 +279,13 @@ export class SettingsScreen {
         `;
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'የእኔ መገለጫ' : (i18n.currentLocale === 'om' ? 'PROFILE KOO' : 'MY PROFILE'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
@@ -312,7 +324,13 @@ export class SettingsScreen {
         };
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'ቋንቋ ይምረጡ' : (i18n.currentLocale === 'om' ? 'AFAAN FILADHU' : 'SELECT LANGUAGE'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
@@ -359,7 +377,13 @@ export class SettingsScreen {
         };
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'BEEKSIISAA' : 'NOTIFICATIONS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
@@ -455,7 +479,13 @@ export class SettingsScreen {
         const disableLabel = i18n.currentLocale === 'am' ? 'ድምፅ አጥፋ' : (i18n.currentLocale === 'om' ? 'Cufi' : 'Disable');
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'የድምፅ ውጤቶች' : (i18n.currentLocale === 'om' ? 'SAGAALE TAPHA' : 'SOUND EFFECTS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
@@ -552,7 +582,13 @@ export class SettingsScreen {
 
         if (this._showContactSupportForm) {
             root.innerHTML = `
-                <div class="stadium-container" style="pointer-events: auto;">
+                <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                     ${header(i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'GARGAARSA' : 'HELP & SUPPORT'))}
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
@@ -639,7 +675,13 @@ export class SettingsScreen {
             const categoryName = catItem ? catItem.name : this._helpCategory;
 
             root.innerHTML = `
-                <div class="stadium-container" style="pointer-events: auto;">
+                <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                     ${header(`${categoryName.toUpperCase()}`)}
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
@@ -727,7 +769,13 @@ export class SettingsScreen {
         `).join('');
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'GARGAARSA' : 'HELP & SUPPORT'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
@@ -830,7 +878,13 @@ export class SettingsScreen {
         `);
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'WALIIGALTEE' : 'TERMS & CONDITIONS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
@@ -881,7 +935,13 @@ export class SettingsScreen {
         `);
 
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'IMAAMMATA DHUUNFAA' : 'PRIVACY POLICY'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
@@ -897,7 +957,13 @@ export class SettingsScreen {
 
     private _renderAboutScreen(root: HTMLElement, header: Function): void {
         root.innerHTML = `
-            <div class="stadium-container" style="pointer-events: auto;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+
                 ${header(i18n.currentLocale === 'am' ? 'ስለ ኢትዮ ፋንታሲ' : (i18n.currentLocale === 'om' ? 'WAA\'EE ETHIO FANTASY' : 'ABOUT ETHIO FANTASY'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px; text-align: center;">
