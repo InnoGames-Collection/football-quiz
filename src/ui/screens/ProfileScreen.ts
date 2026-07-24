@@ -3,6 +3,7 @@ import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { DesignSystem } from '../theme/DesignSystem';
+import { AwardsScreen } from './AwardsScreen';
 import { ProfileService } from '../../networking/services/ProfileService';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { i18n } from '../../localization/i18n';
@@ -284,40 +285,17 @@ export class ProfileScreen {
                         break;
 
                     case 'awards':
-                        showModal(`
-                            <div style="font-size: 32px; margin-bottom: 12px;">🏅</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የዋንጫ ካቢኔ' : (i18n.currentLocale === 'om' ? 'Saanduqa Waancaa' : 'Trophy Cabinet')}</div>
-                            <div id="awards-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                                <div style="grid-column: span 2;">
-                                    ${DesignSystem.LoadingState(i18n.currentLocale === 'am' ? 'ሽልማቶችን በመጫን ላይ...' : (i18n.currentLocale === 'om' ? 'Badhaasota fe\'aa jira...' : 'Loading awards...'))}
-                                </div>
-                            </div>
-                        `);
-
-                        ProfileService.getInstance().getRewards().then(rewards => {
-                            const content = document.getElementById('awards-content');
-                            if (!content) return;
-                            
-                            if (!rewards || rewards.length === 0) {
-                                content.innerHTML = `
-                                    <div style="grid-column: span 2;">
-                                        ${DesignSystem.EmptyState('🏅', i18n.currentLocale === 'am' ? 'ምንም ሽልማቶች የሉም' : (i18n.currentLocale === 'om' ? 'Badhaasni Hin Jiru' : 'No Awards'), i18n.currentLocale === 'am' ? 'ሽልማቶችን ለማግኘት በውድድሮች ይወዳደሩ!' : (i18n.currentLocale === 'om' ? 'Badhaasa argachuuf dorgommii irratti hirmaadhaa!' : 'Compete in tournaments to earn awards!'))}
-                                    </div>
-                                `;
-                                return;
+                        this._audioManager.playClick();
+                        this._uiManager.clear();
+                        new AwardsScreen(
+                            this._uiManager,
+                            this._audioManager,
+                            () => {
+                                // Provide a callback to return to the Profile Screen
+                                this._uiManager.clear();
+                                this.render(); // Rebinds and renders Profile Screen
                             }
-
-                            content.innerHTML = rewards.map(reward => `
-                                <div style="background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2); padding: 16px 8px; border-radius: 8px;">
-                                    <span style="font-size: 32px;">🏆</span>
-                                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-main); margin-top: 8px;">${reward.name || (i18n.currentLocale === 'am' ? 'ሽልማት' : (i18n.currentLocale === 'om' ? 'Badhaasa' : 'Award'))}</div>
-                                    <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${reward.source_type}</div>
-                                </div>
-                            `).join('');
-                        }).catch(_ => {
-                            const content = document.getElementById('awards-content');
-                            if (content) content.innerHTML = `<div style="grid-column: span 2;">${DesignSystem.ErrorState('btn-retry-awards')}</div>`;
-                        });
+                        );
                         break;
                 }
             });
