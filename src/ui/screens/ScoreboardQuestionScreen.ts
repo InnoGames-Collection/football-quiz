@@ -228,7 +228,7 @@ export class ScoreboardQuestionScreen {
         const currentXP = currentGoals * 100;
         
         root.innerHTML = `
-            <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; flex-direction: column; min-height: 100vh; position: relative;">
+            <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
                 <!-- Layers -->
                 <div class="ethio-layer ethio-layer-pitch"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
@@ -254,8 +254,8 @@ export class ScoreboardQuestionScreen {
                         box-sizing: border-box;
                     ">
                         <!-- Leave Button -->
-                        <button id="match-exit-btn" class="top-bar-chip">
-                            <span class="top-bar-icon" style="font-size: 16px;">←</span> <span class="top-bar-text">Leave</span>
+                        <button id="match-exit-btn" class="top-bar-chip" style="width: 40px; padding: 0; flex-shrink: 0;">
+                            <span class="top-bar-icon" style="font-size: 18px; display: flex; align-items: center; justify-content: center; margin: 0;">←</span>
                         </button>
                         
                         <!-- Score Chip -->
@@ -304,28 +304,28 @@ export class ScoreboardQuestionScreen {
                     box-sizing: border-box;
                     z-index: 10;
                     position: relative;
-                    overflow-y: auto;
+                    min-height: 0;
                 ">
-                    <div style="margin: auto 0; width: 100%; display: flex; flex-direction: column;">
-                        <!-- High-Focus Responsive Question Text -->
+                    <!-- Question Card Wrapper (Scrollable if needed) -->
+                    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(16px, 3vh, 24px); padding: 0 4px;" class="hide-scrollbar">
                         <div class="anim-question-in" style="
                             width: 100%;
-                            margin: 0 auto clamp(16px, 3vh, 24px) auto;
-                            padding: clamp(16px, 3vh, 22px) 28px;
+                            margin: auto 0;
+                            padding: 22px 28px;
                             background: rgba(7, 27, 45, 0.75);
                             backdrop-filter: blur(12px);
                             border: 1px solid rgba(255,255,255,0.15);
                             border-radius: 24px;
-                            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 12px rgba(255,255,255,0.1);
                             text-align: center;
                             box-sizing: border-box;
                             flex-shrink: 0;
                         ">
                             <h2 style="
-                                font-size: clamp(20px, 4vh, 28px); 
+                                font-size: clamp(22px, 4vh, 28px); 
                                 font-weight: 700; 
                                 color: white; 
-                                line-height: 1.35; 
+                                line-height: 1.3; 
                                 letter-spacing: 0.2px; 
                                 margin: 0; 
                                 text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -335,17 +335,17 @@ export class ScoreboardQuestionScreen {
                                 ${q.prompt}
                             </h2>
                         </div>
+                    </div>
 
-                        <!-- ANSWERS GRID -->
-                        <div style="display: flex; flex-direction: column; gap: clamp(10px, 2vh, 14px); width: 100%; padding-bottom: 24px;">
-                            ${q.options.map((opt, i) => `
-                                <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
-                                    <span class="option-badge">${String.fromCharCode(65 + i)}</span>
-                                    <span class="option-text">${opt}</span>
-                                    <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
-                                </button>
-                            `).join('')}
-                        </div>
+                    <!-- ANSWERS GRID (Never scrolls) -->
+                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(10px, 2vh, 14px); width: 100%; padding-bottom: 24px;">
+                        ${q.options.map((opt, i) => `
+                            <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
+                                <span class="option-badge">${String.fromCharCode(65 + i)}</span>
+                                <span class="option-text">${opt}</span>
+                                <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
+                            </button>
+                        `).join('')}
                     </div>
                 </div>
                 
@@ -394,11 +394,11 @@ export class ScoreboardQuestionScreen {
                         border: 1px solid rgba(255,255,255,0.1);
                         box-shadow: 0 16px 40px rgba(0,0,0,0.5);
                     ">
-                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">Leave Match?</div>
-                        <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px; line-height: 1.4;">Your current match progress will be lost.<br/><br/>Are you sure you want to leave?</div>
+                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">Leave Quiz?</div>
+                        <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px; line-height: 1.4;">Your current progress will be lost.</div>
                         <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <button id="btn-pause-resume" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #22c55e, #15803d); color: white; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.3);">Continue Playing</button>
-                            <button id="btn-pause-leave" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-weight: bold; font-size: 16px; cursor: pointer;">Leave Match</button>
+                            <button id="btn-pause-resume" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #22c55e, #15803d); color: white; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.3);">Stay</button>
+                            <button id="btn-pause-leave" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.1); color: #EF4444; font-weight: bold; font-size: 16px; cursor: pointer;">Leave Quiz</button>
                         </div>
                     </div>
                 </div>
@@ -428,10 +428,12 @@ export class ScoreboardQuestionScreen {
                 .top-bar-chip {
                     background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
                     border: 1px solid rgba(255,255,255,0.15);
-                    border-radius: 18px;
-                    padding: clamp(6px, 1vh, 8px) clamp(10px, 2vw, 16px);
+                    border-radius: 20px;
+                    height: 40px;
+                    padding: 0 16px;
                     display: flex;
                     align-items: center;
+                    justify-content: center;
                     gap: 6px;
                     white-space: nowrap;
                     box-shadow: 
@@ -478,7 +480,7 @@ export class ScoreboardQuestionScreen {
                     width: 100%;
                     min-height: clamp(56px, 8vh, 76px);
                     padding: clamp(12px, 2vh, 18px) 24px;
-                    background: linear-gradient(180deg, #19C15B 0%, #0A7C45 100%);
+                    background: linear-gradient(180deg, #12A64B 0%, #065F33 100%);
                     border: 1px solid rgba(255,255,255,0.2);
                     border-radius: 18px;
                     color: white;
@@ -490,8 +492,8 @@ export class ScoreboardQuestionScreen {
                     gap: 16px;
                     box-shadow: 
                         inset 0 2px 4px rgba(255,255,255,0.4),
-                        inset 0 -4px 8px rgba(0,0,0,0.2), 
-                        0 8px 24px rgba(0,0,0,0.3);
+                        inset 0 -4px 8px rgba(0,0,0,0.3), 
+                        0 10px 30px rgba(0,0,0,0.4);
                     position: relative;
                     overflow: hidden;
                     box-sizing: border-box;
@@ -501,7 +503,7 @@ export class ScoreboardQuestionScreen {
                     content: '';
                     position: absolute;
                     top: 0; left: 0; right: 0; height: 40%;
-                    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+                    background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
                     border-radius: 16px 16px 0 0;
                     pointer-events: none;
                 }
