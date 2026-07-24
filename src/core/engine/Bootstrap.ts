@@ -595,7 +595,27 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 if (activeSession) {
                     GameSessionManager.getInstance().clearSession();
                 }
-                navigateToTab('home');
+                
+                // BUG FIX: Reset navigation state and force render the Home screen.
+                // Previously, navigateToTab('home') would return early because currentTab 
+                // was already 'home' on launch, leaving the AuthScreen stuck on the screen.
+                tabStacks = {
+                    home: ['home'],
+                    play: ['play'],
+                    league: ['league'],
+                    rankings: ['rankings'],
+                    profile: ['profile']
+                };
+                currentTab = 'home';
+                
+                // Force the UI to replace AuthScreen with HomeScreen
+                renderRoute('home', false);
+                
+                // Clear any leftover history to prevent back-button returning to Login
+                try {
+                    window.history.replaceState({ root: true }, '');
+                    window.history.pushState({ tab: 'home', route: 'home' }, '');
+                } catch (e) {}
             }
         }
     });
