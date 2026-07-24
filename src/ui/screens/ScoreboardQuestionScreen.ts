@@ -176,7 +176,7 @@ export class ScoreboardQuestionScreen {
                         border-radius: 26px;
                         border: 1px solid rgba(255,255,255,0.08);
                         box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 0 16px rgba(255,255,255,0.05);
-                        padding: 30px 28px 30px 28px;
+                        padding: 28px;
                         text-align: center;
                         animation: popupScale 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
                     ">
@@ -204,13 +204,13 @@ export class ScoreboardQuestionScreen {
                         </button>
                     
                         <!-- Trophy -->
-                        <div style="font-size: 64px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); margin-bottom: 24px;">${this._competition.badge}</div>
+                        <div style="font-size: 64px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); margin-bottom: 20px;">${this._competition.badge}</div>
                         
                         <!-- Title -->
-                        <div style="font-size: 30px; font-weight: 800; color: white; text-align: center; margin-bottom: 16px; line-height: 1.2;">${this._competition.name}</div>
+                        <div style="font-size: 30px; font-weight: 800; color: white; text-align: center; margin-bottom: 14px; line-height: 1.2;">${this._competition.name}</div>
                         
                         <!-- Subtitle -->
-                        <div style="font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.75); text-align: center; max-width: 85%; margin: 0 auto 32px auto; line-height: 1.5;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
+                        <div style="font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.75); text-align: center; max-width: 85%; margin: 0 auto 28px auto; line-height: 1.5;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
                         
                         <!-- Kick Off Button -->
                         <button id="kick-off-btn" style="
@@ -232,7 +232,7 @@ export class ScoreboardQuestionScreen {
                             justify-content: center;
                             animation: fade-up-delay 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
                             animation-delay: 250ms;
-                            margin-bottom: 20px;
+                            margin-bottom: 0;
                         ">${i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF')}</button>
                     </div>
                 </div>
@@ -307,8 +307,8 @@ export class ScoreboardQuestionScreen {
                         box-sizing: border-box;
                     ">
                         <!-- Leave Button -->
-                        <button id="match-exit-btn" class="top-bar-chip" style="width: 40px; padding: 0; flex-shrink: 0;">
-                            <span class="top-bar-icon" style="font-size: 18px; display: flex; align-items: center; justify-content: center; margin: 0;">←</span>
+                        <button id="match-exit-btn" class="top-bar-chip" style="width: 48px !important; height: 48px !important; border-radius: 24px !important; padding: 0 !important; flex-shrink: 0; box-sizing: border-box;">
+                            <span class="top-bar-icon" style="font-size: 28px; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0; transform: translateY(-1px);">←</span>
                         </button>
                         
                         <!-- Score Chip -->
