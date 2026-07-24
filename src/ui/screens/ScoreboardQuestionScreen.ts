@@ -104,6 +104,10 @@ export class ScoreboardQuestionScreen {
         
         history.pushState({ match_active: true }, '');
         (window as any).ethioOnBackPress = () => {
+            if (!this._hasKickedOff) {
+                this._callbacks.onExitMatch();
+                return true;
+            }
             const modal = document.getElementById('match-exit-dialog');
             if (modal && modal.style.display !== 'none') {
                 this._hideLeaveWarning();
@@ -185,8 +189,8 @@ export class ScoreboardQuestionScreen {
                             position: absolute;
                             top: 16px;
                             right: 16px;
-                            width: 40px;
-                            height: 40px;
+                            width: 48px;
+                            height: 48px;
                             border-radius: 50%;
                             background: #071B2D;
                             border: 1px solid rgba(255,255,255,0.1);
@@ -254,6 +258,11 @@ export class ScoreboardQuestionScreen {
                 #match-exit-btn:active { transform: scale(0.9); }
             </style>
         `;
+
+        document.getElementById('match-exit-btn')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            history.back(); // Navigate back (which triggers ethioOnBackPress)
+        });
 
         document.getElementById('kick-off-btn')?.addEventListener('click', () => {
             this._audioManager.playWhistle();
