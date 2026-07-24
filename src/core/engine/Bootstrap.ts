@@ -25,6 +25,7 @@ import { SubscriptionScreen } from '../../ui/screens/SubscriptionScreen';
 import { CacheManager } from '../cache/CacheManager';
 import { EventBus } from '../events/EventBus';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';
+import { AchievementsScreen } from '../../ui/screens/AchievementsScreen';
 
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
@@ -48,7 +49,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioEvents = eventBus;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats';
+    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats' | 'achievements';
 
     let tabStacks: Record<TabId, RouteName[]> = {
         home: ['home'],
@@ -195,6 +196,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 const profScreen = new ProfileScreen(
                     game.uiManager, game.saveManager, game.audioManager,
                     {
+                        onAchievements: () => renderRoute('achievements'),
                         onStatistics: () => renderRoute('stats'),
                         onLeaderboard: () => navigateToTab('rankings'),
                         onSubscription: () => renderRoute('subscription'),
@@ -225,6 +227,15 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 const help = new SettingsScreen(game.uiManager, game.saveManager, game.audioManager, handleBack, 'help');
                 activeScreen = help;
                 help.render();
+                break;
+
+            case 'achievements':
+                cacheManager.setQuizActive(false);
+                const achievements = new AchievementsScreen(
+                    game.uiManager, game.saveManager, game.audioManager, handleBack
+                );
+                activeScreen = achievements;
+                achievements.render();
                 break;
 
             case 'about':

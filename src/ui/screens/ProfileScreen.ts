@@ -4,7 +4,6 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { DesignSystem } from '../theme/DesignSystem';
 import { AwardsScreen } from './AwardsScreen';
-import { ProfileService } from '../../networking/services/ProfileService';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { i18n } from '../../localization/i18n';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';
@@ -12,6 +11,7 @@ import { MessageCenterService } from '../../networking/services/MessageCenterSer
 
 export interface ProfileCallbacks {
     onStatistics: () => void;
+    onAchievements: () => void;
     onLeaderboard: () => void;
     onSubscription: () => void;
     onMessages: () => void;
@@ -288,42 +288,7 @@ export class ProfileScreen {
                         break;
 
                     case 'achievements':
-                        showModal(`
-                            <div style="font-size: 32px; margin-bottom: 12px;">🏆</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'ስኬቶች' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina' : 'Achievements')}</div>
-                            <div id="achievements-content" style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
-                                ${DesignSystem.LoadingState(i18n.currentLocale === 'am' ? 'ስኬቶችን በመጫን ላይ...' : (i18n.currentLocale === 'om' ? 'Milkaa\'inota fe\'aa jira...' : 'Loading achievements...'))}
-                            </div>
-                        `);
-                        
-                        // Fetch achievements
-                        ProfileService.getInstance().getEarnedAchievements().then(achievements => {
-                            const content = document.getElementById('achievements-content');
-                            if (!content) return;
-                            
-                            if (!achievements || achievements.length === 0) {
-                                content.innerHTML = `
-                                    ${DesignSystem.EmptyState('🎯', i18n.currentLocale === 'am' ? 'ምንም ስኬቶች የሉም' : (i18n.currentLocale === 'om' ? 'Milkaa\'inni Hin Jiru' : 'No Achievements'), i18n.currentLocale === 'am' ? 'ስኬቶችን ለማግኘት ተጨማሪ ጨዋታዎችን ይጫወቱ!' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina argachuuf tapha dabalata taphadha!' : 'Play more matches to earn achievements!'))}
-                                `;
-                                return;
-                            }
-
-                            content.innerHTML = achievements.map(achRow => {
-                                const ach = achRow.achievement || {};
-                                return `
-                                    <div style="display: flex; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                                        <span style="font-size: 24px;">${ach.icon || '🎯'}</span>
-                                        <div>
-                                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main);">${ach.name_en || ach.name || (i18n.currentLocale === 'am' ? 'ስኬት' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina' : 'Achievement'))} ✅</div>
-                                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 2px;">${ach.description_en || ach.description || ''}</div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('');
-                        }).catch(_ => {
-                            const content = document.getElementById('achievements-content');
-                            if (content) content.innerHTML = DesignSystem.ErrorState('btn-retry-achievements');
-                        });
+                        this._callbacks.onAchievements();
                         break;
 
                     case 'awards':
