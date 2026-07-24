@@ -235,19 +235,19 @@
 .ethio-layer-pitch {
   background-image: url('/assets/images/pitch_texture.png');
   z-index: 1;
-  opacity: 0.15; /* Subtle texture */
+  opacity: 0.08; /* Subtle texture (< 10%) */
 }
 
 .ethio-layer-overlay {
   background-image: url('/assets/images/stadium_overlay.png');
   z-index: 2;
-  opacity: 0.8; /* Cinematic depth */
+  opacity: 0.15; /* Cinematic depth (10-20%) */
 }
 
 .ethio-layer-lights {
   background-image: url('/assets/images/stadium_lights.png');
   z-index: 3;
-  opacity: 0.6; /* Light atmosphere */
+  opacity: 0.15; /* Light atmosphere (~15%) */
   mix-blend-mode: screen; /* Makes lights blend well */
 }
 

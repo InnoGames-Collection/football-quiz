@@ -123,7 +123,8 @@ export class FootballLeagueHome {
                     <!-- 1. HERO SECTION: DAILY CHAMPIONSHIP TOURNAMENT -->
                     <div class="glass-card fade-in-up" style="
                         border: 2px solid var(--fds-gold-primary);
-                        background: linear-gradient(135deg, rgba(0, 154, 68, 0.25) 0%, rgba(15, 23, 42, 0.95) 70%, rgba(255, 215, 0, 0.15) 100%);
+                        background: linear-gradient(135deg, rgba(0, 154, 68, 0.75) 0%, rgba(15, 23, 42, 0.95) 70%, rgba(255, 215, 0, 0.5) 100%), url('/assets/images/hero_banner.png') center/cover no-repeat;
+                        background-blend-mode: overlay;
                         padding: 24px 20px;
                         border-radius: 20px;
                         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.1);
@@ -157,13 +158,77 @@ export class FootballLeagueHome {
                     <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); margin-left: 4px; text-transform: uppercase; letter-spacing: 1px;" class="fade-in-up">
                         ${t('home.lobbies')}
                     </div>
-                    <div style="display: flex; gap: 12px; margin-bottom: 24px;" class="fade-in-up">
-                        <div style="flex: 1;">
-                            ${DesignSystem.Button({ id: 'btn-action-kickoff', text: t('home.soloMatch'), variant: 'primary', fullWidth: true })}
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;" class="fade-in-up">
+                        
+                        <!-- Daily Challenge Card (Repurposed from Solo Match for layout) -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/daily_challenge_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Daily Challenge</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Complete today's objectives</p>
+                            ${DesignSystem.Button({ id: 'btn-daily-match-card', text: 'Play', variant: 'primary', fullWidth: true })}
                         </div>
-                        <div style="flex: 1;">
-                            ${DesignSystem.Button({ id: 'btn-action-leaderboard', text: t('home.leaderboard'), variant: 'secondary', fullWidth: true })}
+
+                        <!-- Tournament Card (Kick Off) -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/tournament_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${t('home.soloMatch')}</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Test your skills</p>
+                            ${DesignSystem.Button({ id: 'btn-action-kickoff', text: 'Start', variant: 'secondary', fullWidth: true })}
                         </div>
+
+                        <!-- Leaderboard Card -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/leaderboard_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${t('home.leaderboard')}</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Top players ranking</p>
+                            ${DesignSystem.Button({ id: 'btn-action-leaderboard', text: 'View', variant: 'secondary', fullWidth: true })}
+                        </div>
+
+                        <!-- Winner Card -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/winner_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Champions</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Hall of Fame</p>
+                            ${DesignSystem.Button({ id: 'btn-winner-card', text: 'View', variant: 'secondary', fullWidth: true })}
+                        </div>
+
                     </div>
                     
                     <div class="fade-in-up" id="btn-action-referral" style="margin-bottom: 24px; padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
@@ -323,6 +388,12 @@ export class FootballLeagueHome {
         const root = this._uiManager.container;
 
         root.querySelector('#btn-daily-match')?.addEventListener('click', (e) => {
+            this._addRipple(e);
+            this._audioManager.playClick();
+            this._callbacks.onDailyChallenge();
+        });
+
+        root.querySelector('#btn-daily-match-card')?.addEventListener('click', (e) => {
             this._addRipple(e);
             this._audioManager.playClick();
             this._callbacks.onDailyChallenge();

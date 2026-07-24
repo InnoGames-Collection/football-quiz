@@ -86,9 +86,11 @@ export class BottomNav {
                     cursor: pointer;
                     padding: var(--fds-space-8) var(--fds-space-12);
                     flex: 1;
-                    transition: all 180ms ease-out;
+                    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
                     min-height: 48px; /* Strict 48px touch target */
                     outline: none;
+                    transform: ${isActive ? 'scale(1.1)' : 'scale(1)'};
+                    filter: ${isActive ? 'drop-shadow(0 2px 8px rgba(255,215,0,0.4))' : 'none'};
                 ">
                     <span style="font-size: 20px; margin-bottom: 2px;">${t.icon}</span>
                     <span class="tab-text" style="
@@ -133,6 +135,8 @@ export class BottomNav {
             const isActive = tabId === BottomNav._activeTab;
             const element = btn as HTMLElement;
             element.style.color = isActive ? 'var(--fds-gold-primary, #FFD700)' : '#94A3B8';
+            element.style.transform = isActive ? 'scale(1.1)' : 'scale(1)';
+            element.style.filter = isActive ? 'drop-shadow(0 2px 8px rgba(255,215,0,0.4))' : 'none';
             const labelSpan = element.querySelector('.tab-text') as HTMLElement;
             if (labelSpan) {
                 labelSpan.style.fontWeight = isActive ? '800' : '600';

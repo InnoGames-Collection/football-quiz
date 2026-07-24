@@ -1,0 +1,393 @@
+commit 03cc9bccadbad4317c27500315abb46f815858e2
+Author: YasabnehTA-Inno <265933360+YasabnehTA-Inno@users.noreply.github.com>
+Date:   Fri Jul 24 12:48:15 2026 +0300
+
+    feat: implement unified stadium background system with layered assets across all UI screens
+
+diff --git a/src/ui/screens/FootballLeagueHome.ts b/src/ui/screens/FootballLeagueHome.ts
+index 8e539ed..84fed66 100644
+--- a/src/ui/screens/FootballLeagueHome.ts
++++ b/src/ui/screens/FootballLeagueHome.ts
+@@ -1,14 +1,8 @@
+-import { DesignSystem } from "../theme/DesignSystem";
+ import { SaveManager } from '../../core/managers/SaveManager';
+-import { AuthManager } from '../../core/auth/AuthManager';
+ import { AudioManager } from '../../core/managers/AudioManager';
+ import { UIManager } from '../../core/managers/UIManager';
+-import { ProgressionManager } from '../../core/managers/ProgressionManager';
+ import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
+-import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
+-import { Toast } from '../components/Toast';
+ import { ReturningPlayerModal } from '../components/ReturningPlayerModal';
+-import { t } from '../../localization/i18n';
+ import { PullToRefresh } from '../components/PullToRefresh';
+ 
+ export interface FootballHomeCallbacks {
+@@ -43,174 +37,72 @@ export class FootballLeagueHome {
+     public render(): void {
+         const root = this._uiManager.container;
+         const profile = this._saveManager.profile;
+-        const division = ProgressionManager.getDivision(profile.xp);
+         
+-        const gamesPlayed = profile.totalMatches || 0;
+-        const winRate = gamesPlayed > 0 ? Math.round(((profile.totalWins || 0) / gamesPlayed) * 100) : 0;
+-
+         root.innerHTML = `
+-            <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; padding-bottom: 80px;">
++            <div class="stadium-container ethio-bg-main" style="position: relative; overflow-y: auto; overflow-x: hidden; min-height: 100vh; padding-bottom: 80px;">
+                 
+-                <!-- STADIUM LIGHT BEAMS & FLOATING GRAPHICS -->
+-                <div class="stadium-beam stadium-beam-left"></div>
+-                <div class="stadium-beam stadium-beam-right"></div>
+-                <div class="floating-ball-graphic" style="top: 15%; left: 5%; font-size: 40px;">⚽</div>
+-                <div class="floating-ball-graphic" style="top: 60%; right: 8%; font-size: 32px; animation-delay: -2s;">⚽</div>
+-
+-                <!-- TOP APP BAR (Ethio Telecom Branded) -->
+-                <div class="tv-broadcast-header fade-in-up" style="justify-content: space-between; padding: 12px 16px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(2,6,23,0.85); backdrop-filter: blur(12px);">
+-                    <!-- Left: Profile & Brand -->
+-                    <div style="display: flex; align-items: center; gap: 8px;">
+-                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #009A44, #22C55E); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid #4ADE80;">
+-                            ⚽
+-                        </div>
+-                        <div>
+-                            <div style="font-size: 9px; font-weight: 800; color: var(--fds-ethio-green); text-transform: uppercase; letter-spacing: 1px;">ETHIO FANTASY</div>
+-                            <div style="font-weight: 900; font-size: var(--fds-font-sm); color: var(--fds-text-main); font-family: var(--fds-font-mono);">${profile.phone ? this._maskPhone(profile.phone) : 'Guest'}</div>
+-                        </div>
+-                    </div>
+-
+-                    <!-- Right: Notification & Settings -->
+-                    <div style="display: flex; align-items: center; gap: 4px;">
+-                        <button id="btn-notif" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+-                            🔔
+-                        </button>
+-                        <button id="btn-settings" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); color: var(--fds-text-main); font-weight: bold; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+-                                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94l-0.36-2.54c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41l-0.36,2.54c-0.59,0.24-1.13,0.56-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.04,0.64,0.09,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+-                            </svg>
+-                        </button>
+-                    </div>
+-                </div>
++                <!-- STADIUM EFFECT LAYERS (Z-INDEX 1 to 3) -->
++                <div class="ethio-layer ethio-layer-pitch"></div>
++                <div class="ethio-layer ethio-layer-overlay"></div>
++                <div class="ethio-layer ethio-layer-lights"></div>
+ 
+-                <!-- COMPACT TELEMETRY ROW -->
+-                <div class="fade-in-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 16px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; animation-delay: 50ms;">
+-                    <div>
+-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">League</div>
+-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${division.color}; display: flex; align-items: center; justify-content: center; gap: 4px;">
+-                            <span>${division.badge}</span> <span>${division.name}</span>
+-                        </div>
+-                    </div>
+-                    <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
+-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Rank</div>
+-                        <div id="global-rank-display" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${DesignSystem.LoadingState('', true)}</div>
+-                    </div>
+-                    <div>
+-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Points</div>
+-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${profile.xp} XP</div>
+-                    </div>
+-                </div>
+-
+-                <!-- SCROLLABLE BODY CONTENT (8dp Grid System) -->
+-                <div style="max-width: 960px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
++                <!-- MAIN UI CONTENT (Z-INDEX 10) -->
++                <div style="position: relative; z-index: 10; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column;">
+                     
+-                    <!-- PREMIUM AD BANNER CAROUSEL -->
+-                    <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6); aspect-ratio: 16/5; width: 100%;">
+-                        <div id="ad-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%;">
+-                            <img src="/assets/banners/banner1.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: fill;" alt="Ad 1">
+-                            <img src="/assets/banners/banner2.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: fill;" alt="Ad 2">
++                    <!-- TOP APP BAR -->
++                    <div class="fade-in-up" style="display: flex; justify-content: space-between; padding: 16px; align-items: center; background: linear-gradient(180deg, rgba(11,17,32,0.9) 0%, transparent 100%);">
++                        <!-- Left: Profile -->
++                        <div style="display: flex; align-items: center; gap: 8px;">
++                            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #009A44, #22C55E); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid #4ADE80; box-shadow: 0 4px 12px rgba(34,197,94,0.4);">
++                                ⚽
++                            </div>
++                            <div>
++                                <div style="font-size: 9px; font-weight: 800; color: var(--fds-ethio-green); text-transform: uppercase; letter-spacing: 1px;">ETHIO FANTASY</div>
++                                <div style="font-weight: 900; font-size: var(--fds-font-sm); color: var(--fds-text-main); font-family: var(--fds-font-mono);">${profile.phone ? this._maskPhone(profile.phone) : 'Guest'}</div>
++                            </div>
+                         </div>
+-                        <!-- Page Indicators -->
+-                        <div style="position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none;">
+-                            <div class="ad-dot active" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 1;"></div>
+-                            <div class="ad-dot" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 0.4;"></div>
++
++                        <!-- Right: Notification & Settings -->
++                        <div style="display: flex; align-items: center; gap: 4px;">
++                            <button id="btn-notif" style="background: none; border: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: transform 0.2s;">
++                                🔔
++                            </button>
++                            <button id="btn-settings" style="background: none; border: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: transform 0.2s;">
++                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
++                                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94l-0.36-2.54c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41l-0.36,2.54c-0.59,0.24-1.13,0.56-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.04,0.64,0.09,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
++                                </svg>
++                            </button>
+                         </div>
+                     </div>
+-                    <style>
+-                        #ad-carousel::-webkit-scrollbar { display: none; }
+-                    </style>
+ 
+-                    <!-- 1. HERO SECTION: DAILY CHAMPIONSHIP TOURNAMENT -->
+-                    <div class="glass-card fade-in-up" style="
+-                        border: 2px solid var(--fds-gold-primary);
+-                        background: linear-gradient(135deg, rgba(0, 154, 68, 0.25) 0%, rgba(15, 23, 42, 0.95) 70%, rgba(255, 215, 0, 0.15) 100%);
+-                        padding: 24px 20px;
+-                        border-radius: 20px;
+-                        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.1);
+-                        position: relative;
+-                        overflow: hidden;
+-                        animation-delay: 100ms;
+-                    " id="card-daily">
+-                        <!-- Background Glow Accent -->
+-                        <div style="position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%); pointer-events: none;"></div>
+-
+-                        <!-- Badge Row -->
+-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+-                            <span id="daily-players-count" class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
+-                                ${t('home.liveMatch')}
+-                            </span>
+-                                ${DesignSystem.LoadingState('', true)}
++                    <!-- SCROLLABLE BODY CONTENT (Image Cards) -->
++                    <div style="padding: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 16px;">
++                        
++                        <!-- Hero Banner -->
++                        <div class="fade-in-up" style="animation-delay: 50ms;">
++                            <img src="/assets/images/hero_banner.png" id="btn-hero-banner" class="ethio-image-card" alt="Hero Banner" style="border-radius: 16px;">
+                         </div>
+ 
+-                        <!-- Title & Description -->
+-                        <div style="text-align: left; margin-bottom: 16px;">
+-                            <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+-                                ${t('home.championship')}
+-                            </h2>
++                        <!-- Daily Challenge Card -->
++                        <div class="fade-in-up" style="animation-delay: 150ms;">
++                            <img src="/assets/images/daily_challenge_card.png" id="btn-daily-match" class="ethio-image-card" alt="Daily Challenge" style="border-radius: 16px;">
+                         </div>
+ 
+-                        <!-- Hero Primary Action Button -->
+-                        ${DesignSystem.Button({ id: 'btn-daily-match', text: t('home.dailyChallenge'), variant: 'primary', fullWidth: true })}
+-                    </div>
+-
+-                    <!-- 2. QUICK GAME MODES & ACTIONS GRID -->
+-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); margin-left: 4px; text-transform: uppercase; letter-spacing: 1px;" class="fade-in-up">
+-                        ${t('home.lobbies')}
+-                    </div>
+-                    <div style="display: flex; gap: 12px; margin-bottom: 24px;" class="fade-in-up">
+-                        <div style="flex: 1;">
+-                            ${DesignSystem.Button({ id: 'btn-action-kickoff', text: t('home.soloMatch'), variant: 'primary', fullWidth: true })}
++                        <!-- Tournament Card -->
++                        <div class="fade-in-up" style="animation-delay: 200ms;">
++                            <img src="/assets/images/tournament_card.png" id="btn-action-kickoff" class="ethio-image-card" alt="Tournament" style="border-radius: 16px;">
+                         </div>
+-                        <div style="flex: 1;">
+-                            ${DesignSystem.Button({ id: 'btn-action-leaderboard', text: t('home.leaderboard'), variant: 'secondary', fullWidth: true })}
+-                        </div>
+-                    </div>
+-                    
+-                    <div class="fade-in-up" id="btn-action-referral" style="margin-bottom: 24px; padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+-                        <div style="display: flex; align-items: center; gap: 12px;">
+-                            <div style="font-size: var(--fds-font-xl); filter: drop-shadow(0 2px 4px rgba(192,132,252,0.4));">🎁</div>
+-                            <div style="text-align: left;">
+-                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); letter-spacing: 0.5px; text-transform: uppercase;">${t('home.invite')}</div>
+-                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; margin-top: 2px;">${t('home.inviteDesc')}</div>
+-                            </div>
+-                        </div>
+-                        <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #C084FC; background: rgba(192,132,252,0.15); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+-                            ${t('home.copyLink')}
+-                        </div>
+-                    </div>
+ 
+-                    <!-- 3. STATISTICS DASHBOARD CARD -->
+-                    <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.12); border-radius: 16px;">
+-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">${t('home.performance')}</div>
+-                            <button id="btn-view-all-stats" style="background: none; border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; text-decoration: underline;">${t('home.details')}</button>
+-                        </div>
+-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); text-align: center;">
+-                            <div>
+-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.matches')}</div>
+-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${gamesPlayed}</div>
++                        <!-- Winners & Leaderboard Grid -->
++                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
++                            <div class="fade-in-up" style="animation-delay: 300ms;">
++                                <img src="/assets/images/winner_card.png" id="btn-winner-card" class="ethio-image-card" alt="Winners" style="border-radius: 12px; height: 100%; object-fit: cover;">
+                             </div>
+-                            <div style="border-left: 1px solid rgba(255,255,255,0.06);">
+-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('match.accuracy')}</div>
+-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: #4ADE80; margin-top: 4px;">${winRate}%</div>
+-                            </div>
+-                            <div style="border-left: 1px solid rgba(255,255,255,0.06);">
+-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.points')}</div>
+-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${profile.xp}</div>
+-                            </div>
+-                            <div style="border-left: 1px solid rgba(255,255,255,0.06);">
+-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.score')}</div>
+-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">${profile.eloRating || 0}</div>
++                            <div class="fade-in-up" style="animation-delay: 350ms;">
++                                <img src="/assets/images/leaderboard_card.png" id="btn-action-leaderboard" class="ethio-image-card" alt="Leaderboard" style="border-radius: 12px; height: 100%; object-fit: cover;">
+                             </div>
+                         </div>
+-                    </div>
+ 
+-                    <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->
+-                    <div class="glass-card fade-in-up" style="padding: 20px 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
+-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">${t('home.rankingsTitle')}</div>
+-                        <div id="home-leaderboard-preview" style="display: flex; flex-direction: column;">
+-                            ${DesignSystem.LoadingState(t('home.loadingRankings'))}
+-                        </div>
+                     </div>
+                 </div>
+             </div>
+@@ -218,9 +110,6 @@ export class FootballLeagueHome {
+ 
+         this._startCountdownTimer();
+         this._bindEvents();
+-        const userId = AuthManager.getInstance().currentUser?.id || '';
+-        this._fetchDynamicData(userId, division.name);
+-
+         // Attach Pull to Refresh behavior (REQ 11-15 Refresh strategy)
+         const container = root.querySelector('.stadium-container') as HTMLElement;
+         if (container) {
+@@ -235,58 +124,6 @@ export class FootballLeagueHome {
+         ReturningPlayerModal.checkAndShow(this._uiManager, this._saveManager, this._audioManager);
+     }
+ 
+-    private async _fetchDynamicData(userId: string, divisionName: string) {
+-        // Fetch User Rank
+-        const rank = await LeaderboardService.getInstance().getUserRank(userId);
+-        const rankEl = document.getElementById('global-rank-display');
+-        if (rankEl) {
+-            rankEl.innerText = rank ? `#${rank} In ${divisionName}` : 'Unranked';
+-        }
+-
+-        // Fetch Live Matches / Top 3 Leaderboard
+-        const liveComps = CompetitionRegistry.getAll().filter(c => c.status === 'live');
+-        const dailyComp = liveComps.find(c => c.id === 'daily') || liveComps[0];
+-        
+-        const playersEl = document.getElementById('daily-players-count');
+-        const playBtnEl = document.getElementById('daily-play-btn-text');
+-
+-        if (dailyComp) {
+-            if (playersEl) playersEl.innerHTML = `🟢 LIVE MATCH • ${(dailyComp.participants || 0).toLocaleString()} PLAYERS`;
+-            if (playBtnEl) playBtnEl.innerText = `⚡ KICK OFF NOW (+${dailyComp.prize_pool || 0} XP)`;
+-        } else {
+-            if (playersEl) playersEl.innerHTML = `⚪ NO LIVE MATCHES`;
+-            if (playBtnEl) playBtnEl.innerText = `⚡ PLAY CASUAL MATCH`;
+-        }
+-
+-        // Fetch Leaderboard Preview
+-        try {
+-            const lb = await LeaderboardService.getInstance().getLeaderboard(undefined, 'all_time', 3);
+-            const previewEl = document.getElementById('home-leaderboard-preview');
+-            if (previewEl && lb.length > 0) {
+-                const medals = ['🥇', '🥈', '🥉'];
+-                const bgColors = ['rgba(255,215,0,0.08)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.02)'];
+-                const textColors = ['white', '#E2E8F0', '#CBD5E1'];
+-                
+-                previewEl.innerHTML = lb.map((entry, idx) => `
+-                    <div style="display: flex; justify-content: space-between; align-items: center; background: ${bgColors[idx]}; padding: 12px 16px; border-radius: 12px; margin-bottom: 8px;">
+-                        <div style="display: flex; align-items: center; gap: 12px;">
+-                            <span style="font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${medals[idx]}</span>
+-                            <span style="font-size: var(--fds-font-sm); font-weight: ${idx === 0 ? '800' : '700'}; color: ${textColors[idx]};">${entry.username}</span>
+-                        </div>
+-                        <div style="text-align: right;">
+-                            <div style="font-size: var(--fds-font-md); font-weight: 900; color: ${idx === 0 ? 'var(--fds-gold-primary)' : 'white'}; font-family: var(--fds-font-mono); line-height: 1.1;">${entry.score.toLocaleString()}</div>
+-                            <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px;">Points</div>
+-                        </div>
+-                    </div>
+-                `).join('');
+-            } else if (previewEl) {
+-                previewEl.innerHTML = `<div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); text-align: center;">No ranked players yet</div>`;
+-            }
+-        } catch(e) {
+-            console.error(e);
+-        }
+-    }
+-
+     private _startCountdownTimer(): void {
+         if (this._timerInterval) {
+             clearInterval(this._timerInterval);
+@@ -340,13 +177,14 @@ export class FootballLeagueHome {
+             this._callbacks.onLeaderboard();
+         });
+ 
+-        root.querySelector('#btn-action-referral')?.addEventListener('click', (e) => {
++        root.querySelector('#btn-hero-banner')?.addEventListener('click', (e) => {
+             this._addRipple(e);
+             this._audioManager.playClick();
+-            Toast.show('Invitation link copied! Share with friends to earn 200 XP bonus.', 'success');
++            this._callbacks.onCompetitions();
+         });
+ 
+-        root.querySelector('#btn-view-all-stats')?.addEventListener('click', () => {
++        root.querySelector('#btn-winner-card')?.addEventListener('click', (e) => {
++            this._addRipple(e);
+             this._audioManager.playClick();
+             if (this._callbacks.onViewStats) this._callbacks.onViewStats();
+         });
+@@ -360,58 +198,6 @@ export class FootballLeagueHome {
+             this._audioManager.playClick();
+             this._callbacks.onSettings();
+         });
+-
+-        // Ad Carousel Logic
+-        const carousel = root.querySelector('#ad-carousel') as HTMLElement;
+-        const dots = root.querySelectorAll('.ad-dot');
+-        if (carousel && dots.length > 0) {
+-            let currentIndex = 0;
+-
+-            const updateDots = (index: number) => {
+-                dots.forEach((dot, i) => {
+-                    if (i === index) {
+-                        dot.classList.add('active');
+-                        (dot as HTMLElement).style.opacity = '1';
+-                    } else {
+-                        dot.classList.remove('active');
+-                        (dot as HTMLElement).style.opacity = '0.4';
+-                    }
+-                });
+-            };
+-
+-            const scrollToNext = () => {
+-                if (!carousel.clientWidth) return;
+-                currentIndex = (currentIndex + 1) % dots.length;
+-                const targetScroll = carousel.clientWidth * currentIndex;
+-                carousel.scrollTo({ left: targetScroll, behavior: 'smooth' });
+-                updateDots(currentIndex);
+-            };
+-
+-            const startAutoScroll = () => {
+-                clearInterval(this._autoScrollInterval);
+-                this._autoScrollInterval = setInterval(scrollToNext, 4000);
+-            };
+-
+-            const stopAutoScroll = () => {
+-                clearInterval(this._autoScrollInterval);
+-            };
+-
+-            carousel.addEventListener('scroll', () => {
+-                if (!carousel.clientWidth) return;
+-                const newIndex = Math.round(carousel.scrollLeft / carousel.clientWidth);
+-                if (newIndex !== currentIndex && newIndex >= 0 && newIndex < dots.length) {
+-                    currentIndex = newIndex;
+-                    updateDots(currentIndex);
+-                }
+-            }, { passive: true });
+-
+-            carousel.addEventListener('touchstart', stopAutoScroll, { passive: true });
+-            carousel.addEventListener('touchend', startAutoScroll, { passive: true });
+-            carousel.addEventListener('mouseenter', stopAutoScroll);
+-            carousel.addEventListener('mouseleave', startAutoScroll);
+-
+-            startAutoScroll();
+-        }
+     }
+ 
+     private _addRipple(e: Event): void {

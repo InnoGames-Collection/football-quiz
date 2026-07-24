@@ -156,25 +156,28 @@ export class ScoreboardQuestionScreen {
                     padding: 32px 24px;
                     text-align: center;
                     border-color: var(--tv-pitch-green);
+                    background: rgba(30, 41, 59, 0.6);
+                    backdrop-filter: blur(16px);
+                    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
                 ">
-                    <div style="font-size: 64px; margin-bottom: 16px;">${this._competition.badge}</div>
-                    <div style="font-size: 24px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">${this._competition.name}</div>
-                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-dim); margin-bottom: 32px;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
+                    <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));">${this._competition.badge}</div>
+                    <div style="font-size: 28px; font-weight: 900; color: white; margin-bottom: 8px; text-shadow: 0 2px 8px rgba(0,0,0,0.6);">${this._competition.name}</div>
+                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 40px;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
                     
                     <button id="kick-off-btn" style="
                         width: 100%; 
-                        padding: 16px; 
-                        background: var(--tv-pitch-green); 
-                        color: var(--fds-text-main); 
+                        padding: 20px; 
+                        background: linear-gradient(135deg, #22c55e, #15803d);
+                        color: white; 
                         font-weight: 900; 
-                        font-size: var(--fds-font-md); 
-                        border: none; 
-                        border-radius: 12px; 
+                        font-size: 24px; 
+                        border: 2px solid #4ade80; 
+                        border-radius: 16px; 
                         cursor: pointer;
-                        box-shadow: 0 4px 15px rgba(34,197,94,0.3);
-                        transition: transform 0.2s;
+                        box-shadow: 0 8px 24px rgba(34,197,94,0.5), inset 0 0 12px rgba(255,255,255,0.3);
+                        transition: transform 0.2s, box-shadow 0.2s;
                         text-transform: uppercase;
-                        letter-spacing: 1px;
+                        letter-spacing: 2px;
                     ">${i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF')}</button>
                 </div>
             </div>
@@ -231,22 +234,22 @@ export class ScoreboardQuestionScreen {
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <!-- Score -->
                         <div style="text-align: left; flex: 1;">
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Score</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--tv-gold-primary);">${currentXP} Points</div>
+                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Score</div>
+                            <div style="font-size: 20px; font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${currentXP} Points</div>
                         </div>
 
                         <!-- Time -->
                         <div style="text-align: center; flex: 1; position: relative;">
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Time</div>
-                            <div id="timer-text" style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,255,255,0.2); transition: color 0.3s, text-shadow 0.3s, transform 0.1s;">
+                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Time</div>
+                            <div id="timer-text" style="font-size: 32px; font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; text-shadow: 0 0 16px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.8); transition: color 0.3s, text-shadow 0.3s, transform 0.1s;">
                                 00:${String(startTimerSec).padStart(2, '0')}
                             </div>
                         </div>
 
                         <!-- Question -->
                         <div style="text-align: right; flex: 1; position: relative;">
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">${i18n.currentLocale === 'am' ? 'ጥያቄ' : (i18n.currentLocale === 'om' ? 'Gaaffii' : 'Question')}</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main);">
+                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ጥያቄ' : (i18n.currentLocale === 'om' ? 'Gaaffii' : 'Question')}</div>
+                            <div style="font-size: 20px; font-weight: 900; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
                                 ${this._currentIndex + 1}/${this._questions.length}
                             </div>
                         </div>
@@ -286,35 +289,32 @@ export class ScoreboardQuestionScreen {
                         color: var(--fds-text-main);
                         text-align: center;
                         line-height: 1.35;
-                        margin-bottom: 32px;
-                        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-                        width: 100%;
-                        padding: 0 16px;
-                        box-sizing: border-box;
-                    ">${q.prompt}</div>
+                        box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+                    ">
+                        <h2 style="font-size: 24px; font-weight: 800; color: white; line-height: 1.5; margin: 0; text-shadow: 0 2px 6px rgba(0,0,0,0.6);">
+                            ${q.prompt}
+                        </h2>
+                    </div>
 
-                    <!-- Responsive Answer Buttons -->
-                    <div style="display: flex; flex-direction: column; gap: 12px; width: 100%; box-sizing: border-box;">
+                    <!-- ANSWERS GRID -->
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
                         ${q.options.map((opt, i) => `
                             <button class="option-btn" data-index="${i}" style="
-                                display: flex;
-                                align-items: center;
                                 width: 100%;
-                                min-height: 64px;
-                                padding: 12px 20px;
-                                background: rgba(30, 41, 59, 0.7);
-                                border: 2px solid rgba(255,255,255,0.1);
+                                padding: 20px 24px;
+                                background: rgba(30,41,59,0.95);
+                                border: 2px solid rgba(255,255,255,0.15);
                                 border-radius: 16px;
-                                color: var(--fds-text-main);
-                                font-size: clamp(15px, 4vw, 17px);
-                                font-weight: 700;
+                                color: white;
+                                font-size: 18px;
+                                font-weight: 800;
                                 text-align: left;
                                 cursor: pointer;
                                 transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                                position: relative;
-                                overflow: hidden;
-                                box-sizing: border-box;
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                display: flex;
+                                align-items: center;
+                                gap: 16px;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
                             ">
                                 <span style="
                                     width: 32px; height: 32px; 
