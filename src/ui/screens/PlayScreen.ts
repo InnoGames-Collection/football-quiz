@@ -11,16 +11,18 @@ export interface GameModeInfo {
     difficulty: string;
     reward: string;
     category: string;
+    banner: string;
 }
 
 const GAME_MODES: GameModeInfo[] = [
-    { id: 'quick', name: 'Quick Match', icon: '⚡', difficulty: 'Easy', reward: '+100 XP', category: 'world-cup' },
-    { id: 'daily', name: 'Daily Challenge', icon: '📅', difficulty: 'Medium', reward: '+500 XP (1.5x Multiplier)', category: 'ethiopian-premier' },
-    { id: 'league', name: 'League Match', icon: '🏆', difficulty: 'Hard', reward: '+300 XP + Division Points', category: 'champions-league' },
-    { id: 'tournament', name: 'Tournament', icon: '👑', difficulty: 'Legend', reward: '+1000 XP + Cup Prize', category: 'afcon' },
-    { id: 'guess', name: 'Guess Player', icon: '👤', difficulty: 'Medium', reward: '+200 XP', category: 'legendary-players' },
-    { id: 'iq', name: 'Football IQ', icon: '🧠', difficulty: 'Hard', reward: '+250 XP', category: 'football-rules' },
-    { id: 'penalty', name: 'Penalty Shootout', icon: '⚽', difficulty: 'Easy', reward: '+150 XP', category: 'transfer-market' }
+    { id: 'quick', name: 'Quick Match', icon: '⚡', difficulty: 'Easy', reward: '+100 XP', category: 'world-cup', banner: 'quick_match_banner.png' },
+    { id: 'daily', name: 'Daily Challenge', icon: '📅', difficulty: 'Medium', reward: '+500 XP (1.5x Multiplier)', category: 'ethiopian-premier', banner: 'daily_challenge_banner.png' },
+    { id: 'league', name: 'League Match', icon: '🏆', difficulty: 'Hard', reward: '+300 XP + Division Points', category: 'champions-league', banner: 'league_match_banner.png' },
+    { id: 'tournament', name: 'Tournament', icon: '👑', difficulty: 'Legend', reward: '+1000 XP + Cup Prize', category: 'afcon', banner: 'tournament_banner.png' },
+    { id: 'guess', name: 'Guess Player', icon: '👤', difficulty: 'Medium', reward: '+200 XP', category: 'legendary-players', banner: 'guess_player_banner.png' },
+    { id: 'iq', name: 'Football IQ', icon: '🧠', difficulty: 'Hard', reward: '+250 XP', category: 'football-rules', banner: 'football_iq_banner.png' },
+    { id: 'penalty', name: 'Penalty Shootout', icon: '⚽', difficulty: 'Easy', reward: '+150 XP', category: 'transfer-market', banner: 'penalty_shootout_banner.png' },
+    { id: 'championship', name: 'Championship', icon: '🏅', difficulty: 'Elite', reward: '+2000 XP', category: 'world-cup', banner: 'championship_banner.png' }
 ];
 
 export class PlayScreen {
@@ -41,6 +43,12 @@ export class PlayScreen {
         this._audioManager = audioManager;
         this._onStartMatch = onStartMatch;
         this._onResumeMatch = onResumeMatch;
+
+        // Pre-cache banners
+        GAME_MODES.forEach(mode => {
+            const img = new Image();
+            img.src = `/assets/banners/${mode.banner}`;
+        });
     }
 
     public render(): void {
@@ -111,37 +119,49 @@ export class PlayScreen {
                     <!-- ACTIVE PLAY DETAILS CARD -->
                     <div class="glass-card fade-in-up" style="
                         border: 2px solid rgba(34, 197, 94, 0.3); 
-                        background: radial-gradient(circle at top, rgba(34, 197, 94, 0.15) 0%, rgba(15, 23, 42, 0.95) 80%);
-                        padding: 32px 20px 24px 20px; 
+                        padding: 0;
                         text-align: center;
                         border-radius: 20px;
                         margin-bottom: 24px;
-                        box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(34, 197, 94, 0.05);
+                        box-shadow: 0 12px 40px rgba(0,0,0,0.5);
                         position: relative;
                         overflow: hidden;
                     ">
-                        <!-- Icon -->
-                        <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(34,197,94,0.5)); transform: scale(1.05);">⚽</div>
+                        <!-- Dynamic Background Asset -->
+                        <div id="play-card-bg" style="
+                            position: absolute;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: linear-gradient(to bottom, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.25) 100%), url('/assets/banners/${activeMode.banner}') center/cover no-repeat;
+                            transition: opacity 120ms ease-out;
+                            opacity: 1;
+                            z-index: 0;
+                        "></div>
                         
-                        <!-- Title -->
-                        <div style="font-size: 24px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
-                            ${activeMode.name}
-                        </div>
-
-                        <!-- Info Pills -->
-                        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 32px;">
-                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase;">Level</span>
-                                <span style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">${activeMode.difficulty}</span>
+                        <!-- Content Container -->
+                        <div style="position: relative; z-index: 1; padding: 32px 20px 24px 20px; height: 100%;">
+                            <!-- Icon -->
+                            <div id="play-card-icon" style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(34,197,94,0.5)); transform: scale(1.05);">${activeMode.icon}</div>
+                            
+                            <!-- Title -->
+                            <div id="play-card-title" style="font-size: 24px; font-weight: 900; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.8); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                                ${activeMode.name}
                             </div>
-                            <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase;">Prize</span>
-                                <span style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-blue-accent); text-transform: uppercase;">${activeMode.reward}</span>
-                            </div>
-                        </div>
 
-                        <!-- Kick Off Button -->
-                        ${DesignSystem.Button({ id: 'btn-kickoff', text: 'KICK OFF', variant: 'primary', fullWidth: true, className: 'btn-kickoff-action' })}
+                            <!-- Info Pills -->
+                            <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 32px;">
+                                <div style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px);">
+                                    <span style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.8); font-weight: 700; text-transform: uppercase;">Level</span>
+                                    <span id="play-card-difficulty" style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">${activeMode.difficulty}</span>
+                                </div>
+                                <div style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px);">
+                                    <span style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.8); font-weight: 700; text-transform: uppercase;">Prize</span>
+                                    <span id="play-card-reward" style="font-size: var(--fds-font-xs); font-weight: 900; color: #60A5FA; text-transform: uppercase;">${activeMode.reward}</span>
+                                </div>
+                            </div>
+
+                            <!-- Kick Off Button -->
+                            ${DesignSystem.Button({ id: 'btn-kickoff', text: 'KICK OFF', variant: 'primary', fullWidth: true, className: 'btn-kickoff-action' })}
+                        </div>
                     </div>
 
                     <!-- RESUME SUSPENDED MATCH SECTION -->
@@ -205,7 +225,42 @@ export class PlayScreen {
                 if (modeId && modeId !== this._selectedMode) {
                     this._audioManager.playClick();
                     this._selectedMode = modeId;
-                    this.render();
+                    
+                    const nextMode = GAME_MODES.find(m => m.id === modeId) || GAME_MODES[0];
+                    
+                    // Update Mode Cards UI
+                    cards.forEach(c => {
+                        const isSelected = c.getAttribute('data-mode-id') === modeId;
+                        (c as HTMLElement).style.border = isSelected ? '1px solid var(--tv-gold-primary)' : '1px solid rgba(255,255,255,0.08)';
+                        (c as HTMLElement).style.background = isSelected ? 'rgba(255, 215, 0, 0.12)' : 'rgba(15, 23, 42, 0.6)';
+                        (c as HTMLElement).style.color = isSelected ? 'var(--tv-gold-primary)' : '#94A3B8';
+                    });
+                    
+                    // Dynamic Cross Fade Transition
+                    const bgEl = document.getElementById('play-card-bg');
+                    const iconEl = document.getElementById('play-card-icon');
+                    const titleEl = document.getElementById('play-card-title');
+                    const diffEl = document.getElementById('play-card-difficulty');
+                    const rewardEl = document.getElementById('play-card-reward');
+                    
+                    if (bgEl) {
+                        // 1. Fade Out (120ms)
+                        bgEl.style.transition = 'opacity 120ms ease-out';
+                        bgEl.style.opacity = '0.3';
+                        
+                        setTimeout(() => {
+                            // 2. Cross Fade (Update content)
+                            bgEl.style.background = `linear-gradient(to bottom, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.25) 100%), url('/assets/banners/${nextMode.banner}') center/cover no-repeat`;
+                            if (iconEl) iconEl.innerText = nextMode.icon;
+                            if (titleEl) titleEl.innerText = nextMode.name;
+                            if (diffEl) diffEl.innerText = nextMode.difficulty;
+                            if (rewardEl) rewardEl.innerText = nextMode.reward;
+                            
+                            // 3. Fade In (180ms)
+                            bgEl.style.transition = 'opacity 180ms ease-in';
+                            bgEl.style.opacity = '1';
+                        }, 120);
+                    }
                 }
             });
         });
