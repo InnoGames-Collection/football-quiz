@@ -332,29 +332,8 @@ export class ScoreboardQuestionScreen {
                     </div>
                 </div>
                 
-                <!-- TRANSLUCENT FEEDBACK OVERLAY -->
-                <div id="feedback-overlay" style="
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%) scale(0.8);
-                    opacity: 0;
-                    pointer-events: none;
-                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    z-index: 1000;
-                    padding: 24px;
-                    border-radius: 16px;
-                    text-align: center;
-                    min-width: 260px;
-                    backdrop-filter: blur(8px);
-                    border: 2px solid;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-                    box-sizing: border-box;
-                ">
-                    <div id="feedback-anim" style="font-size: 64px; display: inline-block;">⚽</div>
-                    <div id="feedback-text" style="font-size: var(--fds-font-xl); font-weight: 900; letter-spacing: 2px; margin-top: 12px; text-transform: uppercase; font-family: var(--tv-mono);"></div>
-                    <div id="feedback-subtext" style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-top: 4px; font-weight: 700;"></div>
-                </div>
+                <!-- GAMEPLAY ANIMATION LAYER -->
+                <div id="animation-layer"></div>
 
                 <!-- MATCH EXIT CONFIRMATION DIALOG -->
                 <div id="match-exit-dialog" style="
@@ -579,8 +558,9 @@ export class ScoreboardQuestionScreen {
         if (isCorrect) {
             targetBtn.classList.add('correct');
             this._audioManager.playGoalCheer();
+            // ConfettiCanvas.burst is kept as extra juice
             ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF']);
-            this._showFeedbackOverlay(true);
+            this._showFeedbackOverlay(true, 100);
             
             // Rolling Scoreboard Goal Counter
             const currentScore = this._quizEngine.calculateFinalStats().goals;
@@ -605,39 +585,71 @@ export class ScoreboardQuestionScreen {
             this._hideFeedbackOverlay();
             this._currentIndex++;
             this._renderQuestion();
-        }, 1300);
+        }, 1500);
     }
 
-    private _showFeedbackOverlay(isGoal: boolean): void {
-        const overlay = document.getElementById('feedback-overlay');
-        const anim = document.getElementById('feedback-anim');
-        const text = document.getElementById('feedback-text');
-        const sub = document.getElementById('feedback-subtext');
+    private _showFeedbackOverlay(isGoal: boolean, scoreGained: number = 0): void {
+        const animLayer = document.getElementById('animation-layer');
+        if (!animLayer) return;
         
-        if (overlay && anim && text && sub) {
-            overlay.style.borderColor = isGoal ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)';
-            overlay.style.background = isGoal 
-                ? 'linear-gradient(135deg, rgba(34,197,94,0.25) 0%, rgba(15,23,42,0.96) 100%)' 
-                : 'linear-gradient(135deg, rgba(255,215,0,0.18) 0%, rgba(15,23,42,0.96) 100%)';
-            overlay.style.color = isGoal ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)';
-            
-            anim.innerText = isGoal ? '⚽🥅' : '🧤⚽';
-            anim.style.animation = isGoal ? 'goal-bounce 0.6s ease-in-out infinite' : 'save-shake 0.4s ease-in-out infinite';
-            
-            text.innerText = isGoal ? 'GOAL!' : 'SAVED!';
-            sub.innerText = isGoal ? 'Brilliant strike into the net!' : 'Keeper parries the shot away!';
-            
-            overlay.style.opacity = '1';
-            overlay.style.transform = 'translate(-50%, -50%) scale(1)';
+        animLayer.innerHTML = ''; // clear any existing
+
+        if (isGoal) {
+            animLayer.innerHTML = `
+                <div class="anim-overlay"></div>
+                <div class="anim-sprite anim-goal-ball"></div>
+            `;
+            setTimeout(() => {
+                if (document.getElementById('animation-layer')) {
+                    document.getElementById('animation-layer')!.innerHTML += `
+                        <div class="anim-impact anim-goal-impact"></div>
+                    `;
+                }
+            }, 400);
+            setTimeout(() => {
+                if (document.getElementById('animation-layer')) {
+                    document.getElementById('animation-layer')!.innerHTML += `
+                        <div class="anim-particles"></div>
+                        <div class="anim-text anim-text-goal"></div>
+                    `;
+                }
+            }, 500);
+            if (scoreGained > 0) {
+                setTimeout(() => {
+                    if (document.getElementById('animation-layer')) {
+                        document.getElementById('animation-layer')!.innerHTML += `
+                            <div class="anim-score-popup">
+                                <div class="anim-score-popup-bg"></div>
+                                <div class="anim-score-popup-text">+${scoreGained}</div>
+                            </div>
+                        `;
+                    }
+                }, 700);
+            }
+        } else {
+            animLayer.innerHTML = `
+                <div class="anim-sprite anim-gk-save"></div>
+            `;
+            setTimeout(() => {
+                if (document.getElementById('animation-layer')) {
+                    document.getElementById('animation-layer')!.innerHTML += `
+                        <div class="anim-impact anim-save-impact"></div>
+                    `;
+                }
+            }, 400);
+            setTimeout(() => {
+                if (document.getElementById('animation-layer')) {
+                    document.getElementById('animation-layer')!.innerHTML += `
+                        <div class="anim-text anim-text-saved"></div>
+                    `;
+                }
+            }, 500);
         }
     }
 
     private _hideFeedbackOverlay(): void {
-        const overlay = document.getElementById('feedback-overlay');
-        if (overlay) {
-            overlay.style.opacity = '0';
-            overlay.style.transform = 'translate(-50%, -50%) scale(0.8)';
-        }
+        const animLayer = document.getElementById('animation-layer');
+        if (animLayer) animLayer.innerHTML = '';
     }
 
     private async _handleTimeOut(): Promise<void> {
