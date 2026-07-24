@@ -96,6 +96,12 @@ export class MatchmakingScreen {
                             ">⚽</div>
                         </div>
 
+                        <!-- Live Players Count -->
+                        <div style="margin-bottom: 24px; font-size: var(--fds-font-sm); font-weight: 700; color: #4ADE80; background: rgba(34, 197, 94, 0.1); padding: 8px 16px; border-radius: 20px; display: inline-block;">
+                            <span style="display: inline-block; width: 8px; height: 8px; background: #4ADE80; border-radius: 50%; margin-right: 8px; animation: pulse 1.5s infinite;"></span>
+                            <span id="live-players-count">142 Players in Queue</span>
+                        </div>
+
                         <!-- Player Info Card -->
                         <div style="
                             background: rgba(15, 23, 42, 0.6);
@@ -154,6 +160,18 @@ export class MatchmakingScreen {
             this._audioManager.playGoalCheer();
             this._onMatchFound(info);
         });
+
+        // Simulate fluctuating player count for premium feel
+        setInterval(() => {
+            const countEl = document.getElementById('live-players-count');
+            if (countEl && document.body.contains(countEl)) {
+                // Random walk between 120 and 180
+                const current = parseInt(countEl.innerText.split(' ')[0]);
+                const next = current + Math.floor(Math.random() * 5) - 2;
+                const bounded = Math.max(120, Math.min(180, next));
+                countEl.innerText = `${bounded} Players in Queue`;
+            }
+        }, 3000);
 
         root.querySelector('#cancel-mm-btn')?.addEventListener('click', () => {
             this._audioManager.playClick();

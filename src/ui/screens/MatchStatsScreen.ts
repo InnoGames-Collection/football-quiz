@@ -6,6 +6,8 @@ import { MatchStats } from '../../core/quiz/QuizEngine';
 import { Toast } from '../components/Toast';
 import { RollingCounter } from '../components/RollingCounter';
 import { i18n } from '../../localization/i18n';
+import { ProgressionManager } from '../../core/managers/ProgressionManager';
+import { ConfettiCanvas } from '../components/ConfettiCanvas';
 
 export class MatchStatsScreen {
     private _uiManager: UIManager;
@@ -96,12 +98,36 @@ export class MatchStatsScreen {
                     </div>
 
                     <!-- Final Score (LARGE) -->
-                    <div style="margin-bottom: 32px; position: relative;">
+                    <div style="margin-bottom: 24px; position: relative;">
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
                             ${i18n.currentLocale === 'am' ? 'አጠቃላይ እይታ' : (i18n.currentLocale === 'om' ? 'Waliigala' : 'Overview')}
                         </div>
                         <div style="font-size: 56px; font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 4px 16px rgba(255,215,0,0.4); line-height: 1;">
                             <span id="final-score-rolling">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- PREMIUM XP PROGRESS BAR -->
+                    <div style="width: 100%; margin-bottom: 32px; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <div id="level-display-left" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); font-family: var(--fds-font-mono);">
+                                Lvl --
+                            </div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #4ADE80; text-transform: uppercase;">
+                                +<span id="xp-gained-rolling">0</span> XP
+                            </div>
+                            <div id="level-display-right" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-dim); font-family: var(--fds-font-mono);">
+                                Lvl --
+                            </div>
+                        </div>
+                        
+                        <!-- The Bar -->
+                        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; position: relative;">
+                            <div id="xp-progress-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, #3B82F6, #4ADE80); border-radius: 8px; transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+                        </div>
+                        
+                        <div id="level-up-toast" style="display: none; font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-gold-primary); margin-top: 12px; animation: bounce-in 0.5s;">
+                            🎉 LEVEL UP! 🎉
                         </div>
                     </div>
 
@@ -188,14 +214,73 @@ export class MatchStatsScreen {
                 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
                 button:active { transform: scale(0.96) !important; }
                 .review-action-btn:active { background: rgba(255,255,255,0.1) !important; }
+                @keyframes bounce-in {
+                    0% { transform: scale(0.8); opacity: 0; }
+                    50% { transform: scale(1.1); }
+                    100% { transform: scale(1); opacity: 1; }
+                }
             </style>
         `;
 
         this._bindEvents();
 
+        // Animate main score
         const scoreEl = document.getElementById('final-score-rolling');
         if (scoreEl) {
-            RollingCounter.animate(scoreEl, 0, this._finalScore, 1000, (v) => `${Math.round(v)}`);
+            RollingCounter.animate(scoreEl, 0, this._finalScore, 1500);
+        }
+
+        // Animate XP and Levels
+        const oldXp = Math.max(0, this._saveManager.profile.xp - earnedXp);
+        const newXp = this._saveManager.profile.xp;
+        
+        const oldLevelInfo = ProgressionManager.getLevel(oldXp);
+        const newLevelInfo = ProgressionManager.getLevel(newXp);
+        
+        const xpGainedEl = document.getElementById('xp-gained-rolling');
+        if (xpGainedEl) {
+            RollingCounter.animate(xpGainedEl, 0, earnedXp, 1500);
+        }
+
+        const leftLvl = document.getElementById('level-display-left');
+        const rightLvl = document.getElementById('level-display-right');
+        const barFill = document.getElementById('xp-progress-fill');
+        
+        if (leftLvl) leftLvl.innerText = `Lvl ${oldLevelInfo.level}`;
+        if (rightLvl) rightLvl.innerText = `Lvl ${oldLevelInfo.level + 1}`;
+        
+        if (barFill) {
+            // Set initial state
+            barFill.style.width = `${oldLevelInfo.progressPercent}%`;
+            
+            // Trigger animation after slight delay
+            setTimeout(() => {
+                if (newLevelInfo.level > oldLevelInfo.level) {
+                    // Level UP!
+                    barFill.style.width = '100%';
+                    setTimeout(() => {
+                        barFill.style.transition = 'none';
+                        barFill.style.width = '0%';
+                        if (leftLvl) leftLvl.innerText = `Lvl ${newLevelInfo.level}`;
+                        if (rightLvl) rightLvl.innerText = `Lvl ${newLevelInfo.level + 1}`;
+                        
+                        // Small delay before filling up remaining new level XP
+                        setTimeout(() => {
+                            barFill.style.transition = 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                            barFill.style.width = `${newLevelInfo.progressPercent}%`;
+                        }, 50);
+
+                        // Show Level Up Celebration
+                        this._audioManager.playVictoryFanfare(); // Play again for level up
+                        ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 2, 100);
+                        const toast = document.getElementById('level-up-toast');
+                        if (toast) toast.style.display = 'block';
+                    }, 1500); // Time to fill first bar
+                } else {
+                    // Normal XP gain
+                    barFill.style.width = `${newLevelInfo.progressPercent}%`;
+                }
+            }, 500);
         }
     }
 

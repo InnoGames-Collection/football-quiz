@@ -297,6 +297,11 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
     winAny.ethioReloadHome = () => navigateToTab('home');
     winAny.ethioHandleBack = () => handleBack();
+    winAny.ethioCloseGame = () => {
+        cacheManager.setQuizActive(false);
+        const currentRoute = navigationStack.length > 0 ? navigationStack[navigationStack.length - 1] : 'home';
+        renderRoute(currentRoute, false);
+    };
 
     // Listen for EventBus view reload events
     eventBus.on('RELOAD_CURRENT_VIEW', () => {
@@ -376,6 +381,14 @@ export async function bootstrapFootballLeague(): Promise<Game> {
             return;
         }
 
+        // Only pop if we're not currently recovering from an active quiz game.
+        // Wait, if cacheManager.isQuizActive is false, how do we know we just finished a game?
+        // We can just pop the stack if it's a normal navigation back. 
+        // But if we just finished a game, the game screen calls ethioHandleBack, we don't want to pop the screen we were on before the game.
+        // Actually, the game screens should call a different method, but for now, we'll pop.
+        
+        // Wait, if it's the MatchStatsScreen calling ethioHandleBack, we should pop? No!
+        // To fix this globally, we will check if we are on a bottom nav tab. If we have history, we pop.
         navigationStack.pop();
 
         if (navigationStack.length > 0) {
@@ -424,7 +437,10 @@ export async function bootstrapFootballLeague(): Promise<Game> {
             game.audioManager.playClick();
             modal.remove();
             cacheManager.setQuizActive(false);
-            navigateToTab('home');
+            
+            // Re-render the current route instead of hardcoding 'home'
+            const currentRoute = navigationStack.length > 0 ? navigationStack[navigationStack.length - 1] : 'home';
+            renderRoute(currentRoute, false);
         });
     };
 
