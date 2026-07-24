@@ -217,51 +217,103 @@ export class ScoreboardQuestionScreen {
                 <div class="ethio-layer ethio-layer-pitch"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
 
-                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: rgba(0,0,0,0.5); border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">✕</button>
-                
                 <!-- PREMIUM GAMING HEADER -->
                 <div style="
                     display: flex; 
                     flex-direction: column;
-                    gap: 16px;
-                    padding: 16px 20px; 
                     background: rgba(15,23,42,0.95);
                     backdrop-filter: blur(12px);
                     border-bottom: 1px solid rgba(255,255,255,0.08);
                     position: relative;
                     z-index: 10;
                 ">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <!-- Score -->
-                        <div style="text-align: left; flex: 1;">
-                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Score</div>
-                            <div style="font-size: 20px; font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${currentXP} Points</div>
+                    <!-- Top Bar Info Row -->
+                    <div style="
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: space-between; 
+                        gap: 8px;
+                        padding: 12px 16px;
+                        width: 100%;
+                        box-sizing: border-box;
+                    ">
+                        <!-- Leave Button -->
+                        <button id="match-exit-btn" style="
+                            background: rgba(255,255,255,0.1); 
+                            border: 1px solid rgba(255,255,255,0.15); 
+                            color: white; 
+                            font-weight: 800; 
+                            font-size: clamp(12px, 3.5vw, 14px); 
+                            padding: 8px 14px; 
+                            border-radius: 20px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            white-space: nowrap;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                            transition: background 0.2s;
+                        ">
+                            <span style="font-size: 16px;">←</span> Leave
+                        </button>
+                        
+                        <!-- Score Chip -->
+                        <div style="
+                            background: rgba(0,0,0,0.4);
+                            border: 1px solid rgba(255,255,255,0.1);
+                            padding: 6px 14px;
+                            border-radius: 20px;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            white-space: nowrap;
+                        ">
+                            <span style="font-size: 16px;">⚽</span>
+                            <span id="match-score" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${currentXP}</span>
                         </div>
 
-                        <!-- Time -->
-                        <div style="text-align: center; flex: 1; position: relative;">
-                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Time</div>
-                            <div id="timer-text" style="font-size: 32px; font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; text-shadow: 0 0 16px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.8); transition: color 0.3s, text-shadow 0.3s, transform 0.1s;">
-                                00:${String(startTimerSec).padStart(2, '0')}
-                            </div>
+                        <!-- Timer Chip -->
+                        <div id="timer-chip" style="
+                            background: rgba(0,0,0,0.4);
+                            border: 1px solid rgba(255,255,255,0.1);
+                            padding: 6px 14px;
+                            border-radius: 20px;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            white-space: nowrap;
+                            transition: all 0.3s ease;
+                        ">
+                            <span style="font-size: 16px;">⏱️</span>
+                            <span id="timer-text" style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white; font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums;">
+                                ${String(startTimerSec)}s
+                            </span>
                         </div>
 
-                        <!-- Question -->
-                        <div style="text-align: right; flex: 1; position: relative;">
-                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ጥያቄ' : (i18n.currentLocale === 'om' ? 'Gaaffii' : 'Question')}</div>
-                            <div style="font-size: 20px; font-weight: 900; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                        <!-- Progress Chip -->
+                        <div style="
+                            background: rgba(0,0,0,0.4);
+                            border: 1px solid rgba(255,255,255,0.1);
+                            padding: 6px 14px;
+                            border-radius: 20px;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            white-space: nowrap;
+                        ">
+                            <span style="font-size: 16px;">📝</span>
+                            <span style="font-size: clamp(14px, 4vw, 16px); font-weight: 900; color: white;">
                                 ${this._currentIndex + 1}/${this._questions.length}
-                            </div>
+                            </span>
                         </div>
                     </div>
 
                     <!-- Clean Progress Bar -->
-                    <div style="position: relative; height: 6px; background: rgba(0,0,0,0.5); border-radius: 6px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
+                    <div style="position: relative; height: 4px; background: rgba(0,0,0,0.5); overflow: hidden;">
                         <div style="
                             height: 100%; 
                             width: ${((this._currentIndex + 1) / this._questions.length) * 100}%; 
                             background: linear-gradient(90deg, #009A44 0%, #22C55E 100%); 
-                            border-radius: 6px; 
                             transition: width 350ms cubic-bezier(0.16, 1, 0.3, 1);
                         "></div>
                     </div>
@@ -377,15 +429,11 @@ export class ScoreboardQuestionScreen {
                         border: 1px solid rgba(255,255,255,0.1);
                         box-shadow: 0 16px 40px rgba(0,0,0,0.5);
                     ">
-                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">${t('match.leaveMatch')}</div>
-                        <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px;">${t('match.leaveWarning')}</div>
-                        <div style="display: flex; gap: 12px;">
-                            <div style="flex: 1;">
-                                ${DesignSystem.Button({ id: 'btn-pause-leave', text: t('match.leaveBtn'), variant: 'secondary', fullWidth: true })}
-                            </div>
-                            <div style="flex: 1;">
-                                ${DesignSystem.Button({ id: 'btn-pause-resume', text: t('match.continueBtn'), variant: 'primary', fullWidth: true })}
-                            </div>
+                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">Leave Match?</div>
+                        <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px; line-height: 1.4;">Your current match progress will be lost.<br/><br/>Are you sure you want to leave?</div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button id="btn-pause-resume" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #22c55e, #15803d); color: white; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.3);">Continue Playing</button>
+                            <button id="btn-pause-leave" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white; font-weight: bold; font-size: 16px; cursor: pointer;">Leave Match</button>
                         </div>
                     </div>
                 </div>
@@ -410,6 +458,20 @@ export class ScoreboardQuestionScreen {
                     20%, 60% { transform: translateX(-12px); }
                     40%, 80% { transform: translateX(12px); }
                 }
+                
+                @keyframes subtle-pulse {
+                    0% { transform: scale(1); box-shadow: 0 0 0px rgba(245, 158, 11, 0); }
+                    50% { transform: scale(1.05); box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); border-color: rgba(245, 158, 11, 0.8); }
+                    100% { transform: scale(1); box-shadow: 0 0 0px rgba(245, 158, 11, 0); }
+                }
+                .time-low {
+                    animation: subtle-pulse 1s infinite ease-in-out;
+                    color: #F59E0B !important;
+                    border-color: rgba(245, 158, 11, 0.5) !important;
+                }
+                .time-low span {
+                    color: #F59E0B !important;
+                }
             </style>
         `;
 
@@ -427,21 +489,17 @@ export class ScoreboardQuestionScreen {
 
         const drawTimer = () => {
             if (timerText) {
-                timerText.innerText = `00:${String(this._timeLeftSec).padStart(2, '0')}`;
-
-                if (this._timeLeftSec <= 5) {
-                    timerText.style.color = '#EF4444';
-                    timerText.style.textShadow = '0 0 12px rgba(239, 68, 68, 0.6)';
-                    timerText.style.transform = 'scale(1.1)';
-                    setTimeout(() => { if(timerText) timerText.style.transform = 'scale(1)'; }, 150);
-                    
-                    if (this._timeLeftSec > 0 && this._timeLeftSec <= 5) {
-                        this._audioManager.playCountdownWarning();
+                timerText.innerText = `${String(this._timeLeftSec)}s`;
+                const timerChip = document.getElementById('timer-chip');
+                if (timerChip) {
+                    if (this._timeLeftSec <= 5) {
+                        timerChip.classList.add('time-low');
+                        if (this._timeLeftSec > 0) {
+                            this._audioManager.playCountdownWarning();
+                        }
+                    } else {
+                        timerChip.classList.remove('time-low');
                     }
-                } else {
-                    timerText.style.color = 'white';
-                    timerText.style.textShadow = '0 0 10px rgba(255,255,255,0.2)';
-                    timerText.style.transform = 'scale(1)';
                 }
             }
         };
@@ -582,11 +640,11 @@ export class ScoreboardQuestionScreen {
             ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF']);
             this._showFeedbackOverlay(true);
             
-            // Rolling Scoreboard Goal Counter
+            // Rolling Scoreboard Score Counter
             const currentScore = this._quizEngine.calculateFinalStats().goals;
-            const goalsEl = document.getElementById('match-goals');
-            if (goalsEl) {
-                RollingCounter.animate(goalsEl, currentScore - 1, currentScore, 600, (v) => `${Math.round(v)}`);
+            const scoreEl = document.getElementById('match-score');
+            if (scoreEl) {
+                RollingCounter.animate(scoreEl, (currentScore - 1) * 100, currentScore * 100, 600, (v) => `${Math.round(v)}`);
             }
         } else {
             targetBtn.classList.add('wrong');
