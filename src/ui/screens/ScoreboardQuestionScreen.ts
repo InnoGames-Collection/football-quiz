@@ -38,6 +38,7 @@ export class ScoreboardQuestionScreen {
     private _session: GameSession | null = null;
     private _isPaused: boolean = false;
     private _isDestroyed: boolean = false;
+    private _nextQuestionTimeoutId: any = null;
     private _visibilityHandler: () => void;
     private _networkOfflineHandler: () => void;
     private _networkOnlineHandler: () => void;
@@ -578,6 +579,7 @@ export class ScoreboardQuestionScreen {
             GameSessionManager.getInstance().clearSession();
         }
         (window as any).ethioOnBackPress = null;
+        this.destroy();
         this._callbacks.onExitMatch();
     }
 
@@ -669,7 +671,8 @@ export class ScoreboardQuestionScreen {
             this._showFeedbackOverlay(false);
         }
 
-        setTimeout(() => {
+        this._nextQuestionTimeoutId = setTimeout(() => {
+            this._nextQuestionTimeoutId = null;
             if (this._isDestroyed) return;
             this._hideFeedbackOverlay();
             this._currentIndex++;
@@ -748,7 +751,8 @@ export class ScoreboardQuestionScreen {
             sub.innerText = 'Speed up next time!';
         }
 
-        setTimeout(() => {
+        this._nextQuestionTimeoutId = setTimeout(() => {
+            this._nextQuestionTimeoutId = null;
             if (this._isDestroyed) return;
             this._hideFeedbackOverlay();
             this._currentIndex++;
@@ -816,9 +820,19 @@ export class ScoreboardQuestionScreen {
     public destroy(): void {
         this._isDestroyed = true;
         this._stopTimer();
+        if (this._nextQuestionTimeoutId) {
+            clearTimeout(this._nextQuestionTimeoutId);
+            this._nextQuestionTimeoutId = null;
+        }
         document.removeEventListener('visibilitychange', this._visibilityHandler);
         window.removeEventListener('ethio-network-offline', this._networkOfflineHandler);
         window.removeEventListener('ethio-network-online', this._networkOnlineHandler);
+        
+        this._quizEngine = null as any;
+        this._session = null;
+        if (this._uiManager && this._uiManager.container) {
+            this._uiManager.container.innerHTML = '';
+        }
     }
 
     private async _findCorrectIndex(q: QuestionData): Promise<number | undefined> {
