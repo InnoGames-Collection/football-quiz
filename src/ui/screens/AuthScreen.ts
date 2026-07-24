@@ -155,8 +155,6 @@ export class AuthScreen {
 
                 const res = await this._authManager.verifyOtp(this._pendingPhone, token);
                 if (res.success) {
-                    this._statusMessage = i18n.currentLocale === 'am' ? 'ፕሮፋይል በመጫን ላይ...' : (i18n.currentLocale === 'om' ? 'Pirofaayilii fe\'aa jira...' : 'Loading profile...');
-                    this.render();
                     this._onSuccess();
                 } else {
                     this._statusMessage = res.error || (i18n.currentLocale === 'am' ? 'የተሳሳተ የማረጋገጫ ኮድ።' : (i18n.currentLocale === 'om' ? 'Koodii mirkaneessaa dogoggoraa.' : 'Invalid verification code.'));
