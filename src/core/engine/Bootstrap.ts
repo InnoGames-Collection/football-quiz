@@ -44,13 +44,11 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
     // Navigation Stack Management
     type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats';
-    let tabStacks: Record<TabId, RouteName[]> = {
-        home: ['home'],
-        play: ['play'],
-        league: ['league'],
-        rankings: ['rankings'],
-        profile: ['profile']
-    };
+    interface HistoryState {
+        tab: TabId;
+        route: RouteName;
+    }
+    let globalHistory: HistoryState[] = [{ tab: 'home', route: 'home' }];
     let currentTab: TabId = 'home';
     let activeScreen: any = null;
 
@@ -66,7 +64,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         }
         activeScreen = null;
         if (pushToStack) {
-            tabStacks[currentTab].push(route);
+            globalHistory.push({ tab: currentTab, route });
             try {
                 window.history.pushState({ tab: currentTab, route }, '', window.location.href);
             } catch (e) {}
@@ -85,7 +83,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                             const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
                             quizMode.setCompetition('walia-ibex');
                             
-                            tabStacks[currentTab].push('quiz_game');
+                            globalHistory.push({ tab: currentTab, route: 'quiz_game' });
                             try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
                             
                             await registry.launchGame('football-quiz');
@@ -98,7 +96,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                             quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
                             localStorage.setItem('ETHIO_DAILY_COMPLETED_TODAY', 'true');
                             
-                            tabStacks[currentTab].push('quiz_game');
+                            globalHistory.push({ tab: currentTab, route: 'quiz_game' });
                             try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
                             
                             await registry.launchGame('football-quiz');
@@ -127,8 +125,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         cacheManager.setQuizActive(true);
                         const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
                         quizMode.setCompetition(category);
-                        
-                        tabStacks[currentTab].push('quiz_game');
+                        globalHistory.push({ tab: currentTab, route: 'quiz_game' });
                         try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
                         
                         await registry.launchGame('football-quiz');
@@ -136,8 +133,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     async (session) => {
                         cacheManager.setQuizActive(true);
                         const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-                        
-                        tabStacks[currentTab].push('quiz_game');
+                        globalHistory.push({ tab: currentTab, route: 'quiz_game' });
                         try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
                         
                         await registry.launchGame('football-quiz');
@@ -158,8 +154,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         cacheManager.setQuizActive(true);
                         const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
                         quizMode.setCompetition(comp.id);
-                        
-                        tabStacks[currentTab].push('quiz_game');
+                        globalHistory.push({ tab: currentTab, route: 'quiz_game' });
                         try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
                         
                         await registry.launchGame('football-quiz');
@@ -323,28 +318,25 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     };
 
     const navigateToTab = (tabId: TabId) => {
-        if (currentTab === tabId) {
-            // Tapping active tab pops it to root
-            tabStacks[tabId] = [tabId as RouteName];
+        const currentState = globalHistory.length > 0 ? globalHistory[globalHistory.length - 1] : null;
+        if (currentState && currentState.tab === tabId && currentState.route === tabId) {
+            return; // Already at the root of this tab
         }
-        currentTab = tabId;
-        const targetRoute = tabStacks[tabId][tabStacks[tabId].length - 1];
         
-        // We do not push to tabStacks here because it's already at the top (or we just reset it).
-        renderRoute(targetRoute, false);
-        try { window.history.pushState({ tab: tabId, route: targetRoute }, '', window.location.href); } catch(e){}
+        currentTab = tabId;
+        renderRoute(tabId as RouteName, true);
     };
 
     winAny.ethioReloadHome = () => navigateToTab('home');
     winAny.ethioHandleBack = () => handleBack();
     winAny.ethioCloseGame = () => {
         cacheManager.setQuizActive(false);
-        const stack = tabStacks[currentTab];
-        if (stack[stack.length - 1] === 'quiz_game' || stack[stack.length - 1] === 'match_stats') {
-            stack.pop();
+        if (globalHistory[globalHistory.length - 1]?.route === 'quiz_game' || globalHistory[globalHistory.length - 1]?.route === 'match_stats') {
+            globalHistory.pop();
         }
-        const currentRoute = stack.length > 0 ? stack[stack.length - 1] : 'home';
-        renderRoute(currentRoute, false);
+        const currentState = globalHistory.length > 0 ? globalHistory[globalHistory.length - 1] : { tab: 'home' as TabId, route: 'home' };
+        currentTab = currentState.tab;
+        renderRoute(currentState.route as RouteName, false);
     };
 
     // Listen for EventBus view reload events
@@ -401,8 +393,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
     // Android Back Button Handler
     const handleBack = () => {
-        const stack = tabStacks[currentTab];
-        let currentRoute = stack.length > 0 ? stack[stack.length - 1] : 'home';
+        let currentRoute = globalHistory.length > 0 ? globalHistory[globalHistory.length - 1].route : 'home';
 
         if (typeof (window as any).ethioOnBackPress === 'function') {
             if ((window as any).ethioOnBackPress()) {
@@ -426,34 +417,23 @@ export async function bootstrapFootballLeague(): Promise<Game> {
             return;
         }
 
-        // Pop the current tab's stack
-        if (stack.length > 1) {
-            stack.pop();
-            const previousRoute = stack[stack.length - 1];
+        // Pop the chronological stack
+        if (globalHistory.length > 1) {
+            globalHistory.pop();
+            const previousState = globalHistory[globalHistory.length - 1];
             
-            if (previousRoute === 'quiz_game' || previousRoute === 'match_stats') {
+            if (previousState.route === 'quiz_game' || previousState.route === 'match_stats') {
                 // If we somehow pop TO a quiz_game state instead of FROM, we pop again to reach a renderable screen
-                stack.pop();
+                globalHistory.pop();
             }
             
-            const targetRoute = stack[stack.length - 1] || currentTab;
-            renderRoute(targetRoute, false);
+            const targetState = globalHistory.length > 0 ? globalHistory[globalHistory.length - 1] : { tab: 'home' as TabId, route: 'home' };
+            currentTab = targetState.tab;
+            renderRoute(targetState.route as RouteName, false);
         } else {
-            // At root of a tab
-            if (currentTab !== 'home') {
-                // Switch back to Home tab, resume Home stack
-                currentTab = 'home';
-                BottomNav.setActiveTab('home');
-                const homeStack = tabStacks['home'];
-                const targetRoute = homeStack[homeStack.length - 1] || 'home';
-                
-                try { window.history.pushState({ tab: 'home', route: targetRoute }, '', window.location.href); } catch(e){}
-                renderRoute(targetRoute, false);
-            } else {
-                // At root of Home tab -> Exit PWA
-                showMaterial3ExitDialog();
-                try { window.history.pushState({ tab: 'home', route: 'home' }, '', window.location.href); } catch(e){}
-            }
+            // At root of history
+            showMaterial3ExitDialog();
+            try { window.history.pushState({ tab: 'home' as TabId, route: 'home' }, '', window.location.href); } catch(e){}
         }
     };
 
@@ -491,11 +471,13 @@ export async function bootstrapFootballLeague(): Promise<Game> {
             modal.remove();
             cacheManager.setQuizActive(false);
             
-            const stack = tabStacks[currentTab];
-            if (stack[stack.length - 1] === 'quiz_game') stack.pop(); // Remove the quiz_game route since we left
+            if (globalHistory.length > 0 && globalHistory[globalHistory.length - 1].route === 'quiz_game') {
+                globalHistory.pop(); // Remove the quiz_game route since we left
+            }
             
-            const currentRoute = stack.length > 0 ? stack[stack.length - 1] : 'home';
-            renderRoute(currentRoute, false);
+            const targetState = globalHistory.length > 0 ? globalHistory[globalHistory.length - 1] : { tab: 'home' as TabId, route: 'home' };
+            currentTab = targetState.tab;
+            renderRoute(targetState.route as RouteName, false);
         });
     };
 
@@ -563,7 +545,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
         quizMode.setCompetition(compId);
         
-        tabStacks[currentTab].push('quiz_game');
+        globalHistory.push({ tab: currentTab, route: 'quiz_game' });
         try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
         
         await registry.launchGame('football-quiz');
