@@ -19,6 +19,9 @@ export interface QuestionData {
     prompt: string;
     options: string[];
     correctIndex?: number;
+    explanation?: string;
+    fact?: string;
+    learningTip?: string;
 }
 
 export class ScoreboardQuestionScreen {

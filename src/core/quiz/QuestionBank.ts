@@ -14,6 +14,9 @@ export interface ExtendedQuestionData extends QuestionData {
     optionsEn?: string[];
     optionsAm?: string[];
     optionsOm?: string[];
+    explanation?: string;
+    fact?: string;
+    learningTip?: string;
 }
 
 const OFFLINE_FALLBACK_QUESTIONS: ExtendedQuestionData[] = [
@@ -21,13 +24,17 @@ const OFFLINE_FALLBACK_QUESTIONS: ExtendedQuestionData[] = [
         id: 'fb-1', category: 'walia-ibex', difficulty: 2,
         prompt: "Which country won the first ever African Cup of Nations (AFCON) in 1957?",
         options: ["Egypt", "Ethiopia", "Sudan", "South Africa"],
-        correctIndex: 0
+        correctIndex: 0,
+        explanation: "Egypt defeated Ethiopia 4-0 in the final of the inaugural Africa Cup of Nations.",
+        fact: "Only three nations participated in the first AFCON: Egypt, Ethiopia, and Sudan. South Africa was disqualified due to apartheid.",
+        learningTip: "Remember '1957' as the birth year of AFCON."
     },
     {
         id: 'fb-2', category: 'walia-ibex', difficulty: 1,
         prompt: "What is the nickname of the Ethiopian National Football Team?",
         options: ["The Lions", "Walia Ibex", "The Pharoahs", "Black Stars"],
-        correctIndex: 1
+        correctIndex: 1,
+        explanation: "The Walia Ibex is an endangered species of ibex found only in the Simien Mountains of Ethiopia."
     },
     {
         id: 'fb-3', category: 'ethiopian-premier-league', difficulty: 3,
@@ -75,7 +82,9 @@ const OFFLINE_FALLBACK_QUESTIONS: ExtendedQuestionData[] = [
         id: 'fb-10', category: 'walia-ibex', difficulty: 4,
         prompt: "Ethiopia won its only African Cup of Nations title in which year?",
         options: ["1957", "1962", "1970", "1982"],
-        correctIndex: 1
+        correctIndex: 1,
+        fact: "Ydnekatchew Tessema was one of the most influential figures in Ethiopian football history.",
+        learningTip: "Ethiopia hosted and won the 1962 tournament, defeating Egypt 4-2 in the final after extra time."
     },
     {
         id: 'fb-11', category: 'english-premier-league', difficulty: 2,

@@ -362,31 +362,140 @@ export class MatchStatsScreen {
             const chosenOpt = chosenIdx >= 0 ? q.options[chosenIdx] : (i18n.currentLocale === 'am' ? 'ጊዜ አልቋል / ያልተመለሰ' : (i18n.currentLocale === 'om' ? 'Yeroon dhumate / Hin deebine' : 'Timeout / Unanswered'));
             
             const isCorrect = chosenIdx === q.correctIndex;
-            const chosenColor = isCorrect ? '#22C55E' : '#EF4444';
+            
+            let badgeHtml = '';
+            let chosenColor = '';
+            if (chosenIdx === -1) {
+                chosenColor = '#F97316'; // Orange
+                badgeHtml = `<span style="font-size: var(--fds-font-xs); font-weight: 900; color: ${chosenColor}; background: rgba(249,115,22,0.15); padding: 2px 8px; border-radius: 4px;">
+                    ${i18n.currentLocale === 'am' ? '⏱ ጊዜ አልቋል' : (i18n.currentLocale === 'om' ? '⏱ Yeroon Dhumate' : '⏱ Timeout')}
+                </span>`;
+            } else if (isCorrect) {
+                chosenColor = '#22C55E'; // Green
+                badgeHtml = `<span style="font-size: var(--fds-font-xs); font-weight: 900; color: ${chosenColor}; background: rgba(34,197,94,0.15); padding: 2px 8px; border-radius: 4px;">
+                    ${i18n.currentLocale === 'am' ? '✓ ትክክል' : (i18n.currentLocale === 'om' ? '✓ Sirrii' : '✓ Correct')}
+                </span>`;
+            } else {
+                chosenColor = '#EF4444'; // Red
+                badgeHtml = `<span style="font-size: var(--fds-font-xs); font-weight: 900; color: ${chosenColor}; background: rgba(239,68,68,0.15); padding: 2px 8px; border-radius: 4px;">
+                    ${i18n.currentLocale === 'am' ? '✗ የተሳሳተ' : (i18n.currentLocale === 'om' ? '✗ Dogoggora' : '✗ Wrong')}
+                </span>`;
+            }
 
-            // REQ 13: SECURE REVIEW SCREEN (DO NOT REVEAL CORRECT ANSWER OR EXPLANATION)
+            const actualCorrectOpt = q.options[q.correctIndex];
+            
+            let correctAnswerBoxHtml = '';
+            if (!isCorrect) {
+                correctAnswerBoxHtml = `
+                    <div style="background: rgba(34,197,94,0.1); border: 1px solid #22C55E; box-shadow: 0 0 10px rgba(34,197,94,0.2); padding: 10px 12px; border-radius: 8px; font-size: var(--fds-font-sm); margin-bottom: 12px;">
+                        <div style="color: #4ADE80; font-size: var(--fds-font-xs); font-weight: 700; text-transform: uppercase; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+                            <span style="font-size: 14px;">✨</span> ${i18n.currentLocale === 'am' ? 'ትክክለኛው መልስ' : (i18n.currentLocale === 'om' ? 'Deebii Sirrii' : 'Correct Answer')}
+                        </div>
+                        <div style="color: white; font-weight: 800; font-size: var(--fds-font-sm);">${actualCorrectOpt}</div>
+                    </div>
+                `;
+            }
+
+            const optionsHtml = q.options.map((opt: string, optIdx: number) => {
+                const isThisCorrect = optIdx === q.correctIndex;
+                const isThisSelected = optIdx === chosenIdx;
+                
+                let bgColor = 'rgba(0,0,0,0.3)';
+                let borderColor = 'rgba(255,255,255,0.06)';
+                let iconHtml = '';
+                let labelHtml = '';
+
+                if (isThisCorrect && isThisSelected) {
+                    bgColor = 'rgba(34,197,94,0.15)';
+                    borderColor = '#22C55E';
+                    iconHtml = '<span style="color: #22C55E; font-weight: bold; margin-right: 8px;">✓</span>';
+                    labelHtml = `<div style="display: flex; gap: 8px;"><span style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Correct Answer</span><span style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Your Answer</span></div>`;
+                } else if (isThisCorrect) {
+                    bgColor = 'rgba(34,197,94,0.15)';
+                    borderColor = '#22C55E';
+                    iconHtml = '<span style="color: #22C55E; font-weight: bold; margin-right: 8px;">✓</span>';
+                    labelHtml = `<div style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Correct Answer</div>`;
+                } else if (isThisSelected) {
+                    bgColor = 'rgba(239,68,68,0.15)';
+                    borderColor = '#EF4444';
+                    iconHtml = '<span style="color: #EF4444; font-weight: bold; margin-right: 8px;">✗</span>';
+                    labelHtml = `<div style="background: rgba(239,68,68,0.2); color: #F87171; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Your Answer</div>`;
+                }
+
+                const prefix = String.fromCharCode(65 + optIdx) + '.';
+                
+                return `
+                    <div style="background: ${bgColor}; border: 1px solid ${borderColor}; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-main);">
+                                ${iconHtml}
+                                <span style="color: var(--fds-gold-primary); margin-right: 8px;">${prefix}</span> 
+                                ${opt}
+                            </div>
+                            ${labelHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            let explanationHtml = '';
+            if (q.explanation) {
+                explanationHtml = `
+                    <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(56,189,248,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <div style="color: #38BDF8; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">💡 ${i18n.currentLocale === 'am' ? 'ይህ ለምን ትክክል ነው' : (i18n.currentLocale === 'om' ? 'Maaliif Sirrii Dha' : 'Why this is correct')}</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-main); line-height: 1.4;">${q.explanation}</div>
+                    </div>
+                `;
+            }
+
+            let factHtml = '';
+            if (q.fact) {
+                factHtml = `
+                    <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <div style="color: #C084FC; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">🧠 ${i18n.currentLocale === 'am' ? 'ያውቁ ኖሯል?' : (i18n.currentLocale === 'om' ? 'Beektuu Laata?' : 'Did You Know?')}</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-main); line-height: 1.4;">${q.fact}</div>
+                    </div>
+                `;
+            }
+
+            let tipHtml = '';
+            if (q.learningTip) {
+                tipHtml = `
+                    <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(250,204,21,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                        <div style="color: #FACC15; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">🎯 ${i18n.currentLocale === 'am' ? 'የመማሪያ ጠቃሚ ምክር' : (i18n.currentLocale === 'om' ? 'Gorsa Barumsaa' : 'Learning Tip')}</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-main); line-height: 1.4;">${q.learningTip}</div>
+                    </div>
+                `;
+            }
+
             return `
                 <div class="glass-card" style="border-radius: 12px; padding: 16px; margin-bottom: 16px; border-color: ${chosenColor}; text-align: left;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase;">
                             ${i18n.currentLocale === 'am' ? `ጥያቄ ${idx + 1}` : (i18n.currentLocale === 'om' ? `Gaaffii ${idx + 1}` : `Question ${idx + 1}`)}
                         </span>
-                        <span style="font-size: var(--fds-font-xs); font-weight: 900; color: ${chosenColor}; background: ${isCorrect ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'}; padding: 2px 8px; border-radius: 4px;">
-                            ${isCorrect 
-                                ? (i18n.currentLocale === 'am' ? '✓ ትክክል' : (i18n.currentLocale === 'om' ? '✓ Sirrii' : '✓ Correct'))
-                                : (i18n.currentLocale === 'am' ? '✗ የተሳሳተ' : (i18n.currentLocale === 'om' ? '✗ Dogoggora' : '✗ Wrong'))}
-                        </span>
+                        ${badgeHtml}
                     </div>
 
                     <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-text-main); margin-bottom: 12px; line-height: 1.4;">${q.prompt}</div>
 
-                    <!-- Answers status box (Only user selection & status, NO correct answer revealed!) -->
+                    <!-- Answers status box -->
                     <div style="background: rgba(0,0,0,0.3); padding: 10px 12px; border-radius: 8px; font-size: var(--fds-font-sm); margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.06);">
                         <div style="color: var(--fds-text-dim); font-size: var(--fds-font-xs); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">
                             ${i18n.currentLocale === 'am' ? 'የመረጡት መልስ' : (i18n.currentLocale === 'om' ? 'DEEBII ISIN FILATTAN' : 'YOUR SELECTED ANSWER')}
                         </div>
                         <div style="color: var(--fds-text-main); font-weight: 800; font-size: var(--fds-font-sm);">${chosenOpt}</div>
                     </div>
+                    
+                    ${correctAnswerBoxHtml}
+                    
+                    <div style="margin-bottom: 12px;">
+                        ${optionsHtml}
+                    </div>
+                    
+                    ${explanationHtml}
+                    ${factHtml}
+                    ${tipHtml}
 
                     <!-- In-App Interactions Row (REQ 14) -->
                     <div style="display: flex; gap: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
