@@ -348,49 +348,40 @@ export class ScoreboardQuestionScreen {
                     position: relative;
                 ">
                     <!-- High-Focus Responsive Question Text -->
-                    <div style="
-                        font-size: clamp(20px, 5.5vw, 26px);
-                        font-weight: 900;
-                        color: var(--fds-text-main);
+                    <div class="anim-question-in" style="
+                        width: 100%;
+                        max-width: 90%;
+                        margin: 0 auto 24px auto;
+                        padding: 32px 24px;
+                        background: rgba(7, 27, 45, 0.85);
+                        backdrop-filter: blur(12px);
+                        border: 1px solid rgba(255,255,255,0.08);
+                        border-radius: 22px;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
                         text-align: center;
-                        line-height: 1.35;
-                        box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+                        box-sizing: border-box;
                     ">
-                        <h2 style="font-size: 24px; font-weight: 800; color: white; line-height: 1.5; margin: 0; text-shadow: 0 2px 6px rgba(0,0,0,0.6);">
+                        <h2 style="
+                            font-size: clamp(22px, 5vw, 28px); 
+                            font-weight: 700; 
+                            color: white; 
+                            line-height: 1.35; 
+                            letter-spacing: 0.2px; 
+                            margin: 0; 
+                            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                            word-wrap: break-word;
+                            overflow-wrap: break-word;
+                        ">
                             ${q.prompt}
                         </h2>
                     </div>
 
                     <!-- ANSWERS GRID -->
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
                         ${q.options.map((opt, i) => `
-                            <button class="option-btn" data-index="${i}" style="
-                                width: 100%;
-                                padding: 20px 24px;
-                                background: rgba(30,41,59,0.95);
-                                border: 2px solid rgba(255,255,255,0.15);
-                                border-radius: 16px;
-                                color: white;
-                                font-size: 18px;
-                                font-weight: 800;
-                                text-align: left;
-                                cursor: pointer;
-                                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                                display: flex;
-                                align-items: center;
-                                gap: 16px;
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                            ">
-                                <span style="
-                                    width: 32px; height: 32px; 
-                                    border-radius: 50%; 
-                                    background: rgba(255,255,255,0.1); 
-                                    display: flex; align-items: center; justify-content: center; 
-                                    margin-right: 16px; 
-                                    font-size: var(--fds-font-sm); font-weight: 900;
-                                    flex-shrink: 0;
-                                ">${String.fromCharCode(65 + i)}</span>
-                                <span style="flex: 1; word-break: break-word; line-height: 1.3;">${opt}</span>
+                            <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
+                                <span class="option-badge">${String.fromCharCode(65 + i)}</span>
+                                <span class="option-text">${opt}</span>
                                 <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
                             </button>
                         `).join('')}
@@ -473,13 +464,101 @@ export class ScoreboardQuestionScreen {
             </div>
             
             <style>
-                .option-btn:active:not(:disabled) { transform: scale(0.98); }
-                .option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: var(--fds-green-pitch) !important; }
-                .option-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: var(--fds-red-live) !important; }
-                .option-btn.correct .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-green-pitch); }
-                .option-btn.wrong .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-red-live); }
+                .option-btn {
+                    width: 100%;
+                    min-height: 68px;
+                    padding: 18px 22px;
+                    background: linear-gradient(180deg, #12A64B 0%, #0A7C45 100%);
+                    border: 2px solid rgba(255,255,255,0.12);
+                    border-radius: 18px;
+                    color: white;
+                    text-align: left;
+                    cursor: pointer;
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 10px 30px rgba(0,0,0,0.25);
+                    position: relative;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }
+                .option-btn::after {
+                    content: '';
+                    position: absolute;
+                    top: 0; left: 0; right: 0; height: 40%;
+                    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+                    border-radius: 16px 16px 0 0;
+                    pointer-events: none;
+                }
+                .option-badge {
+                    width: 34px; height: 34px; 
+                    border-radius: 50%; 
+                    background: rgba(255,255,255,0.12); 
+                    display: flex; align-items: center; justify-content: center; 
+                    font-size: 18px; font-weight: bold; color: white;
+                    flex-shrink: 0;
+                }
+                .option-text {
+                    flex: 1; 
+                    font-size: 18px; 
+                    font-weight: 600; 
+                    color: white; 
+                    line-height: 1.3; 
+                    word-wrap: break-word; 
+                    overflow-wrap: break-word;
+                }
+                .option-btn:active:not(:disabled) { 
+                    transform: scale(0.98); 
+                    background: linear-gradient(180deg, #0f8c3f 0%, #086136 100%);
+                    box-shadow: inset 0 2px 8px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.2);
+                }
+                .option-btn.selected {
+                    border-color: #FFD54F !important;
+                    box-shadow: 0 0 20px rgba(255, 213, 79, 0.4), inset 0 2px 4px rgba(255,255,255,0.2) !important;
+                }
+                .option-btn.correct { 
+                    background: linear-gradient(180deg, #22C55E 0%, #15803D 100%) !important; 
+                    border-color: #4ADE80 !important; 
+                    box-shadow: 0 0 24px rgba(74, 222, 128, 0.5), inset 0 2px 4px rgba(255,255,255,0.3) !important;
+                    animation: correctPulse 400ms cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .option-btn.wrong { 
+                    background: linear-gradient(180deg, #EF4444 0%, #B91C1C 100%) !important; 
+                    border-color: #F87171 !important; 
+                    box-shadow: 0 0 24px rgba(239, 68, 68, 0.4), inset 0 2px 4px rgba(255,255,255,0.3) !important;
+                    animation: wrongShake 400ms ease-in-out;
+                }
+                .option-btn:disabled {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none !important;
+                }
+                
+                .option-btn.correct .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+                .option-btn.wrong .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
                 .option-btn.correct .feedback-icon::after { content: '✓'; }
                 .option-btn.wrong .feedback-icon::after { content: '✕'; }
+
+                @keyframes slideFadeUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .anim-question-in {
+                    animation: slideFadeUp 250ms ease-out forwards;
+                    opacity: 0;
+                    animation-fill-mode: forwards;
+                }
+                @keyframes correctPulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.03); }
+                    100% { transform: scale(1); }
+                }
+                @keyframes wrongShake {
+                    0%, 100% { transform: translateX(0); }
+                    20%, 60% { transform: translateX(-6px); }
+                    40%, 80% { transform: translateX(6px); }
+                }
 
                 @keyframes goal-bounce {
                     0% { transform: translateY(0) scale(1); }
