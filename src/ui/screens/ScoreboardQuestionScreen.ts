@@ -159,46 +159,99 @@ export class ScoreboardQuestionScreen {
         const playerName = localStorage.getItem('ETHIO_FOOTBALL_USERNAME') || 'Player';
 
         root.innerHTML = `
-            <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; min-height: 100vh;">
+            <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 0 28px; position: relative; height: 100vh; overflow: hidden;">
                 <!-- Layers -->
                 <div class="ethio-layer ethio-layer-pitch"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
+                
+                <!-- Dark Overlay -->
+                <div style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); z-index: 5; animation: fade-in 250ms ease-out;"></div>
 
-                <!-- Content -->
-                <div style="position: relative; z-index: 10; width: 100%; max-width: 400px;">
-                <button id="match-exit-btn" style="position: absolute; right: 16px; top: 16px; z-index: 100; background: rgba(0,0,0,0.5); border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">✕</button>
-                <div class="glass-card" style="
-                    width: 100%;
-                    padding: 32px 24px;
-                    text-align: center;
-                    border-color: var(--tv-pitch-green);
-                    background: rgba(30, 41, 59, 0.6);
-                    backdrop-filter: blur(16px);
-                    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
-                ">
-                    <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));">${this._competition.badge}</div>
-                    <div style="font-size: 28px; font-weight: 900; color: white; margin-bottom: 8px; text-shadow: 0 2px 8px rgba(0,0,0,0.6);">${this._competition.name}</div>
-                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 40px;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
+                <!-- Content Wrapper -->
+                <div class="kick-off-wrapper" style="position: relative; z-index: 10; width: 100%; max-width: 86%;">
                     
-                    <button id="kick-off-btn" style="
-                        width: 100%; 
-                        padding: 20px; 
-                        background: linear-gradient(135deg, #22c55e, #15803d);
-                        color: white; 
-                        font-weight: 900; 
-                        font-size: 24px; 
-                        border: 2px solid #4ade80; 
-                        border-radius: 16px; 
-                        cursor: pointer;
-                        box-shadow: 0 8px 24px rgba(34,197,94,0.5), inset 0 0 12px rgba(255,255,255,0.3);
-                        transition: transform 0.2s, box-shadow 0.2s;
-                        text-transform: uppercase;
-                        letter-spacing: 2px;
-                    ">${i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF')}</button>
+                    <div class="kick-off-card" style="
+                        position: relative;
+                        background: linear-gradient(180deg, #071B2D 0%, #04101b 100%);
+                        border-radius: 26px;
+                        border: 1px solid rgba(255,255,255,0.08);
+                        box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 0 16px rgba(255,255,255,0.05);
+                        padding: 30px 28px 30px 28px;
+                        text-align: center;
+                        animation: popupScale 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                    ">
+                        <!-- Close Button -->
+                        <button id="match-exit-btn" style="
+                            position: absolute;
+                            top: 16px;
+                            right: 16px;
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            background: #071B2D;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1);
+                            color: white;
+                            font-size: 16px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            z-index: 20;
+                            transition: transform 0.2s;
+                        ">
+                            <span style="display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 2px;">✕</span>
+                        </button>
+                    
+                        <!-- Trophy -->
+                        <div style="font-size: 64px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); margin-bottom: 24px;">${this._competition.badge}</div>
+                        
+                        <!-- Title -->
+                        <div style="font-size: 30px; font-weight: 800; color: white; text-align: center; margin-bottom: 16px; line-height: 1.2;">${this._competition.name}</div>
+                        
+                        <!-- Subtitle -->
+                        <div style="font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.75); text-align: center; max-width: 85%; margin: 0 auto 32px auto; line-height: 1.5;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
+                        
+                        <!-- Kick Off Button -->
+                        <button id="kick-off-btn" style="
+                            width: 100%; 
+                            height: 58px;
+                            background: linear-gradient(180deg, #22D46E 0%, #0A7C45 100%);
+                            color: white; 
+                            font-weight: 900; 
+                            font-size: 20px; 
+                            border: 1px solid rgba(255,255,255,0.2); 
+                            border-radius: 18px; 
+                            cursor: pointer;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.3);
+                            transition: transform 0.2s;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            animation: fade-up-delay 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+                            animation-delay: 250ms;
+                            margin-bottom: 20px;
+                        ">${i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF')}</button>
+                    </div>
                 </div>
             </div>
             <style>
-                #kick-off-btn:active { transform: scale(0.96); }
+                @keyframes popupScale {
+                    from { transform: scale(0.92); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+                @keyframes fade-up-delay {
+                    from { transform: translateY(16px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                @keyframes fade-in {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                #kick-off-btn:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 2px 8px rgba(0,0,0,0.5); }
+                #match-exit-btn:active { transform: scale(0.9); }
             </style>
         `;
 
