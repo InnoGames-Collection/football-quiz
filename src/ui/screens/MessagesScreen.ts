@@ -4,7 +4,8 @@ import { MessageCenterService, MessageCenterItem, SupportTicket, Announcement } 
 import { DesignSystem } from '../theme/DesignSystem';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 import { PullToRefresh } from '../components/PullToRefresh';
-import { Toast } from '../components/Toast';
+import { TicketDialog } from '../components/TicketDialog';
+import { SupportConversationModal } from '../components/SupportConversationModal';
 
 type Tab = 'announcements' | 'personal' | 'support';
 type Filter = 'All' | 'Unread' | 'Read' | 'High Priority' | 'Tournament' | 'Reward' | 'Subscription';
@@ -168,7 +169,9 @@ export class MessagesScreen {
                                 padding: 6px 16px;
                                 border-radius: 20px;
                                 white-space: nowrap;
-                                font-size: 12px;
+                                flex-shrink: 0;
+                                min-height: 48px;
+                                font-size: 13px;
                                 font-weight: 800;
                                 cursor: pointer;
                                 border: 1px solid ${this._activeFilter === f ? '#FFD54F' : 'rgba(255,255,255,0.1)'};
@@ -229,10 +232,10 @@ export class MessagesScreen {
             }
 
             return `
-                <div style="text-align: center; padding: 60px 16px;">
-                    <div style="font-size: 64px; margin-bottom: 16px;">⚽</div>
+                <div style="text-align: center; padding: 60px 16px; animation: fade-in-up 0.4s ease;">
+                    <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.6;">${this._activeTab === 'support' ? '🏟️' : (this._activeTab === 'announcements' ? '📢' : '✉️')}</div>
                     <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 900; color: white;">${emptyMsg}</h2>
-                    <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm);">Check back later for updates.</p>
+                    <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm); max-width: 300px; margin: 0 auto; line-height: 1.5;">Check back later for updates. Your football journey continues!</p>
                 </div>
             `;
         }
@@ -257,7 +260,7 @@ export class MessagesScreen {
         }
 
         return `
-            <div class="glass-card msg-card" data-msg-id="${item.id}" style="
+            <div class="glass-card msg-card fade-in-up" data-msg-id="${item.id}" style="
                 padding: 16px; 
                 background: ${isUnread ? 'rgba(30,41,59,0.95)' : 'rgba(15,23,42,0.6)'};
                 border: 1px solid ${isUnread ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.05)'};
@@ -265,8 +268,9 @@ export class MessagesScreen {
                 border-radius: 12px;
                 display: flex; gap: 16px;
                 opacity: ${isUnread ? '1' : '0.8'};
+                min-height: 48px;
             ">
-                <div style="font-size: 24px; padding-top: 4px;">${icon}</div>
+                <div style="font-size: 24px; padding-top: 4px; flex-shrink: 0;">${icon}</div>
                 <div style="flex: 1; min-width: 0;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px;">
                         <div style="
@@ -359,21 +363,12 @@ export class MessagesScreen {
         // Open Ticket Button
         const createBtn = root.querySelector('#btn-create-ticket');
         if (createBtn) {
-            createBtn.addEventListener('click', async () => {
+            createBtn.addEventListener('click', () => {
                 this._audioManager.playClick();
-                const title = prompt("Enter a brief title for your support ticket:");
-                if (!title) return;
-                const content = prompt("Describe your issue:");
-                if (!content) return;
-                
-                Toast.show("Submitting ticket...", "info");
-                try {
-                    await MessageCenterService.getInstance().createSupportTicket(title, content, 'Technical Problem');
-                    Toast.show("Ticket opened successfully.", "success");
+                const dialog = new TicketDialog(() => {
                     this._loadData();
-                } catch (e) {
-                    Toast.show("Failed to create ticket.", "error");
-                }
+                });
+                dialog.show();
             });
         }
 
@@ -388,8 +383,17 @@ export class MessagesScreen {
                 if (id) {
                     this._audioManager.playClick();
                     
-                    // Simulate opening a detailed view by marking as read locally
-                    await MessageCenterService.getInstance().markAsRead(id);
+                    const item = this._items.find(i => i.id === id);
+                    if (item && item.type === 'support') {
+                        const modal = new SupportConversationModal(item as SupportTicket, () => {
+                            this.render();
+                        });
+                        modal.render();
+                        return; // Modal handles marking as read
+                    }
+                    
+                    // Mark as read locally without popup
+                    MessageCenterService.getInstance().markAsRead(id).catch(console.error);
                     
                     // Update UI immediately
                     this._items.forEach(i => {
@@ -399,7 +403,7 @@ export class MessagesScreen {
                         }
                     });
                     
-                    Toast.show("Message marked as read.", "success");
+                    // NO popup toast here. Just re-render to update the state silently.
                     this.render();
                 }
             });

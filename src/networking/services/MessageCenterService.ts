@@ -38,11 +38,20 @@ export interface PersonalMessage extends BaseMessage {
     deepLink?: string;
 }
 
+export interface SupportMessage {
+    id: string;
+    text: string;
+    sender: 'user' | 'support';
+    timestamp: number;
+    read: boolean;
+}
+
 export interface SupportTicket extends BaseMessage {
     type: 'support';
     status: 'Open' | 'Pending' | 'Resolved' | 'Closed';
     category: 'Technical Problem' | 'Subscription' | 'Reward' | 'Tournament' | 'Payment' | 'General Inquiry' | 'Bug Report' | 'Feature Request';
     unreadSupportMessagesCount: number;
+    messages: SupportMessage[];
 }
 
 export type MessageCenterItem = Announcement | PersonalMessage | SupportTicket;
@@ -146,6 +155,7 @@ export class MessageCenterService {
             priority: 'Normal',
             status: 'Open',
             unreadSupportMessagesCount: 0,
+            messages: [{ id: Date.now().toString(), text: content, sender: 'user', timestamp: Date.now(), read: true }],
             createdAt: new Date().toISOString(),
             read: true,
             archived: false,
@@ -155,6 +165,21 @@ export class MessageCenterService {
         this._saveToCache();
         this._notifyListeners();
         return ticket;
+    }
+
+    public async replyToSupportTicket(id: string, text: string): Promise<void> {
+        await this._simulateNetwork();
+        const ticket = this.supportTickets.find(t => t.id === id);
+        if (ticket) {
+            ticket.messages.push({
+                id: Date.now().toString(),
+                text,
+                sender: 'user',
+                timestamp: Date.now(),
+                read: true
+            });
+            this._saveToCache();
+        }
     }
 
     // ==========================================
@@ -237,6 +262,10 @@ export class MessageCenterService {
                 content: 'I finished 5th yesterday but my account balance was not updated.',
                 category: 'Reward', status: 'Pending', priority: 'High',
                 unreadSupportMessagesCount: 1,
+                messages: [
+                    { id: '1', text: 'I finished 5th yesterday but my account balance was not updated.', sender: 'user', timestamp: Date.now() - 1000 * 60 * 60 * 24, read: true },
+                    { id: '2', text: 'We are looking into this issue and will get back to you shortly.', sender: 'support', timestamp: Date.now() - 1000 * 60 * 60 * 23, read: false }
+                ],
                 createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
                 read: false, archived: false, deleted: false
             }
