@@ -63,21 +63,31 @@ export class AuthManager {
         }
     }
 
-    private async _fetchUserProfile(userId: string): Promise<void> {
+    private async _fetchUserProfile(userId: string, retries = 5): Promise<void> {
         if (!supabase) return;
 
-        const { data, error } = await (supabase.from('users' as any) as any)
-            .select('*')
-            .eq('id', userId)
-            .single();
+        for (let i = 0; i < retries; i++) {
+            const { data, error } = await (supabase.from('users' as any) as any)
+                .select('*')
+                .eq('id', userId)
+                .single();
 
-        if (error) {
-            console.error('[AuthManager] Error fetching user profile:', error);
-        } else if (data) {
-            this._currentUser = data as UserRow;
-            // Sync local profile to save manager
-            this._saveManager.syncWithCloudUser(data as UserRow);
+            if (error) {
+                console.warn(`[AuthManager] Error fetching user profile (attempt ${i + 1}/${retries}):`, error);
+                if (i < retries - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    continue;
+                }
+            } else if (data) {
+                this._currentUser = data as UserRow;
+                // Sync local profile to save manager
+                this._saveManager.syncWithCloudUser(data as UserRow);
+                this._notifyListeners();
+                return;
+            }
         }
+        
+        console.error('[AuthManager] Failed to fetch user profile after retries.');
         this._notifyListeners();
     }
 
