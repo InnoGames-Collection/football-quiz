@@ -117,8 +117,10 @@ export class BottomNav {
                     }
                 }
 
-                if (tabId && tabId !== BottomNav._activeTab) {
-                    BottomNav.setActiveTab(tabId);
+                if (tabId) {
+                    if (tabId !== BottomNav._activeTab) {
+                        BottomNav.setActiveTab(tabId);
+                    }
                     onTabChange(tabId);
                 }
             });

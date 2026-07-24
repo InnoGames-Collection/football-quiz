@@ -296,6 +296,7 @@ export class MatchStatsScreen {
         
         document.getElementById('btn-home')?.addEventListener('click', () => {
             this._audioManager.playClick();
+            if (winAny.ethioCloseGame) winAny.ethioCloseGame();
             if (winAny.ethioReloadHome) {
                 winAny.ethioReloadHome();
             } else {
@@ -305,6 +306,7 @@ export class MatchStatsScreen {
         
         document.getElementById('btn-play-again')?.addEventListener('click', () => {
             this._audioManager.playClick();
+            if (winAny.ethioCloseGame) winAny.ethioCloseGame();
             if (winAny.ethioPlayAgain) {
                 winAny.ethioPlayAgain(this._gameId);
             } else {
@@ -314,6 +316,7 @@ export class MatchStatsScreen {
         
         document.getElementById('btn-leaderboard')?.addEventListener('click', () => {
             this._audioManager.playClick();
+            if (winAny.ethioCloseGame) winAny.ethioCloseGame();
             if (winAny.ethioNavigateToTab) {
                 winAny.ethioNavigateToTab('rankings');
             } else {

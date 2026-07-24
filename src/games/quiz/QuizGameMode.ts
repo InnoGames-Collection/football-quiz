@@ -76,6 +76,11 @@ export class QuizGameMode implements IGameMode {
     }
 
     private _showMatchStats(gameId: string, stats: any, finalScore: number): void {
+        const winAny = window as any;
+        if (winAny.ethioCache) {
+            winAny.ethioCache.setQuizActive(false);
+        }
+        
         const statsScreen = new MatchStatsScreen(
             this._uiManager,
             this._saveManager,
@@ -107,8 +112,6 @@ export class QuizGameMode implements IGameMode {
         const winAny = window as any;
         if (winAny.ethioCloseGame) {
             winAny.ethioCloseGame();
-        } else if (winAny.ethioHandleBack) {
-            winAny.ethioHandleBack();
         } else if (winAny.ethioReloadHome) {
             winAny.ethioReloadHome();
         }
