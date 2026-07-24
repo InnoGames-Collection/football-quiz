@@ -24,6 +24,7 @@ import { MessagesScreen } from '../../ui/screens/MessagesScreen';
 import { SubscriptionScreen } from '../../ui/screens/SubscriptionScreen';
 import { CacheManager } from '../cache/CacheManager';
 import { EventBus } from '../events/EventBus';
+import { MessageCenterService } from '../../networking/services/MessageCenterService';
 
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
@@ -34,6 +35,10 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     const eventBus = EventBus.getInstance();
     const registry = new GameRegistry(game.uiManager);
     registry.registerGame(new QuizGameMode());
+
+    MessageCenterService.getInstance().subscribeToBadgeUpdates((count) => {
+        BottomNav.setBadge('profile', count);
+    });
 
     const winAny = window as any;
     winAny.ethioAudio = game.audioManager;

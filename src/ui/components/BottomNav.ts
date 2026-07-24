@@ -92,7 +92,18 @@ export class BottomNav {
                     transform: ${isActive ? 'scale(1.1)' : 'scale(1)'};
                     filter: ${isActive ? 'drop-shadow(0 2px 8px rgba(255,215,0,0.4))' : 'none'};
                 ">
-                    <span style="font-size: 20px; margin-bottom: 2px;">${t.icon}</span>
+                    <div style="position: relative; display: inline-block;">
+                        <span style="font-size: 20px; margin-bottom: 2px;">${t.icon}</span>
+                        <div id="nav-badge-${t.id}" style="
+                            display: none;
+                            position: absolute;
+                            top: -4px; right: -8px;
+                            background: var(--tv-pitch-green, #22C55E);
+                            color: white; font-size: 10px; font-weight: 900;
+                            border-radius: 10px; padding: 2px 6px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                        "></div>
+                    </div>
                     <span class="tab-text" style="
                         font-size: var(--fds-font-xs);
                         font-weight: ${isActive ? '800' : '600'};
@@ -144,6 +155,18 @@ export class BottomNav {
                 labelSpan.style.fontWeight = isActive ? '800' : '600';
             }
         });
+    }
+
+    public static setBadge(tabId: TabId, count: number): void {
+        const badge = document.getElementById(`nav-badge-${tabId}`);
+        if (badge) {
+            if (count > 0) {
+                badge.innerText = count > 99 ? '99+' : count.toString();
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
     }
 
     public static hide(): void {

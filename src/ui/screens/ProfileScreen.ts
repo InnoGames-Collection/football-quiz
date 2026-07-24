@@ -7,6 +7,7 @@ import { AwardsScreen } from './AwardsScreen';
 import { ProfileService } from '../../networking/services/ProfileService';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { i18n } from '../../localization/i18n';
+import { MessageCenterService } from '../../networking/services/MessageCenterService';
 
 
 export interface ProfileCallbacks {
@@ -26,6 +27,7 @@ export class ProfileScreen {
     private _saveManager: SaveManager;
     private _audioManager: AudioManager;
     private _callbacks: ProfileCallbacks;
+    private _unsubscribeBadge: (() => void) | null = null;
 
     constructor(
         uiManager: UIManager,
@@ -37,6 +39,23 @@ export class ProfileScreen {
         this._saveManager = saveManager;
         this._audioManager = audioManager;
         this._callbacks = callbacks;
+
+        this._unsubscribeBadge = MessageCenterService.getInstance().subscribeToBadgeUpdates(() => {
+            const badgeEl = document.getElementById('profile-msg-badge');
+            if (badgeEl) {
+                const count = MessageCenterService.getInstance().getTotalUnreadCount();
+                if (count > 0) {
+                    badgeEl.innerText = count > 99 ? '99+' : count.toString();
+                    badgeEl.style.display = 'inline-block';
+                } else {
+                    badgeEl.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    public destroy(): void {
+        if (this._unsubscribeBadge) this._unsubscribeBadge();
     }
 
     public render(): void {
@@ -54,7 +73,7 @@ export class ProfileScreen {
         const division = ProgressionManager.getDivision(profile.xp);
         const msisdn = profile.phone ? this._maskPhone(profile.phone) : `${i18n.currentLocale === 'am' ? 'እንግዳ ተጫዋች' : (i18n.currentLocale === 'om' ? 'Tapaataa Keessummaa' : 'Guest Player')}`;
 
-        const listTile = (icon: string, title: string, action: string, hasArrow: boolean = true) => `
+        const listTile = (icon: string, title: string, action: string, hasArrow: boolean = true, badgeId: string = '') => `
             <div class="list-tile profile-menu-tile" data-action="${action}" style="
                 display: flex; 
                 justify-content: space-between; 
@@ -68,7 +87,18 @@ export class ProfileScreen {
                     <span style="font-size: var(--fds-font-lg);">${icon}</span>
                     <span style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${title}</span>
                 </div>
-                ${hasArrow ? `<span style="color: var(--fds-text-dim);">❯</span>` : ''}
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    ${badgeId ? `
+                        <span id="${badgeId}" style="
+                            display: none;
+                            background: var(--tv-pitch-green, #22C55E);
+                            color: white; font-size: 10px; font-weight: 900;
+                            border-radius: 10px; padding: 2px 6px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                        "></span>
+                    ` : ''}
+                    ${hasArrow ? `<span style="color: var(--fds-text-dim);">❯</span>` : ''}
+                </div>
             </div>
         `;
 
@@ -141,7 +171,7 @@ export class ProfileScreen {
                     <div class="glass-card" style="border-radius: 12px; margin-bottom: 20px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
                         ${listTile('👥', i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : (i18n.currentLocale === 'om' ? 'Hiriyoota Affeeri' : 'Invite Friends'), 'invite')}
                         ${listTile('⭐', i18n.currentLocale === 'am' ? 'ምዝገባ' : (i18n.currentLocale === 'om' ? 'Galmee' : 'Subscription'), 'subscription')}
-                        <div style="border-bottom: none;">${listTile('💬', i18n.currentLocale === 'am' ? 'መልዕክቶች' : (i18n.currentLocale === 'om' ? 'Ergaawwan' : 'Messages'), 'messages')}</div>
+                        <div style="border-bottom: none;">${listTile('💬', i18n.currentLocale === 'am' ? 'መልዕክቶች' : (i18n.currentLocale === 'om' ? 'Ergaawwan' : 'Messages'), 'messages', true, 'profile-msg-badge')}</div>
                     </div>
 
                     <!-- Group 3: Utility -->
@@ -170,6 +200,18 @@ export class ProfileScreen {
         `;
 
         this._bindEvents();
+
+        // Initial badge sync
+        const count = MessageCenterService.getInstance().getTotalUnreadCount();
+        const badgeEl = document.getElementById('profile-msg-badge');
+        if (badgeEl) {
+            if (count > 0) {
+                badgeEl.innerText = count > 99 ? '99+' : count.toString();
+                badgeEl.style.display = 'inline-block';
+            } else {
+                badgeEl.style.display = 'none';
+            }
+        }
     }
 
     private _bindEvents(): void {
