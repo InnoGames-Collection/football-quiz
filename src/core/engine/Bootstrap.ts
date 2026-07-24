@@ -329,7 +329,10 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         }
         currentTab = tabId;
         const targetRoute = tabStacks[tabId][tabStacks[tabId].length - 1];
-        renderRoute(targetRoute, true);
+        
+        // We do not push to tabStacks here because it's already at the top (or we just reset it).
+        renderRoute(targetRoute, false);
+        try { window.history.pushState({ tab: tabId, route: targetRoute }, '', window.location.href); } catch(e){}
     };
 
     winAny.ethioReloadHome = () => navigateToTab('home');
