@@ -60,7 +60,7 @@ export class ScoreboardQuestionScreen {
         // Visibility / Pause Listener
         this._visibilityHandler = () => {
             if (document.visibilityState === 'hidden' && this._hasKickedOff && !this._isPaused && this._currentIndex < this._questions.length) {
-                this._pauseMatch();
+                this._showLeaveWarning();
             }
         };
         document.addEventListener('visibilitychange', this._visibilityHandler);
@@ -68,16 +68,16 @@ export class ScoreboardQuestionScreen {
         // Network Monitor Listeners
         this._networkOfflineHandler = () => {
             if (this._hasKickedOff && !this._isPaused && this._currentIndex < this._questions.length) {
-                this._pauseMatch();
-                const text = document.getElementById('pause-modal')?.querySelector('div > div:nth-child(3)');
+                this._showLeaveWarning();
+                const text = document.getElementById('match-exit-dialog')?.querySelector('div > div:nth-child(2)');
                 if (text) {
-                    text.innerHTML = '⚠️ Your connection was lost. Reconnect to resume your match.';
+                    text.innerHTML = '⚠️ Your connection was lost. Reconnect to continue playing.';
                 }
             }
         };
         this._networkOnlineHandler = () => {
             if (this._hasKickedOff && this._isPaused && this._currentIndex < this._questions.length) {
-                this._resumeMatch();
+                this._hideLeaveWarning();
             }
         };
         window.addEventListener('ethio-network-offline', this._networkOfflineHandler);
@@ -97,6 +97,19 @@ export class ScoreboardQuestionScreen {
         );
 
         localStorage.setItem('ETHIO_REVIEW_CHOICES', '[]');
+        
+        history.pushState({ match_active: true }, '');
+        (window as any).ethioOnBackPress = () => {
+            const modal = document.getElementById('match-exit-dialog');
+            if (modal && modal.style.display !== 'none') {
+                this._hideLeaveWarning();
+            } else {
+                this._showLeaveWarning();
+            }
+            history.pushState({ match_active: true }, '');
+            return true; 
+        };
+
         this._renderKickOffScreen();
     }
 
@@ -125,9 +138,9 @@ export class ScoreboardQuestionScreen {
         (window as any).ethioOnBackPress = () => {
             const modal = document.getElementById('match-exit-dialog');
             if (modal && modal.style.display !== 'none') {
-                this._resumeMatch();
+                this._hideLeaveWarning();
             } else {
-                this._pauseMatch();
+                this._showLeaveWarning();
             }
             // Re-push state so next back press can be caught
             history.pushState({ match_active: true }, '');
@@ -549,38 +562,20 @@ export class ScoreboardQuestionScreen {
         }
     }
 
-    private _pauseMatch(): void {
-        this._isPaused = true;
-        this._stopTimer();
-        
+    private _showLeaveWarning(): void {
         const modal = document.getElementById('match-exit-dialog');
         if (modal) modal.style.display = 'flex';
-
-        if (this._session) {
-            this._session.state = 'Paused';
-            GameSessionManager.getInstance().saveSession(this._session);
-        }
     }
 
-    private _resumeMatch(): void {
-        this._isPaused = false;
-        
+    private _hideLeaveWarning(): void {
         const modal = document.getElementById('match-exit-dialog');
         if (modal) modal.style.display = 'none';
-
-        if (this._session) {
-            this._session.state = 'Resumed';
-            GameSessionManager.getInstance().saveSession(this._session);
-        }
-
-        this._startTimer(this._timeLeftSec);
     }
 
     private _leaveMatch(): void {
         this._stopTimer();
         if (this._session) {
-            this._session.state = 'Paused';
-            GameSessionManager.getInstance().saveSession(this._session);
+            GameSessionManager.getInstance().clearSession();
         }
         (window as any).ethioOnBackPress = null;
         this._callbacks.onExitMatch();
@@ -589,7 +584,7 @@ export class ScoreboardQuestionScreen {
     private _bindPauseButtons(): void {
         document.getElementById('btn-pause-resume')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            this._resumeMatch();
+            this._hideLeaveWarning();
         });
 
         document.getElementById('btn-pause-leave')?.addEventListener('click', () => {
@@ -600,7 +595,7 @@ export class ScoreboardQuestionScreen {
 
     private _bindOptionButtons(): void {
         document.getElementById('match-exit-btn')?.addEventListener('click', () => {
-            this._pauseMatch();
+            this._showLeaveWarning();
         });
 
         const options = document.querySelectorAll('.option-btn');
