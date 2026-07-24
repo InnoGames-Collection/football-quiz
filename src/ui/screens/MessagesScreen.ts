@@ -8,6 +8,7 @@ import { AuthManager } from '../../core/auth/AuthManager';
 import type { MessageRow } from '../../networking/supabase/types';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { DesignSystem } from '../theme/DesignSystem';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class MessagesScreen {
     private _uiManager: UIManager;
@@ -102,10 +103,7 @@ export class MessagesScreen {
 
                 
                 <!-- App Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
-                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">MESSAGES</div>
-                    <button id="btn-msg-back" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
-                </div>
+                ${EthioFantasyAppBar.render('MESSAGES')}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">
                     
@@ -192,7 +190,7 @@ export class MessagesScreen {
     }
 
     private _bindEvents(): void {
-        document.getElementById('btn-msg-back')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(this._uiManager.container, () => {
             this._audioManager.playClick();
             if (this._unsubscribeRealtime) {
                 this._unsubscribeRealtime();

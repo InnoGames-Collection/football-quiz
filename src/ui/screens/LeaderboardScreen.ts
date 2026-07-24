@@ -6,6 +6,7 @@ import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { DesignSystem } from '../theme/DesignSystem';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class LeaderboardScreen {
     private _uiManager: UIManager;
@@ -93,16 +94,7 @@ export class LeaderboardScreen {
                 <div class="stadium-beam stadium-beam-right"></div>
 
                 <!-- TOP BAR -->
-                <div style="display: flex; justify-content: center; align-items: center; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); position: relative;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 24px;">🏆</span>
-                        <div style="text-align: left;">
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-ethio-green); text-transform: uppercase; letter-spacing: 1px;">ETHIOFANTASY</div>
-                            <h1 style="margin: 0; font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main);">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK')}</h1>
-                        </div>
-                    </div>
-                    <button id="lb-close-btn" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
-                </div>
+                ${EthioFantasyAppBar.render(i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK'))}
 
                 <div style="max-width: 900px; margin: 0 auto; padding: 16px;">
                     
@@ -210,7 +202,7 @@ export class LeaderboardScreen {
     private _bindEvents(): void {
         const root = this._uiManager.container;
 
-        root.querySelector('#lb-close-btn')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._onClose();
         });

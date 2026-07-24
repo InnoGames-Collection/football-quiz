@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { VASService } from '../../networking/vas/VASService';
 import type { SubscriptionTier } from '../../networking/supabase/types';
 import { DesignSystem } from '../theme/DesignSystem';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class SubscriptionScreen {
     private _uiManager: UIManager;
@@ -32,17 +33,7 @@ export class SubscriptionScreen {
 
                 <div style="max-width: 840px; margin: 0 auto; position: relative; z-index: 10;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px; position: relative;">
-                        <div style="text-align: center;">
-                            <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">
-                                ETHIO TELECOM VAS SUBSCRIPTION
-                            </span>
-                            <h1 style="margin: 4px 0 0 0; font-size: 32px; font-weight: 900; color: var(--fds-text-main);">
-                                📡 LEAGUE PASS
-                            </h1>
-                        </div>
-                        <button id="sub-close-btn" style="position: absolute; right: 0; top: 0; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
-                    </div>
+                    ${EthioFantasyAppBar.render('SUBSCRIPTION')}
 
                     ${this._statusMessage ? `
                         <div style="
@@ -115,7 +106,7 @@ export class SubscriptionScreen {
     private _bindEvents(): void {
         const root = this._uiManager.container;
 
-        root.querySelector('#sub-close-btn')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._onClose();
         });

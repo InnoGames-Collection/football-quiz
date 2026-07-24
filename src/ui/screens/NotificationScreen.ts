@@ -6,6 +6,7 @@ import { NotificationService } from '../../networking/services/NotificationServi
 import type { NotificationRow } from '../../networking/supabase/types';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { DesignSystem } from '../theme/DesignSystem';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class NotificationScreen {
     private _uiManager: UIManager;
@@ -173,12 +174,9 @@ export class NotificationScreen {
 
                 
                 <!-- App Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
-                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 1px; text-transform: uppercase;">
-                        ${locale === 'am' ? 'ማሳወቂያዎች' : (locale === 'om' ? 'BEEKSIISAA' : 'NOTIFICATIONS')}
-                    </div>
-                    <button id="btn-back" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
-                    ${hasUnread ? `
+                ${EthioFantasyAppBar.render(
+                    locale === 'am' ? 'ማሳወቂያዎች' : (locale === 'om' ? 'BEEKSIISAA' : 'NOTIFICATIONS'),
+                    hasUnread ? `
                         <button id="btn-mark-read" style="
                             background: rgba(255,255,255,0.08);
                             border: 1px solid rgba(255,255,255,0.15);
@@ -191,8 +189,8 @@ export class NotificationScreen {
                         ">
                             ${locale === 'am' ? 'ሁሉንም አንብብ' : (locale === 'om' ? 'Hunda Dubbisi' : 'MARK ALL READ')}
                         </button>
-                    ` : ''}
-                </div>
+                    ` : ''
+                )}
 
                 <!-- Scrolling Section -->
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px;">
@@ -359,7 +357,7 @@ export class NotificationScreen {
     }
 
     private _bindEvents(): void {
-        document.getElementById('btn-back')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(this._uiManager.container, () => {
             this._audioManager.playClick();
             if (this._unsubscribeRealtime) {
                 this._unsubscribeRealtime();

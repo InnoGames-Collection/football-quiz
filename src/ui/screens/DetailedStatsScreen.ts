@@ -5,6 +5,7 @@ import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { DesignSystem } from '../theme/DesignSystem';
 import { GameSessionService } from '../../networking/services/GameSessionService';
 import { PullToRefresh } from '../components/PullToRefresh';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 
 export class DetailedStatsScreen {
@@ -97,12 +98,7 @@ export class DetailedStatsScreen {
 
                 
                 <!-- App Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
-                    <button id="btn-stats-back" style="
-                        background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
-                    ">❮</button>
-                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">DETAILED STATISTICS</div>
-                </div>
+                ${EthioFantasyAppBar.render('Detailed Statistics')}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
@@ -149,7 +145,7 @@ export class DetailedStatsScreen {
             </div>
         `;
 
-        document.getElementById('btn-stats-back')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._onBack();
         });

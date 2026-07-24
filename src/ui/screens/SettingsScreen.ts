@@ -9,6 +9,7 @@ import { FAQService } from '../../networking/services/FAQService';
 import { Toast } from '../components/Toast';
 import { SupportService } from '../../networking/services/SupportService';
 import { DesignSystem } from '../theme/DesignSystem';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export interface AppSettings {
     soundEffects: boolean;
@@ -126,32 +127,24 @@ export class SettingsScreen {
     public render(): void {
         const root = this._uiManager.container;
 
-        // Custom localized header helper
-        const header = (title: string, _backAction?: () => void) => `
-            <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
-                <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">${title}</div>
-                <button id="btn-back-sub" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px; cursor: pointer; font-weight: bold;">✕</button>
-            </div>
-        `;
-
         if (this._subScreen === 'main') {
             this._renderMainScreen(root);
         } else if (this._subScreen === 'profile') {
-            this._renderProfileScreen(root, header);
+            this._renderProfileScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         } else if (this._subScreen === 'language') {
-            this._renderLanguageScreen(root, header);
+            this._renderLanguageScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         } else if (this._subScreen === 'notifications') {
-            this._renderNotificationsScreen(root, header);
+            this._renderNotificationsScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         } else if (this._subScreen === 'sound') {
-            this._renderSoundScreen(root, header);
+            this._renderSoundScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         } else if (this._subScreen === 'help') {
-            this._renderHelpScreen(root, header);
+            this._renderHelpScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         } else if (this._subScreen === 'terms') {
-            this._renderTermsScreen(root, header);
+            this._renderTermsScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         } else if (this._subScreen === 'privacy') {
-            this._renderPrivacyScreen(root, header);
+            this._renderPrivacyScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         } else if (this._subScreen === 'about') {
-            this._renderAboutScreen(root, header);
+            this._renderAboutScreen(root, (title: string) => EthioFantasyAppBar.render(title));
         }
     }
 
@@ -186,14 +179,7 @@ export class SettingsScreen {
                 <div class="ethio-layer ethio-layer-overlay"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
 
-                
-                <!-- App Bar -->
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: flex-start; padding-left: 8px;">
-                    <button id="btn-back" style="
-                        background: none; border: none; color: var(--fds-text-main); font-size: 24px; padding: 8px 16px; cursor: pointer;
-                    ">❮</button>
-                    <div style="font-weight: 900; font-size: var(--fds-font-md); letter-spacing: 0.5px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'ቅንብሮች' : (i18n.currentLocale === 'om' ? 'QINDAA\'INOOTA' : 'SETTINGS')}</div>
-                </div>
+                ${EthioFantasyAppBar.render(i18n.currentLocale === 'am' ? 'ቅንብሮች' : (i18n.currentLocale === 'om' ? 'QINDAA\'INOOTA' : 'SETTINGS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
@@ -229,8 +215,7 @@ export class SettingsScreen {
             </style>
         `;
 
-        // Bind events
-        document.getElementById('btn-back')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._onBack();
         });
@@ -300,7 +285,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
     }
 
     private _renderLanguageScreen(root: HTMLElement, header: Function): void {
@@ -345,7 +330,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
 
         const items = root.querySelectorAll('.lang-item');
         items.forEach(item => {
@@ -439,7 +424,7 @@ export class SettingsScreen {
             </style>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
 
         const toggles = root.querySelectorAll('.notif-toggle');
         toggles.forEach(toggle => {
@@ -499,7 +484,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
 
         const items = root.querySelectorAll('.sound-item');
         items.forEach(item => {
@@ -617,7 +602,7 @@ export class SettingsScreen {
                 </div>
             `;
 
-            this._bindSubBack();
+            this._bindSubScreenBack(root);
             document.getElementById('btn-back-help')?.addEventListener('click', () => {
                 this._audioManager.playClick();
                 this._showContactSupportForm = false;
@@ -709,7 +694,7 @@ export class SettingsScreen {
                 </div>
             `;
 
-            this._bindSubBack();
+            this._bindSubScreenBack(root);
             document.getElementById('btn-back-help')?.addEventListener('click', () => {
                 this._audioManager.playClick();
                 this._helpCategory = null;
@@ -789,7 +774,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
 
         document.getElementById('btn-contact-support')?.addEventListener('click', () => {
             this._audioManager.playClick();
@@ -895,7 +880,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
     }
 
     private _renderPrivacyScreen(root: HTMLElement, header: Function): void {
@@ -952,7 +937,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
     }
 
     private _renderAboutScreen(root: HTMLElement, header: Function): void {
@@ -992,7 +977,7 @@ export class SettingsScreen {
             </div>
         `;
 
-        this._bindSubBack();
+        this._bindSubScreenBack(root);
     }
 
     private _goBack(): void {
@@ -1002,8 +987,8 @@ export class SettingsScreen {
         this.render();
     }
 
-    private _bindSubBack(): void {
-        document.getElementById('btn-back-sub')?.addEventListener('click', () => {
+    private _bindSubScreenBack(root: HTMLElement): void {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._goBack();
         });

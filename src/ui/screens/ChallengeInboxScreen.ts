@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { ChallengeService } from '../../networking/multiplayer/ChallengeService';
 import type { ChallengeRow } from '../../networking/supabase/types';
 import { DesignSystem } from '../theme/DesignSystem';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class ChallengeInboxScreen {
     private _uiManager: UIManager;
@@ -33,17 +34,7 @@ export class ChallengeInboxScreen {
 
                 <div style="max-width: 600px; margin: 0 auto; position: relative; z-index: 10;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px; position: relative;">
-                        <div style="text-align: center;">
-                            <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">
-                                ASYNC MULTIPLAYER
-                            </span>
-                            <h1 style="margin: 4px 0 0 0; font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main);">
-                                📩 CHALLENGE INBOX (${this._challenges.length})
-                            </h1>
-                        </div>
-                        <button id="ch-close-btn" style="position: absolute; right: 0; top: 0; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
-                    </div>
+                    ${EthioFantasyAppBar.render(`CHALLENGE INBOX (${this._challenges.length})`)}
 
                     ${this._challenges.length === 0 ? `
                         <div class="glass-card" style="padding: 40px; text-align: center;">
@@ -75,7 +66,7 @@ export class ChallengeInboxScreen {
             </div>
         `;
 
-        root.querySelector('#ch-close-btn')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._onClose();
         });

@@ -2,6 +2,7 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { TournamentManager } from '../../core/competition/TournamentManager';
 import type { TournamentRow } from '../../networking/supabase/types';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 import { DesignSystem } from '../theme/DesignSystem';
 
 export class TournamentLobbyScreen {
@@ -33,17 +34,7 @@ export class TournamentLobbyScreen {
 
                 <div style="max-width: 760px; margin: 0 auto; position: relative; z-index: 10;">
                     <!-- Header -->
-                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px; position: relative;">
-                        <div style="text-align: center;">
-                            <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">
-                                SCHEDULED EVENTS
-                            </span>
-                            <h1 style="margin: 4px 0 0 0; font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main);">
-                                🏟️ LIVE TOURNAMENT LOBBY
-                            </h1>
-                        </div>
-                        <button id="t-close-btn" style="position: absolute; right: 0; top: 0; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
-                    </div>
+                    ${EthioFantasyAppBar.render('TOURNAMENT LOBBY')}
 
                     <!-- Tournament Cards List -->
                     <div style="display: flex; flex-direction: column; gap: 18px;">
@@ -81,7 +72,7 @@ export class TournamentLobbyScreen {
     private _bindEvents(): void {
         const root = this._uiManager.container;
 
-        root.querySelector('#t-close-btn')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._onClose();
         });

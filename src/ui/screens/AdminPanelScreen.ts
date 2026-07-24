@@ -5,6 +5,7 @@ import { QUESTION_CATEGORIES } from '../../core/quiz/QuestionCategories';
 import { supabase } from '../../networking/supabase/SupabaseClient';
 import { AnalyticsService, PlatformAnalytics } from '../../networking/api/AnalyticsService';
 import { DesignSystem } from '../theme/DesignSystem';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 type AdminTab = 'QUESTIONS' | 'BULK_IMPORT' | 'COMPETITIONS' | 'ANALYTICS';
 
@@ -40,13 +41,7 @@ export class AdminPanelScreen {
 
                 <div style="max-width: 960px; margin: 0 auto; position: relative; z-index: 10;">
                     <!-- Admin Header -->
-                    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 24px; position: relative;">
-                        <div style="text-align: center;">
-                            <span style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--gold-primary); letter-spacing: 2px;">ETHIO TELECOM VAS PORTAL</span>
-                            <h1 style="margin: 4px 0 0 0; font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main);">⚙️ CMS & ADMIN PANEL</h1>
-                        </div>
-                        <button id="admin-close-btn" style="position: absolute; right: 0; top: 0; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
-                    </div>
+                    ${EthioFantasyAppBar.render('CMS & ADMIN PANEL')}
 
                     ${this._statusMessage ? `
                         <div style="
@@ -337,7 +332,7 @@ world-cup,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,South Afric
         const root = this._uiManager.container;
 
         // Close btn
-        root.querySelector('#admin-close-btn')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
             this._onClose();
         });

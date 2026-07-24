@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { CompetitionRegistry, Competition } from '../../core/quiz/CompetitionRegistry';
 import { DesignSystem } from '../theme/DesignSystem';
 import { PullToRefresh } from '../components/PullToRefresh';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class CompetitionBrowserScreen {
     private _uiManager: UIManager;
@@ -65,10 +66,7 @@ export class CompetitionBrowserScreen {
                 <div class="ethio-layer ethio-layer-lights"></div>
 
                 
-                <div class="tv-broadcast-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); justify-content: center; padding: 12px 16px; position: relative;">
-                    <div style="font-weight: 900; font-size: 18px; letter-spacing: 1px;">LEAGUE</div>
-                    <button id="comp-close-btn" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 20px;">✕</button>
-                </div>
+                ${EthioFantasyAppBar.render('LEAGUE')}
 
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px 0 100px 0;">
                     
@@ -157,7 +155,7 @@ export class CompetitionBrowserScreen {
     }
 
     private _bindEvents(): void {
-        document.getElementById('comp-close-btn')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(this._uiManager.container, () => {
             this._audioManager.playClick();
             this._onClose();
         });
