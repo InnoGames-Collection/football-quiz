@@ -61,7 +61,7 @@ export class ScoreboardQuestionScreen {
         // Visibility / Pause Listener
         this._visibilityHandler = () => {
             if (document.visibilityState === 'hidden' && this._hasKickedOff && !this._isPaused && this._currentIndex < this._questions.length) {
-                this._showLeaveWarning();
+                this._showPauseOverlay();
             }
         };
         document.addEventListener('visibilitychange', this._visibilityHandler);
@@ -450,6 +450,26 @@ export class ScoreboardQuestionScreen {
                         </div>
                     </div>
                 </div>
+
+                <!-- MATCH PAUSED DIALOG -->
+                <div id="match-paused-dialog" style="
+                    display: none; 
+                    position: fixed; 
+                    top: 0; left: 0; 
+                    width: 100%; height: 100%; 
+                    background: rgba(15, 23, 42, 0.95); 
+                    z-index: 10001; 
+                    align-items: center; justify-content: center;
+                    padding: 20px; box-sizing: border-box;
+                    animation: fade-in 0.2s ease-out;
+                ">
+                    <div style="text-align: center;">
+                        <div style="font-size: 64px; margin-bottom: 24px;">⏸️</div>
+                        <div style="font-size: 28px; font-weight: 900; color: white; margin-bottom: 12px; letter-spacing: 1px;">Match Paused</div>
+                        <div style="font-size: 16px; color: #94A3B8; margin-bottom: 40px;">Tap Continue to resume.</div>
+                        <button id="btn-resume-paused" style="width: 100%; max-width: 240px; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #22c55e, #15803d); color: white; font-weight: 900; font-size: 18px; cursor: pointer; box-shadow: 0 8px 24px rgba(34,197,94,0.4); text-transform: uppercase;">Continue</button>
+                    </div>
+                </div>
             </div>
             
             <style>
@@ -573,6 +593,20 @@ export class ScoreboardQuestionScreen {
         if (modal) modal.style.display = 'none';
     }
 
+    private _showPauseOverlay(): void {
+        this._isPaused = true;
+        this._stopTimer();
+        const modal = document.getElementById('match-paused-dialog');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    private _hidePauseOverlay(): void {
+        this._isPaused = false;
+        const modal = document.getElementById('match-paused-dialog');
+        if (modal) modal.style.display = 'none';
+        this._startTimer(this._timeLeftSec);
+    }
+
     private _leaveMatch(): void {
         this._stopTimer();
         if (this._session) {
@@ -592,6 +626,11 @@ export class ScoreboardQuestionScreen {
         document.getElementById('btn-pause-leave')?.addEventListener('click', () => {
             this._audioManager.playClick();
             this._leaveMatch();
+        });
+
+        document.getElementById('btn-resume-paused')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._hidePauseOverlay();
         });
     }
 
