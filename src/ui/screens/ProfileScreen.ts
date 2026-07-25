@@ -3,7 +3,6 @@ import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { DesignSystem } from '../theme/DesignSystem';
-import { AwardsScreen } from './AwardsScreen';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { i18n } from '../../localization/i18n';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';

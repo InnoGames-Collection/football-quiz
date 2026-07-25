@@ -26,6 +26,7 @@ import { CacheManager } from '../cache/CacheManager';
 import { EventBus } from '../events/EventBus';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';
 import { AchievementsScreen } from '../../ui/screens/AchievementsScreen';
+import { AwardsScreen } from '../../ui/screens/AwardsScreen';
 
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
