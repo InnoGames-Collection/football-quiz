@@ -121,6 +121,13 @@ export class BottomNav {
                 const target = e.currentTarget as HTMLButtonElement;
                 const tabId = target.getAttribute('data-tab-id') as TabId;
                 
+                // Light tap haptic feedback respecting mute setting
+                if (localStorage.getItem('ETHIO_FOOTBALL_MUTED') !== 'true') {
+                    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                        try { navigator.vibrate(10); } catch(e) {}
+                    }
+                }
+                
                 // Intercept tab changes if a match is active
                 if (typeof (window as any).ethioOnBackPress === 'function') {
                     if ((window as any).ethioOnBackPress()) {

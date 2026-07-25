@@ -26,10 +26,26 @@ export class AudioManager {
     }
 
     /**
+     * Centralized Haptic Feedback Engine
+     * Respects the global mute setting.
+     */
+    private _vibrate(pattern: number | number[]): void {
+        if (this._isMuted) return;
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(pattern);
+            } catch (e) {
+                // Ignore if browser restricts
+            }
+        }
+    }
+
+    /**
      * 1. Button Click Sound (Tactile Touch Feedback)
      */
     public playClick(): void {
         if (this._isMuted) return;
+        this._vibrate(10); // Light selection feedback
         this._initContext();
         if (!this._ctx) return;
 
@@ -85,6 +101,7 @@ export class AudioManager {
      */
     public playFullTimeWhistle(): void {
         if (this._isMuted) return;
+        this._vibrate([30, 40, 30]); // Success Haptic (Match Completed)
         this._initContext();
         if (!this._ctx) return;
 
@@ -211,6 +228,7 @@ export class AudioManager {
      */
     public playWrongAnswer(): void {
         if (this._isMuted) return;
+        this._vibrate([40, 20, 40]); // Medium Impact Haptic
         this._initContext();
         if (!this._ctx) return;
 
@@ -316,6 +334,7 @@ export class AudioManager {
      */
     public playCorrectAnswer(): void {
         if (this._isMuted) return;
+        this._vibrate(20); // Light Success Haptic
         this._initContext();
         if (!this._ctx) return;
 
