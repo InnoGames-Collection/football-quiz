@@ -212,8 +212,7 @@ export class FootballLeagueHome {
 
         this._startCountdownTimer();
         this._bindEvents();
-        const userId = AuthManager.getInstance().currentUser?.id || '';
-        this._fetchDynamicData(userId, division.name);
+        this._fetchDynamicData();
 
         // Attach Pull to Refresh behavior (REQ 11-15 Refresh strategy)
         const container = root.querySelector('.stadium-container') as HTMLElement;
@@ -229,7 +228,7 @@ export class FootballLeagueHome {
         ReturningPlayerModal.checkAndShow(this._uiManager, this._saveManager, this._audioManager);
     }
 
-    private async _fetchDynamicData(userId: string, divisionName: string) {
+    private async _fetchDynamicData() {
         // Legacy Rank fetch removed since we now use Daily Rank
 
         // Fetch Live Matches / Top 3 Leaderboard
