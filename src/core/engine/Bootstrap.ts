@@ -580,6 +580,10 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         
         // Check if we hit the root trap
         if (e.state && e.state.root) {
+            if (currentTab !== 'home') {
+                navigateToTab('home');
+                return;
+            }
             // Trap triggered, push back the home state immediately
             try { window.history.pushState({ tab: 'home', route: 'home' }, '', window.location.href); } catch(err){}
             showMaterial3ExitDialog();
