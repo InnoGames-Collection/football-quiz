@@ -371,11 +371,11 @@ export class ScoreboardQuestionScreen {
                     min-height: 0;
                 ">
                     <!-- Question Card Wrapper (Scrollable if needed) -->
-                    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(32px, 5vh, 40px); padding: 0 8px;" class="hide-scrollbar">
+                    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(16px, 3vh, 40px); padding: 0 8px;" class="hide-scrollbar">
                         <div class="anim-question-in" style="
                             width: 100%;
                             margin: auto 0;
-                            padding: 32px 24px;
+                            padding: clamp(16px, 3vh, 32px) 24px;
                             background: rgba(7, 27, 45, 0.75);
                             backdrop-filter: blur(12px);
                             border: 1px solid rgba(255,255,255,0.15);
@@ -386,7 +386,7 @@ export class ScoreboardQuestionScreen {
                             flex-shrink: 0;
                         ">
                             <h2 style="
-                                font-size: clamp(22px, 4vh, 28px); 
+                                font-size: clamp(16px, 3.5vh, 28px); 
                                 font-weight: 700; 
                                 color: white; 
                                 line-height: 1.3; 
@@ -402,7 +402,7 @@ export class ScoreboardQuestionScreen {
                     </div>
 
                     <!-- ANSWERS GRID (Never scrolls) -->
-                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(14px, 2.5vh, 18px); width: 100%; padding-bottom: 32px; padding-left: 8px; padding-right: 8px; box-sizing: border-box;">
+                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(8px, 2vh, 18px); width: 100%; padding-bottom: 32px; padding-left: 8px; padding-right: 8px; box-sizing: border-box;">
                         ${q.options.map((opt, i) => `
                             <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
                                 <span class="option-badge">${String.fromCharCode(65 + i)}</span>
@@ -543,8 +543,8 @@ export class ScoreboardQuestionScreen {
                 
                 .option-btn {
                     width: 100%;
-                    min-height: clamp(56px, 8vh, 76px);
-                    padding: clamp(12px, 2vh, 18px) 24px;
+                    min-height: clamp(48px, 7vh, 76px);
+                    padding: clamp(8px, 1.5vh, 18px) 24px;
                     background: linear-gradient(180deg, #12A64B 0%, #065F33 100%);
                     border: 1px solid rgba(255,255,255,0.2);
                     border-radius: 18px;
@@ -585,7 +585,7 @@ export class ScoreboardQuestionScreen {
                 }
                 .option-text {
                     flex: 1; 
-                    font-size: clamp(16px, 3vh, 18px); 
+                    font-size: clamp(14px, 2.5vh, 18px); 
                     font-weight: 600; 
                     color: white; 
                     line-height: 1.3; 
@@ -965,26 +965,33 @@ export class ScoreboardQuestionScreen {
     }
 
     private async _completeMatch(): Promise<void> {
-        // Show loading state while validating with server
-        this._showFeedbackOverlay(false);
-        const text = document.getElementById('feedback-text');
-        const sub = document.getElementById('feedback-subtext');
-        if (text && sub) {
-            text.innerText = 'VALIDATING...';
-            sub.innerText = '';
-        }
-
         let stats = this._quizEngine.calculateFinalStats();
         let finalScore = (stats.goals * 100) + (stats.accuracy * 5) + Math.round(Math.max(0, 15 - stats.avgResponseTime) * stats.goals * 15);
         if (stats.accuracy === 100) finalScore += 500;
 
         // Strict Edge Function Anti-Cheat Validation
         if (this._session) {
+            let showLoadingUI = false;
+            const loadingTimeoutId = setTimeout(() => {
+                showLoadingUI = true;
+                this._showFeedbackOverlay(false);
+                const text = document.getElementById('feedback-text');
+                const sub = document.getElementById('feedback-subtext');
+                if (text && sub) {
+                    text.innerText = 'VALIDATING...';
+                    sub.innerText = '';
+                }
+            }, 600);
             const { data, error } = await EdgeFunctionClient.invoke('validate-match', {
                 matchType: this._session.matchType,
                 competitionId: this._competition.id,
                 answers: this._quizEngine.answerSubmissions
             });
+
+            clearTimeout(loadingTimeoutId);
+            if (showLoadingUI) {
+                this._hideFeedbackOverlay();
+            }
 
             if (!error && data) {
                 if (!data.valid || data.anomalyDetected) {
