@@ -1,6 +1,5 @@
 import { DesignSystem } from "../theme/DesignSystem";
 import { SaveManager } from '../../core/managers/SaveManager';
-import { AuthManager } from '../../core/auth/AuthManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { UIManager } from '../../core/managers/UIManager';
 import { ProgressionManager } from '../../core/managers/ProgressionManager';
@@ -10,6 +9,7 @@ import { Toast } from '../components/Toast';
 import { ReturningPlayerModal } from '../components/ReturningPlayerModal';
 import { t } from '../../localization/i18n';
 import { PullToRefresh } from '../components/PullToRefresh';
+import { GameSessionManager } from '../../core/quiz/GameSessionManager';
 
 export interface FootballHomeCallbacks {
     onKickOff: () => void;
@@ -43,8 +43,6 @@ export class FootballLeagueHome {
     public render(): void {
         const root = this._uiManager.container;
         const profile = this._saveManager.profile;
-        const division = ProgressionManager.getDivision(profile.xp);
-        
         const gamesPlayed = profile.totalMatches || 0;
         const winRate = gamesPlayed > 0 ? Math.round(((profile.totalWins || 0) / gamesPlayed) * 100) : 0;
         
@@ -52,6 +50,35 @@ export class FootballLeagueHome {
         const rawDailyRank = localStorage.getItem('ETHIO_DAILY_RANK');
         const dailyRank = rawDailyRank ? `#${rawDailyRank}` : '--';
         const dailyStreak = profile.streakCount || 0;
+
+        const activeSession = GameSessionManager.getInstance().getActiveSession();
+        const isDailyCompleted = localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
+
+        let contextualCardsHtml = '';
+
+        if (activeSession && activeSession.matchType === 'daily') {
+            contextualCardsHtml += `
+                <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(34,197,94,0.3); border-radius: 16px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #4ADE80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Continue Challenge</div>
+                        <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">Daily Challenge</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-top: 4px;">Round ${activeSession.currentIndex + 1} of ${activeSession.totalQuestions}</div>
+                    </div>
+                    ${DesignSystem.Button({ id: 'btn-continue-challenge', text: 'Resume', variant: 'primary' })}
+                </div>
+            `;
+        }
+
+        if (isDailyCompleted || (!activeSession && isDailyCompleted)) {
+            contextualCardsHtml += `
+                <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.12); border-radius: 16px; margin-bottom: 24px; text-align: center;">
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Next Daily Challenge</div>
+                    <div id="next-daily-countdown" style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main); font-family: var(--fds-font-mono);">
+                        --:--:--
+                    </div>
+                </div>
+            `;
+        }
 
         root.innerHTML = `
             <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; padding-bottom: 80px;">
@@ -172,6 +199,9 @@ export class FootballLeagueHome {
                             ${t('home.copyLink')}
                         </div>
                     </div>
+                    
+                    <!-- NEW CONTEXTUAL UI -->
+                    ${contextualCardsHtml}
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
                     <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.12); border-radius: 16px;">
@@ -304,6 +334,11 @@ export class FootballLeagueHome {
             if (timerEl) {
                 timerEl.textContent = `⏱️ ${h}h : ${m.toString().padStart(2, '0')}m : ${s.toString().padStart(2, '0')}s`;
             }
+            
+            const nextTimerEl = document.getElementById('next-daily-countdown');
+            if (nextTimerEl) {
+                nextTimerEl.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
         }, 1000);
     }
 
@@ -317,6 +352,12 @@ export class FootballLeagueHome {
         });
 
         root.querySelector('#btn-daily-match-card')?.addEventListener('click', (e) => {
+            this._addRipple(e);
+            this._audioManager.playClick();
+            this._callbacks.onDailyChallenge();
+        });
+
+        root.querySelector('#btn-continue-challenge')?.addEventListener('click', (e) => {
             this._addRipple(e);
             this._audioManager.playClick();
             this._callbacks.onDailyChallenge();
