@@ -131,7 +131,7 @@ export class PlayScreen {
                         <div id="play-card-bg" style="
                             position: absolute;
                             top: 0; left: 0; right: 0; bottom: 0;
-                            background: linear-gradient(to bottom, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.25) 100%), url('/assets/banners/${activeMode.banner}') center/cover no-repeat;
+                            background: linear-gradient(to bottom, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.4) 100%), url('/assets/banners/${activeMode.banner}') center/cover no-repeat;
                             transition: opacity 120ms ease-out;
                             opacity: 1;
                             z-index: 0;
@@ -203,6 +203,17 @@ export class PlayScreen {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
                 }
+                .btn-kickoff-action {
+                    font-size: 20px !important;
+                    font-weight: 900 !important;
+                    padding: 18px 24px !important;
+                    letter-spacing: 2px !important;
+                    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%) !important;
+                    border: 2px solid #4ADE80 !important;
+                    box-shadow: 0 8px 24px rgba(34,197,94,0.4), inset 0 2px 4px rgba(255,255,255,0.3) !important;
+                    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+                    border-radius: 16px !important;
+                }
                 .btn-kickoff-action:active {
                     transform: scale(0.96) !important;
                     box-shadow: 0 4px 12px rgba(34,197,94,0.2) !important;
@@ -250,7 +261,7 @@ export class PlayScreen {
                         
                         setTimeout(() => {
                             // 2. Cross Fade (Update content)
-                            bgEl.style.background = `linear-gradient(to bottom, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.25) 100%), url('/assets/banners/${nextMode.banner}') center/cover no-repeat`;
+                            bgEl.style.background = `linear-gradient(to bottom, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.2) 100%), url('/assets/banners/${nextMode.banner}') center/cover no-repeat`;
                             if (iconEl) iconEl.innerText = nextMode.icon;
                             if (titleEl) titleEl.innerText = nextMode.name;
                             if (diffEl) diffEl.innerText = nextMode.difficulty;

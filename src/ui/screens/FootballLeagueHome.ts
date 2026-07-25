@@ -104,21 +104,82 @@ export class FootballLeagueHome {
                 <!-- SCROLLABLE BODY CONTENT (8dp Grid System) -->
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
                     
-                    <!-- PREMIUM AD BANNER CAROUSEL -->
-                    <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6); aspect-ratio: 16/5; width: 100%;">
-                        <div id="ad-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%;">
-                            <img src="/assets/banners/banner1.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: fill;" alt="Ad 1">
-                            <img src="/assets/banners/banner2.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: fill;" alt="Ad 2">
-                        </div>
-                        <!-- Page Indicators -->
-                        <div style="position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; pointer-events: none;">
-                            <div class="ad-dot active" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 1;"></div>
-                            <div class="ad-dot" style="width: 6px; height: 6px; border-radius: 50%; background: white; transition: 0.3s; opacity: 0.4;"></div>
-                        </div>
+                    <!-- 2. QUICK GAME MODES & ACTIONS GRID -->
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); margin-left: 4px; text-transform: uppercase; letter-spacing: 1px;" class="fade-in-up">
+                        ${t('home.lobbies')}
                     </div>
-                    <style>
-                        #ad-carousel::-webkit-scrollbar { display: none; }
-                    </style>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;" class="fade-in-up">
+                        
+                        <!-- Daily Challenge Card -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/daily_challenge_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Daily Challenge</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Complete today's objectives</p>
+                            ${DesignSystem.Button({ id: 'btn-daily-match-card', text: 'Play', variant: 'primary', fullWidth: true })}
+                        </div>
+
+                        <!-- Tournament Card (Kick Off) -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/tournament_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${t('home.soloMatch')}</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Test your skills</p>
+                            ${DesignSystem.Button({ id: 'btn-action-kickoff', text: 'Start', variant: 'secondary', fullWidth: true })}
+                        </div>
+
+                        <!-- Leaderboard Card -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/leaderboard_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${t('home.leaderboard')}</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Top players ranking</p>
+                            ${DesignSystem.Button({ id: 'btn-action-leaderboard', text: 'View', variant: 'secondary', fullWidth: true })}
+                        </div>
+
+                        <!-- Winner Card -->
+                        <div class="glass-card" style="
+                            background: linear-gradient(to top, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.4) 100%), url('/assets/images/winner_card.png') center/cover no-repeat;
+                            padding: 16px;
+                            border-radius: 16px;
+                            border: 1px solid rgba(255,255,255,0.1);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-end;
+                            min-height: 140px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        ">
+                            <h3 style="font-size: var(--fds-font-sm); color: white; margin: 0 0 4px 0; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Champions</h3>
+                            <p style="font-size: 10px; color: rgba(255,255,255,0.8); margin: 0 0 12px 0; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">Hall of Fame</p>
+                            ${DesignSystem.Button({ id: 'btn-winner-card', text: 'View', variant: 'secondary', fullWidth: true })}
+                        </div>
+
+                    </div>
 
                     <!-- 1. HERO SECTION: DAILY CHAMPIONSHIP TOURNAMENT -->
                     <div class="glass-card fade-in-up" style="
@@ -356,57 +417,7 @@ export class FootballLeagueHome {
             this._callbacks.onSettings();
         });
 
-        // Ad Carousel Logic
-        const carousel = root.querySelector('#ad-carousel') as HTMLElement;
-        const dots = root.querySelectorAll('.ad-dot');
-        if (carousel && dots.length > 0) {
-            let currentIndex = 0;
 
-            const updateDots = (index: number) => {
-                dots.forEach((dot, i) => {
-                    if (i === index) {
-                        dot.classList.add('active');
-                        (dot as HTMLElement).style.opacity = '1';
-                    } else {
-                        dot.classList.remove('active');
-                        (dot as HTMLElement).style.opacity = '0.4';
-                    }
-                });
-            };
-
-            const scrollToNext = () => {
-                if (!carousel.clientWidth) return;
-                currentIndex = (currentIndex + 1) % dots.length;
-                const targetScroll = carousel.clientWidth * currentIndex;
-                carousel.scrollTo({ left: targetScroll, behavior: 'smooth' });
-                updateDots(currentIndex);
-            };
-
-            const startAutoScroll = () => {
-                clearInterval(this._autoScrollInterval);
-                this._autoScrollInterval = setInterval(scrollToNext, 4000);
-            };
-
-            const stopAutoScroll = () => {
-                clearInterval(this._autoScrollInterval);
-            };
-
-            carousel.addEventListener('scroll', () => {
-                if (!carousel.clientWidth) return;
-                const newIndex = Math.round(carousel.scrollLeft / carousel.clientWidth);
-                if (newIndex !== currentIndex && newIndex >= 0 && newIndex < dots.length) {
-                    currentIndex = newIndex;
-                    updateDots(currentIndex);
-                }
-            }, { passive: true });
-
-            carousel.addEventListener('touchstart', stopAutoScroll, { passive: true });
-            carousel.addEventListener('touchend', startAutoScroll, { passive: true });
-            carousel.addEventListener('mouseenter', stopAutoScroll);
-            carousel.addEventListener('mouseleave', startAutoScroll);
-
-            startAutoScroll();
-        }
     }
 
     private _addRipple(e: Event): void {

@@ -369,11 +369,11 @@ export class ScoreboardQuestionScreen {
                     min-height: 0;
                 ">
                     <!-- Question Card Wrapper (Scrollable if needed) -->
-                    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(16px, 3vh, 24px); padding: 0 4px;" class="hide-scrollbar">
+                    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(32px, 5vh, 40px); padding: 0 8px;" class="hide-scrollbar">
                         <div class="anim-question-in" style="
                             width: 100%;
                             margin: auto 0;
-                            padding: 22px 28px;
+                            padding: 32px 24px;
                             background: rgba(7, 27, 45, 0.75);
                             backdrop-filter: blur(12px);
                             border: 1px solid rgba(255,255,255,0.15);
@@ -400,7 +400,7 @@ export class ScoreboardQuestionScreen {
                     </div>
 
                     <!-- ANSWERS GRID (Never scrolls) -->
-                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(10px, 2vh, 14px); width: 100%; padding-bottom: 24px;">
+                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(14px, 2.5vh, 18px); width: 100%; padding-bottom: 32px; padding-left: 8px; padding-right: 8px; box-sizing: border-box;">
                         ${q.options.map((opt, i) => `
                             <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
                                 <span class="option-badge">${String.fromCharCode(65 + i)}</span>
@@ -527,9 +527,10 @@ export class ScoreboardQuestionScreen {
                     }
                 }
                 .top-bar-text {
-                    font-size: clamp(13px, 3.5vw, 16px);
+                    font-size: clamp(15px, 4vw, 18px);
                     font-weight: 900;
                     color: white;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
                     position: relative;
                     z-index: 2;
                 }
