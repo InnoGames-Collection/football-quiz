@@ -57,7 +57,7 @@ export class FootballLeagueHome {
 
         if (activeSession && activeSession.matchType === 'daily') {
             contextualCardsHtml += `
-                <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(34,197,94,0.3); border-radius: 16px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
+                <div class="glass-card fade-in-up" style="padding: clamp(12px, 2vh, 16px); border-color: rgba(34,197,94,0.3); border-radius: 16px; display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #4ADE80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Continue Challenge</div>
                         <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">Daily Challenge</div>
@@ -70,7 +70,7 @@ export class FootballLeagueHome {
 
         if (isDailyCompleted || (!activeSession && isDailyCompleted)) {
             contextualCardsHtml += `
-                <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.12); border-radius: 16px; margin-bottom: 24px; text-align: center;">
+                <div class="glass-card fade-in-up" style="padding: clamp(12px, 2vh, 16px); border-color: rgba(255,255,255,0.12); border-radius: 16px; text-align: center;">
                     <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Next Daily Challenge</div>
                     <div id="next-daily-countdown" style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main); font-family: var(--fds-font-mono);">
                         --:--:--
@@ -132,8 +132,8 @@ export class FootballLeagueHome {
                     </div>
                 </div>
 
-                <!-- SCROLLABLE BODY CONTENT (8dp Grid System) -->
-                <div style="max-width: 960px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
+                <!-- SCROLLABLE BODY CONTENT (Responsive Grid System) -->
+                <div style="max-width: 960px; margin: 0 auto; padding: clamp(12px, 2vh, 16px); display: flex; flex-direction: column; gap: clamp(12px, 1.5vh, 16px);">
                     
                     <!-- PREMIUM AD BANNER CAROUSEL -->
                     <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6); aspect-ratio: 16/5; width: 100%;">
@@ -156,7 +156,7 @@ export class FootballLeagueHome {
                         border: 2px solid var(--fds-gold-primary);
                         background: linear-gradient(135deg, rgba(0, 154, 68, 0.75) 0%, rgba(15, 23, 42, 0.95) 70%, rgba(255, 215, 0, 0.5) 100%), url('/assets/images/hero_banner.png') center/cover no-repeat;
                         background-blend-mode: overlay;
-                        padding: 24px 20px;
+                        padding: clamp(16px, 2.5vh, 24px) 20px;
                         border-radius: 20px;
                         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.1);
                         position: relative;
@@ -186,7 +186,7 @@ export class FootballLeagueHome {
                     </div>
 
 
-                    <div class="fade-in-up" id="btn-action-referral" style="margin-bottom: 24px; padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <div class="fade-in-up" id="btn-action-referral" style="padding: clamp(12px, 2vh, 16px); border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="font-size: var(--fds-font-xl); filter: drop-shadow(0 2px 4px rgba(192,132,252,0.4));">🎁</div>
                             <div style="text-align: left;">
