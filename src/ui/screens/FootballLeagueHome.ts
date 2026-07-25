@@ -175,14 +175,14 @@ export class FootballLeagueHome {
                         </div>
 
                         <!-- Title & Description -->
-                        <div style="text-align: left; margin-bottom: 16px;">
+                        <div style="text-align: center; margin-bottom: 16px;">
                             <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                                ${t('home.championship')}
+                                ETHIO FANTASY
                             </h2>
                         </div>
 
                         <!-- Hero Primary Action Button -->
-                        ${DesignSystem.Button({ id: 'btn-daily-match', text: t('home.dailyChallenge'), variant: 'primary', fullWidth: true })}
+                        ${DesignSystem.Button({ id: 'btn-daily-match', text: 'DAILY CHALLENGE', variant: 'primary', fullWidth: true })}
                     </div>
 
 
