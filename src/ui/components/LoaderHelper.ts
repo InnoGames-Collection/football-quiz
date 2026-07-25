@@ -139,14 +139,17 @@ export class LoaderHelper {
             case 'history':
                 icon = '📜';
                 title = 'No History';
+                message = 'Your completed matches will appear here.';
                 break;
             case 'rewards':
                 icon = '🎁';
                 title = 'No Rewards Unlocked';
+                message = 'Keep playing to unlock your first reward or achievement.';
                 break;
             case 'leaderboard':
                 icon = '📈';
                 title = 'No Rankings Available';
+                message = 'Complete today\'s challenge to receive your daily ranking.';
                 break;
             case 'search':
                 icon = '🔍';

@@ -121,28 +121,41 @@ export class FootballLeagueHome {
                         </button>
                         <button id="btn-settings" style="background: none; border: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: var(--fds-font-lg); color: var(--fds-text-main); font-weight: bold; cursor: pointer; padding: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94l-0.36-2.54c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41l-0.36,2.54c-0.59,0.24-1.13,0.56-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.04,0.64,0.09,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                                <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94l-0.36-2.54c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41l-0.36,2.54c-0.59,0.24-1.13,0.56-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.04,0.64,0.09,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39-0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
                             </svg>
                         </button>
                     </div>
                 </div>
-
-                <!-- COMPACT TELEMETRY ROW -->
-                <div class="fade-in-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 16px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; animation-delay: 50ms;">
-                    <div>
-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Streak</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #EF4444; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span>🔥</span> <span>${dailyStreak} Days</span>
+                           <!-- COMPACT TELEMETRY ROW -->
+                <div style="max-width: 900px; margin: 0 auto; padding: 0 16px;">
+                    ${ (dailyScore === '0' && dailyRank === '--') ? `
+                    <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.1); text-align: center; margin-bottom: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(0,0,0,0.4);">
+                        <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🏆</span>
+                        <div style="text-align: left;">
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-bottom: 2px;">No Daily Rank Yet</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; max-width: 200px;">Play today's Daily Challenge to earn your first score and receive your daily ranking.</div>
                         </div>
                     </div>
-                    <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Rank</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); display: flex; align-items: center;">${dailyRank} ${rankDiffHtml}</div>
+                    ` : `
+                    <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; margin-bottom: 24px;">
+                        <div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Streak</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #EF4444; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <span>🔥</span>
+                                ${dailyStreak}
+                            </div>
+                        </div>
+                        <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Rank</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); display: flex; align-items: center; justify-content: center;">${dailyRank} ${rankDiffHtml}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Score</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${dailyScore}</div>
+                        </div>
                     </div>
-                    <div>
-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Score</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${dailyScore}</div>
-                    </div>
+                    ` }
+                </div>                </div>
                 </div>
 
                 <!-- SCROLLABLE BODY CONTENT (Responsive Grid System) -->
@@ -216,29 +229,44 @@ export class FootballLeagueHome {
                     ${contextualCardsHtml}
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
-                    <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.12); border-radius: 16px;">
+                    <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); margin-bottom: 24px; border-radius: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">${t('home.performance')}</div>
                             <button id="btn-view-all-stats" style="background: none; border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; text-decoration: underline;">${t('home.details')}</button>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); text-align: center;">
+                        
+                        ${gamesPlayed === 0 ? `
+                        <div style="text-align: center; padding: 24px 0; background: rgba(0,0,0,0.2); border-radius: 12px;">
+                            <div style="font-size: 32px; margin-bottom: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">📊</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; margin-bottom: 4px;">No History Yet</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600;">Your completed matches and stats will appear here.</div>
+                        </div>
+                        ` : `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px;">
                             <div>
                                 <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.matches')}</div>
                                 <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${gamesPlayed}</div>
                             </div>
-                            <div style="border-left: 1px solid rgba(255,255,255,0.06);">
+                            <div style="border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);">
                                 <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('match.accuracy')}</div>
                                 <div style="font-size: var(--fds-font-md); font-weight: 900; color: #4ADE80; margin-top: 4px;">${winRate}%</div>
                             </div>
-                            <div style="border-left: 1px solid rgba(255,255,255,0.06);">
+                            <div>
                                 <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.points')}</div>
                                 <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${profile.xp}</div>
                             </div>
-                            <div style="border-left: 1px solid rgba(255,255,255,0.06);">
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.score')}</div>
-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">${profile.eloRating || 0}</div>
+                            <div style="grid-column: span 3; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; margin-top: 4px; display: flex; justify-content: space-around;">
+                                <div>
+                                    <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.score')}</div>
+                                    <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${profile.highScores && profile.highScores['football-quiz'] ? profile.highScores['football-quiz'] : 0}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">Divisions</div>
+                                    <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">1st</div>
+                                </div>
                             </div>
                         </div>
+                        `}
                     </div>
 
                     <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->

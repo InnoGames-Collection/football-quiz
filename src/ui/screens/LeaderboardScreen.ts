@@ -167,7 +167,15 @@ export class LeaderboardScreen {
                             <div>
                                 <div style="font-size: var(--fds-font-xs); color: #4ADE80; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የእርስዎ የደረጃ ቦታ' : (i18n.currentLocale === 'om' ? 'SADARKAA KEE' : 'YOUR RANK POSITION')}</div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">${i18n.currentLocale === 'am' ? `#${myRank} በ ${division.name} ሊግ` : (i18n.currentLocale === 'om' ? `#${myRank} Liigii ${division.name} Keessatti` : `#${myRank} In ${division.name} League`)}</div>
+                                    ${myRank === '--' ? `
+                                        <div style="font-size: var(--fds-font-xs); font-weight: 600; color: var(--fds-text-dim); max-width: 200px;">
+                                            Complete today's challenge to receive your daily ranking.
+                                        </div>
+                                    ` : `
+                                        <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">
+                                            ${i18n.currentLocale === 'am' ? `#${myRank} በ ${division.name} ሊግ` : (i18n.currentLocale === 'om' ? `#${myRank} Liigii ${division.name} Keessatti` : `#${myRank} In ${division.name} League`)}
+                                        </div>
+                                    `}
                                     ${rankDiffHtml}
                                 </div>
                             </div>

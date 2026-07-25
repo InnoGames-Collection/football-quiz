@@ -265,7 +265,7 @@ export class AchievementsScreen {
             <div style="padding: 0 16px;">
                 ${filtered.length > 0 
                     ? filtered.map(a => this._buildAchievementCard(a)).join('')
-                    : DesignSystem.EmptyState('📭', 'No Achievements', 'No achievements found in this category.')
+                    : DesignSystem.EmptyState('🎁', 'No Achievements', 'Keep playing to unlock your first achievement.')
                 }
             </div>
         `;
