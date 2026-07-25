@@ -394,7 +394,7 @@ export class MatchStatsScreen {
                     bgColor = 'rgba(34,197,94,0.15)';
                     borderColor = '#22C55E';
                     iconHtml = '<span style="color: #22C55E; font-weight: bold; margin-right: 8px;">✓</span>';
-                    labelHtml = `<div style="display: flex; gap: 8px;"><span style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Correct Answer</span><span style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Your Answer</span></div>`;
+                    labelHtml = `<div style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Your Answer</div>`;
                 } else if (isThisCorrect) {
                     bgColor = 'rgba(34,197,94,0.15)';
                     borderColor = '#22C55E';
