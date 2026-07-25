@@ -166,34 +166,47 @@ export class AudioManager {
     }
 
     /**
-     * 5. Goalkeeper Save Sound (Ball Rebound + Gloves Deflection + Disappointed Crowd Gasp)
-     * Replaces harsh negative buzzer sounds!
+     * 5. Missed Chance (Goalpost Hit + Disappointed Crowd Sigh)
+     * Provides an immersive football "missed opportunity" sound.
      */
     public playWrongAnswer(): void {
-        this.playKeeperSave();
-    }
-
-    public playKeeperSave(): void {
         if (this._isMuted) return;
         this._initContext();
         if (!this._ctx) return;
 
-        // Glove Deflection Thud (Low Pass Burst)
-        const osc = this._ctx.createOscillator();
-        const gain = this._ctx.createGain();
+        // Metallic Goalpost Clang
+        const osc1 = this._ctx.createOscillator();
+        const osc2 = this._ctx.createOscillator();
+        const osc3 = this._ctx.createOscillator();
+        const metalGain = this._ctx.createGain();
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(180, this._ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(60, this._ctx.currentTime + 0.15);
+        // Use dissonant high frequencies for a metallic "clink"
+        osc1.type = 'square';
+        osc1.frequency.setValueAtTime(800, this._ctx.currentTime);
+        osc1.frequency.exponentialRampToValueAtTime(300, this._ctx.currentTime + 0.3);
 
-        gain.gain.setValueAtTime(0.25, this._ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this._ctx.currentTime + 0.15);
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(1200, this._ctx.currentTime);
+        osc2.frequency.exponentialRampToValueAtTime(500, this._ctx.currentTime + 0.3);
+        
+        osc3.type = 'triangle';
+        osc3.frequency.setValueAtTime(1600, this._ctx.currentTime);
+        osc3.frequency.exponentialRampToValueAtTime(800, this._ctx.currentTime + 0.3);
 
-        osc.connect(gain);
-        gain.connect(this._ctx.destination);
+        metalGain.gain.setValueAtTime(0.15, this._ctx.currentTime);
+        metalGain.gain.exponentialRampToValueAtTime(0.01, this._ctx.currentTime + 0.3);
 
-        osc.start();
-        osc.stop(this._ctx.currentTime + 0.15);
+        osc1.connect(metalGain);
+        osc2.connect(metalGain);
+        osc3.connect(metalGain);
+        metalGain.connect(this._ctx.destination);
+
+        osc1.start();
+        osc2.start();
+        osc3.start();
+        osc1.stop(this._ctx.currentTime + 0.3);
+        osc2.stop(this._ctx.currentTime + 0.3);
+        osc3.stop(this._ctx.currentTime + 0.3);
 
         // Disappointed Crowd Sigh / Gasp (Filtered noise ramp down)
         const bufferSize = this._ctx.sampleRate * 0.4;
@@ -207,12 +220,12 @@ export class AudioManager {
 
         const filter = this._ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(500, this._ctx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(150, this._ctx.currentTime + 0.35);
+        filter.frequency.setValueAtTime(600, this._ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(100, this._ctx.currentTime + 0.4);
 
         const noiseGain = this._ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.12, this._ctx.currentTime);
-        noiseGain.gain.linearRampToValueAtTime(0.01, this._ctx.currentTime + 0.35);
+        noiseGain.gain.setValueAtTime(0.15, this._ctx.currentTime);
+        noiseGain.gain.linearRampToValueAtTime(0.01, this._ctx.currentTime + 0.4);
 
         noise.connect(filter);
         filter.connect(noiseGain);

@@ -815,7 +815,7 @@ export class ScoreboardQuestionScreen {
                     correctBtn.classList.add('correct');
                 }
             }
-            this._audioManager.playKeeperSave();
+            this._audioManager.playWrongAnswer();
             this._showFeedbackOverlay(false);
         }
 
