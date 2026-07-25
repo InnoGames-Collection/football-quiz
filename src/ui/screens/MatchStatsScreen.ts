@@ -69,7 +69,7 @@ export class MatchStatsScreen {
         }
 
         root.innerHTML = `
-            <div class="stadium-container ethio-bg-result" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; height: 100vh; overflow: hidden; position: relative;">
+            <div class="stadium-container ethio-bg-result" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 16px 16px 80px 16px; box-sizing: border-box; height: 100vh; overflow: hidden; position: relative;">
                 
                 <!-- Layers -->
                 <div class="ethio-layer ethio-layer-pitch"></div>

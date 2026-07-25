@@ -2,7 +2,6 @@ import { DesignSystem } from "../theme/DesignSystem";
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { UIManager } from '../../core/managers/UIManager';
-import { ProgressionManager } from '../../core/managers/ProgressionManager';
 import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { Toast } from '../components/Toast';
