@@ -47,6 +47,11 @@ export class FootballLeagueHome {
         
         const gamesPlayed = profile.totalMatches || 0;
         const winRate = gamesPlayed > 0 ? Math.round(((profile.totalWins || 0) / gamesPlayed) * 100) : 0;
+        
+        const dailyScore = localStorage.getItem('ETHIO_DAILY_SCORE') || '0';
+        const rawDailyRank = localStorage.getItem('ETHIO_DAILY_RANK');
+        const dailyRank = rawDailyRank ? `#${rawDailyRank}` : '--';
+        const dailyStreak = profile.streakCount || 0;
 
         root.innerHTML = `
             <div class="stadium-container stadium-bg-wrapper" style="pointer-events: auto; padding-bottom: 80px;">
@@ -86,18 +91,18 @@ export class FootballLeagueHome {
                 <!-- COMPACT TELEMETRY ROW -->
                 <div class="fade-in-up" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px 16px; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; animation-delay: 50ms;">
                     <div>
-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">League</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${division.color}; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                            <span>${division.badge}</span> <span>${division.name}</span>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Streak</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #EF4444; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <span>🔥</span> <span>${dailyStreak} Days</span>
                         </div>
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Rank</div>
-                        <div id="global-rank-display" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${DesignSystem.LoadingState('', true)}</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Rank</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${dailyRank}</div>
                     </div>
                     <div>
-                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Points</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${profile.xp} XP</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Score</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${dailyScore}</div>
                     </div>
                 </div>
 
@@ -225,12 +230,7 @@ export class FootballLeagueHome {
     }
 
     private async _fetchDynamicData(userId: string, divisionName: string) {
-        // Fetch User Rank
-        const rank = await LeaderboardService.getInstance().getUserRank(userId);
-        const rankEl = document.getElementById('global-rank-display');
-        if (rankEl) {
-            rankEl.innerText = rank ? `#${rank} In ${divisionName}` : 'Unranked';
-        }
+        // Legacy Rank fetch removed since we now use Daily Rank
 
         // Fetch Live Matches / Top 3 Leaderboard
         const liveComps = CompetitionRegistry.getAll().filter(c => c.status === 'live');
