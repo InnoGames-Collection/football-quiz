@@ -81,6 +81,46 @@ export class AudioManager {
     }
 
     /**
+     * Full Time Referee Whistle (2-3 short blasts for match end)
+     */
+    public playFullTimeWhistle(): void {
+        if (this._isMuted) return;
+        this._initContext();
+        if (!this._ctx) return;
+
+        const scheduleWhistle = (startTime: number, duration: number) => {
+            if (!this._ctx) return;
+            const osc1 = this._ctx.createOscillator();
+            const osc2 = this._ctx.createOscillator();
+            const gain = this._ctx.createGain();
+
+            osc1.type = 'sine';
+            osc2.type = 'sine';
+            osc1.frequency.setValueAtTime(2400, startTime);
+            osc2.frequency.setValueAtTime(2450, startTime);
+
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.18, startTime + 0.05);
+            gain.gain.setValueAtTime(0.18, startTime + duration - 0.1);
+            gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(this._ctx.destination);
+
+            osc1.start(startTime);
+            osc2.start(startTime);
+            osc1.stop(startTime + duration);
+            osc2.stop(startTime + duration);
+        };
+
+        const now = this._ctx.currentTime;
+        scheduleWhistle(now, 0.25);
+        scheduleWhistle(now + 0.35, 0.25);
+        scheduleWhistle(now + 0.7, 0.6);
+    }
+
+    /**
      * 3. Stadium Crowd Ambience Loop
      */
     public playCrowdAmbience(): void {

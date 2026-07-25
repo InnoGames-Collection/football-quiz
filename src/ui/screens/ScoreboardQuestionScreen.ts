@@ -41,6 +41,7 @@ export class ScoreboardQuestionScreen {
     private _hasKickedOff: boolean = false;
     
     private _session: GameSession | null = null;
+    private _hasPlayedFullTimeWhistle: boolean = false;
     private _isPaused: boolean = false;
     private _isDestroyed: boolean = false;
     private _nextQuestionTimeoutId: any = null;
@@ -999,6 +1000,12 @@ export class ScoreboardQuestionScreen {
         import('../../core/auth/AuthManager').then(m => m.AuthManager.getInstance().refreshProfile());
 
         (window as any).ethioOnBackPress = null;
+        
+        if (!this._hasPlayedFullTimeWhistle) {
+            this._hasPlayedFullTimeWhistle = true;
+            this._audioManager.playFullTimeWhistle();
+        }
+        
         this._callbacks.onMatchComplete(stats, finalScore);
     }
     
