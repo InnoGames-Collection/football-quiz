@@ -24,5 +24,10 @@ export class UIManager {
 
     public clear(): void {
         this._container.innerHTML = '';
+        
+        // Trigger subtle page transition
+        this._container.classList.remove('page-transition-enter');
+        void this._container.offsetWidth; // Force reflow
+        this._container.classList.add('page-transition-enter');
     }
 }
