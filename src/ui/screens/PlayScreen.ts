@@ -50,7 +50,7 @@ export class PlayScreen {
 
     public render(): void {
         const root = this._uiManager.container;
-        root.innerHTML = DesignSystem.LoadingState('Loading match modes...');
+        root.innerHTML = DesignSystem.SkeletonCardGrid(6);
         
         setTimeout(() => {
             this._renderActual();

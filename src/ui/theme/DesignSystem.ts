@@ -243,24 +243,54 @@ export class DesignSystem {
     }
 
     /**
-     * Reusable FDS Loading State
+     * Reusable FDS Loading State (Fallback)
      */
-    public static LoadingState(message: string = 'Loading...', compact: boolean = false): string {
-        if (compact) {
-            return `
-                <div style="display: flex; align-items: center; gap: 8px; justify-content: center; opacity: 0.7;">
-                    <div class="loading-spinner" style="width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.1); border-top-color: var(--fds-gold-primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    <div style="font-size: 11px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">${message}</div>
-                    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-                </div>
-            `;
-        }
+    public static LoadingState(_message?: string, _compact?: boolean): string {
+        return this.SkeletonList(4); // Default to a list skeleton if not explicitly overridden
+    }
+
+    /**
+     * SKELETON PLACEHOLDERS
+     * Replaces spinners with premium shimmer blocks matching final layouts.
+     */
+    public static SkeletonList(count: number = 5): string {
         return `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; opacity: 0.7;">
-                <div class="loading-spinner" style="width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--fds-gold-primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px;"></div>
-                <div style="font-size: 12px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">${message}</div>
-                <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+            <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px;">
+                ${Array(count).fill(0).map(() => `
+                    <div class="glass-card skeleton-shimmer" style="height: 72px; width: 100%;"></div>
+                `).join('')}
             </div>
+        `;
+    }
+
+    public static SkeletonProfile(): string {
+        return `
+            <div style="padding: 24px 16px;">
+                <div class="glass-card skeleton-shimmer" style="height: 120px; width: 100%; margin-bottom: 24px;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+                    <div class="glass-card skeleton-shimmer" style="height: 80px;"></div>
+                    <div class="glass-card skeleton-shimmer" style="height: 80px;"></div>
+                    <div class="glass-card skeleton-shimmer" style="height: 80px;"></div>
+                    <div class="glass-card skeleton-shimmer" style="height: 80px;"></div>
+                </div>
+                <div class="glass-card skeleton-shimmer" style="height: 200px; width: 100%;"></div>
+            </div>
+        `;
+    }
+
+    public static SkeletonCardGrid(count: number = 4): string {
+        return `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px;">
+                ${Array(count).fill(0).map(() => `
+                    <div class="glass-card skeleton-shimmer" style="height: 140px; width: 100%;"></div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    public static SkeletonCard(height: number = 160): string {
+        return `
+            <div class="glass-card skeleton-shimmer" style="height: ${height}px; width: 100%;"></div>
         `;
     }
 

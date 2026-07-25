@@ -171,7 +171,7 @@ export class FootballLeagueHome {
                             <span id="daily-players-count" class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
                                 ${t('home.liveMatch')}
                             </span>
-                                ${DesignSystem.LoadingState('', true)}
+                                ${DesignSystem.SkeletonCard(80)}
                         </div>
 
                         <!-- Title & Description -->
@@ -232,7 +232,7 @@ export class FootballLeagueHome {
                     <div class="glass-card fade-in-up" style="padding: 20px 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">${t('home.rankingsTitle')}</div>
                         <div id="home-leaderboard-preview" style="display: flex; flex-direction: column;">
-                            ${DesignSystem.LoadingState(t('home.loadingRankings'))}
+                            ${DesignSystem.SkeletonList(3)}
                         </div>
                     </div>
                 </div>

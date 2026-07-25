@@ -60,7 +60,7 @@ export class ProfileScreen {
 
     public render(): void {
         const root = this._uiManager.container;
-        root.innerHTML = DesignSystem.LoadingState(`${i18n.currentLocale === 'am' ? 'መገለጫ በመጫን ላይ...' : (i18n.currentLocale === 'om' ? "Pirofaayilii fe'aa jira..." : 'Loading profile...')}`);
+        root.innerHTML = DesignSystem.SkeletonProfile();
         
         setTimeout(() => {
             this._renderActual();
