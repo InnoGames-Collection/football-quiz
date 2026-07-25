@@ -315,11 +315,11 @@ export class ScoreboardQuestionScreen {
                     min-height: 0;
                 ">
                     <!-- Question Card Wrapper (Scrollable if needed) -->
-                    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(16px, 3vh, 40px); padding: 0 8px;" class="hide-scrollbar">
+                    <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(12px, 2vh, 24px); padding: 0 4px;" class="hide-scrollbar">
                         <div class="anim-question-in" style="
                             width: 100%;
                             margin: auto 0;
-                            padding: clamp(16px, 3vh, 32px) 24px;
+                            padding: clamp(12px, 2.5vh, 24px) 16px;
                             background: rgba(7, 27, 45, 0.75);
                             backdrop-filter: blur(12px);
                             border: 1px solid rgba(255,255,255,0.15);
@@ -330,7 +330,7 @@ export class ScoreboardQuestionScreen {
                             flex-shrink: 0;
                         ">
                             <h2 style="
-                                font-size: clamp(16px, 3.5vh, 28px); 
+                                font-size: clamp(15px, 3vh, 24px); 
                                 font-weight: 700; 
                                 color: white; 
                                 line-height: 1.3; 
@@ -346,7 +346,7 @@ export class ScoreboardQuestionScreen {
                     </div>
 
                     <!-- ANSWERS GRID (Never scrolls) -->
-                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(8px, 2vh, 18px); width: 100%; padding-bottom: 32px; padding-left: 8px; padding-right: 8px; box-sizing: border-box;">
+                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(6px, 1.2vh, 14px); width: 100%; padding-bottom: 24px; padding-left: 4px; padding-right: 4px; box-sizing: border-box;">
                         ${q.options.map((opt, i) => `
                             <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
                                 <span class="option-badge">${String.fromCharCode(65 + i)}</span>
@@ -487,8 +487,8 @@ export class ScoreboardQuestionScreen {
                 
                 .option-btn {
                     width: 100%;
-                    min-height: clamp(48px, 7vh, 76px);
-                    padding: clamp(8px, 1.5vh, 18px) 24px;
+                    min-height: clamp(44px, 6vh, 64px);
+                    padding: clamp(8px, 1.2vh, 16px) 20px;
                     background: linear-gradient(180deg, #12A64B 0%, #065F33 100%);
                     border: 1px solid rgba(255,255,255,0.2);
                     border-radius: 18px;
@@ -498,7 +498,7 @@ export class ScoreboardQuestionScreen {
                     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                     display: flex;
                     align-items: center;
-                    gap: 16px;
+                    gap: 12px;
                     box-shadow: 
                         inset 0 2px 4px rgba(255,255,255,0.4),
                         inset 0 -4px 8px rgba(0,0,0,0.3), 
@@ -916,16 +916,45 @@ export class ScoreboardQuestionScreen {
         // Strict Edge Function Anti-Cheat Validation
         if (this._session) {
             let showLoadingUI = false;
+            let inlineLoader: HTMLElement | null = null;
+            
             const loadingTimeoutId = setTimeout(() => {
                 showLoadingUI = true;
-                this._showFeedbackOverlay(false);
-                const text = document.getElementById('feedback-text');
-                const sub = document.getElementById('feedback-subtext');
-                if (text && sub) {
-                    text.innerText = 'VALIDATING...';
-                    sub.innerText = '';
+                
+                // Show a lightweight inline loading indicator instead of a standalone overlay
+                inlineLoader = document.createElement('div');
+                inlineLoader.style.position = 'absolute';
+                inlineLoader.style.bottom = '32px';
+                inlineLoader.style.left = '50%';
+                inlineLoader.style.transform = 'translateX(-50%)';
+                inlineLoader.style.background = 'rgba(15,23,42,0.8)';
+                inlineLoader.style.backdropFilter = 'blur(8px)';
+                inlineLoader.style.border = '1px solid rgba(255,255,255,0.1)';
+                inlineLoader.style.borderRadius = '24px';
+                inlineLoader.style.padding = '8px 16px';
+                inlineLoader.style.color = 'var(--fds-gold-primary, #FFD700)';
+                inlineLoader.style.fontSize = '14px';
+                inlineLoader.style.fontWeight = 'bold';
+                inlineLoader.style.display = 'flex';
+                inlineLoader.style.alignItems = 'center';
+                inlineLoader.style.gap = '8px';
+                inlineLoader.style.zIndex = '1000';
+                inlineLoader.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
+                inlineLoader.innerHTML = '<span style="animation: spin 1s linear infinite; display: inline-block;">⏳</span> Validating Match...';
+                
+                if (!document.querySelector('style#loader-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'loader-style';
+                    style.innerHTML = '@keyframes spin { 100% { transform: rotate(360deg); } }';
+                    document.head.appendChild(style);
+                }
+                
+                const container = this._uiManager.container.querySelector('.stadium-container');
+                if (container) {
+                    container.appendChild(inlineLoader);
                 }
             }, 600);
+            
             const { data, error } = await EdgeFunctionClient.invoke('validate-match', {
                 matchType: this._session.matchType,
                 competitionId: this._competition.id,
@@ -933,8 +962,9 @@ export class ScoreboardQuestionScreen {
             });
 
             clearTimeout(loadingTimeoutId);
-            if (showLoadingUI) {
-                this._hideFeedbackOverlay();
+            const loaderEl = inlineLoader as HTMLElement | null;
+            if (showLoadingUI && loaderEl && loaderEl.parentNode) {
+                loaderEl.parentNode.removeChild(loaderEl);
             }
 
             if (!error && data) {
