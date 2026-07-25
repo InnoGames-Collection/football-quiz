@@ -215,7 +215,7 @@ input:focus-visible {
 }
 
 .broadcast-btn:active {
-  transform: scale(0.97) !important;
+  transform: scale(0.96) !important;
 }
 
 .broadcast-btn-gold {
@@ -274,7 +274,7 @@ input:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms ease-out, background 150ms ease-out, filter 150ms ease-out;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 120ms ease-out, background 120ms ease-out, filter 120ms ease-out;
   pointer-events: auto;
   position: relative;
   overflow: hidden;
@@ -283,7 +283,7 @@ input:focus-visible {
 }
 
 .ethio-btn:active {
-  transform: scale(0.95) !important;
+  transform: scale(0.96) !important;
 }
 
 .ethio-btn:disabled {
@@ -434,6 +434,45 @@ input:focus-visible {
 @keyframes resultFadeIn {
   0% { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.97); }
   100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* Micro-Animations requested by user */
+.fade-in-up {
+  animation: fadeInUpAnim 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+@keyframes fadeInUpAnim {
+  0% { opacity: 0; transform: translate3d(0, 16px, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* General Card Fade-In (Only once on load) */
+.glass-card {
+  animation: cardSoftFade 400ms ease-out forwards;
+}
+@keyframes cardSoftFade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Countdown Digit Tick Animation */
+.digit-tick {
+  display: inline-block;
+  animation: digitTick 200ms ease-out forwards;
+}
+@keyframes digitTick {
+  0% { transform: translateY(-8px); opacity: 0.2; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Rank Change Animations */
+.rank-diff-anim {
+  display: inline-block;
+  animation: rankFadeIn 600ms ease-out forwards;
+}
+@keyframes rankFadeIn {
+  0% { opacity: 0; transform: translateY(4px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .floating-xp {

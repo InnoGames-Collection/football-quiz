@@ -15,9 +15,8 @@ export class MatchStatsScreen {
     private _audioManager: AudioManager;
     private _stats: MatchStats;
     private _gameId: string;
-    private _onContinue: () => void;
-
     private _finalScore: number;
+    private _hasAnimated: boolean = false;
 
     constructor(
         uiManager: UIManager,
@@ -110,7 +109,7 @@ export class MatchStatsScreen {
                             ${i18n.currentLocale === 'am' ? 'አጠቃላይ እይታ' : (i18n.currentLocale === 'om' ? 'Waliigala' : 'Overview')}
                         </div>
                         <div style="font-size: 56px; font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 4px 16px rgba(255,215,0,0.4); line-height: 1;">
-                            <span id="final-score-rolling">0</span>
+                            <span id="final-score-rolling">${this._hasAnimated ? this._finalScore : '0'}</span>
                         </div>
                     </div>
                     
@@ -121,7 +120,7 @@ export class MatchStatsScreen {
                                 Lvl --
                             </div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #4ADE80; text-transform: uppercase;">
-                                +<span id="xp-gained-rolling">0</span> XP
+                                +<span id="xp-gained-rolling">${this._hasAnimated ? earnedXp : '0'}</span> XP
                             </div>
                             <div id="level-display-right" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-dim); font-family: var(--fds-font-mono);">
                                 Lvl --
@@ -234,7 +233,9 @@ export class MatchStatsScreen {
         // Animate main score
         const scoreEl = document.getElementById('final-score-rolling');
         if (scoreEl) {
-            RollingCounter.animate(scoreEl, 0, this._finalScore, 1500);
+            if (!this._hasAnimated) {
+                RollingCounter.animate(scoreEl, 0, this._finalScore, 800);
+            }
         }
 
         // Animate XP and Levels
@@ -246,8 +247,12 @@ export class MatchStatsScreen {
         
         const xpGainedEl = document.getElementById('xp-gained-rolling');
         if (xpGainedEl) {
-            RollingCounter.animate(xpGainedEl, 0, earnedXp, 1500);
+            if (!this._hasAnimated) {
+                RollingCounter.animate(xpGainedEl, 0, earnedXp, 800);
+            }
         }
+
+        this._hasAnimated = true;
 
         const leftLvl = document.getElementById('level-display-left');
         const rightLvl = document.getElementById('level-display-right');

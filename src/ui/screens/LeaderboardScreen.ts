@@ -14,6 +14,7 @@ export class LeaderboardScreen {
     private _saveManager: SaveManager;
     private _onClose: () => void;
     private _activeTab: 'daily' | 'weekly' | 'monthly' | 'tournament' = 'weekly';
+    private _previousRank: number | '--' | null = null;
 
     constructor(uiManager: UIManager, saveManager: SaveManager, audioManager: AudioManager, onClose: () => void) {
         this._uiManager = uiManager;
@@ -79,6 +80,20 @@ export class LeaderboardScreen {
                 letter-spacing: 0.5px;
             `;
         };
+
+        const myIndex = processedEntries.findIndex((e: any) => e.isMe);
+        const myRank = myIndex !== -1 ? myIndex + 1 : '--';
+        
+        let rankDiffHtml = '';
+        if (this._previousRank !== null && myRank !== '--' && this._previousRank !== '--') {
+            const diff = (this._previousRank as number) - (myRank as number);
+            if (diff > 0) {
+                rankDiffHtml = `<span class="rank-diff-anim rank-diff-up">▲ +${diff} Positions</span>`;
+            } else if (diff < 0) {
+                rankDiffHtml = `<span class="rank-diff-anim rank-diff-down">▼ ${diff} Positions</span>`;
+            }
+        }
+        this._previousRank = myRank;
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="pointer-events: auto; padding-bottom: 60px; overflow-y: auto;">
@@ -151,7 +166,10 @@ export class LeaderboardScreen {
                             <span style="font-size: 24px;">⚽</span>
                             <div>
                                 <div style="font-size: var(--fds-font-xs); color: #4ADE80; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የእርስዎ የደረጃ ቦታ' : (i18n.currentLocale === 'om' ? 'SADARKAA KEE' : 'YOUR RANK POSITION')}</div>
-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">${i18n.currentLocale === 'am' ? `#4 በ ${division.name} ሊግ` : (i18n.currentLocale === 'om' ? `#4 Liigii ${division.name} Keessatti` : `#4 In ${division.name} League`)}</div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">${i18n.currentLocale === 'am' ? `#${myRank} በ ${division.name} ሊግ` : (i18n.currentLocale === 'om' ? `#${myRank} Liigii ${division.name} Keessatti` : `#${myRank} In ${division.name} League`)}</div>
+                                    ${rankDiffHtml}
+                                </div>
                             </div>
                         </div>
                         <div style="text-align: right;">

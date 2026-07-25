@@ -31,6 +31,7 @@ export class FootballLeagueHome {
     private _callbacks: FootballHomeCallbacks;
     private _timerInterval: number | null = null;
     private _autoScrollInterval: any = null;
+    private _previousDailyRank: string | '--' | null = null;
 
     constructor(saveManager: SaveManager, audioManager: AudioManager, uiManager: UIManager, callbacks: FootballHomeCallbacks) {
         this._saveManager = saveManager;
@@ -47,6 +48,18 @@ export class FootballLeagueHome {
         
         const dailyScore = localStorage.getItem('ETHIO_DAILY_SCORE') || '0';
         const rawDailyRank = localStorage.getItem('ETHIO_DAILY_RANK');
+        
+        let rankDiffHtml = '';
+        if (this._previousDailyRank !== null && rawDailyRank && this._previousDailyRank !== '--' && rawDailyRank !== '--') {
+            const diff = parseInt(this._previousDailyRank) - parseInt(rawDailyRank);
+            if (diff > 0) {
+                rankDiffHtml = `<span class="rank-diff-anim rank-diff-up" style="margin-left: 8px; color: #4ADE80; font-size: 11px; font-weight: 800; background: rgba(34,197,94,0.15); padding: 2px 6px; border-radius: 4px; border: 1px solid #22C55E; vertical-align: middle;">▲ +${diff} Positions</span>`;
+            } else if (diff < 0) {
+                rankDiffHtml = `<span class="rank-diff-anim rank-diff-down" style="margin-left: 8px; color: #F87171; font-size: 11px; font-weight: 800; background: rgba(239,68,68,0.15); padding: 2px 6px; border-radius: 4px; border: 1px solid #EF4444; vertical-align: middle;">▼ ${diff} Positions</span>`;
+            }
+        }
+        this._previousDailyRank = rawDailyRank || '--';
+        
         const dailyRank = rawDailyRank ? `#${rawDailyRank}` : '--';
         const dailyStreak = profile.streakCount || 0;
 
@@ -124,7 +137,7 @@ export class FootballLeagueHome {
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
                         <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Rank</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${dailyRank}</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); display: flex; align-items: center;">${dailyRank} ${rankDiffHtml}</div>
                     </div>
                     <div>
                         <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Score</div>
@@ -317,6 +330,21 @@ export class FootballLeagueHome {
         if (daily && daily.end_time) {
             targetTime = new Date(daily.end_time).getTime();
         }
+        const updateTimerAnimated = (el: HTMLElement, text: string) => {
+            if (el.children.length !== text.length) {
+                el.innerHTML = text.split('').map(c => `<span>${c}</span>`).join('');
+                return;
+            }
+            for (let i = 0; i < text.length; i++) {
+                const span = el.children[i] as HTMLElement;
+                if (span.textContent !== text[i]) {
+                    span.textContent = text[i];
+                    span.classList.remove('digit-tick');
+                    void span.offsetWidth; // trigger reflow
+                    span.classList.add('digit-tick');
+                }
+            }
+        };
 
         this._timerInterval = window.setInterval(() => {
             let secondsRemaining = Math.floor((targetTime - new Date().getTime()) / 1000);
@@ -331,12 +359,12 @@ export class FootballLeagueHome {
 
             const timerEl = document.getElementById('daily-countdown');
             if (timerEl) {
-                timerEl.textContent = `⏱️ ${h}h : ${m.toString().padStart(2, '0')}m : ${s.toString().padStart(2, '0')}s`;
+                updateTimerAnimated(timerEl, `⏱️ ${h}h : ${m.toString().padStart(2, '0')}m : ${s.toString().padStart(2, '0')}s`);
             }
             
             const nextTimerEl = document.getElementById('next-daily-countdown');
             if (nextTimerEl) {
-                nextTimerEl.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                updateTimerAnimated(nextTimerEl, `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
             }
         }, 1000);
     }
@@ -417,7 +445,28 @@ export class FootballLeagueHome {
                 if (!carousel.clientWidth) return;
                 currentIndex = (currentIndex + 1) % dots.length;
                 const targetScroll = carousel.clientWidth * currentIndex;
-                carousel.scrollTo({ left: targetScroll, behavior: 'smooth' });
+                
+                // Custom smooth slide (fixes abrupt changes on devices lacking smooth scroll support)
+                const startScroll = carousel.scrollLeft;
+                const distance = targetScroll - startScroll;
+                const duration = 400; // 400ms smooth slide
+                let startTime: number | null = null;
+                
+                const animateScroll = (currentTime: number) => {
+                    if (startTime === null) startTime = currentTime;
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    // easeInOutQuad easing
+                    const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+                    
+                    carousel.scrollLeft = startScroll + distance * ease;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animateScroll);
+                    }
+                };
+                requestAnimationFrame(animateScroll);
+
                 updateDots(currentIndex);
             };
 
