@@ -7,6 +7,8 @@ import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionMana
 import { ConfettiCanvas } from '../components/ConfettiCanvas';
 import { RollingCounter } from '../components/RollingCounter';
 import { EdgeFunctionClient } from '../../networking/supabase/EdgeFunctionClient';
+import { GAME_MODES } from './PlayScreen';
+import { GameModeBanner } from '../components/GameModeBanner';
 
 export interface ScoreboardCallbacks {
     onMatchComplete: (stats: MatchStats, finalScore: number) => void;
@@ -160,7 +162,7 @@ export class ScoreboardQuestionScreen {
 
     private _renderKickOffScreen(): void {
         const root = this._uiManager.container;
-        const playerName = localStorage.getItem('ETHIO_FOOTBALL_USERNAME') || 'Player';
+        const mode = GAME_MODES.find(m => m.category === this._competition.id) || GAME_MODES[0];
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 0 28px; position: relative; height: 100vh; overflow: hidden;">
@@ -174,73 +176,15 @@ export class ScoreboardQuestionScreen {
                 <!-- Content Wrapper -->
                 <div class="kick-off-wrapper" style="position: relative; z-index: 10; width: 100%; max-width: 600px; margin: 0 auto; padding: 0 16px;">
                     
-                    <div class="kick-off-card" style="
-                        position: relative;
-                        background: linear-gradient(180deg, #071B2D 0%, #04101b 100%);
-                        border-radius: 20px;
-                        border: 1px solid rgba(255,255,255,0.08);
-                        box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 0 16px rgba(255,255,255,0.05);
-                        padding: 32px 20px 24px 20px;
-                        text-align: center;
-                        width: 100%;
-                        box-sizing: border-box;
-                        animation: popupScale 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                    ">
-                        <!-- Close Button -->
-                        <button id="match-exit-btn" style="
-                            position: absolute;
-                            top: 16px;
-                            right: 16px;
-                            width: 48px;
-                            height: 48px;
-                            border-radius: 50%;
-                            background: #071B2D;
-                            border: 1px solid rgba(255,255,255,0.1);
-                            box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.1);
-                            color: white;
-                            font-size: 16px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            cursor: pointer;
-                            z-index: 20;
-                            transition: transform 0.2s;
-                        ">
-                            <span style="display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 2px;">✕</span>
-                        </button>
-                    
-                        <!-- Trophy -->
-                        <div style="font-size: 64px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); margin-bottom: 20px;">${this._competition.badge}</div>
-                        
-                        <!-- Title -->
-                        <div style="font-size: 30px; font-weight: 800; color: white; text-align: center; margin-bottom: 14px; line-height: 1.2;">${this._competition.name}</div>
-                        
-                        <!-- Subtitle -->
-                        <div style="font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.75); text-align: center; max-width: 85%; margin: 0 auto 28px auto; line-height: 1.5;">${i18n.currentLocale === 'am' ? `${playerName}፣ እውቀትዎን ለመፈተሽ ዝግጁ ነዎት?` : (i18n.currentLocale === 'om' ? `${playerName}, beekumsa kee qoruuf qophaa'aa?` : `Ready to test your knowledge, ${playerName}?`)}</div>
-                        
-                        <!-- Kick Off Button -->
-                        <button id="kick-off-btn" style="
-                            width: 100%; 
-                            height: 58px;
-                            background: linear-gradient(180deg, #22D46E 0%, #0A7C45 100%);
-                            color: white; 
-                            font-weight: 900; 
-                            font-size: 20px; 
-                            border: 1px solid rgba(255,255,255,0.2); 
-                            border-radius: 18px; 
-                            cursor: pointer;
-                            box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.3);
-                            transition: transform 0.2s;
-                            text-transform: uppercase;
-                            letter-spacing: 1px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            animation: fade-up-delay 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
-                            animation-delay: 250ms;
-                            margin-bottom: 0;
-                        ">${i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF')}</button>
-                    </div>
+                    ${GameModeBanner.render({
+                        bannerUrl: `/assets/banners/${mode.banner}`,
+                        icon: this._competition.badge,
+                        title: this._competition.name,
+                        buttonId: 'kick-off-btn',
+                        buttonText: i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF'),
+                        showCloseButton: true
+                    })}
+
                 </div>
             </div>
             <style>
@@ -329,17 +273,17 @@ export class ScoreboardQuestionScreen {
                         </div>
 
                         <!-- Timer Chip -->
-                        <div id="timer-chip" class="top-bar-chip">
+                        <div id="timer-chip" class="top-bar-chip" style="width: 100px; justify-content: center; box-sizing: border-box;">
                             <span class="top-bar-icon" style="font-size: 16px;">⏱️</span>
-                            <span id="timer-text" class="top-bar-text" style="font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums;">
+                            <span id="timer-text" class="top-bar-text" style="font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; display: inline-block; min-width: 32px; text-align: left;">
                                 ${String(startTimerSec)}s
                             </span>
                         </div>
 
                         <!-- Progress Chip -->
-                        <div class="top-bar-chip">
+                        <div class="top-bar-chip" style="width: 100px; justify-content: center; box-sizing: border-box;">
                             <span class="top-bar-icon" style="font-size: 16px;">📝</span>
-                            <span class="top-bar-text">
+                            <span class="top-bar-text" style="font-family: var(--fds-font-mono); font-variant-numeric: tabular-nums; display: inline-block; min-width: 32px; text-align: left;">
                                 ${this._currentIndex + 1}/${this._questions.length}
                             </span>
                         </div>

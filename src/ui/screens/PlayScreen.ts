@@ -1,7 +1,8 @@
 import { DesignSystem } from "../theme/DesignSystem";
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-
+import { GameModeBanner } from '../components/GameModeBanner';
+import { i18n } from '../../localization/i18n';
 
 export interface GameModeInfo {
     id: string;
@@ -13,7 +14,7 @@ export interface GameModeInfo {
     banner: string;
 }
 
-const GAME_MODES: GameModeInfo[] = [
+export const GAME_MODES: GameModeInfo[] = [
     { id: 'quick', name: 'Quick Match', icon: '⚡', difficulty: 'Easy', reward: '+100 XP', category: 'world-cup', banner: 'QUICK MATCH.png' },
     { id: 'daily', name: 'Daily Challenge', icon: '📅', difficulty: 'Medium', reward: '+500 XP (1.5x Multiplier)', category: 'ethiopian-premier', banner: 'DAILY CHALLENGE.png' },
     { id: 'league', name: 'League Match', icon: '🏆', difficulty: 'Hard', reward: '+300 XP + Division Points', category: 'champions-league', banner: 'LEAGUE MATCH.png' },
@@ -113,52 +114,20 @@ export class PlayScreen {
                     </div>
 
                     <!-- ACTIVE PLAY DETAILS CARD -->
-                    <div class="glass-card fade-in-up" style="
-                        border: 2px solid rgba(34, 197, 94, 0.3); 
-                        padding: 0;
-                        text-align: center;
-                        border-radius: 20px;
-                        margin-bottom: 24px;
-                        box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-                        position: relative;
-                        overflow: hidden;
-                    ">
-                        <!-- Dynamic Background Asset -->
-                        <div id="play-card-bg" style="
-                            position: absolute;
-                            top: 0; left: 0; right: 0; bottom: 0;
-                            background: linear-gradient(to bottom, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.4) 100%), url('/assets/banners/${activeMode.banner}') center/cover no-repeat;
-                            transition: opacity 120ms ease-out;
-                            opacity: 1;
-                            z-index: 0;
-                        "></div>
-                        
-                        <!-- Content Container -->
-                        <div style="position: relative; z-index: 1; padding: 32px 20px 24px 20px; height: 100%;">
-                            <!-- Icon -->
-                            <div id="play-card-icon" style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(34,197,94,0.5)); transform: scale(1.05);">${activeMode.icon}</div>
-                            
-                            <!-- Title -->
-                            <div id="play-card-title" style="font-size: 24px; font-weight: 900; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.8); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
-                                ${activeMode.name}
-                            </div>
-
-                            <!-- Info Pills -->
-                            <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 32px;">
-                                <div style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px);">
-                                    <span style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.8); font-weight: 700; text-transform: uppercase;">Level</span>
-                                    <span id="play-card-difficulty" style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--tv-gold-primary); text-transform: uppercase;">${activeMode.difficulty}</span>
-                                </div>
-                                <div style="background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); border-radius: 24px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px);">
-                                    <span style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.8); font-weight: 700; text-transform: uppercase;">Prize</span>
-                                    <span id="play-card-reward" style="font-size: var(--fds-font-xs); font-weight: 900; color: #60A5FA; text-transform: uppercase;">${activeMode.reward}</span>
-                                </div>
-                            </div>
-
-                            <!-- Kick Off Button -->
-                            ${DesignSystem.Button({ id: 'btn-kickoff', text: 'KICK OFF', variant: 'primary', fullWidth: true, className: 'btn-kickoff-action' })}
-                        </div>
-                    </div>
+                    ${GameModeBanner.render({
+                        bgId: 'play-card-bg',
+                        iconId: 'play-card-icon',
+                        titleId: 'play-card-title',
+                        difficultyId: 'play-card-difficulty',
+                        rewardId: 'play-card-reward',
+                        bannerUrl: `/assets/banners/${activeMode.banner}`,
+                        icon: activeMode.icon,
+                        title: activeMode.name,
+                        difficulty: activeMode.difficulty,
+                        reward: activeMode.reward,
+                        buttonId: 'btn-kickoff',
+                        buttonText: i18n.currentLocale === 'am' ? 'ጀምር' : (i18n.currentLocale === 'om' ? 'EGGALI' : 'KICK OFF')
+                    })}
 
 
                 </div>
