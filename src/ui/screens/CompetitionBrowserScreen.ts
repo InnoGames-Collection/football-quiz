@@ -66,7 +66,7 @@ export class CompetitionBrowserScreen {
                 <div class="ethio-layer ethio-layer-lights"></div>
 
                 
-                ${EthioFantasyAppBar.render('LEAGUE')}
+                ${EthioFantasyAppBar.render('LEAGUE', '', false)}
 
                 <div style="max-width: 960px; margin: 0 auto; padding: 16px 0 100px 0;">
                     

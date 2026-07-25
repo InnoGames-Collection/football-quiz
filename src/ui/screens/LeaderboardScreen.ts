@@ -94,7 +94,7 @@ export class LeaderboardScreen {
                 <div class="stadium-beam stadium-beam-right"></div>
 
                 <!-- TOP BAR -->
-                ${EthioFantasyAppBar.render(i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK'))}
+                ${EthioFantasyAppBar.render(i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK'), '', false)}
 
                 <div style="max-width: 900px; margin: 0 auto; padding: 16px;">
                     

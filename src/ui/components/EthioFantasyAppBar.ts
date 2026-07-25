@@ -5,7 +5,7 @@ export class EthioFantasyAppBar {
      * @param actionsHtml Optional HTML for trailing actions (e.g. mark all read button)
      * @returns HTML string for the app bar
      */
-    public static render(title: string, actionsHtml: string = ''): string {
+    public static render(title: string, actionsHtml: string = '', showBackButton: boolean = true): string {
         return `
             <div class="ethio-fantasy-app-bar" style="
                 display: flex;
@@ -18,6 +18,7 @@ export class EthioFantasyAppBar {
                 z-index: 100;
                 position: relative;
             ">
+                ${showBackButton ? `
                 <button class="app-bar-back-btn" style="
                     display: flex;
                     align-items: center;
@@ -33,7 +34,7 @@ export class EthioFantasyAppBar {
                     margin-left: 24px;
                     margin-right: 16px;
                     padding: 0;
-                " aria-label="Back">❮</button>
+                " aria-label="Back">❮</button>` : ''}
                 <div class="app-bar-title" style="
                     flex: 1;
                     color: white;
@@ -44,6 +45,7 @@ export class EthioFantasyAppBar {
                     overflow: hidden;
                     text-overflow: ellipsis;
                     text-transform: uppercase;
+                    ${!showBackButton ? 'margin-left: 24px;' : ''}
                 ">${title}</div>
                 ${actionsHtml ? `
                 <div class="app-bar-actions" style="
