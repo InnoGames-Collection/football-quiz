@@ -172,16 +172,18 @@ export class ScoreboardQuestionScreen {
                 <div style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); z-index: 5; animation: fade-in 250ms ease-out;"></div>
 
                 <!-- Content Wrapper -->
-                <div class="kick-off-wrapper" style="position: relative; z-index: 10; width: 100%; max-width: 86%;">
+                <div class="kick-off-wrapper" style="position: relative; z-index: 10; width: 100%; max-width: 600px; margin: 0 auto; padding: 0 16px;">
                     
                     <div class="kick-off-card" style="
                         position: relative;
                         background: linear-gradient(180deg, #071B2D 0%, #04101b 100%);
-                        border-radius: 26px;
+                        border-radius: 20px;
                         border: 1px solid rgba(255,255,255,0.08);
                         box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 0 16px rgba(255,255,255,0.05);
-                        padding: 28px;
+                        padding: 32px 20px 24px 20px;
                         text-align: center;
+                        width: 100%;
+                        box-sizing: border-box;
                         animation: popupScale 250ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
                     ">
                         <!-- Close Button -->
