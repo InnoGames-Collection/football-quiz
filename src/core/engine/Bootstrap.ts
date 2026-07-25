@@ -142,15 +142,6 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
                         
                         await registry.launchGame('football-quiz');
-                    },
-                    async (session) => {
-                        cacheManager.setQuizActive(true);
-                        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-                        tabStacks[currentTab].push('quiz_game');
-                        try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
-                        
-                        await registry.launchGame('football-quiz');
-                        await quizMode.resume(session);
                     }
                 );
                 activeScreen = playScreen;
@@ -352,13 +343,23 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
     const navigateToTab = (tabId: TabId) => {
         const stack = tabStacks[tabId];
-        const route = stack[stack.length - 1];
-        if (currentTab === tabId && route === tabId) {
-            return; // Already at the root of this tab
+        const currentTopRoute = stack[stack.length - 1];
+
+        if (currentTab === tabId) {
+            if (currentTopRoute === tabId) {
+                return; // Already at the root of this tab
+            } else {
+                // User clicked the active tab again while in a nested page.
+                // Clear the nested stack and return to root.
+                tabStacks[tabId] = [tabId as RouteName];
+                renderRoute(tabId as RouteName, true);
+                return;
+            }
         }
         
         currentTab = tabId;
-        renderRoute(tabId as RouteName, true);
+        // Restore the last active route on that tab's stack
+        renderRoute(currentTopRoute, true);
     };
 
     winAny.ethioReloadHome = () => navigateToTab('home');

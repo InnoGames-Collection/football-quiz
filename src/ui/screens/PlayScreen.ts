@@ -1,7 +1,6 @@
 import { DesignSystem } from "../theme/DesignSystem";
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionManager';
 
 
 export interface GameModeInfo {
@@ -30,19 +29,16 @@ export class PlayScreen {
     private _audioManager: AudioManager;
 
     private _onStartMatch: (category: string) => void;
-    private _onResumeMatch?: (session: GameSession) => void;
     private _selectedMode: string = 'quick';
 
     constructor(
         uiManager: UIManager,
         audioManager: AudioManager,
-        onStartMatch: (category: string) => void,
-        onResumeMatch?: (session: GameSession) => void
+        onStartMatch: (category: string) => void
     ) {
         this._uiManager = uiManager;
         this._audioManager = audioManager;
         this._onStartMatch = onStartMatch;
-        this._onResumeMatch = onResumeMatch;
 
         // Pre-cache banners
         GAME_MODES.forEach(mode => {
@@ -164,33 +160,6 @@ export class PlayScreen {
                         </div>
                     </div>
 
-                    <!-- RESUME SUSPENDED MATCH SECTION -->
-                    <div id="resume-match-container" style="display: none; margin-bottom: 24px;">
-                        <div class="glass-card fade-in-up" style="
-                            border: 2px solid rgba(255, 215, 0, 0.3); 
-                            background: radial-gradient(circle at top, rgba(255, 215, 0, 0.15) 0%, rgba(15, 23, 42, 0.95) 80%);
-                            padding: 24px 20px; 
-                            text-align: center;
-                            border-radius: 20px;
-                            box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(255, 215, 0, 0.05);
-                        ">
-                            <div style="font-size: 48px; margin-bottom: 12px; filter: drop-shadow(0 4px 16px rgba(255,215,0,0.5));">⏱️</div>
-                            <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
-                                SUSPENDED
-                            </div>
-                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 20px; font-weight: 600;">
-                                Match in progress.
-                            </div>
-                            <div style="display: flex; gap: 12px;">
-                                <div style="flex: 1;">
-                                    ${DesignSystem.Button({ id: 'btn-resume-match', text: 'RESUME', variant: 'primary', fullWidth: true })}
-                                </div>
-                                <div style="flex: 1;">
-                                    ${DesignSystem.Button({ id: 'btn-discard-match', text: 'DISCARD', variant: 'secondary', fullWidth: true })}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
             </div>
@@ -286,25 +255,5 @@ export class PlayScreen {
             this._onStartMatch(activeMode.category);
         });
 
-        // Resume handlers
-        const activeSession = GameSessionManager.getInstance().getActiveSession();
-        if (activeSession) {
-            const resumeContainer = document.getElementById('resume-match-container');
-            if (resumeContainer) resumeContainer.style.display = 'block';
-
-            document.getElementById('btn-resume-match')?.addEventListener('click', () => {
-                this._audioManager.playClick();
-                if (this._onResumeMatch) {
-                    this._onResumeMatch(activeSession);
-                }
-            });
-
-            document.getElementById('btn-discard-match')?.addEventListener('click', () => {
-                this._audioManager.playClick();
-                GameSessionManager.getInstance().clearSession();
-                if (resumeContainer) resumeContainer.style.display = 'none';
-                this.render(); // Re-render to clear out the active session fully
-            });
-        }
     }
 }

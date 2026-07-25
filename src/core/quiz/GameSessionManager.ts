@@ -62,6 +62,13 @@ export class GameSessionManager {
             if (session.state === 'Completed' || session.state === 'Abandoned' || session.state === 'Expired') {
                 return null;
             }
+            
+            // Auto-discard sessions older than 4 hours (14,400,000 ms)
+            if (Date.now() - session.startTime > 14400000) {
+                this.clearSession();
+                return null;
+            }
+            
             return session;
         } catch (e) {
             return null;
