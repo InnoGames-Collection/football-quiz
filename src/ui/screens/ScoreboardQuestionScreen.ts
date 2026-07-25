@@ -1041,6 +1041,7 @@ export class ScoreboardQuestionScreen {
         
         this._quizEngine = null as any;
         this._session = null;
+        (window as any).ethioOnBackPress = null;
         if (this._uiManager && this._uiManager.container) {
             this._uiManager.container.innerHTML = '';
         }

@@ -484,9 +484,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 showMaterial3ExitDialog();
                 try { window.history.pushState({ tab: 'home' as TabId, route: 'home' }, '', window.location.href); } catch(e){}
             } else {
-                BottomNav.setActiveTab('home');
-                currentTab = 'home';
-                renderRoute('home', false);
+                navigateToTab('home');
             }
         }
     };
