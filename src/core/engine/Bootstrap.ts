@@ -49,7 +49,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioEvents = eventBus;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats' | 'achievements';
+    type RouteName = 'home' | 'play' | 'league' | 'rankings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats' | 'achievements' | 'awards';
 
     let tabStacks: Record<TabId, RouteName[]> = {
         home: ['home'],
@@ -205,7 +205,8 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onHelp: () => renderRoute('help'),
                         onAbout: () => renderRoute('about'),
                         onPrivacy: () => renderRoute('privacy'),
-                        onTerms: () => renderRoute('terms')
+                        onTerms: () => renderRoute('terms'),
+                        onAwards: () => renderRoute('awards')
                     }
                 );
                 activeScreen = profScreen;
@@ -236,6 +237,15 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 );
                 activeScreen = achievements;
                 achievements.render();
+                break;
+
+            case 'awards':
+                cacheManager.setQuizActive(false);
+                const awards = new AwardsScreen(
+                    game.uiManager, game.audioManager, handleBack
+                );
+                activeScreen = awards;
+                awards.render();
                 break;
 
             case 'about':
@@ -458,7 +468,9 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 showMaterial3ExitDialog();
                 try { window.history.pushState({ tab: 'home' as TabId, route: 'home' }, '', window.location.href); } catch(e){}
             } else {
-                navigateToTab('home');
+                BottomNav.setActiveTab('home');
+                currentTab = 'home';
+                renderRoute('home', false);
             }
         }
     };
@@ -539,7 +551,13 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         document.getElementById('exit-btn-confirm')?.addEventListener('click', () => {
             game.audioManager.playClick();
             modal.remove();
-            window.history.back();
+            if ((window as any).navigator?.app?.exitApp) {
+                (window as any).navigator.app.exitApp();
+            } else if ((window as any).Android?.exitApp) {
+                (window as any).Android.exitApp();
+            } else {
+                window.close();
+            }
         });
     };
 

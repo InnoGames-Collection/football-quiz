@@ -29,6 +29,7 @@ export class SettingsScreen {
     private _audioManager: AudioManager;
     private _onBack: () => void;
     private _subScreen: 'main' | 'profile' | 'language' | 'notifications' | 'sound' | 'help' | 'terms' | 'privacy' | 'about' = 'main';
+    private _defaultSubScreen: 'main' | 'profile' | 'language' | 'notifications' | 'sound' | 'help' | 'terms' | 'privacy' | 'about' = 'main';
     private _settings!: AppSettings;
     private _helpCategory: string | null = null;
     private _showContactSupportForm: boolean = false;
@@ -40,6 +41,16 @@ export class SettingsScreen {
         this._audioManager = audioManager;
         this._onBack = onBack;
         this._subScreen = defaultSubScreen;
+        this._defaultSubScreen = defaultSubScreen;
+        
+        (window as any).ethioOnBackPress = () => {
+            if (this._subScreen !== this._defaultSubScreen || this._helpCategory || this._showContactSupportForm) {
+                this._audioManager.playClick();
+                this._goBack();
+                return true;
+            }
+            return false;
+        };
         
         // Initialize default settings first to avoid synchronous undefined accesses
         this._settings = this._getDefaultSettings();
@@ -86,6 +97,10 @@ export class SettingsScreen {
         }
         
         this.render();
+    }
+
+    public destroy(): void {
+        (window as any).ethioOnBackPress = null;
     }
 
     private _getDefaultSettings(): AppSettings {
@@ -981,7 +996,14 @@ export class SettingsScreen {
     }
 
     private _goBack(): void {
-        this._subScreen = 'main';
+        if (this._subScreen !== this._defaultSubScreen) {
+            this._subScreen = this._defaultSubScreen;
+        } else if (this._helpCategory !== null || this._showContactSupportForm) {
+            // We just clear the deep states below, no need to call _onBack yet
+        } else {
+            this._onBack();
+            return;
+        }
         this._helpCategory = null;
         this._showContactSupportForm = false;
         this.render();

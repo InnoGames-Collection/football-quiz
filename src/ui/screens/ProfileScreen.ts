@@ -20,6 +20,7 @@ export interface ProfileCallbacks {
     onAbout: () => void;
     onPrivacy: () => void;
     onTerms: () => void;
+    onAwards: () => void;
 }
 
 export class ProfileScreen {
@@ -293,16 +294,7 @@ export class ProfileScreen {
 
                     case 'awards':
                         this._audioManager.playClick();
-                        this._uiManager.clear();
-                        new AwardsScreen(
-                            this._uiManager,
-                            this._audioManager,
-                            () => {
-                                // Provide a callback to return to the Profile Screen
-                                this._uiManager.clear();
-                                this.render(); // Rebinds and renders Profile Screen
-                            }
-                        );
+                        this._callbacks.onAwards();
                         break;
                 }
             });
