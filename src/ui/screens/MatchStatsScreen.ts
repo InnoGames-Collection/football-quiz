@@ -296,11 +296,11 @@ export class MatchStatsScreen {
         
         document.getElementById('btn-home')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            if (winAny.ethioCloseGame) winAny.ethioCloseGame();
-            if (winAny.ethioReloadHome) {
-                winAny.ethioReloadHome();
+            if (winAny.ethioForceHome) {
+                winAny.ethioForceHome();
             } else {
-                this._onContinue();
+                if (winAny.ethioCloseGame) winAny.ethioCloseGame();
+                if (winAny.ethioReloadHome) winAny.ethioReloadHome();
             }
         });
         

@@ -373,6 +373,20 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         const route = stack.length > 0 ? stack[stack.length - 1] : currentTab;
         renderRoute(route as RouteName, false);
     };
+    
+    winAny.ethioForceHome = () => {
+        cacheManager.setQuizActive(false);
+        // Clean up the current stack without rendering it
+        const stack = tabStacks[currentTab];
+        if (stack[stack.length - 1] === 'quiz_game' || stack[stack.length - 1] === 'match_stats') {
+            stack.pop();
+        }
+        
+        // Reset home stack and explicitly navigate
+        tabStacks['home'] = ['home'];
+        currentTab = 'home';
+        renderRoute('home', true);
+    };
 
     // Listen for EventBus view reload events
     eventBus.on('RELOAD_CURRENT_VIEW', () => {
