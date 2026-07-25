@@ -316,12 +316,12 @@ export class ScoreboardQuestionScreen {
                         box-sizing: border-box;
                     ">
                         <!-- Leave Button -->
-                        <button id="match-exit-btn" class="top-bar-chip" style="width: 48px !important; height: 48px !important; border-radius: 24px !important; padding: 0 !important; flex-shrink: 0; box-sizing: border-box;">
-                            <span class="top-bar-icon" style="font-size: 28px; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0; transform: translateY(-1px);">←</span>
+                        <button id="match-exit-btn" class="top-bar-chip" style="width: 48px !important; height: 48px !important; border-radius: 24px !important; padding: 0 !important; flex-shrink: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: center;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><path d="M15 18l-6-6 6-6"/></svg>
                         </button>
                         
                         <!-- Score Chip -->
-                        <div class="top-bar-chip">
+                        <div class="top-bar-chip" style="width: 100px; justify-content: center; box-sizing: border-box;">
                             <span class="top-bar-icon" style="font-size: 16px;">⚽</span>
                             <span id="match-score" class="top-bar-text" style="color: var(--tv-gold-primary);">${currentXP}</span>
                         </div>
