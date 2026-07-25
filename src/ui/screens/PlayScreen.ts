@@ -15,14 +15,14 @@ export interface GameModeInfo {
 }
 
 const GAME_MODES: GameModeInfo[] = [
-    { id: 'quick', name: 'Quick Match', icon: '⚡', difficulty: 'Easy', reward: '+100 XP', category: 'world-cup', banner: 'QUICK MATCH.png' },
-    { id: 'daily', name: 'Daily Challenge', icon: '📅', difficulty: 'Medium', reward: '+500 XP (1.5x Multiplier)', category: 'ethiopian-premier', banner: 'DAILY CHALLENGE.png' },
-    { id: 'league', name: 'League Match', icon: '🏆', difficulty: 'Hard', reward: '+300 XP + Division Points', category: 'champions-league', banner: 'LEAGUE MATCH.png' },
-    { id: 'tournament', name: 'Tournament', icon: '👑', difficulty: 'Legend', reward: '+1000 XP + Cup Prize', category: 'afcon', banner: 'TOURNAMENT.png' },
-    { id: 'guess', name: 'Guess Player', icon: '👤', difficulty: 'Medium', reward: '+200 XP', category: 'legendary-players', banner: 'GUESS PLAYER.png' },
-    { id: 'iq', name: 'Football IQ', icon: '🧠', difficulty: 'Hard', reward: '+250 XP', category: 'football-rules', banner: 'FOOTBALL IQ.png' },
-    { id: 'penalty', name: 'Penalty Shootout', icon: '⚽', difficulty: 'Easy', reward: '+150 XP', category: 'transfer-market', banner: 'PENALTY SHOOTOUT.png' },
-    { id: 'championship', name: 'Championship', icon: '🏅', difficulty: 'Elite', reward: '+2000 XP', category: 'world-cup', banner: 'CHAMPIONSHIP.png' }
+    { id: 'quick', name: 'Quick Match', icon: '⚡', difficulty: 'Easy', reward: '+100 XP', category: 'world-cup', banner: 'banner1.jpg' },
+    { id: 'daily', name: 'Daily Challenge', icon: '📅', difficulty: 'Medium', reward: '+500 XP (1.5x Multiplier)', category: 'ethiopian-premier', banner: 'banner2.jpg' },
+    { id: 'league', name: 'League Match', icon: '🏆', difficulty: 'Hard', reward: '+300 XP + Division Points', category: 'champions-league', banner: 'banner3.png' },
+    { id: 'tournament', name: 'Tournament', icon: '👑', difficulty: 'Legend', reward: '+1000 XP + Cup Prize', category: 'afcon', banner: 'banner4.png' },
+    { id: 'guess', name: 'Guess Player', icon: '👤', difficulty: 'Medium', reward: '+200 XP', category: 'legendary-players', banner: 'banner1.jpg' },
+    { id: 'iq', name: 'Football IQ', icon: '🧠', difficulty: 'Hard', reward: '+250 XP', category: 'football-rules', banner: 'banner2.jpg' },
+    { id: 'penalty', name: 'Penalty Shootout', icon: '⚽', difficulty: 'Easy', reward: '+150 XP', category: 'transfer-market', banner: 'banner3.png' },
+    { id: 'championship', name: 'Championship', icon: '🏅', difficulty: 'Elite', reward: '+2000 XP', category: 'world-cup', banner: 'banner4.png' }
 ];
 
 export class PlayScreen {
