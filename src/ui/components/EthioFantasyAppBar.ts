@@ -45,7 +45,7 @@ export class EthioFantasyAppBar {
                     overflow: hidden;
                     text-overflow: ellipsis;
                     text-transform: uppercase;
-                    ${!showBackButton ? 'margin-left: 24px;' : ''}
+                    ${!showBackButton ? 'text-align: center;' : ''}
                 ">${title}</div>
                 ${actionsHtml ? `
                 <div class="app-bar-actions" style="
