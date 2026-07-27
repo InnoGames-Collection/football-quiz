@@ -21,7 +21,7 @@ import { GameSessionManager } from '../quiz/GameSessionManager';
 import { PlayScreen } from '../../ui/screens/PlayScreen';
 import { i18n } from '../../localization/i18n';
 import { DetailedStatsScreen } from '../../ui/screens/DetailedStatsScreen';
-import { MessagesScreen } from '../../ui/screens/MessagesScreen';
+
 import { SubscriptionScreen } from '../../ui/screens/SubscriptionScreen';
 import { CacheManager } from '../cache/CacheManager';
 import { EventBus } from '../events/EventBus';
