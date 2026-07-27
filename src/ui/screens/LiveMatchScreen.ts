@@ -313,14 +313,9 @@ export class LiveMatchScreen {
             this._showFeedbackOverlay(false);
         }
 
-        // Broadcast answer and current score to opponent
-        this._client.broadcastEvent('ANSWER_SUBMITTED', { 
-            score: this._myScore,
-            responseTimeMs: (10 - this._timeLeftSec) * 1000
-        });
-
         // Send live WebSocket broadcast
-        this._client.sendAnswer('local-user', this._currentIndex, isCorrect, this._myScore);
+        const myUserId = this._saveManager.cloudUserId || 'local-user';
+        this._client.sendAnswer(myUserId, this._currentIndex, isCorrect, this._myScore);
 
         setTimeout(() => {
             this._hideFeedbackOverlay();
@@ -363,7 +358,8 @@ export class LiveMatchScreen {
             selectedIndex: -1,
             responseTimeMs: 10000
         });
-        this._client.sendAnswer('local-user', this._currentIndex, false, this._myScore);
+        const myUserId = this._saveManager.cloudUserId || 'local-user';
+        this._client.sendAnswer(myUserId, this._currentIndex, false, this._myScore);
         this._audioManager.playWhistle();
         
         const buttons = document.querySelectorAll('.live-option-btn');
@@ -453,13 +449,13 @@ export class LiveMatchScreen {
     }
 
     private async _submitToBackend(): Promise<void> {
-        if (!this._saveManager.profile.id) return;
+        if (!this._saveManager.cloudUserId) return;
         
         try {
             // We use standard match submission, but flagged as 'live'
             const { supabase } = await import('../../networking/supabase/SupabaseClient');
             if (supabase) {
-                await supabase.rpc('submit_match_result', {
+                await supabase.rpc('submit_match_result' as any, {
                     p_match_type: 'live',
                     p_answers: this._answers,
                     p_live_match_id: this._client.matchId

@@ -1,12 +1,11 @@
-import { Screen } from '../core/Screen';
-import { UIManager } from '../UIManager';
-import { AudioManager } from '../../core/audio/AudioManager';
+import { UIManager } from '../../core/managers/UIManager';
+import { AudioManager } from '../../core/managers/AudioManager';
 import { DesignSystem } from '../theme/DesignSystem';
 import { i18n } from '../../localization/i18n';
 import { TournamentService, TournamentLeaderboardEntry } from '../../core/competition/TournamentService';
 import { DailyChallengeManager } from '../../core/competition/DailyChallengeManager';
 
-export class TournamentScreen extends Screen {
+export class TournamentScreen {
     private _currentTab: 'weekly' | 'monthly' | 'yearly' = 'weekly';
     private _leaderboardData: TournamentLeaderboardEntry[] = [];
     private _nextChallengeTime: number = 0;
@@ -18,16 +17,14 @@ export class TournamentScreen extends Screen {
         private _audioManager: AudioManager,
         private _onPlay: () => void,
         private _onBack: () => void
-    ) {
-        super();
-    }
+    ) {}
 
     public async render(): Promise<void> {
         const root = this._uiManager.container;
         
         // Fetch challenge info to know if we can play
         const challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
-        this._isChallengeAvailable = challengeInfo.available && !challengeInfo.completed;
+        this._isChallengeAvailable = !challengeInfo.completed && challengeInfo.questions.length > 0;
         
         // Calculate time to next midnight UTC
         const now = new Date();

@@ -141,7 +141,7 @@ export class QuestionBank {
         usageType: 'casual' | 'tournament' = 'casual'
     ): Promise<ExtendedQuestionData[]> {
         // 1. Edge Function Request (Primary)
-        if (supabaseService.isOnline && EdgeFunctionClient.isAvailable) {
+        if (supabaseService.isOnline) {
             try {
                 const { data, error } = await EdgeFunctionClient.invoke('questions', {
                     competitionId,
@@ -229,7 +229,7 @@ export class QuestionBank {
                     // Order them according to the input `ids` array to guarantee order
                     const ordered = [];
                     for (const id of ids) {
-                        const q = mapped.find(m => m.id === id);
+                        const q = mapped.find((m: any) => m.id === id);
                         if (q) ordered.push(q);
                     }
                     return ordered;

@@ -24,6 +24,10 @@ export class SaveManager {
         this._profile = this._loadProfile();
     }
 
+    public get cloudUserId(): string | null {
+        return this._cloudUserId;
+    }
+
     private _loadProfile(): UserProfile {
         try {
             const data = localStorage.getItem(SaveManager.STORAGE_KEY);

@@ -23,6 +23,10 @@ export class LiveMatchClient {
         this._matchId = matchId;
     }
 
+    public get matchId(): string {
+        return this._matchId;
+    }
+
     public connect(): void {
         if (!supabaseService.isOnline || !supabase) {
             console.log(`[LiveMatchClient] Offline mode — simulated channel for ${this._matchId}`);

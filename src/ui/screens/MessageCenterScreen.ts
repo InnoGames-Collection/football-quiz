@@ -1,13 +1,12 @@
-import { Screen } from '../core/Screen';
-import { UIManager } from '../UIManager';
-import { AudioManager } from '../../core/audio/AudioManager';
+import { UIManager } from '../../core/managers/UIManager';
+import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
-import { MessageCenterService, MessageCenterItem, Announcement, PersonalMessage, SupportTicket } from '../../networking/services/MessageCenterService';
+import { MessageCenterService, MessageCenterItem } from '../../networking/services/MessageCenterService';
 
 export type MessageTab = 'announcements' | 'personal' | 'support';
 export type MessageFilter = 'all' | 'unread' | 'high-priority' | 'reward' | 'tournament';
 
-export class MessageCenterScreen extends Screen {
+export class MessageCenterScreen {
     private _currentTab: MessageTab = 'announcements';
     private _currentFilter: MessageFilter = 'all';
     private _messages: MessageCenterItem[] = [];
@@ -16,9 +15,7 @@ export class MessageCenterScreen extends Screen {
         private _uiManager: UIManager,
         private _audioManager: AudioManager,
         private _onBack: () => void
-    ) {
-        super();
-    }
+    ) {}
 
     public async render(): Promise<void> {
         const root = this._uiManager.container;
@@ -216,8 +213,8 @@ export class MessageCenterScreen extends Screen {
         });
 
         const tabs = this._uiManager.container.querySelectorAll('.mc-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', async (e) => {
+        tabs.forEach((tab: Element) => {
+            tab.addEventListener('click', async (e: Event) => {
                 const target = e.currentTarget as HTMLElement;
                 const tabId = target.getAttribute('data-tab') as MessageTab;
                 if (tabId !== this._currentTab) {
@@ -230,15 +227,15 @@ export class MessageCenterScreen extends Screen {
         });
 
         const chips = this._uiManager.container.querySelectorAll('.filter-chip');
-        chips.forEach(chip => {
-            chip.addEventListener('click', (e) => {
+        chips.forEach((chip: Element) => {
+            chip.addEventListener('click', (e: Event) => {
                 const target = e.currentTarget as HTMLElement;
                 const filterId = target.getAttribute('data-filter') as MessageFilter;
                 if (filterId !== this._currentFilter) {
                     this._audioManager.playClick();
                     this._currentFilter = filterId;
                     
-                    chips.forEach(c => c.classList.remove('filter-chip-active'));
+                    chips.forEach((c: Element) => c.classList.remove('filter-chip-active'));
                     target.classList.add('filter-chip-active');
                     
                     this._renderMessages();

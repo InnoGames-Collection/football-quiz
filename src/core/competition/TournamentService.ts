@@ -24,7 +24,7 @@ export class TournamentService {
         }
 
         try {
-            const { data, error } = await supabase.rpc('get_tournament_leaderboard', {
+            const { data, error } = await supabase.rpc('get_tournament_leaderboard' as any, {
                 p_period_type: periodType,
                 p_limit: limit
             });

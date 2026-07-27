@@ -337,15 +337,6 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 statsScreen.render();
                 break;
 
-            case 'messages':
-                cacheManager.setQuizActive(false);
-                const messagesScreen = new MessagesScreen(
-                    game.uiManager, game.audioManager,
-                    handleBack
-                );
-                activeScreen = messagesScreen;
-                messagesScreen.render();
-                break;
 
             case 'subscription':
                 cacheManager.setQuizActive(false);
