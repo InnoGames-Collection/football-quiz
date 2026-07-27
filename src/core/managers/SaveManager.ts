@@ -75,11 +75,19 @@ export class SaveManager {
         // Async sync to cloud if authenticated
         const client = supabaseService.client;
         if (this._cloudUserId && client) {
+            let totalScore = 0;
+            if (this._profile.highScores) {
+                for (const key in this._profile.highScores) {
+                    totalScore += this._profile.highScores[key];
+                }
+            }
+            
             (client.from('users' as any) as any)
                 .update({
                     username: this._profile.username,
                     coins: this._profile.coins,
                     xp: this._profile.xp,
+                    score: totalScore,
                     elo_rating: this._profile.eloRating || 0,
                     streak_count: this._profile.streakCount || 0,
                     last_active: new Date().toISOString()

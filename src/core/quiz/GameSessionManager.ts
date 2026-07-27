@@ -1,8 +1,10 @@
 import { QuestionData } from '../../ui/screens/ScoreboardQuestionScreen';
+import { GameSessionService } from '../../networking/services/GameSessionService';
 
 export type SessionState = 'Ready' | 'Starting' | 'Playing' | 'Paused' | 'Resumed' | 'Completed' | 'Abandoned' | 'Expired';
 
 export interface GameSession {
+    cloudSessionId?: string;
     sessionId: string;
     matchType: string;
     startTime: number;
@@ -50,6 +52,16 @@ export class GameSessionManager {
             wrongCount: 0,
             timeOutCount: 0
         };
+
+        // Asynchronously create the session in Supabase so it shows up in "Live Match"
+        const questionIds = questions.map(q => String(q.id));
+        GameSessionService.getInstance().createSession(matchType, matchType, difficulty, questionIds).then(cloudSession => {
+            if (cloudSession && cloudSession.id) {
+                session.cloudSessionId = cloudSession.id;
+                this.saveSession(session);
+            }
+        });
+
         this.saveSession(session);
         return session;
     }
@@ -106,6 +118,20 @@ export class GameSessionManager {
             session.wrongCount++;
         }
 
+        if (session.cloudSessionId) {
+            const questionId = String(session.questions[index].id);
+            const correctIndex = session.questions[index].correctIndex ?? -1;
+            GameSessionService.getInstance().recordAnswer(
+                session.cloudSessionId,
+                questionId,
+                index,
+                chosenIdx,
+                correctIndex,
+                isCorrect,
+                responseTime
+            );
+        }
+
         this.saveSession(session);
     }
 
@@ -113,6 +139,11 @@ export class GameSessionManager {
         session.state = 'Abandoned';
         this.saveSession(session);
         this.addToHistory(session);
+        
+        if (session.cloudSessionId) {
+            GameSessionService.getInstance().abandonSession(session.cloudSessionId);
+        }
+        
         this.clearSession();
     }
 
@@ -121,6 +152,19 @@ export class GameSessionManager {
         session.currentScore = finalScore;
         this.saveSession(session);
         this.addToHistory(session);
+        
+        if (session.cloudSessionId) {
+            const accuracy = session.totalQuestions > 0 ? Math.round((session.correctCount / session.totalQuestions) * 100) : 0;
+            const avgTime = session.responseTimes.length > 0 ? session.responseTimes.reduce((a, b) => a + b, 0) / session.responseTimes.length : 0;
+            GameSessionService.getInstance().completeSession(
+                session.cloudSessionId,
+                finalScore,
+                accuracy,
+                avgTime,
+                0 // maxCombo - could be added to session if needed
+            );
+        }
+        
         this.clearSession();
     }
 
