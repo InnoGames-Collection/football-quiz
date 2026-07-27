@@ -155,7 +155,6 @@ export class FootballLeagueHome {
                         </div>
                     </div>
                     ` }
-                </div>                </div>
                 </div>
 
                 <!-- SCROLLABLE BODY CONTENT (Responsive Grid System) -->
