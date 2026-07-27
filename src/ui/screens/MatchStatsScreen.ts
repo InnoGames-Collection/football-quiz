@@ -17,6 +17,7 @@ export class MatchStatsScreen {
     private _gameId: string;
     private _finalScore: number;
     private _hasAnimated: boolean = false;
+    private _onContinue: () => void;
 
     constructor(
         uiManager: UIManager,
