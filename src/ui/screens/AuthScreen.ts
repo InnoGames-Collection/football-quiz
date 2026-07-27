@@ -121,7 +121,8 @@ export class AuthScreen {
                     return;
                 }
 
-                const fullPhone = rawNum.startsWith('+') ? rawNum : `+251${rawNum.replace(/^0/, '')}`;
+                // Normalise: handle 09..., 9..., 2519..., +2519... → +2519...
+                const fullPhone = this._normalisePhone(rawNum);
                 this._pendingPhone = fullPhone;
                 this._statusMessage = i18n.currentLocale === 'am' ? 'የኦቲፒ መልዕክት በመላክ ላይ...' : (i18n.currentLocale === 'om' ? 'OTP SMS ergaa jira...' : 'Sending OTP SMS...');
                 this.render();
@@ -171,6 +172,27 @@ export class AuthScreen {
                 this._statusMessage = '';
                 this.render();
             });
+        }
+    }
+
+    /**
+     * Normalise any Ethiopian phone format to E.164 (+2519XXXXXXXX).
+     * Handles:  09XXXXXXXX  |  9XXXXXXXX  |  2519XXXXXXXX  |  +2519XXXXXXXX
+     */
+    private _normalisePhone(raw: string): string {
+        const digits = raw.replace(/\D/g, ''); // strip everything except digits
+        if (digits.startsWith('251')) {
+            // e.g. 2519... or 251911000001
+            return '+' + digits;
+        } else if (digits.startsWith('0')) {
+            // e.g. 0911000001
+            return '+251' + digits.slice(1);
+        } else if (raw.startsWith('+')) {
+            // already has country code prefix
+            return raw.replace(/\s+/g, '');
+        } else {
+            // e.g. 911000001 (9-digit local without leading 0)
+            return '+251' + digits;
         }
     }
 }

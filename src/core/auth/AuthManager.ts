@@ -19,6 +19,20 @@ export class AuthManager {
         this._initSession();
     }
 
+    /** Normalise any Ethiopian phone format to E.164 (+2519XXXXXXXX). */
+    public static normalisePhone(raw: string): string {
+        const digits = raw.replace(/\D/g, '');
+        if (digits.startsWith('251')) return '+' + digits;   // 2519... or 251911000001
+        if (digits.startsWith('0'))   return '+251' + digits.slice(1); // 09...
+        if (raw.startsWith('+'))      return raw.replace(/\s+/g, '');  // already E.164
+        return '+251' + digits;  // 9... (9-digit local)
+    }
+
+    /** Returns true for test phone numbers that bypass SMS sending. */
+    private static _isTestNumber(normalised: string): boolean {
+        return /^\+251911000000[0-9]$/.test(normalised);
+    }
+
     public static getInstance(saveManager?: SaveManager): AuthManager {
         if (!AuthManager._instance) {
             if (!saveManager) {
@@ -63,7 +77,7 @@ export class AuthManager {
         }
     }
 
-    private async _fetchUserProfile(userId: string, retries = 5): Promise<void> {
+    private async _fetchUserProfile(userId: string, retries = 5, phone?: string): Promise<void> {
         if (!supabase) return;
 
         for (let i = 0; i < retries; i++) {
@@ -73,6 +87,37 @@ export class AuthManager {
                 .single();
 
             if (error) {
+                if (error.code === 'PGRST116') {
+                    // Row not found — this is a brand-new user; create their profile row
+                    const username = phone ? `Player_${phone.slice(-4)}` : `Player_${userId.slice(-4)}`;
+                    const { data: inserted, error: insertError } = await (supabase.from('users' as any) as any)
+                        .insert({
+                            id: userId,
+                            username,
+                            phone: phone || null,
+                            locale: 'en',
+                            elo_rating: 0,
+                            coins: 0,
+                            xp: 0,
+                            total_matches: 0,
+                            total_wins: 0,
+                            subscription_tier: 'free',
+                            streak_count: 0,
+                            created_at: new Date().toISOString(),
+                            last_active: new Date().toISOString()
+                        })
+                        .select()
+                        .single();
+                    if (!insertError && inserted) {
+                        this._currentUser = inserted as UserRow;
+                        this._saveManager.syncWithCloudUser(inserted as UserRow);
+                        this._notifyListeners();
+                        console.log('[AuthManager] Created new user profile:', username);
+                        return;
+                    }
+                    console.error('[AuthManager] Failed to create user profile:', insertError);
+                    break;
+                }
                 console.warn(`[AuthManager] Error fetching user profile (attempt ${i + 1}/${retries}):`, error);
                 if (i < retries - 1) {
                     await new Promise(resolve => setTimeout(resolve, 500));
@@ -80,7 +125,6 @@ export class AuthManager {
                 }
             } else if (data) {
                 this._currentUser = data as UserRow;
-                // Sync local profile to save manager
                 this._saveManager.syncWithCloudUser(data as UserRow);
                 this._notifyListeners();
                 return;
@@ -102,24 +146,15 @@ export class AuthManager {
             return { success: false, error: 'Supabase client offline' };
         }
 
-        const cleanPhone = phoneNumber.replace(/\s+/g, '');
-        const normalised = cleanPhone.startsWith('+') ? cleanPhone : `+251${cleanPhone.replace(/^0/, '')}`;
-        // Test numbers configured in Supabase (Authentication → Phone → Test OTP numbers)
-        // bypass the SMS send step — they are verified against the real Supabase user table.
-        const isTestNumber = /^\+251911000000[0-9]$/.test(normalised);
-        if (isTestNumber) {
+        const normalised = AuthManager.normalisePhone(phoneNumber);
+        if (AuthManager._isTestNumber(normalised)) {
             console.log('[AuthManager] Test number detected — skipping SMS send (use configured OTP).');
             return { success: true };
         }
 
         try {
-            const { error } = await supabase.auth.signInWithOtp({
-                phone: phoneNumber
-            });
-
-            if (error) {
-                return { success: false, error: error.message };
-            }
+            const { error } = await supabase.auth.signInWithOtp({ phone: normalised });
+            if (error) return { success: false, error: error.message };
             return { success: true };
         } catch (err: any) {
             return { success: false, error: err.message || 'Failed to send OTP' };
@@ -136,22 +171,19 @@ export class AuthManager {
             return { success: false, error: 'Supabase client offline' };
         }
 
-        const cleanPhone = phoneNumber.replace(/\s+/g, '');
-        const normalised = cleanPhone.startsWith('+') ? cleanPhone : `+251${cleanPhone.replace(/^0/, '')}`;
-        const isTestNumber = /^\+251911000000[0-9]$/.test(normalised);
+        const normalised = AuthManager.normalisePhone(phoneNumber);
+        const isTestNumber = AuthManager._isTestNumber(normalised);
 
         if (isTestNumber) {
-            // Validate token against Supabase configured test OTP
-            // Supabase stores test numbers in auth.users by phone — look up the real row.
             if (token !== '123456') {
                 return { success: false, error: 'Invalid OTP code. Use the code configured in Supabase.' };
             }
-            // Fetch the real Supabase auth user by phone, then load their real profile
             try {
+                // Look up real user row by normalised phone
                 const { data: userData, error: userError } = await (supabase.from('users' as any) as any)
                     .select('*')
                     .eq('phone', normalised)
-                    .single();
+                    .maybeSingle();
 
                 if (!userError && userData) {
                     this._currentUser = userData as UserRow;
@@ -160,9 +192,34 @@ export class AuthManager {
                     console.log('[AuthManager] Test user loaded from Supabase:', userData.username);
                     return { success: true };
                 } else {
-                    // User row not found — they may not have registered yet
-                    console.warn('[AuthManager] Test user not found in users table:', userError?.message);
-                    return { success: false, error: 'Account not found. Please register first.' };
+                    // No row yet — create a placeholder user row
+                    const username = `Player_${normalised.slice(-4)}`;
+                    const { data: inserted, error: insertError } = await (supabase.from('users' as any) as any)
+                        .insert({
+                            id: crypto.randomUUID(),
+                            username,
+                            phone: normalised,
+                            locale: 'en',
+                            elo_rating: 0,
+                            coins: 0,
+                            xp: 0,
+                            total_matches: 0,
+                            total_wins: 0,
+                            subscription_tier: 'free',
+                            streak_count: 0,
+                            created_at: new Date().toISOString(),
+                            last_active: new Date().toISOString()
+                        })
+                        .select()
+                        .single();
+                    if (!insertError && inserted) {
+                        this._currentUser = inserted as UserRow;
+                        this._saveManager.syncWithCloudUser(inserted as UserRow);
+                        this._notifyListeners();
+                        return { success: true };
+                    }
+                    console.warn('[AuthManager] Could not create test user:', insertError);
+                    return { success: false, error: 'Account not found. Please check your phone number.' };
                 }
             } catch (err: any) {
                 return { success: false, error: err.message || 'Failed to load profile' };
@@ -171,7 +228,7 @@ export class AuthManager {
 
         try {
             const { data, error } = await supabase.auth.verifyOtp({
-                phone: phoneNumber,
+                phone: normalised,
                 token,
                 type: 'sms'
             });
@@ -182,7 +239,7 @@ export class AuthManager {
             }
 
             if (data.user) {
-                await this._fetchUserProfile(data.user.id);
+                await this._fetchUserProfile(data.user.id, 5, normalised);
             }
             return { success: true };
         } catch (err: any) {
