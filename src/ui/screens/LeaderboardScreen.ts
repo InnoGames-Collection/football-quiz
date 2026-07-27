@@ -40,14 +40,16 @@ export class LeaderboardScreen {
             const isPhone = /^\\+?[0-9]{9,}$/.test((entry.username || '').replace(/[^0-9+]/g, ''));
             const displayName = isPhone ? this._maskPhone(entry.username) : (entry.username || (i18n.currentLocale === 'am' ? 'ያልታወቀ' : (i18n.currentLocale === 'om' ? 'Namummaa Hin Beekamne' : 'Anonymous')));
             
-            const score = entry.eloRating || 0;
-            const points = entry.score || 0;
-            const entryDiv = ProgressionManager.getDivision(points);
+            // score = total match points (from game_sessions); eloRating = matchmaking ranking
+            const score = entry.score || 0;
+            const eloRating = entry.eloRating || 0;
+            const entryDiv = ProgressionManager.getDivision(score);
 
             return {
                 msisdn: displayName,
                 score,
-                points,
+                eloRating,
+                points: score,
                 league: entryDiv.name,
                 isMe
             };
@@ -181,8 +183,8 @@ export class LeaderboardScreen {
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${profile.eloRating || 0} PTS</div>
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-muted);">${profile.xp} XP</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${profile.xp || 0} PTS</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-muted);">${profile.totalMatches || 0} Matches</div>
                         </div>
                     </div>
 

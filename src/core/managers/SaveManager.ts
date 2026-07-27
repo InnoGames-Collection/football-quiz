@@ -90,6 +90,8 @@ export class SaveManager {
                     score: totalScore,
                     elo_rating: this._profile.eloRating || 0,
                     streak_count: this._profile.streakCount || 0,
+                    total_matches: this._profile.totalMatches || 0,
+                    total_wins: this._profile.totalWins || 0,
                     last_active: new Date().toISOString()
                 })
                 .eq('id', this._cloudUserId)
@@ -126,6 +128,14 @@ export class SaveManager {
 
     public addXp(amount: number): void {
         this._profile.xp += amount;
+        this.save();
+    }
+
+    public incrementMatchStats(won: boolean): void {
+        this._profile.totalMatches = (this._profile.totalMatches || 0) + 1;
+        if (won) {
+            this._profile.totalWins = (this._profile.totalWins || 0) + 1;
+        }
         this.save();
     }
 

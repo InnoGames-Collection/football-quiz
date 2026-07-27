@@ -99,13 +99,6 @@ export class AuthManager {
             return { success: false, error: 'Supabase client offline' };
         }
 
-        const cleanPhone = phoneNumber.replace(/\s+/g, '');
-        const isTestNumber = /^(\+251)?91100000[0-9]$/.test(cleanPhone);
-        if (isTestNumber) {
-            console.log('[AuthManager] Test phone number recognized, bypassing OTP request.');
-            return { success: true };
-        }
-
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 phone: phoneNumber
@@ -128,40 +121,10 @@ export class AuthManager {
             return { success: false, error: 'Supabase client offline' };
         }
 
-        const cleanPhone = phoneNumber.replace(/\s+/g, '');
-        const isTestNumber = /^(\+251)?91100000[0-9]$/.test(cleanPhone);
-
-        if (isTestNumber && token === '123456') {
-            console.log('[AuthManager] Test OTP verified successfully for bypass.');
-            const mockUserId = `test-user-${cleanPhone.replace(/[^0-9]/g, '')}`;
-            this._currentUser = {
-                id: mockUserId,
-                username: `TestPlayer_${cleanPhone.slice(-4)}`,
-                phone: cleanPhone,
-                avatar_url: null,
-                locale: 'en',
-                elo_rating: 1200,
-                coins: 500,
-                xp: 0,
-                total_matches: 5,
-                total_wins: 3,
-                subscription_tier: 'premium',
-                streak_count: 3,
-                streak_last_date: new Date().toISOString().split('T')[0],
-                role: 'player',
-                referral_code: null,
-                referred_by: null,
-                created_at: new Date().toISOString(),
-                last_active: new Date().toISOString()
-            };
-            this._saveManager.syncWithCloudUser(this._currentUser);
-            this._notifyListeners();
-            return { success: true };
-        } else if (isTestNumber) {
-            return { success: false, error: 'Invalid verification code for test number.' };
-        }
-
         try {
+            // All numbers — including Supabase-configured test numbers — go through
+            // the standard Supabase OTP flow. Test numbers are configured directly
+            // in the Supabase dashboard (Authentication → Phone → Test OTP numbers).
             const { data, error } = await supabase.auth.verifyOtp({
                 phone: phoneNumber,
                 token,

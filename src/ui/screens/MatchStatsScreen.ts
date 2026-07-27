@@ -60,6 +60,9 @@ export class MatchStatsScreen {
         // Apply to local save to keep UI updated
         this._saveManager.addXp(earnedXp);
         this._saveManager.addCoins(earnedCoins);
+        // Increment match counters — synced to Supabase immediately
+        const won = this._stats.accuracy >= 50;
+        this._saveManager.incrementMatchStats(won);
 
         
         if (this._stats.accuracy >= 50) {
