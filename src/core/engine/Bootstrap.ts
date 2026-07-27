@@ -6,10 +6,11 @@ import { FootballLeagueHome } from '../../ui/screens/FootballLeagueHome';
 import { AuthManager } from '../auth/AuthManager';
 import { AuthScreen } from '../../ui/screens/AuthScreen';
 import { RealtimeService } from '../../networking/services/RealtimeService';
-import { CompetitionBrowserScreen } from '../../ui/screens/CompetitionBrowserScreen';
+import { TournamentScreen } from '../../ui/screens/TournamentScreen';
 import { LeaderboardScreen } from '../../ui/screens/LeaderboardScreen';
 import { ProfileScreen } from '../../ui/screens/ProfileScreen';
 import { MatchmakingScreen } from '../../ui/screens/MatchmakingScreen';
+import { MessageCenterScreen } from '../../ui/screens/MessageCenterScreen';
 import { LiveMatchScreen } from '../../ui/screens/LiveMatchScreen';
 import { QuestionBank } from '../quiz/QuestionBank';
 import { BottomNav, TabId } from '../../ui/components/BottomNav';
@@ -105,9 +106,12 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onDailyChallenge: async () => {
                             cacheManager.setQuizActive(true);
                             const challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
-                            const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                            const quizMode = registry.activeGame as any;
                             quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
-                            localStorage.setItem('ETHIO_DAILY_COMPLETED_TODAY', 'true');
+                            quizMode.setPreloadedQuestions(challengeInfo.questions);
+                            // Mark matchType as daily so stats screen can save properly
+                            quizMode.matchType = 'daily';
+                            quizMode.dailyChallengeId = challengeInfo.id;
                             
                             tabStacks[currentTab].push('quiz_game');
                             try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
@@ -152,12 +156,17 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 BottomNav.setActiveTab('league');
                 currentTab = 'league';
                 cacheManager.setQuizActive(false);
-                const browser = new CompetitionBrowserScreen(
+                const tournamentScreen = new TournamentScreen(
                     game.uiManager, game.audioManager,
-                    async (comp) => {
+                    async () => {
                         cacheManager.setQuizActive(true);
-                        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
-                        quizMode.setCompetition(comp.id);
+                        const challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
+                        const quizMode = registry.activeGame as any;
+                        quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
+                        quizMode.setPreloadedQuestions(challengeInfo.questions);
+                        quizMode.matchType = 'daily';
+                        quizMode.dailyChallengeId = challengeInfo.id;
+                        
                         tabStacks[currentTab].push('quiz_game');
                         try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
                         
@@ -165,8 +174,8 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     },
                     handleBack
                 );
-                activeScreen = browser;
-                browser.render();
+                activeScreen = tournamentScreen;
+                tournamentScreen.render();
                 break;
 
             case 'rankings':
@@ -203,6 +212,15 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 );
                 activeScreen = profScreen;
                 profScreen.render();
+                break;
+
+            case 'messages':
+                cacheManager.setQuizActive(false);
+                const messageScreen = new MessageCenterScreen(
+                    game.uiManager, game.audioManager, handleBack
+                );
+                activeScreen = messageScreen;
+                messageScreen.render();
                 break;
 
             case 'settings':
@@ -299,7 +317,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     handleBack();
                     return;
                 }
-                const questions = await QuestionBank.getInstance().fetchQuestions(undefined, 10, i18n.currentLocale as any);
+                const questions = await QuestionBank.getInstance().fetchQuestionsByIds(matchInfo.questionIds, i18n.currentLocale as any);
                 const liveMatch = new LiveMatchScreen(
                     game.uiManager, game.audioManager, game.saveManager,
                     matchInfo.liveMatchId, matchInfo.opponent, questions,

@@ -22,6 +22,10 @@ export class QuizGameMode implements IGameMode {
     private _quizEngine!: QuizEngine;
     private _activeScoreboard: ScoreboardQuestionScreen | null = null;
     private _targetCompetitionId: string = 'walia-ibex';
+    private _preloadedQuestions: any[] | null = null;
+    
+    public matchType: string = 'casual';
+    public dailyChallengeId?: string;
 
     public async initialize(uiManager: UIManager): Promise<void> {
         this._uiManager = uiManager;
@@ -35,8 +39,10 @@ export class QuizGameMode implements IGameMode {
     public async start(): Promise<void> {
         const comp = CompetitionRegistry.getById(this._targetCompetitionId) || CompetitionRegistry.getAll()[0];
         
-        // Fetch 10 questions for this competition in the user's current locale
-        const questions = await QuestionBank.getInstance().fetchQuestions(comp.id, 10, i18n.currentLocale as any);
+        let questions = this._preloadedQuestions;
+        if (!questions || questions.length === 0) {
+            questions = await QuestionBank.getInstance().fetchQuestions(comp.id, 10, i18n.currentLocale as any);
+        }
 
         this._activeScoreboard = new ScoreboardQuestionScreen(
             this._uiManager,
@@ -75,11 +81,18 @@ export class QuizGameMode implements IGameMode {
         this._targetCompetitionId = compId;
     }
 
+    public setPreloadedQuestions(questions: any[]): void {
+        this._preloadedQuestions = questions;
+    }
+
     private _showMatchStats(gameId: string, stats: any, finalScore: number): void {
         const winAny = window as any;
         if (winAny.ethioCache) {
             winAny.ethioCache.setQuizActive(false);
         }
+        
+        // Pass the actual match type instead of hardcoding to gameId if it's daily
+        const typeToPass = this.matchType === 'daily' ? 'daily' : gameId;
         
         const statsScreen = new MatchStatsScreen(
             this._uiManager,
@@ -87,7 +100,7 @@ export class QuizGameMode implements IGameMode {
             this._audioManager,
             stats,
             finalScore,
-            gameId,
+            typeToPass,
             () => {
                 const winAny = window as any;
                 if (winAny.ethioCloseGame) {
@@ -97,6 +110,11 @@ export class QuizGameMode implements IGameMode {
                 }
             }
         );
+        
+        if (this.matchType === 'daily' && this.dailyChallengeId) {
+            (statsScreen as any).dailyChallengeId = this.dailyChallengeId;
+        }
+        
         statsScreen.render();
     }
 

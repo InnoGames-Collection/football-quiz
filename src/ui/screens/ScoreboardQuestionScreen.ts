@@ -218,7 +218,7 @@ export class ScoreboardQuestionScreen {
         });
     }
 
-    private _renderQuestion(startTimerSec: number = 15): void {
+    private _renderQuestion(startTimerSec: number = 10): void {
         if (this._isDestroyed) return;
         if (!this._hasKickedOff) {
             this._renderKickOffScreen();
@@ -640,7 +640,7 @@ export class ScoreboardQuestionScreen {
         this._bindPauseButtons();
     }
 
-    private _startTimer(startVal: number = 15): void {
+    private _startTimer(startVal: number = 10): void {
         this._stopTimer();
         this._timeLeftSec = startVal;
         this._startTimeMs = performance.now();
@@ -767,8 +767,8 @@ export class ScoreboardQuestionScreen {
     private async _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement): Promise<void> {
         let responseTimeSec = parseFloat(((performance.now() - this._startTimeMs) / 1000).toFixed(1));
         
-        // Anti-cheat: prevent timer manipulation (> 15.5s)
-        if (responseTimeSec > 15.5) {
+        // Anti-cheat: prevent timer manipulation (> 10.5s)
+        if (responseTimeSec > 10.5) {
             await this._handleTimeOut();
             return;
         }

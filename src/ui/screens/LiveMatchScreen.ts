@@ -22,7 +22,9 @@ export class LiveMatchScreen {
     private _opponentScore: number = 0;
     
     private _timerInterval: any = null;
-    private _timeLeftSec: number = 20;
+    private _timeLeftSec: number = 10;
+    
+    private _answers: any[] = [];
 
     constructor(
         uiManager: UIManager,
@@ -219,14 +221,14 @@ export class LiveMatchScreen {
 
     private _startTimer(): void {
         this._stopTimer();
-        this._timeLeftSec = 20; // 20s for live match
+        this._timeLeftSec = 10; // 10s for live match
 
         const timerBar = document.getElementById('live-timer-bar');
 
         this._timerInterval = setInterval(() => {
             this._timeLeftSec--;
             if (timerBar) {
-                const pct = (this._timeLeftSec / 20) * 100;
+                const pct = (this._timeLeftSec / 10) * 100;
                 timerBar.style.width = pct + '%';
                 if (this._timeLeftSec <= 5) {
                     timerBar.style.backgroundColor = '#EF4444';
@@ -277,12 +279,23 @@ export class LiveMatchScreen {
     private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement, q: ExtendedQuestionData): void {
         const isCorrect = chosenIndex === q.correctIndex;
         const buttons = document.querySelectorAll('.live-option-btn');
+        
+        const responseTimeMs = (10 - this._timeLeftSec) * 1000;
+        this._answers.push({
+            questionId: q.id,
+            selectedIndex: chosenIndex,
+            responseTimeMs
+        });
 
         if (isCorrect) {
             targetBtn.classList.add('correct');
             this._audioManager.playCorrectAnswer();
             this._audioManager.playGoalCheer();
-            this._myScore += 150; // Faster answers give more score normally, static for demo
+            
+            // Time-based scoring: 100 base + up to 50 speed bonus
+            const speedBonus = Math.floor((this._timeLeftSec / 10) * 50);
+            const scoreEarned = 100 + speedBonus;
+            this._myScore += scoreEarned;
             
             const myScoreEl = document.getElementById('my-score');
             if (myScoreEl) myScoreEl.innerText = String(this._myScore);
@@ -299,6 +312,12 @@ export class LiveMatchScreen {
             this._audioManager.playWhistle();
             this._showFeedbackOverlay(false);
         }
+
+        // Broadcast answer and current score to opponent
+        this._client.broadcastEvent('ANSWER_SUBMITTED', { 
+            score: this._myScore,
+            responseTimeMs: (10 - this._timeLeftSec) * 1000
+        });
 
         // Send live WebSocket broadcast
         this._client.sendAnswer('local-user', this._currentIndex, isCorrect, this._myScore);
@@ -339,6 +358,11 @@ export class LiveMatchScreen {
 
     private _handleTimeOut(): void {
         const q = this._questions[this._currentIndex];
+        this._answers.push({
+            questionId: q.id,
+            selectedIndex: -1,
+            responseTimeMs: 10000
+        });
         this._client.sendAnswer('local-user', this._currentIndex, false, this._myScore);
         this._audioManager.playWhistle();
         
@@ -370,6 +394,9 @@ export class LiveMatchScreen {
 
         this._saveManager.profile.eloRating = eloResult.winnerNewElo;
         this._saveManager.addCoins(isWinner ? 300 : 100);
+
+        // Submit match result to backend
+        this._submitToBackend();
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 20px;">
@@ -421,8 +448,25 @@ export class LiveMatchScreen {
 
         root.querySelector('#live-finish-btn')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            this._client.disconnect();
             this._onComplete();
         });
+    }
+
+    private async _submitToBackend(): Promise<void> {
+        if (!this._saveManager.profile.id) return;
+        
+        try {
+            // We use standard match submission, but flagged as 'live'
+            const { supabase } = await import('../../networking/supabase/SupabaseClient');
+            if (supabase) {
+                await supabase.rpc('submit_match_result', {
+                    p_match_type: 'live',
+                    p_answers: this._answers,
+                    p_live_match_id: this._client.matchId
+                });
+            }
+        } catch(e) {
+            console.warn('[LiveMatchScreen] Failed to submit live match result', e);
+        }
     }
 }

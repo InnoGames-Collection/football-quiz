@@ -18,13 +18,11 @@ serve(async (req) => {
 
     const { userId, eloRating, competitionId } = await req.json();
 
-    // 1. Check if an opponent exists in queue with ELO delta <= 200
+    // 1. Check if an opponent exists in queue (relaxed ELO bounds for faster matching)
     const { data: queueData } = await supabase
       .from('matchmaking_queue')
       .select('*')
       .neq('user_id', userId)
-      .gte('elo_rating', eloRating - 200)
-      .lte('elo_rating', eloRating + 200)
       .limit(1);
 
     if (queueData && queueData.length > 0) {
@@ -33,14 +31,15 @@ serve(async (req) => {
       // Remove opponent from queue
       await supabase.from('matchmaking_queue').delete().eq('id', opponent.id);
 
-      // Fetch 10 random active question IDs from DB
+      // Fetch 50 random active question IDs from DB and pick 10
       const { data: qData } = await supabase
         .from('questions')
         .select('id')
         .eq('is_active', true)
-        .limit(10);
+        .limit(50);
 
-      const questionIds = (qData || []).map((q: any) => q.id);
+      let questionIds = (qData || []).map((q: any) => q.id);
+      questionIds = questionIds.sort(() => 0.5 - Math.random()).slice(0, 10);
 
       // Create live match record
       const { data: matchData, error: matchErr } = await supabase

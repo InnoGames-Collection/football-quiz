@@ -23,11 +23,22 @@ serve(async (req) => {
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-    const { competitionId, count = 10, locale = 'en' } = await req.json().catch(() => ({}));
+    const { competitionId, count = 10, locale = 'en', excludeIds = [], usageType = 'casual' } = await req.json().catch(() => ({}));
 
     let query = supabase.from('questions').select('*').eq('is_active', true);
+    
+    if (usageType === 'casual') {
+      query = query.in('usage_type', ['casual', 'both']);
+    } else if (usageType === 'tournament') {
+      query = query.eq('usage_type', 'tournament');
+    }
+    
     if (competitionId) {
       query = query.or(`competition_id.eq.${competitionId},category.eq.${competitionId}`);
+    }
+    
+    if (excludeIds && excludeIds.length > 0) {
+      query = query.not('id', 'in', `(${excludeIds.join(',')})`);
     }
 
     const { data, error } = await query.limit(50);

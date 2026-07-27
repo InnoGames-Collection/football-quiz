@@ -136,15 +136,19 @@ export class QuestionBank {
     public async fetchQuestions(
         competitionId?: string,
         count: number = 10,
-        locale: Locale = 'en'
+        locale: Locale = 'en',
+        excludeIds: string[] = [],
+        usageType: 'casual' | 'tournament' = 'casual'
     ): Promise<ExtendedQuestionData[]> {
-        // 1. Try Supabase Edge Function ('questions') with SHA-256 Answer Hash Security
-        if (supabaseService.isOnline) {
+        // 1. Edge Function Request (Primary)
+        if (supabaseService.isOnline && EdgeFunctionClient.isAvailable) {
             try {
                 const { data, error } = await EdgeFunctionClient.invoke('questions', {
                     competitionId,
-                    count,
-                    locale
+                    count: count * 2,
+                    locale,
+                    excludeIds,
+                    usageType
                 });
 
                 if (!error && data && data.questions && data.questions.length > 0) {
@@ -163,8 +167,18 @@ export class QuestionBank {
                     .select('*')
                     .eq('is_active', true);
 
+                if (usageType === 'casual') {
+                    query = query.in('usage_type', ['casual', 'both']);
+                } else if (usageType === 'tournament') {
+                    query = query.eq('usage_type', 'tournament');
+                }
+
                 if (competitionId) {
                     query = query.or(`competition_id.eq.${competitionId},category.eq.${competitionId}`);
+                }
+                
+                if (excludeIds && excludeIds.length > 0) {
+                    query = query.not('id', 'in', `(${excludeIds.join(',')})`);
                 }
 
                 const { data, error } = await query.limit(50);
@@ -188,10 +202,47 @@ export class QuestionBank {
                 pool = filtered;
             }
         }
+        if (excludeIds && excludeIds.length > 0) {
+            pool = pool.filter(q => !excludeIds.includes(q.id as string));
+        }
         return this._selectQuestions(pool, count);
     }
 
-    private _mapQuestionRow(row: QuestionRow, locale: Locale): ExtendedQuestionData {
+    /**
+     * Fetch specific questions by exact IDs for deterministic modes like Daily Challenge.
+     */
+    public async fetchQuestionsByIds(
+        ids: string[],
+        locale: Locale = 'en'
+    ): Promise<ExtendedQuestionData[]> {
+        if (supabaseService.isOnline && supabase && ids.length > 0) {
+            try {
+                const { data, error } = await (supabase.from('questions' as any) as any)
+                    .select('*')
+                    .in('id', ids);
+                
+                if (!error && data && data.length > 0) {
+                    console.log(`[QuestionBank] Fetched ${data.length} specific questions by ID.`);
+                    // Map them but DON'T shuffle them randomly here because we want everyone
+                    // playing the Daily Challenge to see the exact same questions in the exact same order!
+                    const mapped = data.map((row: any) => this._mapQuestionRow(row, locale, false));
+                    // Order them according to the input `ids` array to guarantee order
+                    const ordered = [];
+                    for (const id of ids) {
+                        const q = mapped.find(m => m.id === id);
+                        if (q) ordered.push(q);
+                    }
+                    return ordered;
+                }
+            } catch (err) {
+                console.warn('[QuestionBank] Supabase DB fetchQuestionsByIds error:', err);
+            }
+        }
+        // Offline fallback: grab random questions if IDs fail
+        return this.fetchQuestions(undefined, ids.length, locale);
+    }
+
+    private _mapQuestionRow(row: QuestionRow, locale: Locale, shuffleOptions: boolean = true): ExtendedQuestionData {
         let prompt = row.prompt_en;
         let options = row.options_en;
 
@@ -203,15 +254,19 @@ export class QuestionBank {
             options = row.options_om;
         }
 
-        // Shuffle options dynamically so the correct answer isn't always at `correct_index`
-        const indices = [0, 1, 2, 3];
-        for (let i = indices.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [indices[i], indices[j]] = [indices[j], indices[i]];
-        }
+        let shuffledOptions = options;
+        let newCorrectIndex = row.correct_index;
 
-        const shuffledOptions = indices.map(i => options[i]);
-        const newCorrectIndex = indices.indexOf(row.correct_index);
+        if (shuffleOptions) {
+            // Shuffle options dynamically so the correct answer isn't always at `correct_index`
+            const indices = [0, 1, 2, 3];
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            shuffledOptions = indices.map(i => options[i]);
+            newCorrectIndex = indices.indexOf(row.correct_index);
+        }
 
         return {
             id: row.id,

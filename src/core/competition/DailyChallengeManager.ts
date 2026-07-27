@@ -30,8 +30,8 @@ export class DailyChallengeManager {
 
                 if (!error && data) {
                     const res = data as any;
-                    if (res.available) {
-                        const questions = await QuestionBank.getInstance().fetchQuestions(undefined, 5, i18n.currentLocale as any);
+                    if (res.available && res.question_ids && res.question_ids.length > 0) {
+                        const questions = await QuestionBank.getInstance().fetchQuestionsByIds(res.question_ids, i18n.currentLocale as any);
                         return {
                             id: res.id,
                             themeEn: res.theme_en || 'Daily Football Quiz Challenge',
@@ -49,7 +49,7 @@ export class DailyChallengeManager {
         }
 
         // Offline / Default Daily Challenge
-        const questions = await QuestionBank.getInstance().fetchQuestions('world-cup', 5, i18n.currentLocale as any);
+        const questions = await QuestionBank.getInstance().fetchQuestions('world-cup', 10, i18n.currentLocale as any);
         return {
             themeEn: "Daily Champions Challenge",
             themeAm: "የዕለቱ የሻምፒዮኖች ተግዳሮት",
