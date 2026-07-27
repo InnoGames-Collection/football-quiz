@@ -19,13 +19,13 @@ export class AuthManager {
         this._initSession();
     }
 
-    /** Normalise any Ethiopian phone format to E.164 (+2519XXXXXXXX). */
+    /** Normalise any Ethiopian phone format to E.164 (+2519XXXXXXXX or +2518XXXXXXXX). */
     public static normalisePhone(raw: string): string {
         const digits = raw.replace(/\D/g, '');
-        if (digits.startsWith('251')) return '+' + digits;   // 2519... or 251911000001
-        if (digits.startsWith('0'))   return '+251' + digits.slice(1); // 09...
-        if (raw.startsWith('+'))      return raw.replace(/\s+/g, '');  // already E.164
-        return '+251' + digits;  // 9... (9-digit local)
+        if (digits.startsWith('251')) return '+' + digits;          // 2519... or 2518...
+        if (digits.startsWith('0'))   return '+251' + digits.slice(1); // 09... or 08...
+        if (raw.startsWith('+'))      return raw.replace(/\s+/g, ''); // already E.164
+        return '+251' + digits;  // 9... or 8... (local without 0)
     }
 
     /** Returns true for test phone numbers that bypass SMS sending. */
