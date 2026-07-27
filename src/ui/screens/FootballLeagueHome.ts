@@ -133,7 +133,7 @@ export class FootballLeagueHome {
                         <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🏆</span>
                         <div style="text-align: left;">
                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-bottom: 2px;">No Daily Rank Yet</div>
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; max-width: 200px;">Play today's Daily Challenge to earn your first score and receive your daily ranking.</div>
+                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; max-width: 200px;">Play matches to earn points and secure your rank on the leaderboard.</div>
                         </div>
                     </div>
                     ` : `

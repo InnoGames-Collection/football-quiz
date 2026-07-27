@@ -79,6 +79,19 @@ export class CompetitionRegistry {
                     .eq('is_active', true);
 
                 if (!error && data && data.length > 0) {
+                    // Try to fetch active playing sessions
+                    let activeCount = 0;
+                    try {
+                        const { count, error: countError } = await (supabase.from('game_sessions' as any) as any)
+                            .select('*', { count: 'exact', head: true })
+                            .eq('state', 'playing');
+                        if (!countError && count) {
+                            activeCount = count;
+                        }
+                    } catch (e) {
+                        // fallback
+                    }
+
                     data.forEach((row: CompetitionRow) => {
                         CompetitionRegistry._competitions.set(row.id, {
                             id: row.id,
@@ -91,7 +104,7 @@ export class CompetitionRegistry {
                             color: row.color || '#FFD700',
                             questionCount: row.question_count || 10,
                             status: 'live',
-                            participants: 0,
+                            participants: activeCount,
                             prize_pool: 0
                         });
                     });

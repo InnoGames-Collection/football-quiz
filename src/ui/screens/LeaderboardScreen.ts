@@ -168,8 +168,8 @@ export class LeaderboardScreen {
                                 <div style="font-size: var(--fds-font-xs); color: #4ADE80; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የእርስዎ የደረጃ ቦታ' : (i18n.currentLocale === 'om' ? 'SADARKAA KEE' : 'YOUR RANK POSITION')}</div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     ${myRank === '--' ? `
-                                        <div style="font-size: var(--fds-font-xs); font-weight: 600; color: var(--fds-text-dim); max-width: 200px;">
-                                            Complete today's challenge to receive your daily ranking.
+                                        <div style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.7); font-weight: 500; margin-top: 2px;">
+                                            Play matches to earn points and secure your rank.
                                         </div>
                                     ` : `
                                         <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">
