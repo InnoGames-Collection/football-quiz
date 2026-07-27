@@ -30,10 +30,8 @@ export class AuthScreen {
         const root = this._uiManager.container;
         const isOtpStep = this._phoneStep === 'INPUT_OTP';
 
-        // Show the local part of the phone (without +251 prefix) in the input
-        const localPart = this._pendingPhone
-            ? this._pendingPhone.replace(/^\+251/, '')
-            : '';
+        // Show the pending phone exactly as they typed it before or the normalised form without the '+'.
+        const defaultVal = this._pendingPhone ? this._pendingPhone.replace('+', '') : '';
 
         root.innerHTML = `
             <div style="
@@ -78,24 +76,11 @@ export class AuthScreen {
                         <label style="display: block; font-size: 14px; color: #4B5563; font-weight: 600; margin-bottom: 8px;">
                             ${i18n.currentLocale === 'am' ? 'የስልክ ቁጥር' : (i18n.currentLocale === 'om' ? 'Lakkoofsa bilbilaa' : 'Phone number')}
                         </label>
-                        <div style="display: flex; align-items: center; border: 1px solid #D1D5DB; border-radius: 12px; overflow: hidden; background: #FFFFFF; ${isOtpStep ? 'opacity: 0.6;' : ''}">
-                            <span style="
-                                padding: 14px 10px 14px 16px; background: #F9FAFB;
-                                color: #374151; font-size: 16px; font-weight: 600;
-                                border-right: 1px solid #E5E7EB; white-space: nowrap;
-                            ">+251</span>
-                            <input type="tel" id="phone-input"
-                                placeholder="9XXXXXXXX or 8XXXXXXXX"
-                                value="${localPart}"
-                                ${isOtpStep ? 'disabled' : ''}
-                                style="
-                                flex: 1; border: none; outline: none; background: transparent;
-                                padding: 14px 16px; color: #111827; font-size: 16px;
-                            " />
-                        </div>
-                        <div style="font-size: 11px; color: #9CA3AF; margin-top: 4px; padding-left: 2px;">
-                            Enter 9XXXXXXXX (Ethio Telecom) or 8XXXXXXXX — the +251 is added automatically
-                        </div>
+                        <input type="tel" id="phone-input" placeholder="2519XXXXXXXX / 2518XXXXXXXX" value="${defaultVal}" ${isOtpStep ? 'disabled' : ''} style="
+                            width: 100%; background: #FFFFFF; border: 1px solid #D1D5DB; border-radius: 12px;
+                            padding: 14px 16px; color: #111827; font-size: 16px; outline: none; box-sizing: border-box;
+                            opacity: ${isOtpStep ? '0.6' : '1'};
+                        " />
                     </div>
 
                     <div style="display: flex; align-items: stretch; margin-bottom: ${isOtpStep ? '16px' : '32px'}; border: 1px solid #D1D5DB; border-radius: 12px; overflow: hidden; background: #FFFFFF; opacity: ${isOtpStep ? '1' : '0.6'};">
@@ -146,10 +131,13 @@ export class AuthScreen {
     private _bindEvents(): void {
         const root = this._uiManager.container;
 
-        // Only allow digits in phone input (the +251 prefix is shown as static text)
         root.querySelector('#phone-input')?.addEventListener('input', (e: Event) => {
             const input = e.target as HTMLInputElement;
-            input.value = input.value.replace(/[^0-9]/g, '');
+            // Let the user type numbers and optionally a + sign at the beginning.
+            input.value = input.value.replace(/[^0-9+]/g, '');
+            if (input.value.indexOf('+') > 0) {
+                input.value = input.value.replace(/\+/g, '');
+            }
         });
 
         const sendOtpBtn = root.querySelector('#send-otp-btn');
@@ -169,7 +157,7 @@ export class AuthScreen {
                     return;
                 }
 
-                // The input field shows only the local part — prepend +251
+                // Use the shared normalise method to produce E.164.
                 const fullPhone = AuthManager.normalisePhone(rawNum);
                 this._pendingPhone = fullPhone;
                 this._devOtpCode = '';

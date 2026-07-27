@@ -28,11 +28,6 @@ export class AuthManager {
         return '+251' + digits;  // 9... or 8... (local without 0)
     }
 
-    /** Returns true for test phone numbers that bypass SMS sending. */
-    private static _isTestNumber(normalised: string): boolean {
-        return /^\+251911000000[0-9]$/.test(normalised);
-    }
-
     public static getInstance(saveManager?: SaveManager): AuthManager {
         if (!AuthManager._instance) {
             if (!saveManager) {
@@ -147,10 +142,6 @@ export class AuthManager {
         }
 
         const normalised = AuthManager.normalisePhone(phoneNumber);
-        if (AuthManager._isTestNumber(normalised)) {
-            console.log('[AuthManager] Test number detected — skipping SMS send (use configured OTP).');
-            return { success: true };
-        }
 
         try {
             const { error } = await supabase.auth.signInWithOtp({ phone: normalised });
@@ -172,59 +163,6 @@ export class AuthManager {
         }
 
         const normalised = AuthManager.normalisePhone(phoneNumber);
-        const isTestNumber = AuthManager._isTestNumber(normalised);
-
-        if (isTestNumber) {
-            if (token !== '123456') {
-                return { success: false, error: 'Invalid OTP code. Use the code configured in Supabase.' };
-            }
-            try {
-                // Look up real user row by normalised phone
-                const { data: userData, error: userError } = await (supabase.from('users' as any) as any)
-                    .select('*')
-                    .eq('phone', normalised)
-                    .maybeSingle();
-
-                if (!userError && userData) {
-                    this._currentUser = userData as UserRow;
-                    this._saveManager.syncWithCloudUser(userData as UserRow);
-                    this._notifyListeners();
-                    console.log('[AuthManager] Test user loaded from Supabase:', userData.username);
-                    return { success: true };
-                } else {
-                    // No row yet — create a placeholder user row
-                    const username = `Player_${normalised.slice(-4)}`;
-                    const { data: inserted, error: insertError } = await (supabase.from('users' as any) as any)
-                        .insert({
-                            id: crypto.randomUUID(),
-                            username,
-                            phone: normalised,
-                            locale: 'en',
-                            elo_rating: 0,
-                            coins: 0,
-                            xp: 0,
-                            total_matches: 0,
-                            total_wins: 0,
-                            subscription_tier: 'free',
-                            streak_count: 0,
-                            created_at: new Date().toISOString(),
-                            last_active: new Date().toISOString()
-                        })
-                        .select()
-                        .single();
-                    if (!insertError && inserted) {
-                        this._currentUser = inserted as UserRow;
-                        this._saveManager.syncWithCloudUser(inserted as UserRow);
-                        this._notifyListeners();
-                        return { success: true };
-                    }
-                    console.warn('[AuthManager] Could not create test user:', insertError);
-                    return { success: false, error: 'Account not found. Please check your phone number.' };
-                }
-            } catch (err: any) {
-                return { success: false, error: err.message || 'Failed to load profile' };
-            }
-        }
 
         try {
             const { data, error } = await supabase.auth.verifyOtp({
