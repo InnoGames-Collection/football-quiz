@@ -196,7 +196,6 @@ export class FootballLeagueHome {
                             <span id="daily-players-count" class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
                                 ${t('home.liveMatch')}
                             </span>
-                                ${DesignSystem.SkeletonCard(80)}
                         </div>
 
                         <!-- Title & Description -->
