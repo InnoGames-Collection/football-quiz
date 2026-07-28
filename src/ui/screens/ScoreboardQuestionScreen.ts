@@ -7,7 +7,6 @@ import { GameSessionManager, GameSession } from '../../core/quiz/GameSessionMana
 import { ConfettiCanvas } from '../components/ConfettiCanvas';
 import { RollingCounter } from '../components/RollingCounter';
 import { EdgeFunctionClient } from '../../networking/supabase/EdgeFunctionClient';
-import { GAME_MODES } from './PlayScreen';
 import { GameModeBanner } from '../components/GameModeBanner';
 
 export interface ScoreboardCallbacks {
@@ -163,7 +162,7 @@ export class ScoreboardQuestionScreen {
 
     private _renderKickOffScreen(): void {
         const root = this._uiManager.container;
-        const mode = GAME_MODES.find(m => m.category === this._competition.id) || GAME_MODES[0];
+        const bannerFileName = this._competition.id === 'all' ? 'QUICK MATCH.png' : 'DAILY CHALLENGE.png';
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; align-items: center; justify-content: center; padding: 0 28px; position: relative; height: 100vh; overflow: hidden;">
@@ -178,7 +177,7 @@ export class ScoreboardQuestionScreen {
                 <div class="kick-off-wrapper" style="position: relative; z-index: 10; width: 100%; max-width: 600px; margin: 0 auto; padding: 0 16px;">
                     
                     ${GameModeBanner.render({
-                        bannerUrl: `/assets/banners/${mode.banner}`,
+                        bannerUrl: `/assets/banners/${bannerFileName}`,
                         icon: this._competition.badge,
                         title: this._competition.name,
                         buttonId: 'kick-off-btn',
