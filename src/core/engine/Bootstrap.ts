@@ -137,9 +137,9 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 const playScreen = new PlayScreen(
                     game.uiManager, game.audioManager,
                     {
-                        onCasualPlay: async () => {
+                        onCasualPlay: async (category?: string) => {
                             const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as QuizGameMode;
-                            quizMode.setCompetition('all');
+                            quizMode.setCompetition(category && category !== 'random' ? category : 'all');
                             quizMode.matchType = 'casual';
                             
                             tabStacks[currentTab].push('quiz_game');

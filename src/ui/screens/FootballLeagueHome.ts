@@ -218,10 +218,12 @@ export class FootballLeagueHome {
 
                         <!-- Hero Primary Action Button OR Countdown -->
                         ${isDailyCompleted ? `
-                        <div style="background: rgba(0,0,0,0.5); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid rgba(255,215,0,0.3);">
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Next Challenge In</div>
-                            <div id="next-daily-countdown" style="font-size: var(--fds-font-xl); font-weight: 900; color: white; font-family: var(--fds-font-mono);">
-                                --:--:--
+                        <div style="display: flex; justify-content: center;">
+                            <div style="background: rgba(0,0,0,0.6); border-radius: 999px; padding: 10px 24px; text-align: center; border: 1px solid rgba(255,215,0,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); cursor: default;">
+                                <div style="font-size: 10px; font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Next Challenge In</div>
+                                <div id="next-daily-countdown" style="font-size: 20px; font-weight: 900; color: white; font-family: var(--fds-font-mono); letter-spacing: 1px;">
+                                    --:--:--
+                                </div>
                             </div>
                         </div>
                         ` : `

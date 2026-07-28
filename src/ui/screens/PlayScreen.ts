@@ -3,7 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export interface PlayScreenCallbacks {
-    onCasualPlay: () => void;
+    onCasualPlay: (category?: string) => void;
 }
 
 export class PlayScreen {
@@ -37,24 +37,42 @@ export class PlayScreen {
                     
                     <h2 style="font-size: var(--fds-font-xl); font-weight: 900; margin-bottom: 24px; text-transform: uppercase; color: white;">Game Modes</h2>
 
-                    <!-- CASUAL PRACTICE ARENA -->
-                    <div class="glass-card fade-in-up" id="card-casual-play" style="padding: clamp(16px, 2.5vh, 20px); border-radius: 20px; background: linear-gradient(145deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div>
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                    <span style="font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">🎯</span>
-                                    <span style="font-size: var(--fds-font-md); font-weight: 900; color: #60A5FA; text-transform: uppercase; letter-spacing: 0.5px;">Practice Arena</span>
-                                </div>
-                                <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); max-width: 85%;">
-                                    Warm up with casual matches across all categories. No limits.
-                                </div>
-                            </div>
-                            <div style="background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.3); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; color: #60A5FA; font-size: 20px; font-weight: bold; flex-shrink: 0;">
-                                ▶
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                        
+                        <!-- World Cup -->
+                        <div class="glass-card fade-in-up category-btn" data-category="world-cup" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s;">
+                            <div style="font-size: 32px; margin-bottom: 8px;">🌍</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">World Cup</div>
+                        </div>
+
+                        <!-- Premier League -->
+                        <div class="glass-card fade-in-up category-btn" data-category="premier-league" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 50ms;">
+                            <div style="font-size: 32px; margin-bottom: 8px;">🦁</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">Premier League</div>
+                        </div>
+
+                        <!-- Ethio Premier League -->
+                        <div class="glass-card fade-in-up category-btn" data-category="ethio-league" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 100ms;">
+                            <div style="font-size: 32px; margin-bottom: 8px;">🇪🇹</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">Ethio League</div>
+                        </div>
+
+                        <!-- Legends -->
+                        <div class="glass-card fade-in-up category-btn" data-category="legends" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 150ms;">
+                            <div style="font-size: 32px; margin-bottom: 8px;">⭐</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">Legends</div>
+                        </div>
+
+                        <!-- Random/All Categories -->
+                        <div class="glass-card fade-in-up category-btn" data-category="random" style="grid-column: 1 / -1; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, rgba(34,197,94,0.2) 0%, rgba(15,23,42,0.9) 100%); border: 1px solid rgba(34,197,94,0.4); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 200ms; display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="font-size: 28px;">🎲</div>
+                            <div style="text-align: left;">
+                                <div style="font-size: var(--fds-font-md); font-weight: 800; color: white; text-transform: uppercase;">Random Mix</div>
+                                <div style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.6);">Play questions from all categories</div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         `;
@@ -65,25 +83,30 @@ export class PlayScreen {
     private _bindEvents(): void {
         const root = this._uiManager.container;
         
-        root.querySelector('#card-casual-play')?.addEventListener('click', (e) => {
-            // Ripple effect
-            const btn = e.currentTarget as HTMLElement;
-            const rect = btn.getBoundingClientRect();
-            const mouseEvent = e as MouseEvent;
-            const ripple = document.createElement('div');
-            const diameter = Math.max(btn.clientWidth, btn.clientHeight);
-            const radius = diameter / 2;
-            let x = mouseEvent.clientX - rect.left - radius;
-            let y = mouseEvent.clientY - rect.top - radius;
-            ripple.style.width = ripple.style.height = `${diameter}px`;
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-            ripple.classList.add('ripple');
-            btn.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
+        const categoryBtns = root.querySelectorAll('.category-btn');
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.currentTarget as HTMLElement;
+                const category = target.getAttribute('data-category') || 'random';
+                
+                // Ripple effect
+                const rect = target.getBoundingClientRect();
+                const mouseEvent = e as MouseEvent;
+                const ripple = document.createElement('div');
+                const diameter = Math.max(target.clientWidth, target.clientHeight);
+                const radius = diameter / 2;
+                let x = mouseEvent.clientX - rect.left - radius;
+                let y = mouseEvent.clientY - rect.top - radius;
+                ripple.style.width = ripple.style.height = `${diameter}px`;
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                ripple.classList.add('ripple');
+                target.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
 
-            this._audioManager.playClick();
-            this._callbacks.onCasualPlay();
+                this._audioManager.playClick();
+                this._callbacks.onCasualPlay(category);
+            });
         });
     }
 
