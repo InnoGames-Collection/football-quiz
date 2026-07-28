@@ -21,4 +21,33 @@ async function bootstrap() {
     }
 }
 
+window.addEventListener('error', (event) => {
+    const errorDiv = document.createElement('div');
+    errorDiv.style.color = 'red';
+    errorDiv.style.position = 'absolute';
+    errorDiv.style.top = '10px';
+    errorDiv.style.left = '10px';
+    errorDiv.style.backgroundColor = 'white';
+    errorDiv.style.padding = '10px';
+    errorDiv.style.fontFamily = 'monospace';
+    errorDiv.style.zIndex = '999999';
+    errorDiv.innerText = `Global Error: ${event.message}\nAt: ${event.filename}:${event.lineno}`;
+    document.body.appendChild(errorDiv);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    const errorDiv = document.createElement('div');
+    errorDiv.style.color = 'red';
+    errorDiv.style.position = 'absolute';
+    errorDiv.style.top = '100px';
+    errorDiv.style.left = '10px';
+    errorDiv.style.backgroundColor = 'white';
+    errorDiv.style.padding = '10px';
+    errorDiv.style.fontFamily = 'monospace';
+    errorDiv.style.zIndex = '999999';
+    errorDiv.innerText = `Unhandled Promise Rejection: ${event.reason}`;
+    document.body.appendChild(errorDiv);
+});
+
 bootstrap().catch(console.error);
+
