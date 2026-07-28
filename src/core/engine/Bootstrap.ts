@@ -94,7 +94,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     {
                         onKickOff: async () => {
                             cacheManager.setQuizActive(true);
-                            const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                            const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as QuizGameMode;
                             quizMode.setCompetition('walia-ibex');
                             
                             tabStacks[currentTab].push('quiz_game');
@@ -106,7 +106,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onDailyChallenge: async () => {
                             cacheManager.setQuizActive(true);
                             const challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
-                            const quizMode = registry.activeGame as any;
+                            const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as any;
                             quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
                             quizMode.setPreloadedQuestions(challengeInfo.questions);
                             // Mark matchType as daily so stats screen can save properly
@@ -140,7 +140,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     game.uiManager, game.audioManager,
                     async (category) => {
                         cacheManager.setQuizActive(true);
-                        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+                        const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as QuizGameMode;
                         quizMode.setCompetition(category);
                         tabStacks[currentTab].push('quiz_game');
                         try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
@@ -161,7 +161,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     async () => {
                         cacheManager.setQuizActive(true);
                         const challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
-                        const quizMode = registry.activeGame as any;
+                        const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as any;
                         quizMode.setCompetition(challengeInfo.questions[0]?.category || 'world-cup');
                         quizMode.setPreloadedQuestions(challengeInfo.questions);
                         quizMode.matchType = 'daily';
@@ -612,7 +612,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioNavigateToTab = (tabId: TabId) => navigateToTab(tabId);
     winAny.ethioPlayAgain = async (compId: string) => {
         cacheManager.setQuizActive(true);
-        const quizMode = registry.activeGame as QuizGameMode || new QuizGameMode();
+        const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as QuizGameMode;
         quizMode.setCompetition(compId);
         
         tabStacks[currentTab].push('quiz_game');

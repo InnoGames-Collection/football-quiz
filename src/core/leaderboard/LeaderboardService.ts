@@ -38,7 +38,7 @@ export class LeaderboardService {
                     if (!error && data && Array.isArray(data)) {
                         // The get_daily_leaderboard returns user_id, username, avatar_url, score, time_taken_ms
                         // We map it to LeaderboardDisplayEntry format
-                        return data.map((item: any, index: number) => ({
+                        const mappedData = data.map((item: any, index: number) => ({
                             rank: index + 1,
                             userId: item.user_id,
                             username: item.username || 'Anonymous Player',
@@ -48,6 +48,18 @@ export class LeaderboardService {
                             matchesPlayed: 1,
                             wins: 1
                         }));
+                        
+                        // Cache my daily rank if I'm in the top 50
+                        const myUserId = supabase.auth.getUser ? (await supabase.auth.getUser()).data.user?.id : null;
+                        if (myUserId) {
+                            const myEntry = mappedData.find((e: any) => e.userId === myUserId);
+                            if (myEntry) {
+                                localStorage.setItem('ETHIO_DAILY_RANK', myEntry.rank.toString());
+                            } else {
+                                localStorage.removeItem('ETHIO_DAILY_RANK');
+                            }
+                        }
+                        return mappedData;
                     }
                 } else {
                     const { data, error } = await (supabase.rpc as any)('get_leaderboard', {

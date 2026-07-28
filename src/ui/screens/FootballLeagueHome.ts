@@ -62,6 +62,19 @@ export class FootballLeagueHome {
         
         const dailyRank = rawDailyRank ? `#${rawDailyRank}` : '--';
         const dailyStreak = profile.streakCount || 0;
+        
+        // Fetch daily rank silently in background if missing
+        if (!rawDailyRank || rawDailyRank === '--') {
+            setTimeout(async () => {
+                try {
+                    await LeaderboardService.getInstance().getLeaderboard(undefined, 'daily');
+                    const newRank = localStorage.getItem('ETHIO_DAILY_RANK');
+                    if (newRank && newRank !== rawDailyRank) {
+                        this.render();
+                    }
+                } catch(e) {}
+            }, 1000);
+        }
 
         const activeSession = GameSessionManager.getInstance().getActiveSession();
         const isDailyCompleted = localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
