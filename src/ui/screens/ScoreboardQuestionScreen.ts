@@ -152,8 +152,6 @@ export class ScoreboardQuestionScreen {
             } else {
                 this._showLeaveWarning();
             }
-            // Re-push state so next back press can be caught
-            history.pushState({ match_active: true }, '');
             return true; 
         };
 

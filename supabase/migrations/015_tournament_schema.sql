@@ -123,15 +123,12 @@ BEGIN
       'score', t.total_score,
       'matchesPlayed', t.matches_played,
       'totalTimeMs', t.total_time_ms
-    )
+    ) ORDER BY t.total_score DESC, t.total_time_ms ASC
   ), '[]'::jsonb)
   INTO v_result
   FROM tournament_leaderboards t
   JOIN users u ON u.id = t.user_id
-  WHERE t.period_type = p_period_type AND t.period_start_date = v_start_date
-  -- Order by score DESC, and resolve ties with total_time_ms ASC
-  ORDER BY t.total_score DESC, t.total_time_ms ASC
-  LIMIT p_limit;
+  WHERE t.period_type = p_period_type AND t.period_start_date = v_start_date;
 
   RETURN v_result;
 END;

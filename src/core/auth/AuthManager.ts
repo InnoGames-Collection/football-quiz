@@ -49,9 +49,12 @@ export class AuthManager {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
                 await this._fetchUserProfile(session.user.id);
+            } else {
+                this._notifyListeners();
             }
         } catch (err) {
             console.error('[AuthManager] Failed to fetch session:', err);
+            this._notifyListeners();
         }
 
         // Listen for auth changes

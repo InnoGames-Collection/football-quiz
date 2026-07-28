@@ -60,7 +60,7 @@ export class FootballLeagueHome {
         }
         this._previousDailyRank = rawDailyRank || '--';
         
-        const dailyRank = rawDailyRank ? `#${rawDailyRank}` : '--';
+        const dailyRank = rawDailyRank && rawDailyRank !== '--' ? `#${rawDailyRank}` : 'Unranked';
         const dailyStreak = profile.streakCount || 0;
         
         // Fetch daily rank silently in background if missing

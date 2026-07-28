@@ -13,7 +13,7 @@ export class LeaderboardScreen {
     private _audioManager: AudioManager;
     private _saveManager: SaveManager;
     private _onClose: () => void;
-    private _activeTab: 'daily' | 'weekly' | 'monthly' | 'tournament' = 'weekly';
+    private _activeTab: 'daily' | 'weekly' | 'monthly' = 'daily';
     private _previousRank: number | '--' | null = null;
 
     constructor(uiManager: UIManager, saveManager: SaveManager, audioManager: AudioManager, onClose: () => void) {
@@ -31,8 +31,19 @@ export class LeaderboardScreen {
         const division = ProgressionManager.getDivision(profile.xp);
 
         // Fetch ranking data dynamically from LeaderboardService
-        const apiRange: any = this._activeTab === 'tournament' ? 'all_time' : this._activeTab;
-        const rawEntries = await LeaderboardService.getInstance().getLeaderboard(undefined, apiRange);
+        let rawEntries: any[] = [];
+        if (this._activeTab === 'daily') {
+            rawEntries = await LeaderboardService.getInstance().getLeaderboard(undefined, 'daily');
+        } else {
+            const TournamentService = (await import('../../core/competition/TournamentService')).TournamentService;
+            const tourneyEntries = await TournamentService.getInstance().getLeaderboard(this._activeTab);
+            rawEntries = tourneyEntries.map(e => ({
+                userId: e.userId,
+                username: e.username,
+                score: e.score,
+                matchesPlayed: e.matchesPlayed
+            }));
+        }
 
         const processedEntries = rawEntries.map((entry: any) => {
             const isMe = entry.username === profile.username;
@@ -120,7 +131,6 @@ export class LeaderboardScreen {
                         <button class="lb-tab-btn" data-tab="daily" style="${tabStyle('daily')}">${i18n.currentLocale === 'am' ? 'ዕለታዊ' : (i18n.currentLocale === 'om' ? 'GUYYAA' : 'DAILY')}</button>
                         <button class="lb-tab-btn" data-tab="weekly" style="${tabStyle('weekly')}">${i18n.currentLocale === 'am' ? 'ሳምንታዊ' : (i18n.currentLocale === 'om' ? 'TORBEE' : 'WEEKLY')}</button>
                         <button class="lb-tab-btn" data-tab="monthly" style="${tabStyle('monthly')}">${i18n.currentLocale === 'am' ? 'ወርሃዊ' : (i18n.currentLocale === 'om' ? "JI'A" : 'MONTHLY')}</button>
-                        <button class="lb-tab-btn" data-tab="tournament" style="${tabStyle('tournament')}">${i18n.currentLocale === 'am' ? 'የውድድር ዘመን' : (i18n.currentLocale === 'om' ? 'SEESON PAAS' : 'SEASON PASS')}</button>
                     </div>
 
                     <!-- 1. PODIUM CARDS (TOP 3 CHAMPIONS) -->
