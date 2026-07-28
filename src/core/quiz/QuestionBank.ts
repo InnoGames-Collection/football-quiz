@@ -37,13 +37,13 @@ const OFFLINE_FALLBACK_QUESTIONS: ExtendedQuestionData[] = [
         explanation: "The Walia Ibex is an endangered species of ibex found only in the Simien Mountains of Ethiopia."
     },
     {
-        id: 'fb-3', category: 'ethiopian-premier-league', difficulty: 3,
+        id: 'fb-3', category: 'ethiopian-premier', difficulty: 3,
         prompt: "Which club holds the record for the most Ethiopian Premier League titles?",
         options: ["Ethiopian Coffee SC", "Dedebit FC", "Fasil Kenema", "Saint George SC"],
         correctIndex: 3
     },
     {
-        id: 'fb-4', category: 'ethiopian-premier-league', difficulty: 3,
+        id: 'fb-4', category: 'ethiopian-premier', difficulty: 3,
         prompt: "In which year was the Ethiopian Premier League established in its current format?",
         options: ["1985", "1997", "2002", "2010"],
         correctIndex: 1
@@ -73,7 +73,7 @@ const OFFLINE_FALLBACK_QUESTIONS: ExtendedQuestionData[] = [
         correctIndex: 2
     },
     {
-        id: 'fb-9', category: 'english-premier-league', difficulty: 3,
+        id: 'fb-9', category: 'premier-league', difficulty: 3,
         prompt: "Which team holds the record for most points in a single English Premier League season?",
         options: ["Manchester United", "Liverpool", "Chelsea", "Manchester City"],
         correctIndex: 3
@@ -87,13 +87,13 @@ const OFFLINE_FALLBACK_QUESTIONS: ExtendedQuestionData[] = [
         learningTip: "Ethiopia hosted and won the 1962 tournament, defeating Egypt 4-2 in the final after extra time."
     },
     {
-        id: 'fb-11', category: 'english-premier-league', difficulty: 2,
+        id: 'fb-11', category: 'premier-league', difficulty: 2,
         prompt: "Who is the all-time top scorer of the English Premier League?",
         options: ["Wayne Rooney", "Alan Shearer", "Harry Kane", "Thierry Henry"],
         correctIndex: 1
     },
     {
-        id: 'fb-12', category: 'ethiopian-premier-league', difficulty: 2,
+        id: 'fb-12', category: 'ethiopian-premier', difficulty: 2,
         prompt: "What colors are primarily associated with Ethiopian Coffee SC?",
         options: ["Green and Yellow", "Red and White", "Brown and Gold", "Blue and White"],
         correctIndex: 2

@@ -42,20 +42,20 @@ export class PlayScreen {
                         <!-- 15 CATEGORIES -->
                         ${[
                             { id: 'world-cup', icon: '🌍', name: 'World Cup' },
-                            { id: 'afcon', icon: '🏆', name: 'AFCON' },
                             { id: 'champions-league', icon: '✨', name: 'Champions Lg' },
-                            { id: 'english-premier-league', icon: '🦁', name: 'Premier League' },
+                            { id: 'caf-champions', icon: '🌍', name: 'CAF Champions' },
+                            { id: 'afcon', icon: '🏆', name: 'AFCON' },
+                            { id: 'ethiopian-premier', icon: '🇪🇹', name: 'Ethio League' },
+                            { id: 'walia-ibex', icon: '🐐', name: 'Walia Ibex' },
+                            { id: 'premier-league', icon: '🦁', name: 'Premier League' },
                             { id: 'la-liga', icon: '🇪🇸', name: 'La Liga' },
                             { id: 'serie-a', icon: '🇮🇹', name: 'Serie A' },
-                            { id: 'ethiopian-premier-league', icon: '🇪🇹', name: 'Ethio League' },
-                            { id: 'walia-ibex', icon: '🐐', name: 'Walia Ibex' },
-                            { id: 'legends', icon: '⭐', name: 'Legends' },
-                            { id: 'rules', icon: '⚖️', name: 'Rules & Refs' },
-                            { id: 'tactics', icon: '♟️', name: 'Tactics' },
+                            { id: 'bundesliga', icon: '🇩🇪', name: 'Bundesliga' },
+                            { id: 'legendary-players', icon: '⭐', name: 'Legends' },
+                            { id: 'football-rules', icon: '⚖️', name: 'Rules & Refs' },
+                            { id: 'transfer-market', icon: '💷', name: 'Transfers' },
                             { id: 'stadiums', icon: '🏟️', name: 'Stadiums' },
-                            { id: 'ballon-dor', icon: '🥇', name: "Ballon d'Or" },
-                            { id: 'womens-football', icon: '🏃‍♀️', name: 'Women\'s' },
-                            { id: 'transfers', icon: '💷', name: 'Transfers' }
+                            { id: 'football-history', icon: '📜', name: 'History' }
                         ].map((cat, i) => `
                         <div class="glass-card fade-in-up category-btn" data-category="${cat.id}" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: ${i * 30}ms;">
                             <div style="font-size: 32px; margin-bottom: 8px;">${cat.icon}</div>
