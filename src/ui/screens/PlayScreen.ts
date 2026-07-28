@@ -39,38 +39,29 @@ export class PlayScreen {
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 24px;">
                         
-                        <!-- World Cup -->
-                        <div class="glass-card fade-in-up category-btn" data-category="world-cup" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">🌍</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">World Cup</div>
+                        <!-- 15 CATEGORIES -->
+                        ${[
+                            { id: 'world-cup', icon: '🌍', name: 'World Cup' },
+                            { id: 'afcon', icon: '🏆', name: 'AFCON' },
+                            { id: 'champions-league', icon: '✨', name: 'Champions Lg' },
+                            { id: 'english-premier-league', icon: '🦁', name: 'Premier League' },
+                            { id: 'la-liga', icon: '🇪🇸', name: 'La Liga' },
+                            { id: 'serie-a', icon: '🇮🇹', name: 'Serie A' },
+                            { id: 'ethiopian-premier-league', icon: '🇪🇹', name: 'Ethio League' },
+                            { id: 'walia-ibex', icon: '🐐', name: 'Walia Ibex' },
+                            { id: 'legends', icon: '⭐', name: 'Legends' },
+                            { id: 'rules', icon: '⚖️', name: 'Rules & Refs' },
+                            { id: 'tactics', icon: '♟️', name: 'Tactics' },
+                            { id: 'stadiums', icon: '🏟️', name: 'Stadiums' },
+                            { id: 'ballon-dor', icon: '🥇', name: "Ballon d'Or" },
+                            { id: 'womens-football', icon: '🏃‍♀️', name: 'Women\'s' },
+                            { id: 'transfers', icon: '💷', name: 'Transfers' }
+                        ].map((cat, i) => `
+                        <div class="glass-card fade-in-up category-btn" data-category="${cat.id}" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: ${i * 30}ms;">
+                            <div style="font-size: 32px; margin-bottom: 8px;">${cat.icon}</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">${cat.name}</div>
                         </div>
-
-                        <!-- Premier League -->
-                        <div class="glass-card fade-in-up category-btn" data-category="premier-league" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 50ms;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">🦁</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">Premier League</div>
-                        </div>
-
-                        <!-- Ethio Premier League -->
-                        <div class="glass-card fade-in-up category-btn" data-category="ethio-league" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 100ms;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">🇪🇹</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">Ethio League</div>
-                        </div>
-
-                        <!-- Legends -->
-                        <div class="glass-card fade-in-up category-btn" data-category="legends" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 150ms;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">⭐</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">Legends</div>
-                        </div>
-
-                        <!-- Random/All Categories -->
-                        <div class="glass-card fade-in-up category-btn" data-category="random" style="grid-column: 1 / -1; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, rgba(34,197,94,0.2) 0%, rgba(15,23,42,0.9) 100%); border: 1px solid rgba(34,197,94,0.4); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: 200ms; display: flex; align-items: center; justify-content: center; gap: 12px;">
-                            <div style="font-size: 28px;">🎲</div>
-                            <div style="text-align: left;">
-                                <div style="font-size: var(--fds-font-md); font-weight: 800; color: white; text-transform: uppercase;">Random Mix</div>
-                                <div style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.6);">Play questions from all categories</div>
-                            </div>
-                        </div>
+                        `).join('')}
 
                     </div>
                 </div>
