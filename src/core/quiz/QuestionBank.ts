@@ -173,7 +173,7 @@ export class QuestionBank {
                     query = query.eq('usage_type', 'tournament');
                 }
 
-                if (competitionId) {
+                if (competitionId && competitionId !== 'all') {
                     query = query.or(`competition_id.eq.${competitionId},category.eq.${competitionId}`);
                 }
                 

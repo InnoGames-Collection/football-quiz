@@ -36,11 +36,11 @@ export class DetailedStatsScreen {
         let totalWins = profile.totalWins || 0;
         let winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
         
-        let avgTimeMs = 12400; // default 12.4s
+        let avgTimeMs = 0;
         let totalAccuracy = winRate;
-        let totalCorrect = Math.round(totalGames * 6.8);
-        let totalWrong = Math.round(totalGames * 2.2);
-        let totalSkipped = Math.round(totalGames * 1.0);
+        let totalCorrect = 0;
+        let totalWrong = 0;
+        let totalSkipped = 0;
 
         if (sessionHistory.length > 0) {
             let sumAccuracy = 0;
@@ -68,11 +68,9 @@ export class DetailedStatsScreen {
             totalWrong = Math.round(totalGames * 10 * ratioWrong);
         }
 
-        const avgTimeStr = (avgTimeMs / 1000).toFixed(1) + 's';
+        const avgTimeStr = avgTimeMs > 0 ? (avgTimeMs / 1000).toFixed(1) + 's' : '--';
         const points = profile.xp;
         const highestScore = profile.highScores['football-quiz'] || 0;
-        const avgSession = '4.8m';
-        const lifelinesUsed = '14';
 
         const cardStyle = `
             border-radius: 12px;
@@ -116,12 +114,8 @@ export class DetailedStatsScreen {
                     <!-- 2. Performance -->
                     <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">⚡ Performance</div>
                     <div class="glass-card" style="${cardStyle}">
-                        ${row('Highest Score (Match)', String(highestScore))}
+                        ${row('Highest Score (Match)', highestScore.toLocaleString())}
                         ${row('Average Response Time', avgTimeStr)}
-                        ${row('Average Session Duration', avgSession)}
-                        <div style="border-bottom: none;">
-                            ${row('Lifelines Used', lifelinesUsed)}
-                        </div>
                     </div>
 
                     <!-- 3. Questions Details -->

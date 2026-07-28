@@ -20,7 +20,7 @@ export class TournamentService {
 
     public async getLeaderboard(periodType: 'weekly' | 'monthly' | 'yearly', limit: number = 100): Promise<TournamentLeaderboardEntry[]> {
         if (!supabaseService.isOnline || !supabase) {
-            return this._getMockLeaderboard(periodType);
+            return [];
         }
 
         try {
@@ -31,24 +31,13 @@ export class TournamentService {
 
             if (error) {
                 console.warn('[TournamentService] Error fetching leaderboard:', error);
-                return this._getMockLeaderboard(periodType);
+                return [];
             }
 
             return (data as any[]) || [];
         } catch (e) {
             console.warn('[TournamentService] Exception fetching leaderboard:', e);
-            return this._getMockLeaderboard(periodType);
+            return [];
         }
-    }
-
-    private _getMockLeaderboard(periodType: string): TournamentLeaderboardEntry[] {
-        const factor = periodType === 'yearly' ? 12 : (periodType === 'monthly' ? 4 : 1);
-        return Array.from({ length: 15 }).map((_, i) => ({
-            userId: `mock-${i}`,
-            username: `Player ${i + 1}`,
-            score: (15 - i) * 1000 * factor,
-            matchesPlayed: (15 - i) * factor,
-            totalTimeMs: 50000 * factor
-        }));
     }
 }

@@ -55,8 +55,10 @@ export class LeaderboardService {
                             const myEntry = mappedData.find((e: any) => e.userId === myUserId);
                             if (myEntry) {
                                 localStorage.setItem('ETHIO_DAILY_RANK', myEntry.rank.toString());
+                                localStorage.setItem('ETHIO_DAILY_SCORE', myEntry.score.toString());
                             } else {
                                 localStorage.removeItem('ETHIO_DAILY_RANK');
+                                // Do not remove score, they might have played but not made top 50, but actually Daily Leaderboard gets all.
                             }
                         }
                         return mappedData;

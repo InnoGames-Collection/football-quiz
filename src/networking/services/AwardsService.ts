@@ -1,3 +1,5 @@
+import { supabase, supabaseService } from '../supabase/SupabaseClient';
+
 export interface AwardRecord {
     awardId: string;
     tournamentId: string;
@@ -26,51 +28,50 @@ export class AwardsService {
     }
 
     /**
-     * Mocks a backend endpoint equivalent to GET /api/awards
+     * Returns real backend rewards.
      */
     public async getAwards(type: 'daily' | 'weekly' | 'monthly'): Promise<AwardRecord[]> {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        // Generate some mock data for demonstration purposes
-        const mockAwards: AwardRecord[] = [];
+        if (!supabaseService.isOnline || !supabase) return [];
         
-        // Mocking user phone to demonstrate highlighting (using a generic one)
-        // Usually we would fetch this from AuthManager, but we'll use a hardcoded one for mock
-        const currentUserMsisdn = '+251911223344';
-
-        // Monthly has less winners, Daily has more in this mock
-        const count = type === 'monthly' ? 5 : type === 'weekly' ? 10 : 20;
-
-        for (let i = 1; i <= count; i++) {
-            // Occasionally make the user the winner in some events for demo
-            const isUser = i === 2 && type === 'weekly'; 
-            const rawPhone = isUser ? currentUserMsisdn : `+2519${Math.floor(1000000 + Math.random() * 9000000)}`;
-            const maskedPhone = this.maskMsisdn(rawPhone);
-
-            let prize = 0;
-            if (i === 1) prize = type === 'monthly' ? 50000 : type === 'weekly' ? 10000 : 1000;
-            else if (i === 2) prize = type === 'monthly' ? 25000 : type === 'weekly' ? 5000 : 500;
-            else if (i === 3) prize = type === 'monthly' ? 10000 : type === 'weekly' ? 2500 : 250;
-            else prize = type === 'monthly' ? 1000 : type === 'weekly' ? 500 : 50;
-
-            mockAwards.push({
-                awardId: `awd_${type}_${i}_${Date.now()}`,
-                tournamentId: `trn_${type}_${Date.now()}`,
-                tournamentType: type,
-                rank: i,
-                userMsisdn: rawPhone,
-                maskedMsisdn: maskedPhone,
-                prizeAmount: prize,
-                currency: 'ETB',
-                tournamentStartDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-                tournamentEndDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-                awardDate: new Date().toISOString(),
-                createdAt: new Date().toISOString(),
-            });
+        try {
+            const { data, error } = await (supabase.rpc as any)('get_past_tournament_winners', { p_period_type: type });
+            if (!error && data && Array.isArray(data)) {
+                return data.map((item: any) => ({
+                    awardId: `awd_${item.user_id}_${type}`,
+                    tournamentId: `trn_${type}`,
+                    tournamentType: type,
+                    rank: item.rank,
+                    userMsisdn: item.msisdn || '',
+                    maskedMsisdn: this.maskMsisdn(item.msisdn || ''),
+                    prizeAmount: this.calculatePrize(item.rank, type),
+                    currency: 'ETB',
+                    tournamentStartDate: '',
+                    tournamentEndDate: '',
+                    awardDate: new Date().toISOString(),
+                    createdAt: new Date().toISOString()
+                }));
+            }
+        } catch (e) {
+            console.error('[AwardsService] Failed to fetch awards', e);
         }
+        return [];
+    }
 
-        return mockAwards;
+    private calculatePrize(rank: number, type: 'daily' | 'weekly' | 'monthly'): number {
+        if (type === 'monthly') {
+            if (rank === 1) return 50000;
+            if (rank === 2) return 25000;
+            if (rank === 3) return 10000;
+        } else if (type === 'weekly') {
+            if (rank === 1) return 10000;
+            if (rank === 2) return 5000;
+            if (rank === 3) return 2500;
+        } else {
+            if (rank === 1) return 1000;
+            if (rank === 2) return 500;
+            if (rank === 3) return 250;
+        }
+        return 0;
     }
 
     /**

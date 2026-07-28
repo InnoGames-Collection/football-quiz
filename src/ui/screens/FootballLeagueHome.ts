@@ -22,6 +22,7 @@ export interface FootballHomeCallbacks {
     onNotifications?: () => void;
     onViewStats?: () => void;
     onMessages?: () => void;
+    onCasualPlay?: () => void;
 }
 
 export class FootballLeagueHome {
@@ -63,18 +64,22 @@ export class FootballLeagueHome {
         const dailyRank = rawDailyRank && rawDailyRank !== '--' ? `#${rawDailyRank}` : 'Unranked';
         const dailyStreak = profile.streakCount || 0;
         
-        // Fetch daily rank silently in background if missing
-        if (!rawDailyRank || rawDailyRank === '--') {
-            setTimeout(async () => {
-                try {
-                    await LeaderboardService.getInstance().getLeaderboard(undefined, 'daily');
-                    const newRank = localStorage.getItem('ETHIO_DAILY_RANK');
-                    if (newRank && newRank !== rawDailyRank) {
-                        this.render();
-                    }
-                } catch(e) {}
-            }, 1000);
-        }
+        const rawDailyScore = localStorage.getItem('ETHIO_DAILY_SCORE') || '0';
+
+        // Always fetch daily rank silently in background to ensure real-time score display
+        setTimeout(async () => {
+            try {
+                await LeaderboardService.getInstance().getLeaderboard(undefined, 'daily');
+                const newRank = localStorage.getItem('ETHIO_DAILY_RANK');
+                const newScore = localStorage.getItem('ETHIO_DAILY_SCORE');
+                
+                // We compare the currently rendered score/rank with the newly fetched ones
+                // Since this runs after initial render, we re-render if it differs
+                if ((newRank && newRank !== rawDailyRank) || (newScore && newScore !== rawDailyScore)) {
+                    this.render();
+                }
+            } catch(e) {}
+        }, 1000);
 
         const activeSession = GameSessionManager.getInstance().getActiveSession();
         const isDailyCompleted = localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
@@ -238,6 +243,24 @@ export class FootballLeagueHome {
                     
                     <!-- NEW CONTEXTUAL UI -->
                     ${contextualCardsHtml}
+
+                    <!-- CASUAL PRACTICE ARENA -->
+                    <div class="glass-card fade-in-up" id="card-casual-play" style="padding: clamp(16px, 2.5vh, 20px); border-radius: 20px; background: linear-gradient(145deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                    <span style="font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">🎯</span>
+                                    <span style="font-size: var(--fds-font-sm); font-weight: 900; color: #60A5FA; text-transform: uppercase; letter-spacing: 0.5px;">Practice Arena</span>
+                                </div>
+                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); max-width: 80%;">
+                                    Warm up with casual matches across all categories. No limits.
+                                </div>
+                            </div>
+                            <div style="background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.3); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #60A5FA; font-size: 18px; font-weight: bold; flex-shrink: 0;">
+                                ▶
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
                     <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); margin-bottom: 24px; border-radius: 16px;">
@@ -433,6 +456,16 @@ export class FootballLeagueHome {
             this._addRipple(e);
             this._audioManager.playClick();
             this._callbacks.onKickOff();
+        });
+
+        root.querySelector('#card-casual-play')?.addEventListener('click', (e) => {
+            this._addRipple(e);
+            this._audioManager.playClick();
+            if (this._callbacks.onCasualPlay) {
+                this._callbacks.onCasualPlay();
+            } else {
+                this._callbacks.onKickOff(); // fallback
+            }
         });
 
         root.querySelector('#btn-action-leaderboard')?.addEventListener('click', (e) => {

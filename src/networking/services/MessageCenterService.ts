@@ -217,58 +217,9 @@ export class MessageCenterService {
     }
 
     private _generateMockData(): void {
-        this.announcements = [
-            {
-                id: 'ann_1', type: 'announcement', title: 'Season 4 Weekend League!',
-                shortDescription: 'Compete this weekend for double XP.',
-                content: 'Join the Weekend League starting Friday to earn double XP and exclusive rewards. Make sure your team is ready!',
-                category: 'Tournament', priority: 'High',
-                createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-                publishDate: new Date().toISOString(), expiryDate: new Date(Date.now() + 100000000).toISOString(),
-                readCount: 15420, pinned: true, active: true, read: false, archived: false, deleted: false
-            },
-            {
-                id: 'ann_2', type: 'announcement', title: 'Server Maintenance',
-                shortDescription: 'Scheduled downtime on Tuesday at 2 AM.',
-                content: 'We will be performing routine maintenance. The game will be unavailable for approximately 2 hours.',
-                category: 'Maintenance', priority: 'Normal',
-                createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-                publishDate: new Date().toISOString(), expiryDate: new Date(Date.now() + 100000000).toISOString(),
-                readCount: 4302, pinned: false, active: true, read: true, archived: false, deleted: false
-            }
-        ];
-
-        this.personalMessages = [
-            {
-                id: 'pm_1', type: 'personal', title: 'Congratulations! You won Bronze',
-                content: 'You ranked 3rd in the Daily Tournament. Your prize of 250 ETB has been credited.',
-                category: 'Reward', priority: 'High', sender: 'System',
-                createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-                read: false, archived: false, deleted: false
-            },
-            {
-                id: 'pm_2', type: 'personal', title: 'Subscription Successful',
-                content: 'Your Premium VIP subscription has been renewed successfully for the month.',
-                category: 'Subscription', priority: 'Normal', sender: 'System',
-                createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
-                readDate: new Date().toISOString(),
-                read: true, archived: false, deleted: false
-            }
-        ];
-
-        this.supportTickets = [
-            {
-                id: 'sup_1', type: 'support', title: 'Did not receive tournament reward',
-                content: 'I finished 5th yesterday but my account balance was not updated.',
-                category: 'Reward', status: 'Pending', priority: 'High',
-                unreadSupportMessagesCount: 1,
-                messages: [
-                    { id: '1', text: 'I finished 5th yesterday but my account balance was not updated.', sender: 'user', timestamp: Date.now() - 1000 * 60 * 60 * 24, read: true },
-                    { id: '2', text: 'We are looking into this issue and will get back to you shortly.', sender: 'support', timestamp: Date.now() - 1000 * 60 * 60 * 23, read: false }
-                ],
-                createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-                read: false, archived: false, deleted: false
-            }
-        ];
+        // No mock data generated in production
+        this.announcements = [];
+        this.personalMessages = [];
+        this.supportTickets = [];
     }
 }
