@@ -18,7 +18,7 @@ import { SettingsScreen } from '../../ui/screens/SettingsScreen';
 import { NotificationScreen } from '../../ui/screens/NotificationScreen';
 import { DailyChallengeManager } from '../competition/DailyChallengeManager';
 import { GameSessionManager } from '../quiz/GameSessionManager';
-import { PlayScreen } from '../../ui/screens/PlayScreen';
+
 import { i18n } from '../../localization/i18n';
 import { DetailedStatsScreen } from '../../ui/screens/DetailedStatsScreen';
 
@@ -133,23 +133,18 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 break;
 
             case 'play':
+                // Instead of rendering a PlayScreen, instantly start a Casual Quick Match
                 BottomNav.setActiveTab('play');
                 currentTab = 'play';
-                cacheManager.setQuizActive(false);
-                const playScreen = new PlayScreen(
-                    game.uiManager, game.audioManager,
-                    async (category) => {
-                        cacheManager.setQuizActive(true);
-                        const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as QuizGameMode;
-                        quizMode.setCompetition(category);
-                        tabStacks[currentTab].push('quiz_game');
-                        try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
-                        
-                        await registry.launchGame('football-quiz');
-                    }
-                );
-                activeScreen = playScreen;
-                playScreen.render();
+                cacheManager.setQuizActive(true);
+                const quizModePlay = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as QuizGameMode;
+                quizModePlay.setCompetition('all'); // Request questions from all categories
+                quizModePlay.matchType = 'casual';
+                
+                tabStacks[currentTab].push('quiz_game');
+                try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
+                
+                await registry.launchGame('football-quiz');
                 break;
 
             case 'league':
