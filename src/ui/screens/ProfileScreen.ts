@@ -148,7 +148,7 @@ export class ProfileScreen {
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK')}</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">#4</div>
+                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${localStorage.getItem('ETHIO_DAILY_RANK') && localStorage.getItem('ETHIO_DAILY_RANK') !== '--' ? '#' + localStorage.getItem('ETHIO_DAILY_RANK') : 'Unranked'}</div>
                     </div>
                     <div>
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ነጥቦች' : (i18n.currentLocale === 'om' ? 'QABXII' : 'POINTS')}</div>

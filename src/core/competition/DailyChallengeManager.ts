@@ -32,13 +32,18 @@ export class DailyChallengeManager {
                     const res = data as any;
                     if (res.available && res.question_ids && res.question_ids.length > 0) {
                         const questions = await QuestionBank.getInstance().fetchQuestionsByIds(res.question_ids, i18n.currentLocale as any);
+                        const isCompleted = res.completed || false;
+                        if (isCompleted) {
+                            localStorage.setItem('ETHIO_DAILY_COMPLETED_TODAY', 'true');
+                        }
+                        
                         return {
                             id: res.id,
                             themeEn: res.theme_en || 'Daily Football Quiz Challenge',
                             themeAm: res.theme_am || 'የዕለቱ የእግር ኳስ ጥያቄ ተግዳሮት',
                             themeOm: res.theme_om || 'Qormaata Gaaffii Kubbaa Miilaa Guyyaa',
                             bonusMultiplier: res.bonusMultiplier || 1.5,
-                            completed: res.completed || false,
+                            completed: isCompleted,
                             questions
                         };
                     }

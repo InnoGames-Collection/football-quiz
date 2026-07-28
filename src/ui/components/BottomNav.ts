@@ -1,6 +1,6 @@
 import { i18n } from '../../localization/i18n';
 
-export type TabId = 'home' | 'standings' | 'profile';
+export type TabId = 'home' | 'play' | 'standings' | 'profile';
 
 export interface TabConfig {
     id: TabId;
@@ -14,13 +14,15 @@ export class BottomNav {
 
     private static TABS: TabConfig[] = [
         { id: 'home', label: 'Home', icon: '🏠' },
-        { id: 'standings', label: 'Standings', icon: '🏆' },
+        { id: 'play', label: 'Play', icon: '🎮' },
+        { id: 'standings', label: 'Leaderboard', icon: '🏆' },
         { id: 'profile', label: 'Profile', icon: '👤' }
     ];
 
     private static LABELS: Record<string, Record<string, string>> = {
         home: { en: 'Home', am: 'መነሻ', om: 'Mula\'a' },
-        standings: { en: 'Standings', am: 'ደረጃዎች', om: 'Sadarkaa' },
+        play: { en: 'Play', am: 'ተጫወት', om: 'Tapha' },
+        standings: { en: 'Leaderboard', am: 'ደረጃዎች', om: 'Sadarkaa' },
         profile: { en: 'Profile', am: 'መገለጫ', om: 'Profile' }
     };
 

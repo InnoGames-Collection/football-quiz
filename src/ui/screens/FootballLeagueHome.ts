@@ -99,15 +99,8 @@ export class FootballLeagueHome {
             `;
         }
 
-        if (isDailyCompleted || (!activeSession && isDailyCompleted)) {
-            contextualCardsHtml += `
-                <div class="glass-card fade-in-up" style="padding: clamp(12px, 2vh, 16px); border-color: rgba(255,255,255,0.12); border-radius: 16px; text-align: center;">
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Next Daily Challenge</div>
-                    <div id="next-daily-countdown" style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main); font-family: var(--fds-font-mono);">
-                        --:--:--
-                    </div>
-                </div>
-            `;
+        if (!activeSession && isDailyCompleted) {
+            // Keep empty, logic moved to Hero Banner
         }
 
         root.innerHTML = `
@@ -223,8 +216,17 @@ export class FootballLeagueHome {
                             </h2>
                         </div>
 
-                        <!-- Hero Primary Action Button -->
+                        <!-- Hero Primary Action Button OR Countdown -->
+                        ${isDailyCompleted ? `
+                        <div style="background: rgba(0,0,0,0.5); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid rgba(255,215,0,0.3);">
+                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Next Challenge In</div>
+                            <div id="next-daily-countdown" style="font-size: var(--fds-font-xl); font-weight: 900; color: white; font-family: var(--fds-font-mono);">
+                                --:--:--
+                            </div>
+                        </div>
+                        ` : `
                         ${DesignSystem.Button({ id: 'btn-daily-match', text: 'DAILY CHALLENGE', variant: 'primary', fullWidth: true })}
+                        `}
                     </div>
 
 
@@ -243,24 +245,6 @@ export class FootballLeagueHome {
                     
                     <!-- NEW CONTEXTUAL UI -->
                     ${contextualCardsHtml}
-
-                    <!-- CASUAL PRACTICE ARENA -->
-                    <div class="glass-card fade-in-up" id="card-casual-play" style="padding: clamp(16px, 2.5vh, 20px); border-radius: 20px; background: linear-gradient(145deg, rgba(30,41,59,0.9) 0%, rgba(15,23,42,0.95) 100%); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div>
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                                    <span style="font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">🎯</span>
-                                    <span style="font-size: var(--fds-font-sm); font-weight: 900; color: #60A5FA; text-transform: uppercase; letter-spacing: 0.5px;">Practice Arena</span>
-                                </div>
-                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); max-width: 80%;">
-                                    Warm up with casual matches across all categories. No limits.
-                                </div>
-                            </div>
-                            <div style="background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.3); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #60A5FA; font-size: 18px; font-weight: bold; flex-shrink: 0;">
-                                ▶
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
                     <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); margin-bottom: 24px; border-radius: 16px;">
@@ -456,16 +440,6 @@ export class FootballLeagueHome {
             this._addRipple(e);
             this._audioManager.playClick();
             this._callbacks.onKickOff();
-        });
-
-        root.querySelector('#card-casual-play')?.addEventListener('click', (e) => {
-            this._addRipple(e);
-            this._audioManager.playClick();
-            if (this._callbacks.onCasualPlay) {
-                this._callbacks.onCasualPlay();
-            } else {
-                this._callbacks.onKickOff(); // fallback
-            }
         });
 
         root.querySelector('#btn-action-leaderboard')?.addEventListener('click', (e) => {

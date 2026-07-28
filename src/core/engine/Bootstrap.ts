@@ -3,6 +3,7 @@ import { GameRegistry } from '../managers/GameRegistry';
 import { QuizGameMode } from '../../games/quiz/QuizGameMode';
 import { AdminPanelScreen } from '../../ui/screens/AdminPanelScreen';
 import { FootballLeagueHome } from '../../ui/screens/FootballLeagueHome';
+import { PlayScreen } from '../../ui/screens/PlayScreen';
 import { AuthManager } from '../auth/AuthManager';
 import { AuthScreen } from '../../ui/screens/AuthScreen';
 import { RealtimeService } from '../../networking/services/RealtimeService';
@@ -51,10 +52,11 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioEvents = eventBus;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'standings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats' | 'achievements' | 'awards' | 'play_single_path';
+    type RouteName = 'home' | 'play' | 'standings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats' | 'achievements' | 'awards' | 'play_single_path';
 
     let tabStacks: Record<TabId, RouteName[]> = {
         home: ['home'],
+        play: ['play'],
         standings: ['standings'],
         profile: ['profile']
     };
@@ -128,6 +130,29 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 homeScreen.render();
                 break;
 
+            case 'play':
+                BottomNav.setActiveTab('play');
+                currentTab = 'play';
+                cacheManager.setQuizActive(false);
+                const playScreen = new PlayScreen(
+                    game.uiManager, game.audioManager,
+                    {
+                        onCasualPlay: async () => {
+                            const quizMode = registry.getRegisteredGames().find(g => g.metadata.id === 'football-quiz') as QuizGameMode;
+                            quizMode.setCompetition('all');
+                            quizMode.matchType = 'casual';
+                            
+                            tabStacks[currentTab].push('quiz_game');
+                            try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
+                            
+                            await registry.launchGame('football-quiz');
+                        }
+                    }
+                );
+                activeScreen = playScreen;
+                playScreen.render();
+                break;
+
             case 'standings':
                 BottomNav.setActiveTab('standings');
                 currentTab = 'standings';
@@ -150,16 +175,16 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                     quizMode.setPreloadedQuestions(challengeInfo.questions);
                     quizMode.matchType = 'daily';
                     quizMode.dailyChallengeId = challengeInfo.id;
+                    
+                    tabStacks[currentTab].push('quiz_game');
+                    try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
+                    
+                    await registry.launchGame('football-quiz');
                 } else {
-                    import('../../ui/components/Toast').then(m => m.Toast.show(i18n.currentLocale === 'am' ? 'የዕለቱ ውድድር አልቋል! አሁን መደበኛ ጨዋታ እየተጫወቱ ነው' : 'Daily challenge completed! Now playing casual mode.'));
-                    quizMode.setCompetition('all');
-                    quizMode.matchType = 'casual';
+                    import('../../ui/components/Toast').then(m => m.Toast.show(i18n.currentLocale === 'am' ? 'የዕለቱ ውድድር አልቋል! 내일 ይሞክሩ' : 'Daily challenge already completed! Come back tomorrow.', 'error'));
+                    cacheManager.setQuizActive(false);
+                    navigateToTab('home');
                 }
-                
-                tabStacks[currentTab].push('quiz_game');
-                try { window.history.pushState({ tab: currentTab, route: 'quiz_game' }, ''); } catch(e){}
-                
-                await registry.launchGame('football-quiz');
                 break;
 
             case 'profile':
@@ -630,6 +655,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 // was already 'home' on launch, leaving the AuthScreen stuck on the screen.
                 tabStacks = {
                     home: ['home'],
+                    play: ['play'],
                     standings: ['standings'],
                     profile: ['profile']
                 };
