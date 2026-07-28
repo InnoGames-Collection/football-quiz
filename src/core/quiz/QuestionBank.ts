@@ -168,7 +168,7 @@ export class QuestionBank {
                     .eq('is_active', true);
 
                 if (usageType === 'casual') {
-                    query = query.in('usage_type', ['casual', 'both']);
+                    query = query.eq('usage_type', 'casual');
                 } else if (usageType === 'tournament') {
                     query = query.eq('usage_type', 'tournament');
                 }
