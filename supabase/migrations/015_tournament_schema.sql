@@ -1,10 +1,9 @@
 -- 1. Add usage_type to questions table
 ALTER TABLE questions 
-ADD COLUMN IF NOT EXISTS usage_type TEXT DEFAULT 'casual' CHECK (usage_type IN ('casual', 'tournament', 'both'));
+ADD COLUMN IF NOT EXISTS usage_type TEXT DEFAULT 'casual' CHECK (usage_type IN ('casual', 'tournament'));
 
--- Update existing questions to 'both' so they can be played anywhere for now, or just 'casual'
--- Let's make existing ones 'casual' to be safe, but since it's development, 'both' lets us test tournaments
-UPDATE questions SET usage_type = 'both' WHERE usage_type IS NULL;
+-- Update existing questions to 'casual'
+UPDATE questions SET usage_type = 'casual' WHERE usage_type IS NULL OR usage_type = 'both';
 
 -- 2. Create the accumulated tournament leaderboards table
 CREATE TABLE IF NOT EXISTS tournament_leaderboards (

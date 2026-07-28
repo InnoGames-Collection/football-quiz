@@ -20,7 +20,7 @@ BEGIN
   FROM (
     SELECT id FROM questions
     WHERE is_active = true 
-      AND usage_type IN ('tournament', 'both')
+      AND usage_type = 'tournament'
     ORDER BY random()
     LIMIT 10
   ) random_q;
