@@ -4,6 +4,14 @@ export class AudioManager {
     private _crowdGain: GainNode | null = null;
     private _crowdSource: AudioBufferSourceNode | null = null;
 
+    private _correctAnswerBuffer: AudioBuffer | null = null;
+    private _activeCorrectAnswerSource: AudioBufferSourceNode | null = null;
+    private _wrongAnswerBuffer: AudioBuffer | null = null;
+    private _isWrongAnswerPlaying: boolean = false;
+    private _answerSelectedBuffer: AudioBuffer | null = null;
+    private _isAnswerSelectedPlaying: boolean = false;
+    private _finalWhistleBuffer: AudioBuffer | null = null;
+
     constructor() {
         const savedMute = localStorage.getItem('ETHIO_FOOTBALL_MUTED');
         if (savedMute !== null) {
@@ -105,36 +113,52 @@ export class AudioManager {
         this._initContext();
         if (!this._ctx) return;
 
-        const scheduleWhistle = (startTime: number, duration: number) => {
-            if (!this._ctx) return;
-            const osc1 = this._ctx.createOscillator();
-            const osc2 = this._ctx.createOscillator();
-            const gain = this._ctx.createGain();
+        if (!this._finalWhistleBuffer) {
+            // Synthetic fallback
+            const scheduleWhistle = (startTime: number, duration: number) => {
+                if (!this._ctx) return;
+                const osc1 = this._ctx.createOscillator();
+                const osc2 = this._ctx.createOscillator();
+                const gain = this._ctx.createGain();
 
-            osc1.type = 'sine';
-            osc2.type = 'sine';
-            osc1.frequency.setValueAtTime(2400, startTime);
-            osc2.frequency.setValueAtTime(2450, startTime);
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(2400, startTime);
+                osc2.frequency.setValueAtTime(2450, startTime);
 
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.18, startTime + 0.05);
-            gain.gain.setValueAtTime(0.18, startTime + duration - 0.1);
-            gain.gain.linearRampToValueAtTime(0, startTime + duration);
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(0.18, startTime + 0.05);
+                gain.gain.setValueAtTime(0.18, startTime + duration - 0.1);
+                gain.gain.linearRampToValueAtTime(0, startTime + duration);
 
-            osc1.connect(gain);
-            osc2.connect(gain);
-            gain.connect(this._ctx.destination);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this._ctx.destination);
 
-            osc1.start(startTime);
-            osc2.start(startTime);
-            osc1.stop(startTime + duration);
-            osc2.stop(startTime + duration);
-        };
+                osc1.start(startTime);
+                osc2.start(startTime);
+                osc1.stop(startTime + duration);
+                osc2.stop(startTime + duration);
+            };
 
-        const now = this._ctx.currentTime;
-        scheduleWhistle(now, 0.25);
-        scheduleWhistle(now + 0.35, 0.25);
-        scheduleWhistle(now + 0.7, 0.6);
+            const now = this._ctx.currentTime;
+            scheduleWhistle(now, 0.25);
+            scheduleWhistle(now + 0.35, 0.25);
+            scheduleWhistle(now + 0.7, 0.6);
+            return;
+        }
+
+        const source = this._ctx.createBufferSource();
+        source.buffer = this._finalWhistleBuffer;
+
+        const gain = this._ctx.createGain();
+        gain.gain.value = 0.75; // 75% volume
+
+        source.connect(gain);
+        gain.connect(this._ctx.destination);
+        
+        // Delay playback by 150ms after the final event so it feels natural
+        source.start(this._ctx.currentTime + 0.15);
     }
 
     /**
@@ -229,66 +253,73 @@ export class AudioManager {
     public playWrongAnswer(): void {
         if (this._isMuted) return;
         this._vibrate([40, 20, 40]); // Medium Impact Haptic
+        
+        // If already playing, do not restart
+        if (this._isWrongAnswerPlaying) return;
+
+        // Prevent overlap with Correct Answer
+        if (this._activeCorrectAnswerSource) {
+            try { this._activeCorrectAnswerSource.stop(); } catch(e) {}
+        }
+
+        if (!this._wrongAnswerBuffer) {
+            // Fail silently if playback is unavailable
+            return;
+        }
+
         this._initContext();
         if (!this._ctx) return;
 
-        // Metallic Goalpost Clang
-        const osc1 = this._ctx.createOscillator();
-        const osc2 = this._ctx.createOscillator();
-        const osc3 = this._ctx.createOscillator();
-        const metalGain = this._ctx.createGain();
+        const source = this._ctx.createBufferSource();
+        source.buffer = this._wrongAnswerBuffer;
 
-        // Use dissonant high frequencies for a metallic "clink"
-        osc1.type = 'square';
-        osc1.frequency.setValueAtTime(800, this._ctx.currentTime);
-        osc1.frequency.exponentialRampToValueAtTime(300, this._ctx.currentTime + 0.3);
+        const gain = this._ctx.createGain();
+        gain.gain.value = 0.7; // 70% volume
 
-        osc2.type = 'sawtooth';
-        osc2.frequency.setValueAtTime(1200, this._ctx.currentTime);
-        osc2.frequency.exponentialRampToValueAtTime(500, this._ctx.currentTime + 0.3);
+        source.connect(gain);
+        gain.connect(this._ctx.destination);
         
-        osc3.type = 'triangle';
-        osc3.frequency.setValueAtTime(1600, this._ctx.currentTime);
-        osc3.frequency.exponentialRampToValueAtTime(800, this._ctx.currentTime + 0.3);
+        this._isWrongAnswerPlaying = true;
+        source.onended = () => {
+            this._isWrongAnswerPlaying = false;
+        };
 
-        metalGain.gain.setValueAtTime(0.15, this._ctx.currentTime);
-        metalGain.gain.exponentialRampToValueAtTime(0.01, this._ctx.currentTime + 0.3);
+        source.start(0);
+    }
 
-        osc1.connect(metalGain);
-        osc2.connect(metalGain);
-        osc3.connect(metalGain);
-        metalGain.connect(this._ctx.destination);
+    /**
+     * Answer Selected Tone (MP3 Asset)
+     * Plays immediately when an answer is tapped.
+     */
+    public playAnswerSelected(): void {
+        if (this._isMuted) return;
+        
+        // Prevent rapid playback spam
+        if (this._isAnswerSelectedPlaying) return;
 
-        osc1.start();
-        osc2.start();
-        osc3.start();
-        osc1.stop(this._ctx.currentTime + 0.3);
-        osc2.stop(this._ctx.currentTime + 0.3);
-        osc3.stop(this._ctx.currentTime + 0.3);
-
-        // Disappointed Crowd Sigh / Gasp (Filtered noise ramp down)
-        const bufferSize = this._ctx.sampleRate * 0.4;
-        const buffer = this._ctx.createBuffer(1, bufferSize, this._ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+        if (!this._answerSelectedBuffer) {
+            this.playClick(); // synthetic fallback
+            return;
         }
-        const noise = this._ctx.createBufferSource();
-        noise.buffer = buffer;
 
-        const filter = this._ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(600, this._ctx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(100, this._ctx.currentTime + 0.4);
+        this._initContext();
+        if (!this._ctx) return;
 
-        const noiseGain = this._ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.15, this._ctx.currentTime);
-        noiseGain.gain.linearRampToValueAtTime(0.01, this._ctx.currentTime + 0.4);
+        const source = this._ctx.createBufferSource();
+        source.buffer = this._answerSelectedBuffer;
 
-        noise.connect(filter);
-        filter.connect(noiseGain);
-        noiseGain.connect(this._ctx.destination);
-        noise.start();
+        const gain = this._ctx.createGain();
+        gain.gain.value = 0.4; // 40% volume
+
+        source.connect(gain);
+        gain.connect(this._ctx.destination);
+        
+        this._isAnswerSelectedPlaying = true;
+        source.onended = () => {
+            this._isAnswerSelectedPlaying = false;
+        };
+
+        source.start(0);
     }
 
     /**
@@ -330,29 +361,79 @@ export class AudioManager {
     }
 
     /**
-     * 7. Correct Answer Tone (Short Chime)
+     * Professional Preloading for Critical Audio Assets
+     * Fetches and decodes the audio safely. Web Audio API decodeAudioData 
+     * is fully supported on a suspended context (before first user gesture).
      */
-    public playCorrectAnswer(): void {
+    public async preloadAssets(): Promise<void> {
         if (this._isMuted) return;
-        this._vibrate(20); // Light Success Haptic
+        try {
+            const [correctRes, wrongRes, selectRes, whistleRes] = await Promise.all([
+                fetch('/assets/audio/correct-answer-goal.mp3'),
+                fetch('/assets/audio/wrong-answer.mp3'),
+                fetch('/assets/audio/answer-selected.mp3'),
+                fetch('/assets/audio/final-whistle.mp3')
+            ]);
+            
+            if (!this._ctx) {
+                const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+                this._ctx = new AudioCtx();
+            }
+
+            if (correctRes.ok) {
+                const arr = await correctRes.arrayBuffer();
+                this._correctAnswerBuffer = await this._ctx.decodeAudioData(arr);
+            }
+            if (wrongRes.ok) {
+                const arr = await wrongRes.arrayBuffer();
+                this._wrongAnswerBuffer = await this._ctx.decodeAudioData(arr);
+            }
+            if (selectRes.ok) {
+                const arr = await selectRes.arrayBuffer();
+                this._answerSelectedBuffer = await this._ctx.decodeAudioData(arr);
+            }
+            if (whistleRes.ok) {
+                const arr = await whistleRes.arrayBuffer();
+                this._finalWhistleBuffer = await this._ctx.decodeAudioData(arr);
+            }
+            console.log('[AudioManager] Audio assets preloaded successfully.');
+        } catch (err) {
+            console.warn('[AudioManager] Failed to preload audio assets', err);
+        }
+    }
+
+    /**
+     * 7. Correct Answer Goal Sound (MP3 Asset)
+     */
+    public playCorrectAnswerGoal(): void {
+        if (this._isMuted) return;
+        this._vibrate([30, 40, 30]); // Haptic for success
+
+        // If audio failed to load or unsupported, silently fallback
+        if (!this._correctAnswerBuffer) {
+            this.playGoalCheer(); // existing synthetic fallback
+            return;
+        }
+
         this._initContext();
         if (!this._ctx) return;
 
-        const osc = this._ctx.createOscillator();
+        // Stop any existing correct answer sound to prevent overlapping
+        if (this._activeCorrectAnswerSource) {
+            try { this._activeCorrectAnswerSource.stop(); } catch(e) {}
+        }
+
+        const source = this._ctx.createBufferSource();
+        source.buffer = this._correctAnswerBuffer;
+        
         const gain = this._ctx.createGain();
+        gain.gain.value = 0.8; // 80% volume
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, this._ctx.currentTime);
-        osc.frequency.setValueAtTime(1760, this._ctx.currentTime + 0.08);
-
-        gain.gain.setValueAtTime(0.2, this._ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this._ctx.currentTime + 0.22);
-
-        osc.connect(gain);
+        source.connect(gain);
         gain.connect(this._ctx.destination);
-
-        osc.start();
-        osc.stop(this._ctx.currentTime + 0.22);
+        
+        source.start(0);
+        this._activeCorrectAnswerSource = source;
     }
 
     /**

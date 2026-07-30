@@ -793,6 +793,7 @@ export class ScoreboardQuestionScreen {
         options.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.currentTarget as HTMLButtonElement;
+                this._audioManager.playAnswerSelected();
                 this._stopTimer();
                 
                 const buttons = document.querySelectorAll('.option-btn');
@@ -838,7 +839,7 @@ export class ScoreboardQuestionScreen {
 
         if (isCorrect) {
             targetBtn.classList.add('correct');
-            this._audioManager.playGoalCheer();
+            this._audioManager.playCorrectAnswerGoal();
             ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF']);
             this._showFeedbackOverlay(true);
             

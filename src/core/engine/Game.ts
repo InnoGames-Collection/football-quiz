@@ -20,6 +20,8 @@ export class Game {
     }
 
     public async initialize(): Promise<void> {
+        // Preload crucial audio assets in background
+        this._audioManager.preloadAssets();
         // No 3D scene required for Gameshow UI
     }
 

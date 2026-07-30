@@ -24,6 +24,8 @@ export class LiveMatchScreen {
     private _timerInterval: any = null;
     private _timeLeftSec: number = 10;
     
+    private _hasPlayedFullTimeWhistle: boolean = false;
+    
     private _answers: any[] = [];
 
     constructor(
@@ -255,6 +257,7 @@ export class LiveMatchScreen {
         options.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.currentTarget as HTMLButtonElement;
+                this._audioManager.playAnswerSelected();
                 this._stopTimer();
                 
                 const buttons = document.querySelectorAll('.live-option-btn');
@@ -289,8 +292,7 @@ export class LiveMatchScreen {
 
         if (isCorrect) {
             targetBtn.classList.add('correct');
-            this._audioManager.playCorrectAnswer();
-            this._audioManager.playGoalCheer();
+            this._audioManager.playCorrectAnswerGoal();
             
             // Time-based scoring: 100 base + up to 50 speed bonus
             const speedBonus = Math.floor((this._timeLeftSec / 10) * 50);
@@ -309,7 +311,6 @@ export class LiveMatchScreen {
                 }
             }
             this._audioManager.playWrongAnswer();
-            this._audioManager.playWhistle();
             this._showFeedbackOverlay(false);
         }
 
@@ -378,6 +379,11 @@ export class LiveMatchScreen {
     }
 
     private _showFinalResults(): void {
+        if (!this._hasPlayedFullTimeWhistle) {
+            this._hasPlayedFullTimeWhistle = true;
+            this._audioManager.playFullTimeWhistle();
+        }
+
         const root = this._uiManager.container;
         const myElo = this._saveManager.profile.eloRating || 0;
         const isWinner = this._myScore > this._opponentScore;
