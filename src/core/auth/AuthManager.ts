@@ -45,10 +45,7 @@ export class AuthManager {
             return;
         }
 
-        // Force sign out on startup to prevent auto-login
-        try {
-            await supabase.auth.signOut();
-        } catch (e) {}
+        // session restoration will happen below automatically
 
         try {
             const { data: { session } } = await supabase.auth.getSession();

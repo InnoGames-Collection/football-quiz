@@ -21,7 +21,7 @@ class SupabaseService {
                 this._client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
                         autoRefreshToken: true,
-                        persistSession: false,
+                        persistSession: true,
                         detectSessionInUrl: true
                     },
                     realtime: {

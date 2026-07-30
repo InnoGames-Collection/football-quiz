@@ -10,6 +10,8 @@ export class MessageCenterScreen {
     private _currentTab: MessageTab = 'announcements';
     private _currentFilter: MessageFilter = 'all';
     private _messages: MessageCenterItem[] = [];
+    private _activeOverlay: HTMLElement | null = null;
+    private _isOpeningMessage: boolean = false;
 
     constructor(
         private _uiManager: UIManager,
@@ -156,11 +158,18 @@ export class MessageCenterScreen {
         const cards = container.querySelectorAll('.message-card');
         cards.forEach(card => {
             card.addEventListener('click', async (e) => {
+                if (this._isOpeningMessage) return;
+
                 const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
                 if (id) {
+                    this._isOpeningMessage = true;
                     this._audioManager.playClick();
-                    await MessageCenterService.getInstance().markAsRead(id);
-                    this._showFullMessage(id);
+                    try {
+                        await MessageCenterService.getInstance().markAsRead(id);
+                        this._showFullMessage(id);
+                    } finally {
+                        this._isOpeningMessage = false;
+                    }
                 }
             });
         });
@@ -176,10 +185,13 @@ export class MessageCenterScreen {
     }
 
     private _showFullMessage(id: string): void {
+        if (this._activeOverlay) return;
+
         const msg = this._messages.find(m => m.id === id);
         if (!msg) return;
 
         const overlay = document.createElement('div');
+        this._activeOverlay = overlay;
         overlay.style.cssText = `
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.8); z-index: 1000;
@@ -199,7 +211,12 @@ export class MessageCenterScreen {
 
         overlay.querySelector('.close-btn')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            document.body.removeChild(overlay);
+            if (this._activeOverlay === overlay) {
+                this._activeOverlay = null;
+            }
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay);
+            }
             this.render(); // Re-render to update unread badges
         });
 
