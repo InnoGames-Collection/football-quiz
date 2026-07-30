@@ -435,19 +435,13 @@ export class ScoreboardQuestionScreen {
             </div>
             
             <style>
-                @keyframes q-drop-in {
-                    0% { transform: translate3d(0, -140px, 0) scale(0.98); opacity: 0; }
-                    1% { transform: translate3d(0, -140px, 0) scale(0.98); opacity: 1; }
-                    84% { transform: translate3d(0, 5px, 0) scale(1); opacity: 1; }
-                    92% { transform: translate3d(0, -2px, 0) scale(1); opacity: 1; }
-                    100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+                @keyframes q-slide-in {
+                    0% { transform: translate3d(120vw, 0, 0); opacity: 0.5; }
+                    100% { transform: translate3d(0, 0, 0); opacity: 1; }
                 }
-                @keyframes a-drop-in {
-                    0% { transform: translate3d(0, -70px, 0) scale(0.97); opacity: 0; }
-                    1% { transform: translate3d(0, -70px, 0) scale(0.97); opacity: 1; }
-                    80% { transform: translate3d(0, 3px, 0) scale(1); opacity: 1; }
-                    90% { transform: translate3d(0, -1px, 0) scale(1); opacity: 1; }
-                    100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+                @keyframes a-slide-in {
+                    0% { transform: translate3d(120vw, 0, 0); opacity: 0; }
+                    100% { transform: translate3d(0, 0, 0); opacity: 1; }
                 }
                 .top-bar-chip {
                     background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
@@ -587,12 +581,12 @@ export class ScoreboardQuestionScreen {
                 .option-btn.wrong .feedback-icon::after { content: '✕'; }
 
                 .anim-q-card {
-                    animation: q-drop-in 210ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: q-slide-in 450ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
                     animation-delay: 80ms;
                     opacity: 0;
                 }
                 .anim-a-card {
-                    animation: a-drop-in 150ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: a-slide-in 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
                     opacity: 0;
                 }
                 @media (prefers-reduced-motion: reduce) {
