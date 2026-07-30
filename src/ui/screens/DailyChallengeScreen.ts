@@ -30,12 +30,7 @@ export class DailyChallengeScreen {
         const root = this._uiManager.container;
         this._challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
         
-        const isCompleted = this._challengeInfo?.completed || localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
-        
-        // Sync local storage if server says it's completed
-        if (this._challengeInfo?.completed) {
-            localStorage.setItem('ETHIO_DAILY_COMPLETED_TODAY', 'true');
-        }
+        const isCompleted = this._challengeInfo?.completed ?? false;
         // Static history of challenges
         const historyList = [
             { 
@@ -194,7 +189,6 @@ export class DailyChallengeScreen {
                     el.innerText = '00h 00m 00s';
                     clearInterval(this._timerInterval);
                     this._timerInterval = null;
-                    localStorage.removeItem('ETHIO_DAILY_COMPLETED_TODAY');
                     window.dispatchEvent(new Event('ethio:dailyReset'));
                     return;
                 }

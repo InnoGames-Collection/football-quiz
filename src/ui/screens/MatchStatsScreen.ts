@@ -354,8 +354,9 @@ export class MatchStatsScreen {
     }
 
     private _renderReviewQuestions(container: HTMLElement): void {
-        const questions = JSON.parse(localStorage.getItem('ETHIO_REVIEW_QUESTIONS') || '[]');
-        const choices = JSON.parse(localStorage.getItem('ETHIO_REVIEW_CHOICES') || '[]');
+        const reviewData = (window as any).ethioReviewData || { questions: [], choices: [] };
+        const questions = reviewData.questions || [];
+        const choices = reviewData.choices || [];
 
         if (questions.length === 0) {
             container.innerHTML = `

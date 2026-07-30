@@ -102,7 +102,7 @@ export class ScoreboardQuestionScreen {
             this._questions
         );
 
-        localStorage.setItem('ETHIO_REVIEW_CHOICES', '[]');
+        (window as any).ethioReviewData = { questions: [], choices: [] };
         
         (window as any).ethioOnBackPress = () => {
             if (!this._hasKickedOff) {
@@ -137,9 +137,8 @@ export class ScoreboardQuestionScreen {
             this._quizEngine.recordAnswer(chosen === correct, time);
         }
 
-        // Restore reviews cache in localStorage
-        localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(session.choices));
-        localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(session.questions));
+        // Restore review data in memory for resumed sessions
+        (window as any).ethioReviewData = { questions: session.questions || [], choices: session.choices || [] };
 
         (window as any).ethioOnBackPress = () => {
             const modal = document.getElementById('match-exit-dialog');
@@ -976,8 +975,8 @@ export class ScoreboardQuestionScreen {
         }
 
         // Save review game questions and choices
-        localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(this._questions));
-        localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(this._session ? this._session.choices : []));
+        // Save review data in memory for the post-match review screen
+        (window as any).ethioReviewData = { questions: this._questions, choices: this._session ? this._session.choices : [] };
 
         // Refresh cloud profile stats asynchronously
         import('../../core/auth/AuthManager').then(m => m.AuthManager.getInstance().refreshProfile());

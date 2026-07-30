@@ -25,7 +25,6 @@ export interface GameSession {
 export class GameSessionManager {
     private static _instance: GameSessionManager | null = null;
     private readonly STORAGE_KEY = 'ETHIO_ACTIVE_SESSION_V3';
-    private readonly HISTORY_KEY = 'ETHIO_SESSION_HISTORY_V3';
 
     public static getInstance(): GameSessionManager {
         if (!GameSessionManager._instance) {
@@ -168,26 +167,8 @@ export class GameSessionManager {
         this.clearSession();
     }
 
-    public addToHistory(session: GameSession): void {
-        const historyJson = localStorage.getItem(this.HISTORY_KEY);
-        let history = [];
-        if (historyJson) {
-            try {
-                history = JSON.parse(historyJson);
-            } catch (e) {
-                history = [];
-            }
-        }
-        history.push({
-            sessionId: session.sessionId,
-            matchType: session.matchType,
-            score: session.currentScore,
-            correct: session.correctCount,
-            wrong: session.wrongCount,
-            timeOut: session.timeOutCount,
-            accuracy: session.totalQuestions > 0 ? Math.round((session.correctCount / session.totalQuestions) * 100) : 0,
-            date: new Date().toLocaleDateString()
-        });
-        localStorage.setItem(this.HISTORY_KEY, JSON.stringify(history));
+    public addToHistory(_session: GameSession): void {
+        // Session history is tracked server-side via GameSessionService.
+        // No localStorage history storage.
     }
 }

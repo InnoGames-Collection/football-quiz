@@ -4,6 +4,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { UIManager } from '../../core/managers/UIManager';
 import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
+import { DailyChallengeManager } from '../../core/competition/DailyChallengeManager';
 import { Toast } from '../components/Toast';
 import { ReturningPlayerModal } from '../components/ReturningPlayerModal';
 import { t } from '../../localization/i18n';
@@ -32,7 +33,6 @@ export class FootballLeagueHome {
     private _callbacks: FootballHomeCallbacks;
     private _timerInterval: number | null = null;
     private _autoScrollInterval: any = null;
-    private _previousDailyRank: string | '--' | null = null;
     private _resetHandler: (() => void) | null = null;
 
     constructor(saveManager: SaveManager, audioManager: AudioManager, uiManager: UIManager, callbacks: FootballHomeCallbacks) {
@@ -47,46 +47,12 @@ export class FootballLeagueHome {
         const profile = this._saveManager.profile;
         const gamesPlayed = profile.totalMatches || 0;
         const winRate = gamesPlayed > 0 ? Math.round(((profile.totalWins || 0) / gamesPlayed) * 100) : 0;
-        
-        const dailyScore = localStorage.getItem('ETHIO_DAILY_SCORE') || '0';
-        const rawDailyRank = localStorage.getItem('ETHIO_DAILY_RANK');
-        
-        let rankDiffHtml = '';
-        if (this._previousDailyRank !== null && rawDailyRank && this._previousDailyRank !== '--' && rawDailyRank !== '--') {
-            const diff = parseInt(this._previousDailyRank) - parseInt(rawDailyRank);
-            if (diff > 0) {
-                rankDiffHtml = `<span class="rank-diff-anim rank-diff-up" style="margin-left: 8px; color: #4ADE80; font-size: 11px; font-weight: 800; background: rgba(34,197,94,0.15); padding: 2px 6px; border-radius: 4px; border: 1px solid #22C55E; vertical-align: middle;">▲ +${diff} Positions</span>`;
-            } else if (diff < 0) {
-                rankDiffHtml = `<span class="rank-diff-anim rank-diff-down" style="margin-left: 8px; color: #F87171; font-size: 11px; font-weight: 800; background: rgba(239,68,68,0.15); padding: 2px 6px; border-radius: 4px; border: 1px solid #EF4444; vertical-align: middle;">▼ ${diff} Positions</span>`;
-            }
-        }
-        this._previousDailyRank = rawDailyRank || '--';
-        
-        const dailyRank = rawDailyRank && rawDailyRank !== '--' ? `#${rawDailyRank}` : 'Unranked';
         const dailyStreak = profile.streakCount || 0;
-        
-        const rawDailyScore = localStorage.getItem('ETHIO_DAILY_SCORE') || '0';
-
-        // Always fetch daily rank silently in background to ensure real-time score display
-        setTimeout(async () => {
-            try {
-                await LeaderboardService.getInstance().getLeaderboard(undefined, 'daily');
-                const newRank = localStorage.getItem('ETHIO_DAILY_RANK');
-                const newScore = localStorage.getItem('ETHIO_DAILY_SCORE');
-                
-                // We compare the currently rendered score/rank with the newly fetched ones
-                // Since this runs after initial render, we re-render if it differs
-                if ((newRank && newRank !== rawDailyRank) || (newScore && newScore !== rawDailyScore)) {
-                    this.render();
-                }
-            } catch(e) {}
-        }, 1000);
 
         const activeSession = GameSessionManager.getInstance().getActiveSession();
-        const isDailyCompleted = localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
 
+        // Render skeleton shell immediately
         let contextualCardsHtml = '';
-
         if (activeSession && activeSession.matchType === 'daily') {
             contextualCardsHtml += `
                 <div class="glass-card fade-in-up" style="padding: clamp(12px, 2vh, 16px); border-color: rgba(34,197,94,0.3); border-radius: 16px; display: flex; align-items: center; justify-content: space-between;">
@@ -98,10 +64,6 @@ export class FootballLeagueHome {
                     ${DesignSystem.Button({ id: 'btn-continue-challenge', text: 'Resume', variant: 'primary' })}
                 </div>
             `;
-        }
-
-        if (!activeSession && isDailyCompleted) {
-            // Keep empty, logic moved to Hero Banner
         }
 
         root.innerHTML = `
@@ -140,33 +102,22 @@ export class FootballLeagueHome {
                 </div>
                            <!-- COMPACT TELEMETRY ROW -->
                 <div style="max-width: 900px; margin: 0 auto; padding: 0 16px;">
-                    ${ (dailyScore === '0' && dailyRank === '--') ? `
-                    <div class="glass-card fade-in-up" style="padding: 16px; border-color: rgba(255,255,255,0.1); text-align: center; margin-bottom: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(0,0,0,0.4);">
-                        <span style="font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🏆</span>
-                        <div style="text-align: left;">
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-bottom: 2px;">No Daily Rank Yet</div>
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; max-width: 200px;">Play matches to earn points and secure your rank on the leaderboard.</div>
-                        </div>
-                    </div>
-                    ` : `
-                    <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; margin-bottom: 24px;">
+                    <div id="home-daily-stats-row" class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; margin-bottom: 24px;">
                         <div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Streak</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #EF4444; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                <span>🔥</span>
-                                ${dailyStreak}
+                                <span>🔥</span>${dailyStreak}
                             </div>
                         </div>
                         <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Rank</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); display: flex; align-items: center; justify-content: center;">${dailyRank} ${rankDiffHtml}</div>
+                            <div id="home-daily-rank" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">--</div>
                         </div>
                         <div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Score</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${dailyScore}</div>
+                            <div id="home-daily-score" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">--</div>
                         </div>
                     </div>
-                    ` }
                 </div>
 
                 <!-- SCROLLABLE BODY CONTENT (Responsive Grid System) -->
@@ -217,19 +168,10 @@ export class FootballLeagueHome {
                             </h2>
                         </div>
 
-                        <!-- Hero Primary Action Button OR Countdown -->
-                        ${isDailyCompleted ? `
-                        <div style="display: flex; justify-content: center;">
-                            <div style="background: rgba(0,0,0,0.6); border-radius: 999px; padding: 10px 24px; text-align: center; border: 1px solid rgba(255,215,0,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1); cursor: default;">
-                                <div style="font-size: 10px; font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Next Challenge In</div>
-                                <div id="next-daily-countdown" style="font-size: 20px; font-weight: 900; color: white; font-family: var(--fds-font-mono); letter-spacing: 1px;">
-                                    --:--:--
-                                </div>
-                            </div>
+                        <!-- Hero Primary Action Button — replaced by server data in _fetchDynamicData -->
+                        <div id="home-daily-action">
+                            ${DesignSystem.SkeletonList(1)}
                         </div>
-                        ` : `
-                        ${DesignSystem.Button({ id: 'btn-daily-match', text: 'DAILY CHALLENGE', variant: 'primary', fullWidth: true })}
-                        `}
                     </div>
 
 
@@ -327,9 +269,50 @@ export class FootballLeagueHome {
     }
 
     private async _fetchDynamicData() {
-        // Legacy Rank fetch removed since we now use Daily Rank
+        // 1. Fetch daily challenge status from server and render hero action button
+        try {
+            const challengeInfo = await DailyChallengeManager.getInstance().getTodayChallenge();
+            const isDailyCompleted = challengeInfo.completed;
+            const actionEl = document.getElementById('home-daily-action');
+            if (actionEl) {
+                if (isDailyCompleted) {
+                    actionEl.innerHTML = `
+                        <div style="display: flex; justify-content: center;">
+                            <div style="background: rgba(0,0,0,0.6); border-radius: 999px; padding: 10px 24px; text-align: center; border: 1px solid rgba(255,215,0,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: default;">
+                                <div style="font-size: 10px; font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Next Challenge In</div>
+                                <div id="next-daily-countdown" style="font-size: 20px; font-weight: 900; color: white; font-family: var(--fds-font-mono); letter-spacing: 1px;">--:--:--</div>
+                            </div>
+                        </div>`;
+                    this._startCountdownTimer();
+                } else {
+                    actionEl.innerHTML = `${DesignSystem.Button({ id: 'btn-daily-match', text: 'DAILY CHALLENGE', variant: 'primary', fullWidth: true })}`;
+                    const btn = document.getElementById('btn-daily-match');
+                    btn?.addEventListener('click', (e) => {
+                        this._addRipple(e);
+                        this._audioManager.playClick();
+                        this._callbacks.onDailyChallenge();
+                    });
+                }
+            }
+        } catch (e) {
+            // Fallback: show the button so users can always try to play
+            const actionEl = document.getElementById('home-daily-action');
+            if (actionEl) {
+                actionEl.innerHTML = `${DesignSystem.Button({ id: 'btn-daily-match', text: 'DAILY CHALLENGE', variant: 'primary', fullWidth: true })}`;
+                document.getElementById('btn-daily-match')?.addEventListener('click', () => this._callbacks.onDailyChallenge());
+            }
+        }
 
-        // Fetch Live Matches / Top 3 Leaderboard
+        // 2. Fetch my daily rank/score from server
+        try {
+            const myStats = await LeaderboardService.getInstance().getMyDailyStats();
+            const rankEl = document.getElementById('home-daily-rank');
+            const scoreEl = document.getElementById('home-daily-score');
+            if (rankEl) rankEl.textContent = myStats ? `#${myStats.rank}` : 'Unranked';
+            if (scoreEl) scoreEl.textContent = myStats ? myStats.score : '0';
+        } catch (e) {}
+
+        // 3. Fetch Live Matches / Top 3 Leaderboard
         const liveComps = CompetitionRegistry.getAll().filter(c => c.status === 'live');
         const dailyComp = liveComps.find(c => c.id === 'daily') || liveComps[0];
         
@@ -411,18 +394,8 @@ export class FootballLeagueHome {
                     this._timerInterval = null;
                 }
                 
-                const wasCompleted = localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
-                localStorage.removeItem('ETHIO_DAILY_COMPLETED_TODAY');
-                
-                if (wasCompleted) {
-                    window.dispatchEvent(new Event('ethio:dailyReset'));
-                } else {
-                    secondsRemaining = 0;
-                    const timerEl = document.getElementById('daily-countdown');
-                    if (timerEl) timerEl.innerHTML = `⏱️ 0h : 00m : 00s`;
-                    const nextTimerEl = document.getElementById('next-daily-countdown');
-                    if (nextTimerEl) nextTimerEl.innerHTML = `00:00:00`;
-                }
+                // Midnight reset — signal a refresh so the home screen re-fetches from the server
+                window.dispatchEvent(new Event('ethio:dailyReset'));
                 return;
             }
 
@@ -445,11 +418,7 @@ export class FootballLeagueHome {
     private _bindEvents(): void {
         const root = this._uiManager.container;
 
-        root.querySelector('#btn-daily-match')?.addEventListener('click', (e) => {
-            this._addRipple(e);
-            this._audioManager.playClick();
-            this._callbacks.onDailyChallenge();
-        });
+        // btn-daily-match is rendered and bound dynamically by _fetchDynamicData after server check.
 
         root.querySelector('#btn-daily-match-card')?.addEventListener('click', (e) => {
             this._addRipple(e);

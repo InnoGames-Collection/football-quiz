@@ -49,18 +49,6 @@ export class LeaderboardService {
                             wins: 1
                         }));
                         
-                        // Cache my daily rank if I'm in the top 50
-                        const myUserId = supabase.auth.getUser ? (await supabase.auth.getUser()).data.user?.id : null;
-                        if (myUserId) {
-                            const myEntry = mappedData.find((e: any) => e.userId === myUserId);
-                            if (myEntry) {
-                                localStorage.setItem('ETHIO_DAILY_RANK', myEntry.rank.toString());
-                                localStorage.setItem('ETHIO_DAILY_SCORE', myEntry.score.toString());
-                            } else {
-                                localStorage.removeItem('ETHIO_DAILY_RANK');
-                                // Do not remove score, they might have played but not made top 50, but actually Daily Leaderboard gets all.
-                            }
-                        }
                         return mappedData;
                     }
                 } else {
@@ -100,5 +88,26 @@ export class LeaderboardService {
             console.warn('[LeaderboardService] Failed to get user rank:', err);
         }
         return null;
+    }
+
+    /**
+     * Fetches the current user's rank and score from the daily leaderboard server-side.
+     * Returns null if not found or offline.
+     */
+    public async getMyDailyStats(): Promise<{ rank: string; score: string } | null> {
+        if (!supabase || !supabaseService.isOnline) return null;
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return null;
+            const todayStr = new Date().toISOString().split('T')[0];
+            const { data, error } = await (supabase.rpc as any)('get_daily_leaderboard', { p_date: todayStr });
+            if (error || !data || !Array.isArray(data)) return null;
+            const idx = data.findIndex((e: any) => e.user_id === user.id);
+            if (idx === -1) return null;
+            return { rank: String(idx + 1), score: String(data[idx].score || 0) };
+        } catch (e) {
+            console.warn('[LeaderboardService] getMyDailyStats failed:', e);
+            return null;
+        }
     }
 }

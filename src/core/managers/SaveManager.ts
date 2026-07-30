@@ -16,35 +16,24 @@ export interface UserProfile {
 }
 
 export class SaveManager {
-    private static STORAGE_KEY = 'ETHIO_FOOTBALL_SAVE_V3';
     private _profile: UserProfile;
     private _cloudUserId: string | null = null;
 
     constructor() {
-        this._profile = this._loadProfile();
+        // Profile starts with defaults; authoritative data comes from syncWithCloudUser() after server auth.
+        this._profile = this._defaultProfile();
     }
 
     public get cloudUserId(): string | null {
         return this._cloudUserId;
     }
 
-    private _loadProfile(): UserProfile {
-        try {
-            const data = localStorage.getItem(SaveManager.STORAGE_KEY);
-            if (data) {
-                return JSON.parse(data);
-            }
-        } catch (e) {
-            console.warn('[SaveManager] Failed to read localStorage, initializing default profile.', e);
-        }
-
+    private _defaultProfile(): UserProfile {
         return {
-            username: 'Walia Player',
+            username: 'Player',
             coins: 0,
             xp: 0,
-            highScores: {
-                'football-quiz': 0
-            },
+            highScores: { 'football-quiz': 0 },
             unlockedItems: ['default-ball', 'default-jersey'],
             eloRating: 0,
             streakCount: 0,
@@ -69,14 +58,7 @@ export class SaveManager {
     }
 
     public save(): void {
-        try {
-            localStorage.setItem(SaveManager.STORAGE_KEY, JSON.stringify(this._profile));
-            console.log('[SaveManager] Saved user profile locally.');
-        } catch (e) {
-            console.error('[SaveManager] Failed to save profile to localStorage.', e);
-        }
-
-        // Async sync to cloud if authenticated
+        // Profile is synced to the server asynchronously. No localStorage write.
         const client = supabaseService.client;
         if (this._cloudUserId && client) {
             let totalScore = 0;

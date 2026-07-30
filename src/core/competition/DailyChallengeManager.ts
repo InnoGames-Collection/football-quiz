@@ -33,11 +33,6 @@ export class DailyChallengeManager {
                     if (res.available && res.question_ids && res.question_ids.length > 0) {
                         const questions = await QuestionBank.getInstance().fetchQuestionsByIds(res.question_ids, i18n.currentLocale as any);
                         const isCompleted = res.completed || false;
-                        if (isCompleted) {
-                            localStorage.setItem('ETHIO_DAILY_COMPLETED_TODAY', 'true');
-                        } else {
-                            localStorage.removeItem('ETHIO_DAILY_COMPLETED_TODAY');
-                        }
                         
                         return {
                             id: res.id,

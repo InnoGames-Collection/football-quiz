@@ -6,6 +6,7 @@ import { DesignSystem } from '../theme/DesignSystem';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { i18n } from '../../localization/i18n';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';
+import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 
 
 export interface ProfileCallbacks {
@@ -148,7 +149,7 @@ export class ProfileScreen {
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK')}</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${localStorage.getItem('ETHIO_DAILY_RANK') && localStorage.getItem('ETHIO_DAILY_RANK') !== '--' ? '#' + localStorage.getItem('ETHIO_DAILY_RANK') : 'Unranked'}</div>
+                        <div id="profile-daily-rank" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">--</div>
                     </div>
                     <div>
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ነጥቦች' : (i18n.currentLocale === 'om' ? 'QABXII' : 'POINTS')}</div>
@@ -212,6 +213,15 @@ export class ProfileScreen {
                 badgeEl.style.display = 'none';
             }
         }
+
+        // Fetch daily rank from server asynchronously
+        LeaderboardService.getInstance().getMyDailyStats().then(stats => {
+            const rankEl = document.getElementById('profile-daily-rank');
+            if (rankEl) rankEl.textContent = stats ? `#${stats.rank}` : 'Unranked';
+        }).catch(() => {
+            const rankEl = document.getElementById('profile-daily-rank');
+            if (rankEl) rankEl.textContent = 'Unranked';
+        });
     }
 
     private _bindEvents(): void {
