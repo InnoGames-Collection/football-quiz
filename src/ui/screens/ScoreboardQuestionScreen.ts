@@ -104,7 +104,6 @@ export class ScoreboardQuestionScreen {
 
         localStorage.setItem('ETHIO_REVIEW_CHOICES', '[]');
         
-        history.pushState({ match_active: true }, '');
         (window as any).ethioOnBackPress = () => {
             if (!this._hasKickedOff) {
                 this._callbacks.onExitMatch();
@@ -116,7 +115,6 @@ export class ScoreboardQuestionScreen {
             } else {
                 this._showLeaveWarning();
             }
-            history.pushState({ match_active: true }, '');
             return true; 
         };
 
@@ -143,8 +141,6 @@ export class ScoreboardQuestionScreen {
         localStorage.setItem('ETHIO_REVIEW_CHOICES', JSON.stringify(session.choices));
         localStorage.setItem('ETHIO_REVIEW_QUESTIONS', JSON.stringify(session.questions));
 
-        // Push history state to intercept Android back button
-        history.pushState({ match_active: true }, '');
         (window as any).ethioOnBackPress = () => {
             const modal = document.getElementById('match-exit-dialog');
             if (modal && modal.style.display !== 'none') {
@@ -205,7 +201,9 @@ export class ScoreboardQuestionScreen {
 
         document.getElementById('match-exit-btn')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            history.back(); // Navigate back (which triggers ethioOnBackPress)
+            if ((window as any).ethioHandleBack) {
+                (window as any).ethioHandleBack();
+            }
         });
 
         document.getElementById('kick-off-btn')?.addEventListener('click', () => {

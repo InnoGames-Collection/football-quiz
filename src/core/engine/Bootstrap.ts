@@ -365,7 +365,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
     winAny.ethioReloadHome = () => navigateToTab('home');
     winAny.ethioHandleBack = () => {
-        try { window.history.back(); } catch(e) { handleBack(); }
+        handleBack();
     };
     winAny.ethioCloseGame = () => {
         cacheManager.setQuizActive(false);
