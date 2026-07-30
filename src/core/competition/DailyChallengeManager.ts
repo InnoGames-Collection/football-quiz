@@ -35,6 +35,8 @@ export class DailyChallengeManager {
                         const isCompleted = res.completed || false;
                         if (isCompleted) {
                             localStorage.setItem('ETHIO_DAILY_COMPLETED_TODAY', 'true');
+                        } else {
+                            localStorage.removeItem('ETHIO_DAILY_COMPLETED_TODAY');
                         }
                         
                         return {

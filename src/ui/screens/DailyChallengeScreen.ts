@@ -12,6 +12,7 @@ export class DailyChallengeScreen {
     private _onClose: () => void;
     private _challengeInfo: DailyChallengeInfo | null = null;
     private _timerInterval: any = null;
+    private _resetHandler: (() => void) | null = null;
 
     constructor(
         uiManager: UIManager,
@@ -163,6 +164,13 @@ export class DailyChallengeScreen {
 
         this._bindEvents();
         this._startCountdownTimer();
+
+        if (!this._resetHandler) {
+            this._resetHandler = () => {
+                this.render();
+            };
+            window.addEventListener('ethio:dailyReset', this._resetHandler);
+        }
     }
 
     private _startCountdownTimer(): void {
@@ -181,6 +189,9 @@ export class DailyChallengeScreen {
                 if (diffMs <= 0) {
                     el.innerText = '00h 00m 00s';
                     clearInterval(this._timerInterval);
+                    this._timerInterval = null;
+                    localStorage.removeItem('ETHIO_DAILY_COMPLETED_TODAY');
+                    window.dispatchEvent(new Event('ethio:dailyReset'));
                     return;
                 }
 
@@ -223,6 +234,11 @@ export class DailyChallengeScreen {
     public destroy(): void {
         if (this._timerInterval) {
             clearInterval(this._timerInterval);
+            this._timerInterval = null;
+        }
+        if (this._resetHandler) {
+            window.removeEventListener('ethio:dailyReset', this._resetHandler);
+            this._resetHandler = null;
         }
     }
 }

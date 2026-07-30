@@ -33,6 +33,7 @@ export class FootballLeagueHome {
     private _timerInterval: number | null = null;
     private _autoScrollInterval: any = null;
     private _previousDailyRank: string | '--' | null = null;
+    private _resetHandler: (() => void) | null = null;
 
     constructor(saveManager: SaveManager, audioManager: AudioManager, uiManager: UIManager, callbacks: FootballHomeCallbacks) {
         this._saveManager = saveManager;
@@ -316,6 +317,13 @@ export class FootballLeagueHome {
 
         // Check if returning player modal should display
         ReturningPlayerModal.checkAndShow(this._uiManager, this._saveManager, this._audioManager);
+
+        if (!this._resetHandler) {
+            this._resetHandler = () => {
+                this.render();
+            };
+            window.addEventListener('ethio:dailyReset', this._resetHandler);
+        }
     }
 
     private async _fetchDynamicData() {
@@ -397,8 +405,23 @@ export class FootballLeagueHome {
         this._timerInterval = window.setInterval(() => {
             let secondsRemaining = Math.floor((targetTime - new Date().getTime()) / 1000);
             
-            if (secondsRemaining < 0) {
-                secondsRemaining = 0;
+            if (secondsRemaining <= 0) {
+                clearInterval(this._timerInterval);
+                this._timerInterval = null;
+                
+                const wasCompleted = localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
+                localStorage.removeItem('ETHIO_DAILY_COMPLETED_TODAY');
+                
+                if (wasCompleted) {
+                    window.dispatchEvent(new Event('ethio:dailyReset'));
+                } else {
+                    secondsRemaining = 0;
+                    const timerEl = document.getElementById('daily-countdown');
+                    if (timerEl) timerEl.innerHTML = `⏱️ 0h : 00m : 00s`;
+                    const nextTimerEl = document.getElementById('next-daily-countdown');
+                    if (nextTimerEl) nextTimerEl.innerHTML = `00:00:00`;
+                }
+                return;
             }
 
             const h = Math.floor(secondsRemaining / 3600);
@@ -579,6 +602,10 @@ export class FootballLeagueHome {
         if (this._autoScrollInterval) {
             clearInterval(this._autoScrollInterval);
             this._autoScrollInterval = null;
+        }
+        if (this._resetHandler) {
+            window.removeEventListener('ethio:dailyReset', this._resetHandler);
+            this._resetHandler = null;
         }
     }
 }
