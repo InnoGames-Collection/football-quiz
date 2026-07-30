@@ -406,8 +406,10 @@ export class FootballLeagueHome {
             let secondsRemaining = Math.floor((targetTime - new Date().getTime()) / 1000);
             
             if (secondsRemaining <= 0) {
-                clearInterval(this._timerInterval);
-                this._timerInterval = null;
+                if (this._timerInterval !== null) {
+                    clearInterval(this._timerInterval);
+                    this._timerInterval = null;
+                }
                 
                 const wasCompleted = localStorage.getItem('ETHIO_DAILY_COMPLETED_TODAY') === 'true';
                 localStorage.removeItem('ETHIO_DAILY_COMPLETED_TODAY');
