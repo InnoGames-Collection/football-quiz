@@ -22,7 +22,8 @@ class SupabaseService {
                     auth: {
                         autoRefreshToken: true,
                         persistSession: true,
-                        detectSessionInUrl: true
+                        detectSessionInUrl: true,
+                        storage: window.sessionStorage
                     },
                     realtime: {
                         params: {

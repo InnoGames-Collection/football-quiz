@@ -253,7 +253,7 @@ export class FootballLeagueHome {
                     <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); margin-bottom: 24px; border-radius: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">${t('home.performance')}</div>
-                            <button id="btn-view-all-stats" style="background: none; border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 800; cursor: pointer; text-decoration: underline;">${t('home.details')}</button>
+                            <button id="btn-view-all-stats" style="background: rgba(244, 114, 182, 0.15); border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 900; cursor: pointer; padding: 6px 12px; border-radius: 20px; letter-spacing: 0.5px; z-index: 10; position: relative;">${t('home.details')}</button>
                         </div>
                         
                         ${gamesPlayed === 0 ? `
