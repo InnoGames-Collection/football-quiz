@@ -395,11 +395,11 @@ export class AudioManager {
         if (this._isMuted) return;
         try {
             const [correctRes, wrongRes, selectRes, whistleRes, arriveRes] = await Promise.all([
-                fetch('/assets/audio/correct-answer-goal.mp3'),
-                fetch('/assets/audio/wrong-answer.mp3'),
-                fetch('/assets/audio/answer-selected.mp3'),
-                fetch('/assets/audio/final-whistle.mp3'),
-                fetch('/assets/audio/question-arrive.mp3')
+                fetch('/assets/audios/correct-answer-goal.mp3'),
+                fetch('/assets/audios/wrong-answer.mp3'),
+                fetch('/assets/audios/answer-selected.mp3'),
+                fetch('/assets/audios/final-whistle.mp3'),
+                fetch('/assets/audios/question-arrive.mp3')
             ]);
             
             if (!this._ctx) {
@@ -449,9 +449,16 @@ export class AudioManager {
         this._initContext();
         if (!this._ctx) return;
 
-        // Stop any existing correct answer sound to prevent overlapping
+        // Stop any existing sounds to prevent overlapping
         if (this._activeCorrectAnswerSource) {
             try { this._activeCorrectAnswerSource.stop(); } catch(e) {}
+        }
+        // Also stop answer selected sound if it's still playing
+        if ((this as any)._activeAnswerSelectedSource) {
+            try { (this as any)._activeAnswerSelectedSource.stop(); } catch(e) {}
+        }
+        if ((this as any)._activeQuestionArriveSource) {
+            try { (this as any)._activeQuestionArriveSource.stop(); } catch(e) {}
         }
 
         const source = this._ctx.createBufferSource();
