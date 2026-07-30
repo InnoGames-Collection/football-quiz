@@ -2,15 +2,14 @@ import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
 import { MessageCenterService, MessageCenterItem } from '../../networking/services/MessageCenterService';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
+import { DesignSystem } from '../theme/DesignSystem';
 
-export type MessageTab = 'announcements' | 'personal' | 'support';
-export type MessageFilter = 'all' | 'unread' | 'high-priority' | 'reward' | 'tournament';
+export type MessageTab = 'all' | 'unread' | 'global' | 'direct' | 'system';
 
 export class MessageCenterScreen {
-    private _currentTab: MessageTab = 'announcements';
-    private _currentFilter: MessageFilter = 'all';
+    private _currentTab: MessageTab = 'all';
     private _messages: MessageCenterItem[] = [];
-    private _activeOverlay: HTMLElement | null = null;
     private _isOpeningMessage: boolean = false;
     private _isLayoutRendered: boolean = false;
     private _currentRequestId: number = 0;
@@ -28,7 +27,6 @@ export class MessageCenterScreen {
             this._isLayoutRendered = true;
         } else {
             this._updateTabUI();
-            this._updateFilterUI();
         }
 
         await this._updateContent();
@@ -36,75 +34,129 @@ export class MessageCenterScreen {
 
     private _renderLayout(): void {
         const root = this._uiManager.container;
+        const locale = i18n.currentLocale;
+        
         root.innerHTML = `
-            <div class="stadium-container ethio-bg-main" style="display: flex; flex-direction: column;">
-                <!-- Header -->
-                <div style="padding: 24px 20px; display: flex; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 10;">
-                    <button id="mc-back-btn" style="
-                        background: rgba(255,255,255,0.1); border: none; width: 40px; height: 40px; 
-                        border-radius: 20px; color: white; font-size: 20px; cursor: pointer;
-                        display: flex; align-items: center; justify-content: center;
-                    ">←</button>
-                    <div style="flex: 1; text-align: center;">
-                        <h1 style="font-size: var(--fds-font-lg); font-weight: 900; margin: 0; color: var(--tv-gold-primary); text-transform: uppercase; letter-spacing: 1px;">
-                            ${i18n.currentLocale === 'am' ? 'መልዕክቶች' : 'MESSAGES'}
-                        </h1>
+            <div class="stadium-container ethio-bg-main" style="display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
+                
+                <!-- Layers -->
+                <div class="ethio-layer ethio-layer-pitch"></div>
+                <div class="ethio-layer ethio-layer-overlay"></div>
+                <div class="ethio-layer ethio-layer-lights"></div>
+                
+                <!-- App Bar -->
+                ${EthioFantasyAppBar.render(
+                    locale === 'am' ? 'መልዕክቶች' : (locale === 'om' ? 'ERGAWWAAN' : 'MESSAGES'),
+                    `<button id="mc-back-btn" style="background: none; border: none; color: white; cursor: pointer; padding: 4px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>`
+                )}
+
+                <!-- Main Content Wrapper -->
+                <div style="flex: 1; display: flex; flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%; position: relative; z-index: 10; padding-top: 16px;">
+                    
+                    <!-- Search Input -->
+                    <div style="padding: 0 16px; margin-bottom: 12px;">
+                        <input type="text" id="mc-search-input" placeholder="🔍 Search messages..." style="
+                            width: 100%; 
+                            padding: 12px 16px; 
+                            border-radius: 12px; 
+                            border: 1px solid rgba(255,255,255,0.1); 
+                            background: rgba(15, 23, 42, 0.7); 
+                            color: white; 
+                            font-size: var(--fds-font-sm);
+                            box-sizing: border-box;
+                        ">
                     </div>
-                    <div style="width: 40px;"></div>
-                </div>
 
-                <!-- Tabs -->
-                <div class="mc-tab-bar">
-                    ${this._renderTabHtml('announcements', '📢 Announcements')}
-                    ${this._renderTabHtml('personal', '📩 Inbox')}
-                    ${this._renderTabHtml('support', '🎧 Support')}
-                </div>
+                    <!-- Tabs -->
+                    <div id="mc-tab-bar" style="display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 12px 16px; margin-bottom: 4px;" class="hide-scrollbar">
+                        <!-- Tabs injected here -->
+                    </div>
 
-                <!-- Filter Chips -->
-                <div class="filter-chip-bar" id="mc-filter-bar">
-                    ${this._renderFilterChipsHtml()}
-                </div>
-
-                <!-- Message List -->
-                <div id="mc-list-container" style="flex: 1; overflow-y: auto; padding-top: 8px; padding-bottom: 40px;">
-                    <!-- Messages injected here -->
+                    <!-- Message List -->
+                    <div id="mc-list-container" style="flex: 1; overflow-y: auto; padding: 0 16px 120px 16px;" class="hide-scrollbar">
+                        <!-- Messages injected here -->
+                    </div>
                 </div>
             </div>
         `;
+        
+        const backBtn = root.querySelector('#mc-back-btn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                this._audioManager.playClick();
+                this._onBack();
+            });
+        }
+        
         this._updateTabUI();
     }
 
     private _updateTabUI(): void {
-        const count = MessageCenterService.getInstance().getTotalUnreadCount();
-        const tabs = this._uiManager.container.querySelectorAll('.mc-tab');
-        
-        tabs.forEach(tab => {
-            const tabId = tab.getAttribute('data-tab');
-            if (tabId === this._currentTab) {
-                tab.classList.add('mc-tab-active');
-            } else {
-                tab.classList.remove('mc-tab-active');
-            }
+        const locale = i18n.currentLocale;
+        const tabs: { id: MessageTab, label: { en: string, am: string, om: string } }[] = [
+            { id: 'all', label: { en: 'All', am: 'ሁሉም', om: 'Hunda' } },
+            { id: 'unread', label: { en: 'Unread', am: 'ያልተነበቡ', om: 'Kan Hin Dubbifamne' } },
+            { id: 'global', label: { en: 'Announcements', am: 'ማስታወቂያዎች', om: 'Beeksisa' } },
+            { id: 'direct', label: { en: 'Inbox', am: 'የገቢ መልዕክቶች', om: 'Ergaa' } },
+            { id: 'system', label: { en: 'Support', am: 'ድጋፍ', om: 'Gargaarsa' } }
+        ];
+
+        const tabBar = document.getElementById('mc-tab-bar');
+        if (!tabBar) return;
+
+        tabBar.innerHTML = tabs.map(tab => {
+            const isActive = tab.id === this._currentTab;
+            const count = (tab.id === 'unread' || tab.id === 'direct' || tab.id === 'global' || tab.id === 'all') 
+                ? MessageCenterService.getInstance().getTotalUnreadCount() 
+                : 0; 
+            const showBadge = (tab.id === 'unread' || tab.id === 'direct') && count > 0;
             
-            // Update badge (only Inbox shows total unread for simplicity in mock)
-            const badgeContainer = tab.querySelector('.badge-container');
-            if (badgeContainer) {
-                const unreadCount = tabId === 'personal' ? count : 0;
-                badgeContainer.innerHTML = unreadCount > 0 ? `<div class="mc-tab-badge">${unreadCount}</div>` : '';
-            }
+            return `
+                <button class="mc-pill-tab ${isActive ? 'active-mc-tab' : ''}" data-tab-id="${tab.id}" style="
+                    flex: 0 0 auto;
+                    padding: 8px 14px;
+                    border-radius: 20px;
+                    border: 1px solid ${isActive ? 'var(--tv-gold-primary)' : 'rgba(255,255,255,0.08)'};
+                    background: ${isActive ? 'rgba(255, 215, 0, 0.12)' : 'rgba(15, 23, 42, 0.6)'};
+                    color: ${isActive ? 'var(--tv-gold-primary)' : '#94A3B8'};
+                    font-size: var(--fds-font-sm);
+                    font-weight: 700;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                ">
+                    ${tab.label[locale] || tab.label['en']}
+                    ${showBadge ? `<span style="background: var(--tv-pitch-green); color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 10px;">${count > 99 ? '99+' : count}</span>` : ''}
+                </button>
+            `;
+        }).join('');
+
+        const tabBtns = tabBar.querySelectorAll('.mc-pill-tab');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                const tabId = (e.currentTarget as HTMLElement).getAttribute('data-tab-id') as MessageTab;
+                if (tabId && tabId !== this._currentTab) {
+                    this._currentTab = tabId;
+                    this._updateTabUI();
+                    this._renderMessages();
+                }
+            });
         });
     }
 
-    private _updateFilterUI(): void {
-        const chips = this._uiManager.container.querySelectorAll('.filter-chip');
-        chips.forEach(chip => {
-            const filterId = chip.getAttribute('data-filter');
-            if (filterId === this._currentFilter) {
-                chip.classList.add('filter-chip-active');
-            } else {
-                chip.classList.remove('filter-chip-active');
-            }
-        });
+    private _bindEvents(): void {
+        const searchInput = document.getElementById('mc-search-input') as HTMLInputElement;
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                this._renderMessages();
+            });
+        }
     }
 
     private async _updateContent(): Promise<void> {
@@ -113,128 +165,137 @@ export class MessageCenterScreen {
         const container = document.getElementById('mc-list-container');
         if (container) {
             container.innerHTML = `
-                <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-                    <div style="height: 80px; background: rgba(255,255,255,0.03); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
-                    <div style="height: 80px; background: rgba(255,255,255,0.03); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
-                    <div style="height: 80px; background: rgba(255,255,255,0.03); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="height: 80px; background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
+                    <div style="height: 80px; background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
+                    <div style="height: 80px; background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
                 </div>
             `;
         }
 
         try {
-            await this._fetchData();
+            const svc = MessageCenterService.getInstance();
+            this._messages = await svc.getAllMessages();
         } catch (e) {
             console.error('Failed to fetch messages', e);
             if (this._currentRequestId === requestId && container) {
-                container.innerHTML = `
-                    <div style="padding: 40px; text-align: center;">
-                        <div style="font-size: 40px; margin-bottom: 16px;">⚠️</div>
-                        <div style="color: #EF4444; font-weight: bold; margin-bottom: 12px;">Failed to load messages</div>
-                        <button id="retry-btn" style="padding: 10px 24px; border-radius: 20px; background: var(--tv-gold-primary); color: #000; font-weight: bold; border: none;">Try Again</button>
-                    </div>
-                `;
-                document.getElementById('retry-btn')?.addEventListener('click', () => {
-                    this._audioManager.playClick();
-                    this._updateContent();
-                });
+                container.innerHTML = DesignSystem.EmptyState('⚠️', 'Failed to load messages');
             }
             return;
         }
 
         if (this._currentRequestId !== requestId) return;
 
-        this._updateTabUI(); // Update badges in case data fetched changes unread count
+        this._updateTabUI(); 
         this._renderMessages();
-    }
-
-    private async _fetchData(): Promise<void> {
-        const svc = MessageCenterService.getInstance();
-        if (this._currentTab === 'announcements') {
-            this._messages = await svc.getAnnouncements();
-        } else if (this._currentTab === 'personal') {
-            this._messages = await svc.getPersonalMessages();
-        } else if (this._currentTab === 'support') {
-            this._messages = await svc.getSupportTickets();
-        }
-    }
-
-    private _renderTabHtml(tab: MessageTab, label: string): string {
-        return `
-            <div class="mc-tab" data-tab="${tab}">
-                ${label}
-                <span class="badge-container"></span>
-            </div>
-        `;
-    }
-
-    private _renderFilterChipsHtml(): string {
-        const filters: { id: MessageFilter, label: string }[] = [
-            { id: 'all', label: 'All' },
-            { id: 'unread', label: 'Unread' },
-            { id: 'high-priority', label: 'Urgent' },
-            { id: 'tournament', label: 'Tournaments' },
-            { id: 'reward', label: 'Rewards' }
-        ];
-
-        return filters.map(f => `
-            <div class="filter-chip" data-filter="${f.id}">
-                ${f.label}
-            </div>
-        `).join('');
     }
 
     private _renderMessages(): void {
         const container = document.getElementById('mc-list-container');
         if (!container) return;
 
-        if (this._currentTab === 'support') {
-            container.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--fds-text-dim);">Support ticketing coming soon...</div>`;
-            return;
-        }
+        const searchInput = document.getElementById('mc-search-input') as HTMLInputElement;
+        const query = searchInput ? searchInput.value.toLowerCase() : '';
 
-        let filtered = this._messages;
-        if (this._currentFilter === 'unread') {
-            filtered = filtered.filter(m => !m.read);
-        } else if (this._currentFilter === 'high-priority') {
-            filtered = filtered.filter(m => m.priority === 'High');
-        } else if (this._currentFilter !== 'all') {
-            // Very loose filtering for mock
-            filtered = filtered.filter(m => m.category.toLowerCase().includes(this._currentFilter.toLowerCase()));
+        let filtered = this._messages.filter(m => {
+            if (this._currentTab === 'all') return true;
+            if (this._currentTab === 'unread') return !m.read;
+            return m.category === this._currentTab;
+        });
+
+        if (query) {
+            filtered = filtered.filter(m => 
+                m.title.toLowerCase().includes(query) || 
+                m.content.toLowerCase().includes(query)
+            );
         }
 
         if (filtered.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;">📭</div>
-                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-dim);">
-                        No messages found.
-                    </div>
-                </div>
-            `;
+            container.innerHTML = DesignSystem.EmptyState('📭', 'No Messages Found');
             return;
         }
 
-        container.innerHTML = filtered.map(msg => `
-            <div class="message-card ${!msg.read ? 'message-card-unread' : ''}" data-id="${msg.id}">
-                <div style="display: flex; gap: 16px;">
-                    <div style="font-size: 24px; padding-top: 4px;">✉️</div>
-                    <div style="flex: 1; overflow: hidden;">
-                        <div class="mc-title">
-                            ${msg.priority === 'High' ? '<span class="mc-priority-dot"></span>' : ''}
-                            ${msg.title}
-                        </div>
-                        <div class="mc-body-preview">${msg.content}</div>
-                        <div class="mc-meta">
-                            <span class="mc-category-badge">${msg.category}</span>
-                            <span class="mc-time">${this._formatTime(new Date(msg.createdAt).getTime())}</span>
-                        </div>
+        container.innerHTML = filtered.map(item => {
+            const timeString = new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const categoryIcons: Record<string, string> = {
+                global: '📢',
+                direct: '📩',
+                system: '⚙️'
+            };
+            const icon = categoryIcons[item.category] || '✉️';
+
+            return `
+                <div class="glass-card mc-item" data-id="${item.id}" style="
+                    display: flex;
+                    gap: 16px;
+                    padding: 16px;
+                    margin-bottom: 12px;
+                    border-radius: 14px;
+                    cursor: pointer;
+                    position: relative;
+                    transition: transform 0.2s, background-color 0.2s;
+                    border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(255, 215, 0, 0.3)'};
+                    background: ${item.read ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 215, 0, 0.03)'};
+                ">
+                    <!-- Status Indicator Dot -->
+                    ${!item.read ? `
+                        <div style="
+                            position: absolute;
+                            top: 16px;
+                            right: 16px;
+                            width: 8px;
+                            height: 8px;
+                            border-radius: 50%;
+                            background-color: var(--tv-pitch-green);
+                            box-shadow: 0 0 8px var(--tv-pitch-glow);
+                        "></div>
+                    ` : ''}
+
+                    <!-- Category Icon -->
+                    <div style="
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 10px;
+                        background: rgba(255,255,255,0.05);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: var(--fds-font-lg);
+                        flex-shrink: 0;
+                    ">${icon}</div>
+
+                    <!-- Texts -->
+                    <div style="flex: 1; padding-right: 12px; min-width: 0;">
+                        <div style="
+                            font-size: var(--fds-font-md); 
+                            font-weight: 800; 
+                            color: ${item.read ? '#CBD5E1' : '#FFFFFF'};
+                            margin-bottom: 4px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        ">${item.title}</div>
+                        <div style="
+                            font-size: var(--fds-font-sm); 
+                            color: var(--fds-text-dim); 
+                            line-height: 1.4;
+                            margin-bottom: 6px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        ">${item.content}</div>
+                        <div style="
+                            font-size: var(--fds-font-xs); 
+                            color: var(--fds-text-dim); 
+                            font-weight: 600;
+                        ">⏱️ ${timeString}</div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
-        // Bind clicks on cards to show full message
-        const cards = container.querySelectorAll('.message-card');
+        const cards = container.querySelectorAll('.mc-item');
         cards.forEach(card => {
             card.addEventListener('click', async (e) => {
                 if (this._isOpeningMessage) return;
@@ -244,7 +305,11 @@ export class MessageCenterScreen {
                     this._isOpeningMessage = true;
                     this._audioManager.playClick();
                     try {
-                        await MessageCenterService.getInstance().markAsRead(id);
+                        const msg = this._messages.find(m => m.id === id);
+                        if (msg && !msg.read) {
+                            await MessageCenterService.getInstance().markAsRead(id);
+                            msg.read = true; 
+                        }
                         this._showFullMessage(id);
                     } finally {
                         this._isOpeningMessage = false;
@@ -254,87 +319,71 @@ export class MessageCenterScreen {
         });
     }
 
-    private _formatTime(ts: number): string {
-        const now = Date.now();
-        const diff = now - ts;
-        if (diff < 60000) return 'Just now';
-        if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
-        if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
-        return Math.floor(diff / 86400000) + 'd ago';
-    }
-
     private _showFullMessage(id: string): void {
-        if (this._activeOverlay) return;
-
         const msg = this._messages.find(m => m.id === id);
         if (!msg) return;
 
+        const timeString = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateString = new Date(msg.createdAt).toLocaleDateString();
+
         const overlay = document.createElement('div');
-        this._activeOverlay = overlay;
         overlay.style.cssText = `
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+            z-index: 10000; display: flex; align-items: flex-end; justify-content: center;
+            animation: fade-in 0.2s ease-out;
         `;
-
+        
         overlay.innerHTML = `
-            <div style="background: var(--fds-bg-main); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; width: 100%; max-width: 400px; padding: 24px; position: relative;">
-                <button class="close-btn" style="position: absolute; top: 16px; right: 16px; background: transparent; border: none; color: var(--fds-text-dim); font-size: 24px; cursor: pointer;">×</button>
-                <div style="font-size: 32px; margin-bottom: 16px;">✉️</div>
-                <h2 style="font-size: var(--fds-font-lg); font-weight: 800; color: var(--fds-text-main); margin: 0 0 8px 0;">${msg.title}</h2>
-                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 24px;">${new Date(msg.createdAt).toLocaleString()}</div>
-                <p style="font-size: var(--fds-font-md); color: var(--fds-text-main); line-height: 1.5; margin: 0;">${msg.content}</p>
-            </div>
-        `;
+            <div style="
+                width: 100%; max-width: 600px; 
+                background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+                border-radius: 24px 24px 0 0;
+                border-top: 1px solid rgba(255,255,255,0.1);
+                padding: 24px;
+                box-sizing: border-box;
+                animation: slide-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+                max-height: 90vh;
+                display: flex;
+                flex-direction: column;
+            ">
+                <div style="width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px auto;"></div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div>
+                        <div style="font-size: var(--fds-font-xl); font-weight: 900; color: white; margin-bottom: 8px;">${msg.title}</div>
+                        <div style="font-size: var(--fds-font-xs); color: var(--tv-gold-primary); font-weight: 700; text-transform: uppercase;">
+                            ${msg.category} • ${dateString} ${timeString}
+                        </div>
+                    </div>
+                    <button id="btn-close-msg" style="
+                        background: rgba(255,255,255,0.1); border: none; width: 36px; height: 36px;
+                        border-radius: 18px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
+                    ">✖</button>
+                </div>
 
-        overlay.querySelector('.close-btn')?.addEventListener('click', () => {
-            this._audioManager.playClick();
-            if (this._activeOverlay === overlay) {
-                this._activeOverlay = null;
-            }
-            if (document.body.contains(overlay)) {
-                document.body.removeChild(overlay);
-            }
-            this._updateContent(); // Refresh UI cleanly to show updated read status
-        });
+                <div style="
+                    flex: 1; overflow-y: auto; 
+                    font-size: var(--fds-font-md); color: #CBD5E1; line-height: 1.6;
+                    padding-right: 8px;
+                " class="hide-scrollbar">
+                    ${msg.content.replace(/\n/g, '<br>')}
+                </div>
+            </div>
+            <style>
+                @keyframes slide-up {
+                    from { transform: translateY(100%); }
+                    to { transform: translateY(0); }
+                }
+            </style>
+        `;
 
         document.body.appendChild(overlay);
-    }
 
-    private _bindEvents(): void {
-        document.getElementById('mc-back-btn')?.addEventListener('click', () => {
+        overlay.querySelector('#btn-close-msg')?.addEventListener('click', () => {
             this._audioManager.playClick();
-            this._onBack();
-        });
-
-        const tabs = this._uiManager.container.querySelectorAll('.mc-tab');
-        tabs.forEach((tab: Element) => {
-            tab.addEventListener('click', (e: Event) => {
-                const target = e.currentTarget as HTMLElement;
-                const tabId = target.getAttribute('data-tab') as MessageTab;
-                if (tabId !== this._currentTab) {
-                    this._audioManager.playClick();
-                    this._currentTab = tabId;
-                    this._currentFilter = 'all'; // Reset filter on tab change
-                    this.render(); // This now calls our safe layout update and async fetch
-                }
-            });
-        });
-
-        const chips = this._uiManager.container.querySelectorAll('.filter-chip');
-        chips.forEach((chip: Element) => {
-            chip.addEventListener('click', (e: Event) => {
-                const target = e.currentTarget as HTMLElement;
-                const filterId = target.getAttribute('data-filter') as MessageFilter;
-                if (filterId !== this._currentFilter) {
-                    this._audioManager.playClick();
-                    this._currentFilter = filterId;
-                    
-                    this._updateFilterUI();
-                    this._renderMessages();
-                }
-            });
+            overlay.remove();
+            this._renderMessages(); 
         });
     }
 }
