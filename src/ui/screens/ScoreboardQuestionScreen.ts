@@ -587,7 +587,7 @@ export class ScoreboardQuestionScreen {
                 .option-btn.wrong .feedback-icon::after { content: '✕'; }
 
                 .anim-q-card {
-                    animation: q-drop-in 250ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: q-drop-in 210ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
                     animation-delay: 80ms;
                     opacity: 0;
                 }
