@@ -844,9 +844,11 @@ export class ScoreboardQuestionScreen {
 
         const buttons = document.querySelectorAll('.option-btn');
 
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+
         if (isCorrect) {
             targetBtn.classList.add('correct');
-            this._audioManager.playCorrectAnswerGoal();
+            this._audioManager.playCorrectAnswerGoal(isFinalQuestion ? 400 : undefined);
             ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF']);
             this._showFeedbackOverlay(true);
             
@@ -864,12 +866,11 @@ export class ScoreboardQuestionScreen {
                     correctBtn.classList.add('correct');
                 }
             }
-            this._audioManager.playWrongAnswer();
+            this._audioManager.playWrongAnswer(isFinalQuestion ? 400 : undefined);
             this._showFeedbackOverlay(false);
         }
 
-        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
-        const delay = isFinalQuestion ? 300 : 1300;
+        const delay = isFinalQuestion ? 400 : 1300;
 
         this._nextQuestionTimeoutId = setTimeout(() => {
             this._nextQuestionTimeoutId = null;
@@ -953,7 +954,7 @@ export class ScoreboardQuestionScreen {
         }
 
         const isFinalQuestion = this._currentIndex === this._questions.length - 1;
-        const delay = isFinalQuestion ? 300 : 1600;
+        const delay = isFinalQuestion ? 400 : 1600;
 
         this._nextQuestionTimeoutId = setTimeout(() => {
             this._nextQuestionTimeoutId = null;
@@ -1012,6 +1013,7 @@ export class ScoreboardQuestionScreen {
     public destroy(): void {
         this._isDestroyed = true;
         this._stopTimer();
+        this._audioManager.stopAllGameplaySounds();
         if (this._nextQuestionTimeoutId) {
             clearTimeout(this._nextQuestionTimeoutId);
             this._nextQuestionTimeoutId = null;

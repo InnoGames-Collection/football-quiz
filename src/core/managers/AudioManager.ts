@@ -5,18 +5,72 @@ export class AudioManager {
     private _crowdSource: AudioBufferSourceNode | null = null;
 
     private _correctAnswerBuffer: AudioBuffer | null = null;
-    private _activeCorrectAnswerSource: AudioBufferSourceNode | null = null;
     private _wrongAnswerBuffer: AudioBuffer | null = null;
-    private _isWrongAnswerPlaying: boolean = false;
     private _answerSelectedBuffer: AudioBuffer | null = null;
-    private _isAnswerSelectedPlaying: boolean = false;
     private _finalWhistleBuffer: AudioBuffer | null = null;
     private _questionArriveBuffer: AudioBuffer | null = null;
+
+    private _activeGameplaySound: { source: AudioBufferSourceNode | OscillatorNode, gain: GainNode, timeoutId?: any } | null = null;
 
     constructor() {
         const savedMute = localStorage.getItem('ETHIO_FOOTBALL_MUTED');
         if (savedMute !== null) {
             this._isMuted = savedMute === 'true';
+        }
+        
+        if (typeof document !== 'undefined') {
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    this.stopAllGameplaySounds(0.05);
+                }
+            });
+        }
+    }
+
+    public stopAllGameplaySounds(fadeDuration = 0.08): void {
+        this.stopCrowdAmbience();
+        if (!this._ctx || !this._activeGameplaySound) return;
+        
+        const sound = this._activeGameplaySound;
+        this._activeGameplaySound = null;
+        
+        if (sound.timeoutId) clearTimeout(sound.timeoutId);
+        
+        const now = this._ctx.currentTime;
+        try {
+            sound.gain.gain.cancelScheduledValues(now);
+            sound.gain.gain.setValueAtTime(sound.gain.gain.value, now);
+            sound.gain.gain.linearRampToValueAtTime(0.01, now + fadeDuration);
+            sound.source.stop(now + fadeDuration + 0.02);
+        } catch(e) {}
+    }
+
+    private _playManagedSound(buffer: AudioBuffer | null, volume: number, durationMs?: number, delaySec: number = 0): void {
+        this.stopAllGameplaySounds(0.02);
+        if (!buffer) return;
+        this._initContext();
+        if (!this._ctx) return;
+
+        const source = this._ctx.createBufferSource();
+        source.buffer = buffer;
+        
+        const gain = this._ctx.createGain();
+        gain.gain.value = volume;
+
+        source.connect(gain);
+        gain.connect(this._ctx.destination);
+        
+        source.start(this._ctx.currentTime + delaySec);
+
+        const activeSound = { source, gain, timeoutId: undefined as any };
+        this._activeGameplaySound = activeSound;
+
+        if (durationMs) {
+            activeSound.timeoutId = setTimeout(() => {
+                if (this._activeGameplaySound === activeSound) {
+                    this.stopAllGameplaySounds(0.08);
+                }
+            }, durationMs);
         }
     }
 
@@ -149,17 +203,7 @@ export class AudioManager {
             return;
         }
 
-        const source = this._ctx.createBufferSource();
-        source.buffer = this._finalWhistleBuffer;
-
-        const gain = this._ctx.createGain();
-        gain.gain.value = 0.75; // 75% volume
-
-        source.connect(gain);
-        gain.connect(this._ctx.destination);
-        
-        // Delay playback by 150ms after the final event so it feels natural
-        source.start(this._ctx.currentTime + 0.15);
+        this._playManagedSound(this._finalWhistleBuffer, 0.75, undefined, 0.15);
     }
 
     /**
@@ -251,77 +295,27 @@ export class AudioManager {
      * 5. Missed Chance (Goalpost Hit + Disappointed Crowd Sigh)
      * Provides an immersive football "missed opportunity" sound.
      */
-    public playWrongAnswer(): void {
+    public playWrongAnswer(durationMs?: number): void {
         if (this._isMuted) return;
         this._vibrate([40, 20, 40]); // Medium Impact Haptic
         
-        // If already playing, do not restart
-        if (this._isWrongAnswerPlaying) return;
-
-        // Prevent overlap with Correct Answer
-        if (this._activeCorrectAnswerSource) {
-            try { this._activeCorrectAnswerSource.stop(); } catch(e) {}
-        }
-
-        if (!this._wrongAnswerBuffer) {
-            // Fail silently if playback is unavailable
-            return;
-        }
-
-        this._initContext();
-        if (!this._ctx) return;
-
-        const source = this._ctx.createBufferSource();
-        source.buffer = this._wrongAnswerBuffer;
-
-        const gain = this._ctx.createGain();
-        gain.gain.value = 0.7; // 70% volume
-
-        source.connect(gain);
-        gain.connect(this._ctx.destination);
-        
-        this._isWrongAnswerPlaying = true;
-        source.onended = () => {
-            this._isWrongAnswerPlaying = false;
-        };
-
-        source.start(0);
+        if (!this._wrongAnswerBuffer) return;
+        this._playManagedSound(this._wrongAnswerBuffer, 0.7, durationMs);
     }
 
     /**
      * Answer Selected Tone (MP3 Asset)
      * Plays immediately when an answer is tapped.
      */
-    public playAnswerSelected(): void {
+    public playAnswerSelected(durationMs?: number): void {
         if (this._isMuted) return;
         
-        // Prevent rapid playback spam
-        if (this._isAnswerSelectedPlaying) return;
-
         if (!this._answerSelectedBuffer) {
             this.playClick(); // synthetic fallback
             return;
         }
 
-        this._initContext();
-        if (!this._ctx) return;
-
-        const source = this._ctx.createBufferSource();
-        source.buffer = this._answerSelectedBuffer;
-
-        const gain = this._ctx.createGain();
-        gain.gain.value = 0.4; // 40% volume
-
-        source.connect(gain);
-        gain.connect(this._ctx.destination);
-        
-        this._isAnswerSelectedPlaying = true;
-        (this as any)._activeAnswerSelectedSource = source;
-        source.onended = () => {
-            this._isAnswerSelectedPlaying = false;
-        };
-
-        source.start(0);
+        this._playManagedSound(this._answerSelectedBuffer, 0.4, durationMs);
     }
 
     /**
@@ -334,19 +328,7 @@ export class AudioManager {
 
         if (!this._questionArriveBuffer) return; // fail silently
 
-        this._initContext();
-        if (!this._ctx) return;
-
-        const source = this._ctx.createBufferSource();
-        source.buffer = this._questionArriveBuffer;
-
-        const gain = this._ctx.createGain();
-        gain.gain.value = 0.45; // 45% volume
-
-        source.connect(gain);
-        gain.connect(this._ctx.destination);
-        
-        source.start(0);
+        this._playManagedSound(this._questionArriveBuffer, 0.45);
     }
 
     /**
@@ -437,7 +419,7 @@ export class AudioManager {
     /**
      * 7. Correct Answer Goal Sound (MP3 Asset)
      */
-    public playCorrectAnswerGoal(): void {
+    public playCorrectAnswerGoal(durationMs?: number): void {
         if (this._isMuted) return;
         this._vibrate([30, 40, 30]); // Haptic for success
 
@@ -447,32 +429,7 @@ export class AudioManager {
             return;
         }
 
-        this._initContext();
-        if (!this._ctx) return;
-
-        // Stop any existing sounds to prevent overlapping
-        if (this._activeCorrectAnswerSource) {
-            try { this._activeCorrectAnswerSource.stop(); } catch(e) {}
-        }
-        // Also stop answer selected sound if it's still playing
-        if ((this as any)._activeAnswerSelectedSource) {
-            try { (this as any)._activeAnswerSelectedSource.stop(); } catch(e) {}
-        }
-        if ((this as any)._activeQuestionArriveSource) {
-            try { (this as any)._activeQuestionArriveSource.stop(); } catch(e) {}
-        }
-
-        const source = this._ctx.createBufferSource();
-        source.buffer = this._correctAnswerBuffer;
-        
-        const gain = this._ctx.createGain();
-        gain.gain.value = 0.8; // 80% volume
-
-        source.connect(gain);
-        gain.connect(this._ctx.destination);
-        
-        source.start(0);
-        this._activeCorrectAnswerSource = source;
+        this._playManagedSound(this._correctAnswerBuffer, 0.8, durationMs);
     }
 
     /**

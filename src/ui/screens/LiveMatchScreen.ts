@@ -325,9 +325,11 @@ export class LiveMatchScreen {
             responseTimeMs
         });
 
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+
         if (isCorrect) {
             targetBtn.classList.add('correct');
-            this._audioManager.playCorrectAnswerGoal();
+            this._audioManager.playCorrectAnswerGoal(isFinalQuestion ? 400 : undefined);
             
             // Time-based scoring: 100 base + up to 50 speed bonus
             const speedBonus = Math.floor((this._timeLeftSec / 10) * 50);
@@ -345,7 +347,7 @@ export class LiveMatchScreen {
                     correctBtn.classList.add('correct');
                 }
             }
-            this._audioManager.playWrongAnswer();
+            this._audioManager.playWrongAnswer(isFinalQuestion ? 400 : undefined);
             this._showFeedbackOverlay(false);
         }
 
@@ -353,8 +355,7 @@ export class LiveMatchScreen {
         const myUserId = this._saveManager.cloudUserId || 'local-user';
         this._client.sendAnswer(myUserId, this._currentIndex, isCorrect, this._myScore);
 
-        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
-        const delay = isFinalQuestion ? 300 : 1500;
+        const delay = isFinalQuestion ? 400 : 1500;
 
         setTimeout(() => {
             this._hideFeedbackOverlay();
@@ -411,7 +412,7 @@ export class LiveMatchScreen {
         }
 
         const isFinalQuestion = this._currentIndex === this._questions.length - 1;
-        const delay = isFinalQuestion ? 300 : 1200;
+        const delay = isFinalQuestion ? 400 : 1200;
 
         setTimeout(() => {
             this._currentIndex++;

@@ -114,6 +114,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
         if (activeScreen && typeof activeScreen.destroy === 'function') {
             activeScreen.destroy();
         }
+        game.audioManager.stopAllGameplaySounds();
         activeScreen = null;
         if (pushToStack) {
             const stack = tabStacks[currentTab] || [];
