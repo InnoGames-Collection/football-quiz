@@ -144,7 +144,9 @@ export class TicketDialog {
     }
 
     public close(): void {
+        (window as any).ethioAudio?.playClick();
         if (this._overlay) {
+            this._overlay.style.pointerEvents = 'none';
             this._overlay.style.opacity = '0';
             const sheet = this._overlay.querySelector('div') as HTMLElement;
             if (sheet) sheet.style.transform = 'translateY(100%)';

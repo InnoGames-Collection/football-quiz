@@ -853,6 +853,7 @@ export class ScoreboardQuestionScreen {
     private _hideFeedbackOverlay(): void {
         const overlay = document.getElementById('feedback-overlay');
         if (overlay) {
+            overlay.style.pointerEvents = 'none';
             overlay.style.opacity = '0';
             overlay.style.transform = 'translate(-50%, -50%) scale(0.8)';
         }

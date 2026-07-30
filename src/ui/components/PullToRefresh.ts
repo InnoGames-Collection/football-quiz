@@ -90,6 +90,8 @@ export class PullToRefresh {
                 }
             }
             
+            // Restore state and clean up
+            spinner.style.pointerEvents = 'none';
             spinner.style.top = '-50px';
             spinner.style.opacity = '0';
             const svg = spinner.querySelector('svg');

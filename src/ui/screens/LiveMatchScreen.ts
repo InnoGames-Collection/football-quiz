@@ -346,6 +346,7 @@ export class LiveMatchScreen {
     private _hideFeedbackOverlay(): void {
         const overlay = document.getElementById('live-feedback-overlay');
         if (overlay) {
+            overlay.style.pointerEvents = 'none';
             overlay.style.opacity = '0';
             overlay.style.transform = 'translateX(-50%) scale(0.9)';
         }

@@ -315,8 +315,8 @@ export class FootballLeagueHome {
             });
         }
 
-        // Check if returning player modal should display
-        ReturningPlayerModal.checkAndShow(this._uiManager, this._saveManager, this._audioManager);
+        // Check if returning player modal should display (now silent)
+        ReturningPlayerModal.checkAndShow(this._saveManager);
 
         if (!this._resetHandler) {
             this._resetHandler = () => {

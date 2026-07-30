@@ -35,6 +35,7 @@ export class Toast {
         el.style.boxShadow = `0 10px 30px rgba(0,0,0,0.5)`;
         el.style.backdropFilter = 'blur(12px)';
         el.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        el.style.pointerEvents = 'none';
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';
 
@@ -47,6 +48,7 @@ export class Toast {
         });
 
         setTimeout(() => {
+            el.style.pointerEvents = 'none';
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
             setTimeout(() => el.remove(), 300);

@@ -10,6 +10,7 @@ import { Toast } from '../components/Toast';
 import { SupportService } from '../../networking/services/SupportService';
 import { DesignSystem } from '../theme/DesignSystem';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
+import { LogoutDialog } from '../components/LogoutDialog';
 
 export interface AppSettings {
     soundEffects: boolean;
@@ -256,7 +257,8 @@ export class SettingsScreen {
 
         document.getElementById('btn-logout')?.addEventListener('click', async () => {
             this._audioManager.playClick();
-            if (confirm(i18n.currentLocale === 'am' ? 'በእርግጥ መውጣት ይፈልጋሉ?' : (i18n.currentLocale === 'om' ? 'Dhuguma ba\'uu barbaadduu?' : 'Are you sure you want to log out?'))) {
+            const shouldLogout = await LogoutDialog.show();
+            if (shouldLogout) {
                 await AuthManager.getInstance().signOut();
                 window.location.reload();
             }

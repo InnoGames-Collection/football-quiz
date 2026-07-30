@@ -149,6 +149,7 @@ export class LoadingSpinner {
 
         return () => {
             overlay.style.transition = 'opacity 0.25s ease';
+            overlay.style.pointerEvents = 'none';
             overlay.style.opacity = '0';
             setTimeout(() => overlay.remove(), 250);
         };
