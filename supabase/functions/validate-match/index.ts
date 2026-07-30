@@ -63,7 +63,7 @@ serve(async (req) => {
 
     if (userId && !anomalyDetected) {
       // 1. Insert Match Record
-      await supabase.from('matches').insert({
+      const { data: matchResult } = await supabase.from('matches').insert({
         user_id: userId,
         competition_id: competitionId || null,
         match_type: matchType || 'solo',
@@ -75,7 +75,21 @@ serve(async (req) => {
         coins_earned: coinsEarned,
         xp_earned: xpEarned,
         answers: answers
-      });
+      }).select().single();
+
+      // 1.5. If Daily Challenge, mark as completed
+      if (matchType === 'daily' && matchResult) {
+        const { data: todayDate } = await supabase.rpc('eat_today');
+        if (todayDate) {
+          await supabase.from('daily_challenge_completions').upsert({
+            user_id: userId,
+            challenge_date: todayDate,
+            match_id: matchResult.id,
+            score: (correctCount * 100), // Max combo is not calculated in edge function, just use correctCount * 100 for now
+            time_taken_ms: Math.round(totalTime)
+          }, { onConflict: 'user_id, challenge_date' });
+        }
+      }
 
       // 2. Update User Profile XP and Coins
       const { data: profile } = await supabase.from('users').select('xp, coins, total_matches').eq('id', userId).single();
