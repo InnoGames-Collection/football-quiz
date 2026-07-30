@@ -1,7 +1,6 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
 import { MessageCenterService, MessageCenterItem, SupportTicket, Announcement } from '../../networking/services/MessageCenterService';
-import { DesignSystem } from '../theme/DesignSystem';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { TicketDialog } from '../components/TicketDialog';
@@ -20,8 +19,12 @@ export class MessagesScreen {
     private _searchQuery: string = '';
     
     private _loading: boolean = true;
+    private _error: string | null = null;
     private _items: MessageCenterItem[] = [];
     private _unsubscribeBadge: (() => void) | null = null;
+    
+    private _currentRequestId: number = 0;
+    private _isLayoutRendered: boolean = false;
 
     constructor(uiManager: UIManager, audioManager: AudioManager, onBack: () => void) {
         this._uiManager = uiManager;
@@ -29,9 +32,10 @@ export class MessagesScreen {
         this._onBack = onBack;
 
         this._unsubscribeBadge = MessageCenterService.getInstance().subscribeToBadgeUpdates(() => {
-            // Re-render if new background messages arrive
+            if (this._isLayoutRendered) this._updateContent();
         });
 
+        this.render();
         this._loadData();
     }
 
@@ -40,8 +44,11 @@ export class MessagesScreen {
     }
 
     private async _loadData(): Promise<void> {
+        const requestId = ++this._currentRequestId;
+        
         this._loading = true;
-        this.render();
+        this._error = null;
+        if (this._isLayoutRendered) this._updateContent();
 
         const service = MessageCenterService.getInstance();
         try {
@@ -54,17 +61,21 @@ export class MessagesScreen {
             }
         } catch (e) {
             console.error('Failed to load messages', e);
-            this._items = [];
+            if (this._currentRequestId === requestId) {
+                this._error = 'Failed to load messages. Please check your connection.';
+                this._items = [];
+            }
         } finally {
-            this._loading = false;
-            this.render();
+            if (this._currentRequestId === requestId) {
+                this._loading = false;
+                this._updateContent();
+            }
         }
     }
 
     private _getFilteredItems(): MessageCenterItem[] {
         let filtered = this._items;
 
-        // Apply Search
         if (this._searchQuery) {
             const q = this._searchQuery.toLowerCase();
             filtered = filtered.filter(item => 
@@ -73,7 +84,6 @@ export class MessagesScreen {
             );
         }
 
-        // Apply Chip Filter
         switch (this._activeFilter) {
             case 'Unread':
                 filtered = filtered.filter(item => {
@@ -104,143 +114,212 @@ export class MessagesScreen {
     }
 
     public render(): void {
+        if (!this._isLayoutRendered) {
+            this._renderLayout();
+            this._isLayoutRendered = true;
+        } else {
+            this._updateLayoutState();
+        }
+        this._updateContent();
+    }
+
+    private _renderLayout(): void {
         const root = this._uiManager.container;
-        const filteredItems = this._getFilteredItems();
-
-        const tabStyle = (tab: Tab) => `
-            flex: 1;
-            padding: 12px 4px;
-            border-radius: 12px;
-            border: 1px solid ${this._activeTab === tab ? 'var(--tv-pitch-green)' : 'rgba(255,255,255,0.05)'};
-            background: ${this._activeTab === tab ? 'rgba(34, 197, 94, 0.1)' : 'rgba(15,23,42,0.4)'};
-            color: ${this._activeTab === tab ? 'white' : '#94A3B8'};
-            font-weight: ${this._activeTab === tab ? '900' : '700'};
-            font-size: var(--fds-font-xs);
-            text-transform: uppercase;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-            box-shadow: ${this._activeTab === tab ? '0 4px 12px rgba(34,197,94,0.2)' : 'none'};
-        `;
-
         const filters: Filter[] = ['All', 'Unread', 'Read', 'High Priority', 'Tournament', 'Reward', 'Subscription'];
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="pointer-events: auto; min-height: 100vh;">
-                <!-- Layers -->
                 <div class="ethio-layer ethio-layer-pitch"></div>
                 <div class="ethio-layer ethio-layer-overlay"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
                 
-                <!-- App Bar -->
                 ${EthioFantasyAppBar.render('MESSAGE CENTER')}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 16px 16px 120px 16px; position: relative; z-index: 10;">
                     
-                    <!-- Search Input -->
                     <div style="position: relative; margin-bottom: 16px;">
                         <input type="text" id="msg-search-input" placeholder="Search messages..." value="${this._searchQuery}" style="
-                            width: 100%; 
-                            padding: 14px 14px 14px 40px; 
-                            background: rgba(15,23,42,0.8); 
-                            border: 1px solid rgba(255,255,255,0.1); 
-                            border-radius: 12px; 
-                            color: white; 
-                            font-size: var(--fds-font-sm); 
-                            font-weight: 700;
-                            box-sizing: border-box;
-                            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-                            outline: none;
+                            width: 100%; padding: 14px 14px 14px 40px; 
+                            background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); 
+                            border-radius: 12px; color: white; font-size: var(--fds-font-sm); font-weight: 700;
+                            box-sizing: border-box; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); outline: none;
                         ">
                         <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px;">🔍</span>
                     </div>
 
-                    <!-- Main Tabs -->
-                    <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-                        <button class="msg-tab" data-tab-id="announcements" style="${tabStyle('announcements')}">📢 Announcements</button>
-                        <button class="msg-tab" data-tab-id="personal" style="${tabStyle('personal')}">👤 Personal</button>
-                        <button class="msg-tab" data-tab-id="support" style="${tabStyle('support')}">🎧 Support</button>
+                    <div id="msg-tabs-container" style="display: flex; gap: 8px; margin-bottom: 20px;">
+                        <button class="msg-tab" data-tab-id="announcements">📢 Announcements</button>
+                        <button class="msg-tab" data-tab-id="personal">👤 Personal</button>
+                        <button class="msg-tab" data-tab-id="support">🎧 Support</button>
                     </div>
 
-                    <!-- Filter Chips (Horizontal Scroll) -->
-                    <div style="display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none;">
-                        ${filters.map(f => `
-                            <button class="msg-filter-chip" data-filter="${f}" style="
-                                padding: 6px 16px;
-                                border-radius: 20px;
-                                white-space: nowrap;
-                                flex-shrink: 0;
-                                min-height: 48px;
-                                font-size: 13px;
-                                font-weight: 800;
-                                cursor: pointer;
-                                border: 1px solid ${this._activeFilter === f ? '#FFD54F' : 'rgba(255,255,255,0.1)'};
-                                background: ${this._activeFilter === f ? 'rgba(255, 213, 79, 0.15)' : 'rgba(255,255,255,0.05)'};
-                                color: ${this._activeFilter === f ? '#FFD54F' : 'var(--fds-text-dim)'};
-                                transition: all 0.2s;
-                            ">${f}</button>
-                        `).join('')}
+                    <div id="msg-filters-container" style="display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none;">
+                        ${filters.map(f => `<button class="msg-filter-chip" data-filter="${f}">${f}</button>`).join('')}
                     </div>
 
-                    <!-- Create Ticket Button for Support Tab -->
-                    ${this._activeTab === 'support' ? `
+                    <div id="support-actions-container" style="display: none; margin-bottom: 24px;">
                         <button id="btn-create-ticket" style="
-                            width: 100%; padding: 14px; margin-bottom: 24px;
+                            width: 100%; padding: 14px;
                             background: linear-gradient(135deg, var(--tv-pitch-green), #15803d);
                             border: none; border-radius: 12px;
                             color: white; font-weight: 900; font-size: 14px; text-transform: uppercase;
                             cursor: pointer; box-shadow: 0 8px 24px rgba(34,197,94,0.3);
                         ">+ Open New Ticket</button>
-                    ` : ''}
-
-                    <!-- Messages List -->
-                    <div id="messages-list-wrapper" style="display: flex; flex-direction: column; gap: 12px;">
-                        ${this._renderContent(filteredItems)}
                     </div>
 
+                    <div id="messages-list-wrapper" style="display: flex; flex-direction: column; gap: 12px;"></div>
                 </div>
             </div>
             <style>
+                .msg-tab {
+                    flex: 1; padding: 12px 4px; border-radius: 12px;
+                    font-size: var(--fds-font-xs); text-transform: uppercase;
+                    cursor: pointer; text-align: center; transition: all 0.2s;
+                }
+                .msg-tab.active {
+                    border: 1px solid var(--tv-pitch-green);
+                    background: rgba(34, 197, 94, 0.1); color: white;
+                    font-weight: 900; box-shadow: 0 4px 12px rgba(34,197,94,0.2);
+                }
+                .msg-tab:not(.active) {
+                    border: 1px solid rgba(255,255,255,0.05);
+                    background: rgba(15,23,42,0.4); color: #94A3B8; font-weight: 700;
+                }
+                
+                .msg-filter-chip {
+                    padding: 6px 16px; border-radius: 20px; white-space: nowrap;
+                    flex-shrink: 0; min-height: 48px; font-size: 13px; font-weight: 800;
+                    cursor: pointer; transition: all 0.2s;
+                }
+                .msg-filter-chip.active {
+                    border: 1px solid #FFD54F; background: rgba(255, 213, 79, 0.15); color: #FFD54F;
+                }
+                .msg-filter-chip:not(.active) {
+                    border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--fds-text-dim);
+                }
+
                 .msg-tab:active, .msg-filter-chip:active { transform: scale(0.95); }
                 .msg-card { cursor: pointer; transition: transform 0.2s, background 0.2s; }
                 .msg-card:active { transform: scale(0.98); }
                 .unread-dot {
                     width: 8px; height: 8px; border-radius: 50%;
-                    background: var(--tv-pitch-green);
-                    box-shadow: 0 0 8px var(--tv-pitch-green);
+                    background: var(--tv-pitch-green); box-shadow: 0 0 8px var(--tv-pitch-green);
                     display: inline-block;
+                }
+                
+                @keyframes skel-pulse {
+                    0% { opacity: 0.5; }
+                    50% { opacity: 0.8; }
+                    100% { opacity: 0.5; }
+                }
+                .skeleton-card {
+                    height: 80px; border-radius: 12px;
+                    background: rgba(255,255,255,0.05);
+                    animation: skel-pulse 1.5s infinite;
                 }
             </style>
         `;
-
         this._bindEvents();
+        this._updateLayoutState();
     }
 
-    private _renderContent(items: MessageCenterItem[]): string {
+    private _updateLayoutState(): void {
+        const root = this._uiManager.container;
+        
+        root.querySelectorAll('.msg-tab').forEach(tab => {
+            const id = tab.getAttribute('data-tab-id');
+            if (id === this._activeTab) tab.classList.add('active');
+            else tab.classList.remove('active');
+        });
+
+        root.querySelectorAll('.msg-filter-chip').forEach(chip => {
+            const f = chip.getAttribute('data-filter');
+            if (f === this._activeFilter) chip.classList.add('active');
+            else chip.classList.remove('active');
+        });
+
+        const supportActions = root.querySelector('#support-actions-container') as HTMLElement;
+        if (supportActions) {
+            supportActions.style.display = this._activeTab === 'support' ? 'block' : 'none';
+        }
+    }
+
+    private _updateContent(): void {
+        const wrapper = this._uiManager.container.querySelector('#messages-list-wrapper');
+        if (!wrapper) return;
+
         if (this._loading) {
-            return DesignSystem.LoadingState('Loading messages...');
+            wrapper.innerHTML = `
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card" style="animation-delay: 0.1s"></div>
+                <div class="skeleton-card" style="animation-delay: 0.2s"></div>
+                <div class="skeleton-card" style="animation-delay: 0.3s"></div>
+            `;
+            return;
         }
 
-        if (items.length === 0) {
-            let emptyMsg = "No messages available.";
-            if (this._activeTab === 'announcements') emptyMsg = "No announcements available.";
-            else if (this._activeTab === 'personal') emptyMsg = "No personal messages.";
-            else if (this._activeTab === 'support') emptyMsg = "No support conversations.";
-
-            if (this._searchQuery || this._activeFilter !== 'All') {
-                emptyMsg = "No messages match your filters.";
-            }
-
-            return `
-                <div style="text-align: center; padding: 60px 16px; animation: fade-in-up 0.4s ease;">
-                    <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.6;">${this._activeTab === 'support' ? '🏟️' : (this._activeTab === 'announcements' ? '📢' : '✉️')}</div>
-                    <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 900; color: white;">${emptyMsg}</h2>
-                    <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm); max-width: 300px; margin: 0 auto; line-height: 1.5;">Check back later for updates. Your football journey continues!</p>
+        if (this._error) {
+            wrapper.innerHTML = `
+                <div style="text-align: center; padding: 40px 16px; animation: fade-in-up 0.4s ease;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                    <h3 style="color: white; margin-bottom: 8px;">Oops!</h3>
+                    <p style="color: #94A3B8; font-size: 14px; margin-bottom: 24px;">${this._error}</p>
+                    <button id="btn-retry-msg" style="
+                        padding: 12px 24px; border-radius: 20px; border: none;
+                        background: rgba(255,255,255,0.1); color: white; font-weight: 800; cursor: pointer;
+                        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+                    ">Try Again</button>
                 </div>
             `;
+            const retryBtn = wrapper.querySelector('#btn-retry-msg');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    this._audioManager.playClick();
+                    this._loadData();
+                });
+            }
+            return;
         }
 
-        return items.map(item => this._renderMessageCard(item)).join('');
+        const filteredItems = this._getFilteredItems();
+
+        if (filteredItems.length === 0) {
+            let emptyMsg = "No messages available.";
+            let icon = '✉️';
+            let sub = "Check back later for updates.";
+            
+            if (this._activeTab === 'announcements') {
+                emptyMsg = "No Announcements";
+                icon = '📢';
+                sub = "Stay tuned! The latest news and updates will appear here.";
+            } else if (this._activeTab === 'personal') {
+                emptyMsg = "Inbox is Empty";
+                icon = '📬';
+                sub = "You're all caught up. New personal messages will land here.";
+            } else if (this._activeTab === 'support') {
+                emptyMsg = "No Support Tickets";
+                icon = '🎧';
+                sub = "Need help? Open a new ticket and our team will assist you.";
+            }
+
+            if (this._searchQuery || this._activeFilter !== 'All') {
+                emptyMsg = "No Results Found";
+                icon = '🔍';
+                sub = "Try adjusting your search or filter criteria.";
+            }
+
+            wrapper.innerHTML = `
+                <div style="text-align: center; padding: 60px 16px; animation: fade-in-up 0.4s ease;">
+                    <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.8;">${icon}</div>
+                    <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 900; color: white;">${emptyMsg}</h2>
+                    <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm); max-width: 300px; margin: 0 auto; line-height: 1.5;">${sub}</p>
+                </div>
+            `;
+            return;
+        }
+
+        wrapper.innerHTML = filteredItems.map(item => this._renderMessageCard(item)).join('');
+        this._bindCardClicks();
     }
 
     private _renderMessageCard(item: MessageCenterItem): string {
@@ -313,45 +392,44 @@ export class MessagesScreen {
             this._onBack();
         });
 
-        // Tabs
         root.querySelectorAll('.msg-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 const tabId = (e.currentTarget as HTMLElement).getAttribute('data-tab-id') as Tab;
                 if (tabId && tabId !== this._activeTab) {
                     this._audioManager.playClick();
                     this._activeTab = tabId;
-                    this._activeFilter = 'All'; // Reset filter on tab change
+                    this._activeFilter = 'All';
+                    
+                    this._searchQuery = '';
+                    const searchInput = root.querySelector('#msg-search-input') as HTMLInputElement;
+                    if (searchInput) searchInput.value = '';
+
+                    this._updateLayoutState();
                     this._loadData();
                 }
             });
         });
 
-        // Filters
         root.querySelectorAll('.msg-filter-chip').forEach(chip => {
             chip.addEventListener('click', (e) => {
                 const f = (e.currentTarget as HTMLElement).getAttribute('data-filter') as Filter;
                 if (f && f !== this._activeFilter) {
                     this._audioManager.playClick();
                     this._activeFilter = f;
-                    this.render(); // Just re-render cached items locally
+                    this._updateLayoutState();
+                    this._updateContent();
                 }
             });
         });
 
-        // Search
         const searchInput = root.querySelector('#msg-search-input') as HTMLInputElement;
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 this._searchQuery = (e.target as HTMLInputElement).value;
-                const wrapper = root.querySelector('#messages-list-wrapper');
-                if (wrapper) {
-                    wrapper.innerHTML = this._renderContent(this._getFilteredItems());
-                    this._bindCardClicks(); // rebind dynamically rendered cards
-                }
+                this._updateContent();
             });
         }
 
-        // Pull to refresh
         const container = root.querySelector('.stadium-container') as HTMLElement;
         if (container) {
             PullToRefresh.attach(container, async () => {
@@ -360,7 +438,6 @@ export class MessagesScreen {
             });
         }
 
-        // Open Ticket Button
         const createBtn = root.querySelector('#btn-create-ticket');
         if (createBtn) {
             createBtn.addEventListener('click', () => {
@@ -371,8 +448,6 @@ export class MessagesScreen {
                 dialog.show();
             });
         }
-
-        this._bindCardClicks();
     }
 
     private _bindCardClicks(): void {
@@ -389,13 +464,11 @@ export class MessagesScreen {
                             this.render();
                         });
                         modal.render();
-                        return; // Modal handles marking as read
+                        return;
                     }
                     
-                    // Mark as read locally without popup
                     MessageCenterService.getInstance().markAsRead(id).catch(console.error);
                     
-                    // Update UI immediately
                     this._items.forEach(i => {
                         if (i.id === id) {
                             if (i.type === 'support') (i as SupportTicket).unreadSupportMessagesCount = 0;
@@ -403,8 +476,7 @@ export class MessagesScreen {
                         }
                     });
                     
-                    // NO popup toast here. Just re-render to update the state silently.
-                    this.render();
+                    this._updateContent();
                 }
             });
         });
