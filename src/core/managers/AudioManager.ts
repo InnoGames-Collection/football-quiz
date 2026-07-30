@@ -395,11 +395,11 @@ export class AudioManager {
         if (this._isMuted) return;
         try {
             const [correctRes, wrongRes, selectRes, whistleRes, arriveRes] = await Promise.all([
-                fetch('/assets/audios/correct-answer-goal.mp3'),
-                fetch('/assets/audios/wrong-answer.mp3'),
-                fetch('/assets/audios/answer-selected.mp3'),
-                fetch('/assets/audios/final-whistle.mp3'),
-                fetch('/assets/audios/question-arrive.mp3')
+                fetch('/assets/audios/Righ%20Answer%20score%20goal.m4a'),
+                fetch('/assets/audios/wrong%20answer.m4a'),
+                fetch('/assets/audios/Answer%20selected.m4a'),
+                fetch('/assets/audios/whistle%20when%20game%20ends%20or%20timout.m4a'),
+                fetch('/assets/audios/question-arrive.mp3') // Fallback since this one is missing
             ]);
             
             if (!this._ctx) {
