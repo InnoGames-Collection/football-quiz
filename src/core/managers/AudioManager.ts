@@ -316,6 +316,7 @@ export class AudioManager {
         gain.connect(this._ctx.destination);
         
         this._isAnswerSelectedPlaying = true;
+        (this as any)._activeAnswerSelectedSource = source;
         source.onended = () => {
             this._isAnswerSelectedPlaying = false;
         };
