@@ -12,6 +12,8 @@ export class MessageCenterScreen {
     private _messages: MessageCenterItem[] = [];
     private _activeOverlay: HTMLElement | null = null;
     private _isOpeningMessage: boolean = false;
+    private _isLayoutRendered: boolean = false;
+    private _currentRequestId: number = 0;
 
     constructor(
         private _uiManager: UIManager,
@@ -20,8 +22,20 @@ export class MessageCenterScreen {
     ) {}
 
     public async render(): Promise<void> {
-        const root = this._uiManager.container;
+        if (!this._isLayoutRendered) {
+            this._renderLayout();
+            this._bindEvents();
+            this._isLayoutRendered = true;
+        } else {
+            this._updateTabUI();
+            this._updateFilterUI();
+        }
 
+        await this._updateContent();
+    }
+
+    private _renderLayout(): void {
+        const root = this._uiManager.container;
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="display: flex; flex-direction: column;">
                 <!-- Header -->
@@ -41,14 +55,14 @@ export class MessageCenterScreen {
 
                 <!-- Tabs -->
                 <div class="mc-tab-bar">
-                    ${this._renderTab('announcements', '📢 Announcements')}
-                    ${this._renderTab('personal', '📩 Inbox')}
-                    ${this._renderTab('support', '🎧 Support')}
+                    ${this._renderTabHtml('announcements', '📢 Announcements')}
+                    ${this._renderTabHtml('personal', '📩 Inbox')}
+                    ${this._renderTabHtml('support', '🎧 Support')}
                 </div>
 
                 <!-- Filter Chips -->
                 <div class="filter-chip-bar" id="mc-filter-bar">
-                    ${this._renderFilterChips()}
+                    ${this._renderFilterChipsHtml()}
                 </div>
 
                 <!-- Message List -->
@@ -57,9 +71,79 @@ export class MessageCenterScreen {
                 </div>
             </div>
         `;
+        this._updateTabUI();
+    }
 
-        await this._fetchData();
-        this._bindEvents();
+    private _updateTabUI(): void {
+        const count = MessageCenterService.getInstance().getTotalUnreadCount();
+        const tabs = this._uiManager.container.querySelectorAll('.mc-tab');
+        
+        tabs.forEach(tab => {
+            const tabId = tab.getAttribute('data-tab');
+            if (tabId === this._currentTab) {
+                tab.classList.add('mc-tab-active');
+            } else {
+                tab.classList.remove('mc-tab-active');
+            }
+            
+            // Update badge (only Inbox shows total unread for simplicity in mock)
+            const badgeContainer = tab.querySelector('.badge-container');
+            if (badgeContainer) {
+                const unreadCount = tabId === 'personal' ? count : 0;
+                badgeContainer.innerHTML = unreadCount > 0 ? `<div class="mc-tab-badge">${unreadCount}</div>` : '';
+            }
+        });
+    }
+
+    private _updateFilterUI(): void {
+        const chips = this._uiManager.container.querySelectorAll('.filter-chip');
+        chips.forEach(chip => {
+            const filterId = chip.getAttribute('data-filter');
+            if (filterId === this._currentFilter) {
+                chip.classList.add('filter-chip-active');
+            } else {
+                chip.classList.remove('filter-chip-active');
+            }
+        });
+    }
+
+    private async _updateContent(): Promise<void> {
+        const requestId = ++this._currentRequestId;
+        
+        const container = document.getElementById('mc-list-container');
+        if (container) {
+            container.innerHTML = `
+                <div style="padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="height: 80px; background: rgba(255,255,255,0.03); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
+                    <div style="height: 80px; background: rgba(255,255,255,0.03); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
+                    <div style="height: 80px; background: rgba(255,255,255,0.03); border-radius: 12px; animation: shimmer 1.5s infinite linear;"></div>
+                </div>
+            `;
+        }
+
+        try {
+            await this._fetchData();
+        } catch (e) {
+            console.error('Failed to fetch messages', e);
+            if (this._currentRequestId === requestId && container) {
+                container.innerHTML = `
+                    <div style="padding: 40px; text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 16px;">⚠️</div>
+                        <div style="color: #EF4444; font-weight: bold; margin-bottom: 12px;">Failed to load messages</div>
+                        <button id="retry-btn" style="padding: 10px 24px; border-radius: 20px; background: var(--tv-gold-primary); color: #000; font-weight: bold; border: none;">Try Again</button>
+                    </div>
+                `;
+                document.getElementById('retry-btn')?.addEventListener('click', () => {
+                    this._audioManager.playClick();
+                    this._updateContent();
+                });
+            }
+            return;
+        }
+
+        if (this._currentRequestId !== requestId) return;
+
+        this._updateTabUI(); // Update badges in case data fetched changes unread count
         this._renderMessages();
     }
 
@@ -74,21 +158,16 @@ export class MessageCenterScreen {
         }
     }
 
-    private _renderTab(tab: MessageTab, label: string): string {
-        const count = MessageCenterService.getInstance().getTotalUnreadCount();
-        // Just show total badge on the active/current if it's there for now, or you can write a specific counter.
-        // For simplicity, we just use the total count on the inbox tab.
-        const unreadCount = tab === 'personal' ? count : 0;
-        const isActive = this._currentTab === tab;
+    private _renderTabHtml(tab: MessageTab, label: string): string {
         return `
-            <div class="mc-tab ${isActive ? 'mc-tab-active' : ''}" data-tab="${tab}">
+            <div class="mc-tab" data-tab="${tab}">
                 ${label}
-                ${unreadCount > 0 ? `<div class="mc-tab-badge">${unreadCount}</div>` : ''}
+                <span class="badge-container"></span>
             </div>
         `;
     }
 
-    private _renderFilterChips(): string {
+    private _renderFilterChipsHtml(): string {
         const filters: { id: MessageFilter, label: string }[] = [
             { id: 'all', label: 'All' },
             { id: 'unread', label: 'Unread' },
@@ -98,7 +177,7 @@ export class MessageCenterScreen {
         ];
 
         return filters.map(f => `
-            <div class="filter-chip ${this._currentFilter === f.id ? 'filter-chip-active' : ''}" data-filter="${f.id}">
+            <div class="filter-chip" data-filter="${f.id}">
                 ${f.label}
             </div>
         `).join('');
@@ -217,7 +296,7 @@ export class MessageCenterScreen {
             if (document.body.contains(overlay)) {
                 document.body.removeChild(overlay);
             }
-            this.render(); // Re-render to update unread badges
+            this._updateContent(); // Refresh UI cleanly to show updated read status
         });
 
         document.body.appendChild(overlay);
@@ -231,14 +310,14 @@ export class MessageCenterScreen {
 
         const tabs = this._uiManager.container.querySelectorAll('.mc-tab');
         tabs.forEach((tab: Element) => {
-            tab.addEventListener('click', async (e: Event) => {
+            tab.addEventListener('click', (e: Event) => {
                 const target = e.currentTarget as HTMLElement;
                 const tabId = target.getAttribute('data-tab') as MessageTab;
                 if (tabId !== this._currentTab) {
                     this._audioManager.playClick();
                     this._currentTab = tabId;
                     this._currentFilter = 'all'; // Reset filter on tab change
-                    await this.render();
+                    this.render(); // This now calls our safe layout update and async fetch
                 }
             });
         });
@@ -252,9 +331,7 @@ export class MessageCenterScreen {
                     this._audioManager.playClick();
                     this._currentFilter = filterId;
                     
-                    chips.forEach((c: Element) => c.classList.remove('filter-chip-active'));
-                    target.classList.add('filter-chip-active');
-                    
+                    this._updateFilterUI();
                     this._renderMessages();
                 }
             });
