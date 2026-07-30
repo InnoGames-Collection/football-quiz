@@ -30,6 +30,45 @@ import { MessageCenterService } from '../../networking/services/MessageCenterSer
 import { AchievementsScreen } from '../../ui/screens/AchievementsScreen';
 import { AwardsScreen } from '../../ui/screens/AwardsScreen';
 
+// --- Global Touch Interceptor ---
+// Prevents rapid-tapping (double-taps) on all buttons by locking async handlers.
+const originalAddEventListener = EventTarget.prototype.addEventListener;
+EventTarget.prototype.addEventListener = function(type: string, listener: any, options?: boolean | AddEventListenerOptions) {
+    if (type === 'click') {
+        const originalListener = listener;
+        listener = async function(this: any, event: Event) {
+            const target = event.currentTarget as HTMLElement | null;
+            if (target && target.nodeType === Node.ELEMENT_NODE) {
+                if (target.hasAttribute('disabled') || target.hasAttribute('data-ethio-processing')) {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    return;
+                }
+                
+                target.setAttribute('data-ethio-processing', 'true');
+                const prevPointerEvents = target.style.pointerEvents;
+                target.style.pointerEvents = 'none';
+
+                try {
+                    const result = originalListener.call(this, event);
+                    if (result instanceof Promise) {
+                        await result;
+                    }
+                } finally {
+                    setTimeout(() => {
+                        target.removeAttribute('data-ethio-processing');
+                        target.style.pointerEvents = prevPointerEvents;
+                    }, 300);
+                }
+            } else {
+                originalListener.call(this, event);
+            }
+        };
+    }
+    return originalAddEventListener.call(this, type, listener, options);
+};
+// --------------------------------
+
 export async function bootstrapFootballLeague(): Promise<Game> {
     const game = new Game();
     await game.initialize();

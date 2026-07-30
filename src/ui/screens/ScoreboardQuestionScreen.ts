@@ -312,7 +312,7 @@ export class ScoreboardQuestionScreen {
                 ">
                     <!-- Question Card Wrapper (Scrollable if needed) -->
                     <div style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; margin-bottom: clamp(12px, 2vh, 24px); padding: 0 4px;" class="hide-scrollbar">
-                        <div class="anim-question-in" style="
+                        <div class="anim-q-card" style="
                             width: 100%;
                             margin: auto 0;
                             padding: clamp(12px, 2.5vh, 24px) 16px;
@@ -342,9 +342,9 @@ export class ScoreboardQuestionScreen {
                     </div>
 
                     <!-- ANSWERS GRID (Never scrolls) -->
-                    <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(6px, 1.2vh, 14px); width: 100%; padding-bottom: 24px; padding-left: 4px; padding-right: 4px; box-sizing: border-box;">
+                    <div id="answers-grid" style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(6px, 1.2vh, 14px); width: 100%; padding-bottom: 24px; padding-left: 4px; padding-right: 4px; box-sizing: border-box;">
                         ${q.options.map((opt, i) => `
-                            <button class="option-btn anim-question-in" style="animation-delay: ${i * 50}ms;" data-index="${i}">
+                            <button class="option-btn anim-a-card" style="animation-delay: ${230 + i * 35}ms;" data-index="${i}">
                                 <span class="option-badge">${String.fromCharCode(65 + i)}</span>
                                 <span class="option-text">${opt}</span>
                                 <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
@@ -566,14 +566,34 @@ export class ScoreboardQuestionScreen {
                 .option-btn.correct .feedback-icon::after { content: '✓'; }
                 .option-btn.wrong .feedback-icon::after { content: '✕'; }
 
-                @keyframes slideFadeUp {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
+                @keyframes q-drop-in {
+                    0% { opacity: 0; transform: translate3d(0, -80px, 0) scale(0.96); }
+                    70% { opacity: 1; transform: translate3d(0, 4px, 0) scale(1.01); }
+                    85% { transform: translate3d(0, -2px, 0) scale(1); }
+                    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
                 }
-                .anim-question-in {
-                    animation: slideFadeUp 250ms ease-out forwards;
+                @keyframes a-drop-in {
+                    0% { opacity: 0; transform: translate3d(0, -40px, 0) scale(0.97); }
+                    75% { opacity: 1; transform: translate3d(0, 2px, 0) scale(1.01); }
+                    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+                }
+                @keyframes simple-fade-in {
+                    0% { opacity: 0; }
+                    100% { opacity: 1; }
+                }
+                .anim-q-card {
+                    animation: q-drop-in 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
                     opacity: 0;
-                    animation-fill-mode: forwards;
+                }
+                .anim-a-card {
+                    animation: a-drop-in 170ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    opacity: 0;
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    .anim-q-card, .anim-a-card {
+                        animation: simple-fade-in 120ms ease-out forwards !important;
+                        transform: none !important;
+                    }
                 }
                 @keyframes correctPulse {
                     0% { transform: scale(1); }
@@ -633,6 +653,31 @@ export class ScoreboardQuestionScreen {
         this._startTimer(startTimerSec);
         this._bindOptionButtons();
         this._bindPauseButtons();
+
+        // 1. Sensory Feedback
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!prefersReducedMotion) {
+            // Play subtle tick if available, otherwise fallback to standard clean click
+            if (typeof (this._audioManager as any).playTick === 'function') {
+                (this._audioManager as any).playTick();
+            } else {
+                this._audioManager.playClick();
+            }
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(10); } catch(e) {}
+            }
+        }
+
+        // 2. Interaction Lock
+        const optsContainer = root.querySelector('#answers-grid') as HTMLElement;
+        if (optsContainer) {
+            optsContainer.style.pointerEvents = 'none';
+            setTimeout(() => {
+                if (optsContainer && !this._isDestroyed) {
+                    optsContainer.style.pointerEvents = 'auto';
+                }
+            }, prefersReducedMotion ? 120 : 500);
+        }
     }
 
     private _startTimer(startVal: number = 10): void {
