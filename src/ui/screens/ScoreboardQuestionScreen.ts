@@ -231,6 +231,12 @@ export class ScoreboardQuestionScreen {
         const currentGoals = this._quizEngine.calculateFinalStats().goals;
         const currentXP = currentGoals * 100;
         
+        // Trigger Audio Arrival
+        setTimeout(() => {
+            if (this._isDestroyed) return;
+            this._audioManager.playQuestionArrive();
+        }, 80);
+        
         root.innerHTML = `
             <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
                 <!-- Layers -->
@@ -342,9 +348,9 @@ export class ScoreboardQuestionScreen {
                     </div>
 
                     <!-- ANSWERS GRID (Never scrolls) -->
-                    <div id="answers-grid" style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(6px, 1.2vh, 14px); width: 100%; padding-bottom: 24px; padding-left: 4px; padding-right: 4px; box-sizing: border-box;">
+                    <div id="answers-grid" style="flex: 0 0 auto; display: flex; flex-direction: column; gap: clamp(6px, 1.2vh, 14px); width: 100%; padding-bottom: 24px; padding-left: 4px; padding-right: 4px; box-sizing: border-box; pointer-events: none;">
                         ${q.options.map((opt, i) => `
-                            <button class="option-btn anim-a-card" style="animation-delay: ${230 + i * 35}ms;" data-index="${i}">
+                            <button class="option-btn anim-a-card" style="animation-delay: ${180 + i * 30}ms;" data-index="${i}">
                                 <span class="option-badge">${String.fromCharCode(65 + i)}</span>
                                 <span class="option-text">${opt}</span>
                                 <span class="feedback-icon" style="font-size: 24px; opacity: 0; transform: scale(0.5); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-left: 12px;"></span>
@@ -429,6 +435,20 @@ export class ScoreboardQuestionScreen {
             </div>
             
             <style>
+                @keyframes q-drop-in {
+                    0% { transform: translate3d(0, -140px, 0) scale(0.98); opacity: 0; }
+                    1% { transform: translate3d(0, -140px, 0) scale(0.98); opacity: 1; }
+                    84% { transform: translate3d(0, 5px, 0) scale(1); opacity: 1; }
+                    92% { transform: translate3d(0, -2px, 0) scale(1); opacity: 1; }
+                    100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+                }
+                @keyframes a-drop-in {
+                    0% { transform: translate3d(0, -70px, 0) scale(0.97); opacity: 0; }
+                    1% { transform: translate3d(0, -70px, 0) scale(0.97); opacity: 1; }
+                    80% { transform: translate3d(0, 3px, 0) scale(1); opacity: 1; }
+                    90% { transform: translate3d(0, -1px, 0) scale(1); opacity: 1; }
+                    100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+                }
                 .top-bar-chip {
                     background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
                     border: 1px solid rgba(255,255,255,0.15);
@@ -566,27 +586,13 @@ export class ScoreboardQuestionScreen {
                 .option-btn.correct .feedback-icon::after { content: '✓'; }
                 .option-btn.wrong .feedback-icon::after { content: '✕'; }
 
-                @keyframes q-drop-in {
-                    0% { opacity: 0; transform: translate3d(0, -80px, 0) scale(0.96); }
-                    70% { opacity: 1; transform: translate3d(0, 4px, 0) scale(1.01); }
-                    85% { transform: translate3d(0, -2px, 0) scale(1); }
-                    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-                }
-                @keyframes a-drop-in {
-                    0% { opacity: 0; transform: translate3d(0, -40px, 0) scale(0.97); }
-                    75% { opacity: 1; transform: translate3d(0, 2px, 0) scale(1.01); }
-                    100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-                }
-                @keyframes simple-fade-in {
-                    0% { opacity: 0; }
-                    100% { opacity: 1; }
-                }
                 .anim-q-card {
-                    animation: q-drop-in 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: q-drop-in 250ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation-delay: 80ms;
                     opacity: 0;
                 }
                 .anim-a-card {
-                    animation: a-drop-in 170ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: a-drop-in 150ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
                     opacity: 0;
                 }
                 @media (prefers-reduced-motion: reduce) {
@@ -653,6 +659,13 @@ export class ScoreboardQuestionScreen {
         this._startTimer(startTimerSec);
         this._bindOptionButtons();
         this._bindPauseButtons();
+
+        // Release touch lock at exactly 420ms
+        setTimeout(() => {
+            if (this._isDestroyed) return;
+            const grid = document.getElementById('answers-grid');
+            if (grid) grid.style.pointerEvents = 'auto';
+        }, 420);
 
         // 1. Sensory Feedback
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -861,13 +874,16 @@ export class ScoreboardQuestionScreen {
             this._showFeedbackOverlay(false);
         }
 
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+        const delay = isFinalQuestion ? 300 : 1300;
+
         this._nextQuestionTimeoutId = setTimeout(() => {
             this._nextQuestionTimeoutId = null;
             if (this._isDestroyed) return;
             this._hideFeedbackOverlay();
             this._currentIndex++;
             this._renderQuestion();
-        }, 1300);
+        }, delay);
     }
 
     private _showFeedbackOverlay(isGoal: boolean): void {
@@ -942,92 +958,22 @@ export class ScoreboardQuestionScreen {
             sub.innerText = 'Speed up next time!';
         }
 
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+        const delay = isFinalQuestion ? 300 : 1600;
+
         this._nextQuestionTimeoutId = setTimeout(() => {
             this._nextQuestionTimeoutId = null;
             if (this._isDestroyed) return;
             this._hideFeedbackOverlay();
             this._currentIndex++;
             this._renderQuestion();
-        }, 1600);
+        }, delay);
     }
 
-    private async _completeMatch(): Promise<void> {
+    private _completeMatch(): void {
         let stats = this._quizEngine.calculateFinalStats();
         let finalScore = (stats.goals * 100) + (stats.accuracy * 5) + Math.round(Math.max(0, 15 - stats.avgResponseTime) * stats.goals * 15);
         if (stats.accuracy === 100) finalScore += 500;
-
-        // Strict Edge Function Anti-Cheat Validation
-        if (this._session) {
-            let showLoadingUI = false;
-            let inlineLoader: HTMLElement | null = null;
-            
-            const loadingTimeoutId = setTimeout(() => {
-                showLoadingUI = true;
-                
-                // Show a lightweight inline loading indicator instead of a standalone overlay
-                inlineLoader = document.createElement('div');
-                inlineLoader.style.position = 'absolute';
-                inlineLoader.style.bottom = '32px';
-                inlineLoader.style.left = '50%';
-                inlineLoader.style.transform = 'translateX(-50%)';
-                inlineLoader.style.background = 'rgba(15,23,42,0.8)';
-                inlineLoader.style.backdropFilter = 'blur(8px)';
-                inlineLoader.style.border = '1px solid rgba(255,255,255,0.1)';
-                inlineLoader.style.borderRadius = '24px';
-                inlineLoader.style.padding = '8px 16px';
-                inlineLoader.style.color = 'var(--fds-gold-primary, #FFD700)';
-                inlineLoader.style.fontSize = '14px';
-                inlineLoader.style.fontWeight = 'bold';
-                inlineLoader.style.display = 'flex';
-                inlineLoader.style.alignItems = 'center';
-                inlineLoader.style.gap = '8px';
-                inlineLoader.style.zIndex = '1000';
-                inlineLoader.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
-                inlineLoader.innerHTML = '<span style="animation: spin 1s linear infinite; display: inline-block;">⏳</span> Validating Match...';
-                
-                if (!document.querySelector('style#loader-style')) {
-                    const style = document.createElement('style');
-                    style.id = 'loader-style';
-                    style.innerHTML = '@keyframes spin { 100% { transform: rotate(360deg); } }';
-                    document.head.appendChild(style);
-                }
-                
-                const container = this._uiManager.container.querySelector('.stadium-container');
-                if (container) {
-                    container.appendChild(inlineLoader);
-                }
-            }, 600);
-            
-            const { data, error } = await EdgeFunctionClient.invoke('validate-match', {
-                matchType: this._session.matchType,
-                competitionId: this._competition.id,
-                answers: this._quizEngine.answerSubmissions
-            });
-
-            clearTimeout(loadingTimeoutId);
-            const loaderEl = inlineLoader as HTMLElement | null;
-            if (showLoadingUI && loaderEl && loaderEl.parentNode) {
-                loaderEl.parentNode.removeChild(loaderEl);
-            }
-
-            if (!error && data) {
-                if (!data.valid || data.anomalyDetected) {
-                    console.error('[Anti-Cheat] Match rejected by server!');
-                    finalScore = 0;
-                    stats.goals = 0;
-                    stats.coinsEarned = 0;
-                    stats.xpEarned = 0;
-                } else {
-                    console.log('[Anti-Cheat] Match validated successfully.');
-                    // Overwrite local stats with server authoritative stats
-                    stats.goals = data.correctCount;
-                    stats.correctAnswers = data.correctCount;
-                    stats.coinsEarned = data.coinsEarned;
-                    stats.xpEarned = data.xpEarned;
-                    stats.accuracy = data.accuracy;
-                }
-            }
-        }
 
         // Save session completion to history
         if (this._session) {
@@ -1048,7 +994,25 @@ export class ScoreboardQuestionScreen {
             this._audioManager.playFullTimeWhistle();
         }
         
+        // 🚀 INSTANT TRANSITION: Fire onMatchComplete immediately with local stats
         this._callbacks.onMatchComplete(stats, finalScore);
+
+        // 🔄 ASYNC BACKGROUND OPERATION: Strict Edge Function Anti-Cheat Validation
+        if (this._session) {
+            EdgeFunctionClient.invoke('validate-match', {
+                matchType: this._session.matchType,
+                competitionId: this._competition.id,
+                answers: this._quizEngine.answerSubmissions
+            }).then(({ data, error }) => {
+                if (!error && data) {
+                    if (!data.valid || data.anomalyDetected) {
+                        console.error('[Anti-Cheat] Match rejected by server!');
+                    } else {
+                        console.log('[Anti-Cheat] Match validated successfully in background.');
+                    }
+                }
+            }).catch(e => console.error('[Anti-Cheat] Background validation failed:', e));
+        }
     }
     
     public destroy(): void {

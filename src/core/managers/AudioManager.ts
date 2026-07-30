@@ -11,6 +11,7 @@ export class AudioManager {
     private _answerSelectedBuffer: AudioBuffer | null = null;
     private _isAnswerSelectedPlaying: boolean = false;
     private _finalWhistleBuffer: AudioBuffer | null = null;
+    private _questionArriveBuffer: AudioBuffer | null = null;
 
     constructor() {
         const savedMute = localStorage.getItem('ETHIO_FOOTBALL_MUTED');
@@ -323,6 +324,31 @@ export class AudioManager {
     }
 
     /**
+     * Question Arrive (MP3 Asset)
+     * Plays exactly when the Question begins dropping.
+     */
+    public playQuestionArrive(): void {
+        if (this._isMuted) return;
+        this._vibrate([10]); // Light vibration 10ms
+
+        if (!this._questionArriveBuffer) return; // fail silently
+
+        this._initContext();
+        if (!this._ctx) return;
+
+        const source = this._ctx.createBufferSource();
+        source.buffer = this._questionArriveBuffer;
+
+        const gain = this._ctx.createGain();
+        gain.gain.value = 0.45; // 45% volume
+
+        source.connect(gain);
+        gain.connect(this._ctx.destination);
+        
+        source.start(0);
+    }
+
+    /**
      * 6. Countdown Warning: Heartbeat Pulse & Stadium Tension Ticking
      */
     public playCountdownWarning(): void {
@@ -368,11 +394,12 @@ export class AudioManager {
     public async preloadAssets(): Promise<void> {
         if (this._isMuted) return;
         try {
-            const [correctRes, wrongRes, selectRes, whistleRes] = await Promise.all([
+            const [correctRes, wrongRes, selectRes, whistleRes, arriveRes] = await Promise.all([
                 fetch('/assets/audio/correct-answer-goal.mp3'),
                 fetch('/assets/audio/wrong-answer.mp3'),
                 fetch('/assets/audio/answer-selected.mp3'),
-                fetch('/assets/audio/final-whistle.mp3')
+                fetch('/assets/audio/final-whistle.mp3'),
+                fetch('/assets/audio/question-arrive.mp3')
             ]);
             
             if (!this._ctx) {
@@ -395,6 +422,10 @@ export class AudioManager {
             if (whistleRes.ok) {
                 const arr = await whistleRes.arrayBuffer();
                 this._finalWhistleBuffer = await this._ctx.decodeAudioData(arr);
+            }
+            if (arriveRes.ok) {
+                const arr = await arriveRes.arrayBuffer();
+                this._questionArriveBuffer = await this._ctx.decodeAudioData(arr);
             }
             console.log('[AudioManager] Audio assets preloaded successfully.');
         } catch (err) {

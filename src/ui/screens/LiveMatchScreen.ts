@@ -134,9 +134,9 @@ export class LiveMatchScreen {
                     width: 100%;
                 ">
                     <!-- High-Focus Question Text -->
-                    <div style="
-                        font-size: var(--fds-font-xl);
-                        font-weight: 900;
+                    <div class="anim-q-card" style="
+                        font-size: clamp(20px, 3vh, 28px);
+                        font-weight: 800;
                         color: var(--fds-text-main);
                         text-align: center;
                         line-height: 1.4;
@@ -145,9 +145,10 @@ export class LiveMatchScreen {
                     ">${promptText}</div>
 
                     <!-- Large Answer Buttons -->
-                    <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+                    <div id="live-answers-grid" style="display: flex; flex-direction: column; gap: 16px; width: 100%; pointer-events: none;">
                         ${optionsList.map((opt, i) => `
-                            <button class="live-option-btn" data-index="${i}" style="
+                            <button class="live-option-btn anim-a-card" data-index="${i}" style="
+                                animation-delay: ${180 + i * 30}ms;
                                 display: flex;
                                 align-items: center;
                                 width: 100%;
@@ -207,6 +208,29 @@ export class LiveMatchScreen {
                 </div>
             </div>
             <style>
+                @keyframes q-drop-in {
+                    0% { transform: translate3d(0, -140px, 0) scale(0.98); opacity: 0; }
+                    1% { transform: translate3d(0, -140px, 0) scale(0.98); opacity: 1; }
+                    84% { transform: translate3d(0, 5px, 0) scale(1); opacity: 1; }
+                    92% { transform: translate3d(0, -2px, 0) scale(1); opacity: 1; }
+                    100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+                }
+                @keyframes a-drop-in {
+                    0% { transform: translate3d(0, -70px, 0) scale(0.97); opacity: 0; }
+                    1% { transform: translate3d(0, -70px, 0) scale(0.97); opacity: 1; }
+                    80% { transform: translate3d(0, 3px, 0) scale(1); opacity: 1; }
+                    90% { transform: translate3d(0, -1px, 0) scale(1); opacity: 1; }
+                    100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+                }
+                .anim-q-card {
+                    animation: q-drop-in 250ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation-delay: 80ms;
+                    opacity: 0;
+                }
+                .anim-a-card {
+                    animation: a-drop-in 150ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    opacity: 0;
+                }
                 .live-option-btn:active:not(:disabled) { transform: scale(0.97); }
                 .live-option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: var(--fds-green-pitch) !important; }
                 .live-option-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: var(--fds-red-live) !important; }
@@ -217,8 +241,19 @@ export class LiveMatchScreen {
             </style>
         `;
 
+        // Trigger Audio Arrival
+        setTimeout(() => {
+            this._audioManager.playQuestionArrive();
+        }, 80);
+
         this._startTimer();
         this._bindEvents(q);
+        
+        // Release touch lock at exactly 420ms
+        setTimeout(() => {
+            const grid = document.getElementById('live-answers-grid');
+            if (grid) grid.style.pointerEvents = 'auto';
+        }, 420);
     }
 
     private _startTimer(): void {
@@ -318,11 +353,14 @@ export class LiveMatchScreen {
         const myUserId = this._saveManager.cloudUserId || 'local-user';
         this._client.sendAnswer(myUserId, this._currentIndex, isCorrect, this._myScore);
 
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+        const delay = isFinalQuestion ? 300 : 1500;
+
         setTimeout(() => {
             this._hideFeedbackOverlay();
             this._currentIndex++;
             this.render();
-        }, 1500);
+        }, delay);
     }
 
     private _showFeedbackOverlay(isGoal: boolean): void {
@@ -372,10 +410,13 @@ export class LiveMatchScreen {
             }
         }
 
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+        const delay = isFinalQuestion ? 300 : 1200;
+
         setTimeout(() => {
             this._currentIndex++;
             this.render();
-        }, 1200);
+        }, delay);
     }
 
     private _showFinalResults(): void {
