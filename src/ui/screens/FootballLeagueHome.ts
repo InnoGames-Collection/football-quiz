@@ -5,7 +5,6 @@ import { UIManager } from '../../core/managers/UIManager';
 import { CompetitionRegistry } from '../../core/quiz/CompetitionRegistry';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { DailyChallengeManager } from '../../core/competition/DailyChallengeManager';
-import { Toast } from '../components/Toast';
 import { ReturningPlayerModal } from '../components/ReturningPlayerModal';
 import { t } from '../../localization/i18n';
 import { PullToRefresh } from '../components/PullToRefresh';

@@ -9,6 +9,7 @@ import { MessageCenterService } from '../../networking/services/MessageCenterSer
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { EthioProfileUI } from '../components/EthioProfileUI';
 import { AuthManager } from '../../core/auth/AuthManager';
+import { ProfileIcons } from '../components/ProfileIcons';
 
 
 export interface ProfileCallbacks {
@@ -137,32 +138,32 @@ export class ProfileScreen {
                 <div style="max-width: 600px; margin: 0 auto; padding: 0 16px;">
                     
                     ${EthioProfileUI.renderCard(`
-                        ${EthioProfileUI.renderNavRow('📊', i18n.currentLocale === 'am' ? 'ስታቲስቲክስ' : 'Statistics', 'stats')}
-                        ${EthioProfileUI.renderNavRow('🏆', i18n.currentLocale === 'am' ? 'ስኬቶች' : 'Achievements', 'achievements')}
-                        ${EthioProfileUI.renderNavRow('🏅', i18n.currentLocale === 'am' ? 'የእኔ ሽልማቶች' : 'My Awards', 'awards')}
-                        ${EthioProfileUI.renderNavRow('📈', i18n.currentLocale === 'am' ? 'የመሪዎች ሰሌዳ' : 'Leaderboard', 'leaderboard', '', true, '', true)}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.statistics, i18n.currentLocale === 'am' ? 'ስታቲስቲክስ' : 'Statistics', 'stats')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.achievements, i18n.currentLocale === 'am' ? 'ስኬቶች' : 'Achievements', 'achievements')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.awards, i18n.currentLocale === 'am' ? 'የእኔ ሽልማቶች' : 'My Awards', 'awards')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.leaderboard, i18n.currentLocale === 'am' ? 'የመሪዎች ሰሌዳ' : 'Leaderboard', 'leaderboard', '', true, '', true)}
                     `, 'PERFORMANCE')}
 
                     ${EthioProfileUI.renderCard(`
-                        ${EthioProfileUI.renderNavRow('👤', i18n.currentLocale === 'am' ? 'ማንነት' : 'Identity', 'identity')}
-                        ${EthioProfileUI.renderNavRow('👥', i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : 'Invite Friends', 'invite')}
-                        ${EthioProfileUI.renderNavRow('💬', i18n.currentLocale === 'am' ? 'መልዕክቶች' : 'Messages', 'messages', '', true, 'profile-msg-badge', true)}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.identity, i18n.currentLocale === 'am' ? 'ማንነት' : 'Identity', 'identity')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.invite, i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : 'Invite Friends', 'invite')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.messages, i18n.currentLocale === 'am' ? 'መልዕክቶች' : 'Messages', 'messages', '', true, 'profile-msg-badge', true)}
                     `, 'ACCOUNT')}
 
                     ${EthioProfileUI.renderCard(`
-                        ${EthioProfileUI.renderNavRow('⭐', i18n.currentLocale === 'am' ? 'ምዝገባ' : 'Subscription', 'subscription')}
-                        ${EthioProfileUI.renderNavRow('⚙️', i18n.currentLocale === 'am' ? 'ቅንብሮች' : 'Settings', 'settings')}
-                        ${EthioProfileUI.renderNavRow('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : 'Help & Support', 'help', '', true, '', true)}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.subscription, i18n.currentLocale === 'am' ? 'ምዝገባ' : 'Subscription', 'subscription')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.settings, i18n.currentLocale === 'am' ? 'ቅንብሮች' : 'Settings', 'settings')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.help, i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : 'Help & Support', 'help', '', true, '', true)}
                     `, 'SERVICE')}
 
                     ${EthioProfileUI.renderCard(`
-                        ${EthioProfileUI.renderNavRow('ℹ️', i18n.currentLocale === 'am' ? 'ስለ እኛ' : 'About', 'about')}
-                        ${EthioProfileUI.renderNavRow('📝', i18n.currentLocale === 'am' ? 'አዘውትረው የሚጠየቁ ጥያቄዎች' : 'FAQ', 'faq')}
-                        ${EthioProfileUI.renderNavRow('📜', i18n.currentLocale === 'am' ? 'ደንቦች እና ሁኔታዎች' : 'Terms & Conditions', 'terms', '', true, '', true)}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.about, i18n.currentLocale === 'am' ? 'ስለ እኛ' : 'About', 'about')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.faq, i18n.currentLocale === 'am' ? 'አዘውትረው የሚጠየቁ ጥያቄዎች' : 'FAQ', 'faq')}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.terms, i18n.currentLocale === 'am' ? 'ደንቦች እና ሁኔታዎች' : 'Terms & Conditions', 'terms', '', true, '', true)}
                     `, 'INFORMATION')}
                     
                     ${EthioProfileUI.renderCard(`
-                        ${EthioProfileUI.renderNavRow('🚪', i18n.currentLocale === 'am' ? 'ውጣ' : 'Log Out', 'logout', '', false, '', true)}
+                        ${EthioProfileUI.renderNavRow(ProfileIcons.logout, i18n.currentLocale === 'am' ? 'ውጣ' : 'Log Out', 'logout', '', false, '', true)}
                     `, 'SESSION')}
 
                 </div>

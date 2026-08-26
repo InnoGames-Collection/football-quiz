@@ -8,6 +8,8 @@ export interface TabConfig {
     icon: string;
 }
 
+import { ProfileIcons } from './ProfileIcons';
+
 export class BottomNav {
     private static _activeTab: TabId = 'home';
     private static _lastCallback: ((tabId: TabId) => void) | null = null;
@@ -16,7 +18,7 @@ export class BottomNav {
         { id: 'home', label: 'Home', icon: '🏠' },
         { id: 'play', label: 'Play', icon: '🎮' },
         { id: 'standings', label: 'Leaderboard', icon: '🏆' },
-        { id: 'profile', label: 'Profile', icon: '👤' }
+        { id: 'profile', label: 'Profile', icon: ProfileIcons.identity }
     ];
 
     private static LABELS: Record<string, Record<string, string>> = {
@@ -91,7 +93,7 @@ export class BottomNav {
                     filter: ${isActive ? 'drop-shadow(0 2px 8px rgba(255,213,79,0.4))' : 'none'};
                 ">
                     <div style="position: relative; display: inline-block;">
-                        <span style="font-size: 20px; margin-bottom: 2px;">${t.icon}</span>
+                        <span style="font-size: 22px; margin-bottom: 2px; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;">${t.icon}</span>
                         <div id="nav-badge-${t.id}" style="
                             display: none;
                             position: absolute;
