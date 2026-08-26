@@ -38,6 +38,8 @@ export class EthioFantasyAppBar {
                         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(0, 200, 83, 0.15);
                         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                         flex-shrink: 0;
+                        z-index: 9999;
+                        position: relative;
                     " aria-label="Back">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
                             <line x1="19" y1="12" x2="5" y2="12"></line>

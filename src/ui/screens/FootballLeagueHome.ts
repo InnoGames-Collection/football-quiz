@@ -75,7 +75,7 @@ export class FootballLeagueHome {
                 <div class="floating-ball-graphic" style="top: 60%; right: 8%; font-size: 32px; animation-delay: -2s;">⚽</div>
 
                 <!-- TOP APP BAR (Ethio Telecom Branded) -->
-                <div class="tv-broadcast-header fade-in-up" style="justify-content: space-between; padding: 12px 16px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(2,6,23,0.85); backdrop-filter: blur(12px);">
+                <div class="tv-broadcast-header fade-in-up" style="justify-content: space-between; padding: 8px 16px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(2,6,23,0.85); backdrop-filter: blur(12px);">
                     <!-- Left: Profile & Brand -->
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #009624, #00C853); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid #00C853;">
@@ -142,7 +142,7 @@ export class FootballLeagueHome {
                         background: linear-gradient(135deg, rgba(7, 27, 45, 0.85) 0%, rgba(7, 27, 45, 0.6) 100%);
                         border: 1px solid rgba(255, 255, 255, 0.08);
                         border-radius: 14px;
-                        padding: 12px 6px;
+                        padding: 8px 4px;
                         display: flex;
                         flex-direction: column;
                         align-items: center;
@@ -162,7 +162,7 @@ export class FootballLeagueHome {
                     }
                     .hud-module-icon {
                         font-size: 16px;
-                        margin-bottom: 4px;
+                        margin-bottom: 2px;
                         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
                     }
                     .hud-module-label {
@@ -171,11 +171,11 @@ export class FootballLeagueHome {
                         font-weight: 800;
                         text-transform: uppercase;
                         letter-spacing: 0.5px;
-                        margin-bottom: 4px;
+                        margin-bottom: 2px;
                         text-align: center;
                     }
                     .hud-module-value {
-                        font-size: 20px;
+                        font-size: 16px;
                         font-weight: 900;
                         color: white;
                         font-family: var(--fds-font-mono);
@@ -188,7 +188,7 @@ export class FootballLeagueHome {
 
                 <!-- COMPACT TELEMETRY ROW -->
                 <div style="max-width: 900px; margin: 0 auto; padding: 0 16px;">
-                    <div id="home-daily-stats-row" class="fade-in-up" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <div id="home-daily-stats-row" class="fade-in-up" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 0;">
                         <div class="hud-module">
                             <div class="hud-module-icon">🔥</div>
                             <div class="hud-module-label">Daily Streak</div>
@@ -230,7 +230,7 @@ export class FootballLeagueHome {
                     <div class="fade-in-up ethio-home-card interactive" style="
                         background: linear-gradient(135deg, rgba(0, 200, 83, 0.4) 0%, rgba(7, 27, 45, 0.95) 70%, rgba(255, 213, 79, 0.4) 100%), url('/assets/images/hero_banner.png') center/cover no-repeat;
                         background-blend-mode: overlay;
-                        padding: 16px 20px;
+                        padding: 12px 16px;
                         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 213, 79, 0.15);
                         animation-delay: 100ms;
                     " id="card-daily">
@@ -238,15 +238,15 @@ export class FootballLeagueHome {
                         <div style="position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,213,79,0.3) 0%, transparent 70%); pointer-events: none;"></div>
 
                         <!-- Badge Row -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span id="daily-players-count" class="fds-badge" style="background: rgba(0,200,83,0.2); border: 1px solid #00C853; color: #00C853; font-weight: 800;">
                                 ${t('home.liveMatch')}
                             </span>
                         </div>
 
                         <!-- Title & Description -->
-                        <div style="text-align: center; margin-bottom: 16px;">
-                            <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: white; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
+                        <div style="text-align: center; margin-bottom: 12px;">
+                            <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: white; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
                                 ETHIO FANTASY
                             </h2>
                         </div>
@@ -260,8 +260,8 @@ export class FootballLeagueHome {
                     ${contextualCardsHtml}
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
-                    <div class="fade-in-up ethio-home-card interactive" style="padding: 16px; margin-bottom: 16px; border: 1px solid rgba(0, 200, 83, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 200, 83, 0.05);" id="performance-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div class="fade-in-up ethio-home-card interactive" style="padding: 12px 16px; margin-top: 4px; margin-bottom: 0; border: 1px solid rgba(0, 200, 83, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 200, 83, 0.05);" id="performance-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                             <div style="font-size: var(--fds-font-md); font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 12px;">
                                 <span style="color: #00C853; text-shadow: 0 0 12px rgba(0,200,83,0.5); font-size: 24px;">📊</span> ${t('home.performance')}
                             </div>
@@ -306,7 +306,7 @@ export class FootballLeagueHome {
                     </div>
 
                     <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->
-                    <div class="fade-in-up ethio-home-card interactive" style="padding: 20px 16px;" id="btn-view-leaderboard-card">
+                    <div class="fade-in-up ethio-home-card interactive" style="padding: 20px 16px; display: none;" id="btn-view-leaderboard-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
                                 <span style="color: #FFD54F; text-shadow: 0 0 12px rgba(255,213,79,0.5);">🏆</span> ${t('home.rankingsTitle')}

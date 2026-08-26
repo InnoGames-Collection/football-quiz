@@ -109,7 +109,9 @@ export class PlayScreen {
                         <!-- 15 CATEGORIES -->
                         ${GameModes.map((cat, i) => `
                         <div class="fade-in-up category-btn ethio-play-card" data-category="${cat.id}" style="animation-delay: ${i * 30}ms; --cat-accent: ${cat.accent}; --cat-glow: ${cat.glowColor}; --cat-base: ${cat.baseColor};">
-                            <div class="category-icon-wrapper">${cat.svg}</div>
+                            <div class="category-icon-wrapper" style="width: 100%; height: 120px; overflow: hidden; border-radius: 12px; margin-bottom: 12px;">
+                                <img src="/assets/images/modes/${cat.id}.jpg" alt="${cat.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/assets/images/modes/world-cup.jpg';" />
+                            </div>
                             <div class="category-title">${cat.name}</div>
                             <div class="category-accent-line"></div>
                         </div>

@@ -40,7 +40,7 @@ export class ScoreboardQuestionScreen {
     private _hasKickedOff: boolean = false;
     
     private _session: GameSession | null = null;
-    private _hasPlayedFullTimeWhistle: boolean = false;
+
     private _isPaused: boolean = false;
     private _isDestroyed: boolean = false;
     private _nextQuestionTimeoutId: any = null;
@@ -206,7 +206,7 @@ export class ScoreboardQuestionScreen {
         });
 
         document.getElementById('kick-off-btn')?.addEventListener('click', () => {
-            this._audioManager.playWhistle();
+            this._audioManager.playQuizWhistle();
             this._hasKickedOff = true;
             this._renderQuestion();
         });
@@ -230,12 +230,9 @@ export class ScoreboardQuestionScreen {
         const currentGoals = this._quizEngine.calculateFinalStats().goals;
         const currentXP = currentGoals * 100;
         
-        // Trigger Audio Arrival
-        setTimeout(() => {
-            if (this._isDestroyed) return;
-            this._audioManager.playQuestionArrive();
-        }, 80);
+        // Removed old audio arrival
         
+        // Show category indicator
         root.innerHTML = `
             <div class="stadium-container ethio-bg-quiz" style="pointer-events: auto; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: relative;">
                 <!-- Layers -->
@@ -653,36 +650,20 @@ export class ScoreboardQuestionScreen {
         this._bindOptionButtons();
         this._bindPauseButtons();
 
-        // Release touch lock at exactly 420ms
+        // Release touch lock at exactly 120ms
         setTimeout(() => {
             if (this._isDestroyed) return;
             const grid = document.getElementById('answers-grid');
             if (grid) grid.style.pointerEvents = 'auto';
-        }, 420);
+        }, 120);
 
-        // 1. Sensory Feedback
+        // Sensory Feedback
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (!prefersReducedMotion) {
-            // Play subtle tick if available, otherwise fallback to standard clean click
-            if (typeof (this._audioManager as any).playTick === 'function') {
-                (this._audioManager as any).playTick();
-            } else {
-                this._audioManager.playClick();
-            }
+            this._audioManager.playClick();
             if (typeof navigator !== 'undefined' && navigator.vibrate) {
                 try { navigator.vibrate(10); } catch(e) {}
             }
-        }
-
-        // 2. Interaction Lock
-        const optsContainer = root.querySelector('#answers-grid') as HTMLElement;
-        if (optsContainer) {
-            optsContainer.style.pointerEvents = 'none';
-            setTimeout(() => {
-                if (optsContainer && !this._isDestroyed) {
-                    optsContainer.style.pointerEvents = 'auto';
-                }
-            }, prefersReducedMotion ? 120 : 500);
         }
     }
 
@@ -700,9 +681,6 @@ export class ScoreboardQuestionScreen {
                 if (timerChip) {
                     if (this._timeLeftSec <= 5) {
                         timerChip.classList.add('time-low');
-                        if (this._timeLeftSec > 0) {
-                            this._audioManager.playCountdownWarning();
-                        }
                     } else {
                         timerChip.classList.remove('time-low');
                     }
@@ -725,9 +703,12 @@ export class ScoreboardQuestionScreen {
                 GameSessionManager.getInstance().saveSession(this._session);
             }
 
+            if (this._isDestroyed || this._isPaused) return;
+
             if (this._timeLeftSec <= 0) {
-                this._stopTimer();
+                this._audioManager.playQuizWhistle();
                 this._handleTimeOut();
+                return;
             }
         }, 1000);
     }
@@ -797,15 +778,24 @@ export class ScoreboardQuestionScreen {
 
         const options = document.querySelectorAll('.option-btn');
         options.forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 const target = e.currentTarget as HTMLButtonElement;
-                this._audioManager.playAnswerSelected();
-                this._stopTimer();
+                if (target.disabled) return;
                 
+                // Immediately lock all buttons
                 const buttons = document.querySelectorAll('.option-btn');
                 buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
+                
+                // Pause timer instantly
+                this._stopTimer();
+                
+                // 1. Play answer selected audio and wait for completion
+                await this._audioManager.playQuizAnswerSelected();
 
+                // Extract index and evaluate
                 const chosenIdx = parseInt(target.getAttribute('data-index') || '0');
+                
+                if (this._isDestroyed) return;
                 this._onOptionSelected(chosenIdx, target);
             });
         });
@@ -825,10 +815,46 @@ export class ScoreboardQuestionScreen {
 
         const isCorrect = chosenIndex === correctIdx;
         
+
+
+        const buttons = document.querySelectorAll('.option-btn');
+
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+        let audioPromise: Promise<void> = Promise.resolve();
+
+        if (isCorrect) {
+            targetBtn.classList.add('correct');
+            audioPromise = this._audioManager.playQuizCorrectAnswer();
+            ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD54F', '#00C853', '#3B82F6', '#FFFFFF']);
+            this._showFeedbackOverlay(true);
+
+        } else {
+            targetBtn.classList.add('wrong');
+            if (correctIdx !== undefined) {
+                const correctBtn = buttons[correctIdx] as HTMLButtonElement;
+                if (correctBtn) {
+                    correctBtn.classList.add('correct');
+                }
+            }
+            audioPromise = this._audioManager.playQuizWrongAnswer();
+            this._showFeedbackOverlay(false);
+        }
+
+        // Wait for the correct/wrong audio to completely finish
+        await audioPromise;
+        if (this._isDestroyed) return;
+
+        // If it's the final question, play whistle and wait for it BEFORE advancing
+        if (isFinalQuestion) {
+            await this._audioManager.playQuizWhistle();
+            if (this._isDestroyed) return;
+        }
+
+        // Calculate and record the score ONLY AFTER the complete audio sequence finishes
         this._quizEngine.recordAnswer(isCorrect, responseTimeSec, q.id, chosenIndex);
         const currentGoals = this._quizEngine.calculateFinalStats().goals;
 
-        // Auto Save progress immediately to local storage
+        // Auto Save progress
         if (this._session) {
             GameSessionManager.getInstance().autoSaveProgress(
                 this._session,
@@ -840,44 +866,17 @@ export class ScoreboardQuestionScreen {
                 15
             );
         }
-
-        const buttons = document.querySelectorAll('.option-btn');
-
-        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
-
+        
         if (isCorrect) {
-            targetBtn.classList.add('correct');
-            this._audioManager.playCorrectAnswerGoal(isFinalQuestion ? 400 : undefined);
-            ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD54F', '#00C853', '#3B82F6', '#FFFFFF']);
-            this._showFeedbackOverlay(true);
-            
-            // Rolling Scoreboard Score Counter
-            const currentScore = this._quizEngine.calculateFinalStats().goals;
             const scoreEl = document.getElementById('match-score');
             if (scoreEl) {
-                RollingCounter.animate(scoreEl, (currentScore - 1) * 100, currentScore * 100, 600, (v) => `${Math.round(v)}`);
+                RollingCounter.animate(scoreEl, (currentGoals - 1) * 100, currentGoals * 100, 600, (v) => `${Math.round(v)}`);
             }
-        } else {
-            targetBtn.classList.add('wrong');
-            if (correctIdx !== undefined) {
-                const correctBtn = buttons[correctIdx] as HTMLButtonElement;
-                if (correctBtn) {
-                    correctBtn.classList.add('correct');
-                }
-            }
-            this._audioManager.playWrongAnswer(isFinalQuestion ? 400 : undefined);
-            this._showFeedbackOverlay(false);
         }
 
-        const delay = isFinalQuestion ? 400 : 1300;
-
-        this._nextQuestionTimeoutId = setTimeout(() => {
-            this._nextQuestionTimeoutId = null;
-            if (this._isDestroyed) return;
-            this._hideFeedbackOverlay();
-            this._currentIndex++;
-            this._renderQuestion();
-        }, delay);
+        this._hideFeedbackOverlay();
+        this._currentIndex++;
+        this._renderQuestion();
     }
 
     private _showFeedbackOverlay(isGoal: boolean): void {
@@ -919,8 +918,7 @@ export class ScoreboardQuestionScreen {
         const q = this._questions[this._currentIndex];
         const correctIdx = await this._findCorrectIndex(q);
 
-        this._quizEngine.recordAnswer(false, responseTimeSec, q.id, -1);
-        this._audioManager.playWhistle();
+
         
         const buttons = document.querySelectorAll('.option-btn');
         if (correctIdx !== undefined) {
@@ -930,7 +928,28 @@ export class ScoreboardQuestionScreen {
             }
         }
 
-        // Auto Save Timeout Progress
+
+
+        this._showFeedbackOverlay(false);
+        const text = document.getElementById('feedback-text');
+        const sub = document.getElementById('feedback-subtext');
+        if (text && sub) {
+            text.innerText = 'TIME OUT!';
+            sub.innerText = 'Speed up next time!';
+        }
+
+        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+        
+        await this._audioManager.playQuizWrongAnswer();
+        if (this._isDestroyed) return;
+        
+        if (isFinalQuestion) {
+            await this._audioManager.playQuizWhistle();
+            if (this._isDestroyed) return;
+        }
+
+        // Calculate and record the score ONLY AFTER the complete audio sequence finishes
+        this._quizEngine.recordAnswer(false, responseTimeSec, q.id, -1);
         const currentGoals = this._quizEngine.calculateFinalStats().goals;
         if (this._session) {
             GameSessionManager.getInstance().autoSaveProgress(
@@ -944,24 +963,9 @@ export class ScoreboardQuestionScreen {
             );
         }
 
-        this._showFeedbackOverlay(false);
-        const text = document.getElementById('feedback-text');
-        const sub = document.getElementById('feedback-subtext');
-        if (text && sub) {
-            text.innerText = 'TIME OUT!';
-            sub.innerText = 'Speed up next time!';
-        }
-
-        const isFinalQuestion = this._currentIndex === this._questions.length - 1;
-        const delay = isFinalQuestion ? 400 : 1600;
-
-        this._nextQuestionTimeoutId = setTimeout(() => {
-            this._nextQuestionTimeoutId = null;
-            if (this._isDestroyed) return;
-            this._hideFeedbackOverlay();
-            this._currentIndex++;
-            this._renderQuestion();
-        }, delay);
+        this._hideFeedbackOverlay();
+        this._currentIndex++;
+        this._renderQuestion();
     }
 
     private _completeMatch(): void {
@@ -982,11 +986,6 @@ export class ScoreboardQuestionScreen {
         import('../../core/auth/AuthManager').then(m => m.AuthManager.getInstance().refreshProfile());
 
         (window as any).ethioOnBackPress = null;
-        
-        if (!this._hasPlayedFullTimeWhistle) {
-            this._hasPlayedFullTimeWhistle = true;
-            this._audioManager.playFullTimeWhistle();
-        }
         
         // 🚀 INSTANT TRANSITION: Fire onMatchComplete immediately with local stats
         this._callbacks.onMatchComplete(stats, finalScore);
@@ -1012,7 +1011,7 @@ export class ScoreboardQuestionScreen {
     public destroy(): void {
         this._isDestroyed = true;
         this._stopTimer();
-        this._audioManager.stopAllGameplaySounds();
+        this._audioManager.stopAllQuizAudio();
         if (this._nextQuestionTimeoutId) {
             clearTimeout(this._nextQuestionTimeoutId);
             this._nextQuestionTimeoutId = null;

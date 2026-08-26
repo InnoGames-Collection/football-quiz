@@ -13,16 +13,9 @@ export class TermsScreen {
         this._uiManager = uiManager;
         this._audioManager = audioManager;
         this._onBack = onBack;
-
-        (window as any).ethioOnBackPress = () => {
-            this._audioManager.playClick();
-            this._onBack();
-            return true;
-        };
     }
 
     public destroy(): void {
-        (window as any).ethioOnBackPress = null;
     }
 
     public render(): void {

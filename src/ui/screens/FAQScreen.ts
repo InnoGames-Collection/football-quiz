@@ -16,22 +16,9 @@ export class FAQScreen {
         this._uiManager = uiManager;
         this._audioManager = audioManager;
         this._onBack = onBack;
-        
-        (window as any).ethioOnBackPress = () => {
-            this._audioManager.playClick();
-            if (this._activeCategory) {
-                this._activeCategory = null;
-                this._faqsCache = [];
-                this.render();
-            } else {
-                this._onBack();
-            }
-            return true;
-        };
     }
 
     public destroy(): void {
-        (window as any).ethioOnBackPress = null;
     }
 
     public render(): void {

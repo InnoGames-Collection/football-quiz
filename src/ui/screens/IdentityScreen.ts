@@ -17,16 +17,9 @@ export class IdentityScreen {
         this._saveManager = saveManager;
         this._audioManager = audioManager;
         this._onBack = onBack;
-        
-        (window as any).ethioOnBackPress = () => {
-            this._audioManager.playClick();
-            this._onBack();
-            return true;
-        };
     }
 
     public destroy(): void {
-        (window as any).ethioOnBackPress = null;
     }
 
     private _maskPhone(phone: string): string {

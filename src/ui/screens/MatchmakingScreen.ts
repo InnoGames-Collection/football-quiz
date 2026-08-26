@@ -163,7 +163,7 @@ export class MatchmakingScreen {
 
         const mmService = MatchmakingService.getInstance();
         const unsubscribe = mmService.onMatchFound((info) => {
-            this._audioManager.playGoalCheer();
+            this._audioManager.playQuizCorrectAnswer();
             this._onMatchFound(info);
         });
 

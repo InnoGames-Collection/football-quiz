@@ -27,6 +27,7 @@ export class LiveMatchScreen {
     private _hasPlayedFullTimeWhistle: boolean = false;
     
     private _answers: any[] = [];
+    private _isDestroyed: boolean = false;
 
     constructor(
         uiManager: UIManager,
@@ -243,7 +244,7 @@ export class LiveMatchScreen {
 
         // Trigger Audio Arrival
         setTimeout(() => {
-            this._audioManager.playQuestionArrive();
+            // Removed audio arrive
         }, 80);
 
         this._startTimer();
@@ -254,6 +255,12 @@ export class LiveMatchScreen {
             const grid = document.getElementById('live-answers-grid');
             if (grid) grid.style.pointerEvents = 'auto';
         }, 420);
+    }
+
+    public destroy(): void {
+        this._isDestroyed = true;
+        this._stopTimer();
+        this._client.disconnect();
     }
 
     private _startTimer(): void {
@@ -269,7 +276,7 @@ export class LiveMatchScreen {
                 timerBar.style.width = pct + '%';
                 if (this._timeLeftSec <= 5) {
                     timerBar.style.backgroundColor = '#EF4444';
-                    this._audioManager.playCountdownWarning();
+                    // Removed countdown warning
                 }
             }
 
@@ -290,13 +297,15 @@ export class LiveMatchScreen {
     private _bindEvents(q: ExtendedQuestionData): void {
         const options = document.querySelectorAll('.live-option-btn');
         options.forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 const target = e.currentTarget as HTMLButtonElement;
-                this._audioManager.playAnswerSelected();
                 this._stopTimer();
                 
                 const buttons = document.querySelectorAll('.live-option-btn');
                 buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
+                
+                await this._audioManager.playQuizAnswerSelected();
+                if (this._isDestroyed) return;
 
                 const chosenIdx = parseInt(target.getAttribute('data-index') || '0');
                 this._onOptionSelected(chosenIdx, target, q);
@@ -314,7 +323,7 @@ export class LiveMatchScreen {
         }
     }
 
-    private _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement, q: ExtendedQuestionData): void {
+    private async _onOptionSelected(chosenIndex: number, targetBtn: HTMLButtonElement, q: ExtendedQuestionData): Promise<void> {
         const isCorrect = chosenIndex === q.correctIndex;
         const buttons = document.querySelectorAll('.live-option-btn');
         
@@ -326,10 +335,11 @@ export class LiveMatchScreen {
         });
 
         const isFinalQuestion = this._currentIndex === this._questions.length - 1;
+        let audioPromise = Promise.resolve();
 
         if (isCorrect) {
             targetBtn.classList.add('correct');
-            this._audioManager.playCorrectAnswerGoal(isFinalQuestion ? 400 : undefined);
+            audioPromise = this._audioManager.playQuizCorrectAnswer();
             
             // Time-based scoring: 100 base + up to 50 speed bonus
             const speedBonus = Math.floor((this._timeLeftSec / 10) * 50);
@@ -347,7 +357,7 @@ export class LiveMatchScreen {
                     correctBtn.classList.add('correct');
                 }
             }
-            this._audioManager.playWrongAnswer(isFinalQuestion ? 400 : undefined);
+            audioPromise = this._audioManager.playQuizWrongAnswer();
             this._showFeedbackOverlay(false);
         }
 
@@ -355,13 +365,17 @@ export class LiveMatchScreen {
         const myUserId = this._saveManager.cloudUserId || 'local-user';
         this._client.sendAnswer(myUserId, this._currentIndex, isCorrect, this._myScore);
 
-        const delay = isFinalQuestion ? 400 : 1500;
+        await audioPromise;
+        if (this._isDestroyed) return;
 
-        setTimeout(() => {
-            this._hideFeedbackOverlay();
-            this._currentIndex++;
-            this.render();
-        }, delay);
+        if (isFinalQuestion) {
+            await this._audioManager.playQuizWhistle();
+            if (this._isDestroyed) return;
+        }
+
+        this._hideFeedbackOverlay();
+        this._currentIndex++;
+        this.render();
     }
 
     private _showFeedbackOverlay(isGoal: boolean): void {
@@ -401,7 +415,7 @@ export class LiveMatchScreen {
         });
         const myUserId = this._saveManager.cloudUserId || 'local-user';
         this._client.sendAnswer(myUserId, this._currentIndex, false, this._myScore);
-        this._audioManager.playWhistle();
+        this._audioManager.playQuizWhistle();
         
         const buttons = document.querySelectorAll('.live-option-btn');
         if (q.correctIndex !== undefined) {
@@ -423,7 +437,7 @@ export class LiveMatchScreen {
     private _showFinalResults(): void {
         if (!this._hasPlayedFullTimeWhistle) {
             this._hasPlayedFullTimeWhistle = true;
-            this._audioManager.playFullTimeWhistle();
+            this._audioManager.playQuizWhistle();
         }
 
         const root = this._uiManager.container;

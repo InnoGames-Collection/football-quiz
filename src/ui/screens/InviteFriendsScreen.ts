@@ -21,16 +21,9 @@ export class InviteFriendsScreen {
         
         this._referralCode = this._saveManager.profile.phone || 'GUEST';
         this._referralLink = `https://ethiofantasy.com/join?ref=${this._referralCode}`;
-        
-        (window as any).ethioOnBackPress = () => {
-            this._audioManager.playClick();
-            this._onBack();
-            return true;
-        };
     }
 
     public destroy(): void {
-        (window as any).ethioOnBackPress = null;
     }
 
     public render(): void {

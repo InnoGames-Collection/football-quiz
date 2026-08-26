@@ -66,9 +66,9 @@ export class MatchStatsScreen {
 
         
         if (this._stats.accuracy >= 50) {
-            this._audioManager.playVictoryFanfare();
+            this._audioManager.playQuizCorrectAnswer();
         } else {
-            this._audioManager.playDefeatSound();
+            this._audioManager.playQuizWrongAnswer();
         }
 
         root.innerHTML = `
@@ -287,7 +287,7 @@ export class MatchStatsScreen {
                         }, 50);
 
                         // Show Level Up Celebration
-                        this._audioManager.playVictoryFanfare(); // Play again for level up
+                        this._audioManager.playQuizCorrectAnswer(); // Play again for level up
                         ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 2, 100);
                         const toast = document.getElementById('level-up-toast');
                         if (toast) toast.style.display = 'block';
