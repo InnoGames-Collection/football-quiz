@@ -1,6 +1,5 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { GameModes } from '../components/GameModeGraphics';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
