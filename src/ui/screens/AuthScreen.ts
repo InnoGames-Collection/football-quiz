@@ -458,7 +458,6 @@ export class AuthScreen {
         const settingsBackBtn = root.querySelector('.app-bar-back-btn');
         if (settingsBackBtn) {
             settingsBackBtn.addEventListener('click', (e) => {
-                this._addRipple(e);
                 this._audioManager.playClick();
                 if (this._settingsTab !== 'main') {
                     this._settingsTab = 'main';
