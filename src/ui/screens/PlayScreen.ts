@@ -1,5 +1,7 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
+import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
+import { GameModes } from '../components/GameModeGraphics';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export interface PlayScreenCallbacks {
@@ -34,63 +36,69 @@ export class PlayScreen {
                 ${EthioFantasyAppBar.render('PLAY', '', false)}
 
                 <style>
-                    .category-btn {
-                        padding: 20px 12px;
-                        border-radius: 20px;
-                        background: linear-gradient(135deg, rgba(7, 27, 45, 0.9) 0%, rgba(7, 27, 45, 0.7) 100%);
+                    .ethio-play-card {
+                        background: rgba(7, 27, 45, 0.85); /* #071B2D 85% */
                         border: 1px solid rgba(255, 255, 255, 0.08);
-                        cursor: pointer;
-                        text-align: center;
-                        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-                        transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+                        border-radius: 22px;
+                        padding: 24px 12px 20px 12px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
                         position: relative;
                         overflow: hidden;
+                        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 60px var(--cat-base);
+                        transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
+                        cursor: pointer;
+                        min-height: 160px;
                     }
-                    
-                    /* Subtle green accent at the bottom */
-                    .category-btn::after {
+                    /* Subtle stadium-light reflection */
+                    .ethio-play-card::before {
                         content: '';
                         position: absolute;
-                        bottom: 0;
-                        left: 15%;
-                        right: 15%;
-                        height: 3px;
-                        background: #00C853;
-                        border-radius: 4px 4px 0 0;
-                        opacity: 0.5;
-                        transition: all 0.2s;
+                        top: 0; left: -50%; width: 50%; height: 100%;
+                        background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+                        transform: skewX(-20deg);
+                        pointer-events: none;
                     }
-                    
-                    /* Selected/Hover State */
-                    .category-btn:hover {
-                        background: linear-gradient(135deg, rgba(15, 35, 55, 0.95) 0%, rgba(7, 27, 45, 0.8) 100%);
-                        border-color: rgba(0, 200, 83, 0.4);
-                        box-shadow: 0 12px 32px rgba(0, 200, 83, 0.15), inset 0 0 20px rgba(0, 200, 83, 0.05);
-                        transform: translateY(-2px);
-                    }
-                    .category-btn:hover::after {
-                        opacity: 1;
-                        left: 0;
-                        right: 0;
-                        box-shadow: 0 -2px 12px rgba(0, 200, 83, 0.4);
-                    }
-                    
-                    /* Press Interaction (Scale & Brighten) */
-                    .category-btn:active {
+                    .ethio-play-card:active {
                         transform: scale(0.97);
-                        background: linear-gradient(135deg, rgba(20, 45, 70, 0.95) 0%, rgba(7, 27, 45, 0.85) 100%);
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                        border-color: rgba(255, 255, 255, 0.15);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 0 20px var(--cat-base);
                     }
                     
                     .category-icon-wrapper {
-                        font-size: 36px;
-                        margin-bottom: 12px;
-                        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+                        width: 64px;
+                        height: 64px;
+                        margin-bottom: 16px;
+                        filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5)) drop-shadow(0 0 16px var(--cat-glow));
                         transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+                        z-index: 2;
                     }
-                    .category-btn:hover .category-icon-wrapper {
-                        transform: scale(1.1);
+                    
+                    .category-title {
+                        font-size: 16px;
+                        font-weight: 800;
+                        color: white;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        text-align: center;
+                        width: 100%;
+                        padding: 0 4px;
+                        line-height: 1.2;
+                        z-index: 2;
+                        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                    }
+                    
+                    .category-accent-line {
+                        position: absolute;
+                        bottom: 0;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        width: 40px;
+                        height: 4px;
+                        background: #00C853; /* Primary EthioFantasy accent */
+                        border-radius: 4px 4px 0 0;
+                        box-shadow: 0 -2px 8px var(--cat-glow), 0 0 6px rgba(0, 200, 83, 0.6);
                     }
                 </style>
                 <div style="max-width: 960px; margin: 0 auto; padding: 24px 16px 100px 16px;">
@@ -100,26 +108,11 @@ export class PlayScreen {
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 24px;">
                         
                         <!-- 15 CATEGORIES -->
-                        ${[
-                            { id: 'world-cup', icon: '🌍', name: 'World Cup' },
-                            { id: 'champions-league', icon: '✨', name: 'Champions Lg' },
-                            { id: 'caf-champions', icon: '🌍', name: 'CAF Champions' },
-                            { id: 'afcon', icon: '🏆', name: 'AFCON' },
-                            { id: 'ethiopian-premier', icon: '🇪🇹', name: 'Ethio League' },
-                            { id: 'walia-ibex', icon: '🐐', name: 'Walia Ibex' },
-                            { id: 'premier-league', icon: '🦁', name: 'Premier League' },
-                            { id: 'la-liga', icon: '🇪🇸', name: 'La Liga' },
-                            { id: 'serie-a', icon: '🇮🇹', name: 'Serie A' },
-                            { id: 'bundesliga', icon: '🇩🇪', name: 'Bundesliga' },
-                            { id: 'legendary-players', icon: '⭐', name: 'Legends' },
-                            { id: 'football-rules', icon: '⚖️', name: 'Rules & Refs' },
-                            { id: 'transfer-market', icon: '💷', name: 'Transfers' },
-                            { id: 'stadiums', icon: '🏟️', name: 'Stadiums' },
-                            { id: 'football-history', icon: '📜', name: 'History' }
-                        ].map((cat, i) => `
-                        <div class="glass-card fade-in-up category-btn" data-category="${cat.id}" style="animation-delay: ${i * 30}ms;">
-                            <div class="category-icon-wrapper">${cat.icon}</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 0.5px;">${cat.name}</div>
+                        ${GameModes.map((cat, i) => `
+                        <div class="fade-in-up category-btn ethio-play-card" data-category="${cat.id}" style="animation-delay: ${i * 30}ms; --cat-accent: ${cat.accent}; --cat-glow: ${cat.glowColor}; --cat-base: ${cat.baseColor};">
+                            <div class="category-icon-wrapper">${cat.svg}</div>
+                            <div class="category-title">${cat.name}</div>
+                            <div class="category-accent-line"></div>
                         </div>
                         `).join('')}
 

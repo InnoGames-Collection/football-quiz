@@ -188,7 +188,7 @@ export class FootballLeagueHome {
 
                 <!-- COMPACT TELEMETRY ROW -->
                 <div style="max-width: 900px; margin: 0 auto; padding: 0 16px;">
-                    <div id="home-daily-stats-row" class="fade-in-up" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px;">
+                    <div id="home-daily-stats-row" class="fade-in-up" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px;">
                         <div class="hud-module">
                             <div class="hud-module-icon">🔥</div>
                             <div class="hud-module-label">Daily Streak</div>
@@ -208,7 +208,7 @@ export class FootballLeagueHome {
                 </div>
 
                 <!-- SCROLLABLE BODY CONTENT (Responsive Grid System) -->
-                <div style="max-width: 960px; margin: 0 auto; padding: clamp(12px, 2vh, 16px); display: flex; flex-direction: column; gap: clamp(12px, 1.5vh, 16px);">
+                <div style="max-width: 960px; margin: 0 auto; padding: 12px 16px 100px 16px; display: flex; flex-direction: column; gap: 12px;">
                     
                     <!-- PREMIUM AD BANNER CAROUSEL -->
                     <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: linear-gradient(135deg, rgba(7, 27, 45, 0.8) 0%, rgba(7, 27, 45, 0.6) 100%); border: 1px solid rgba(255, 255, 255, 0.08); aspect-ratio: 16/5; width: 100%;">
@@ -230,7 +230,7 @@ export class FootballLeagueHome {
                     <div class="fade-in-up ethio-home-card interactive" style="
                         background: linear-gradient(135deg, rgba(0, 200, 83, 0.4) 0%, rgba(7, 27, 45, 0.95) 70%, rgba(255, 213, 79, 0.4) 100%), url('/assets/images/hero_banner.png') center/cover no-repeat;
                         background-blend-mode: overlay;
-                        padding: clamp(16px, 2.5vh, 24px) 20px;
+                        padding: 16px 20px;
                         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 213, 79, 0.15);
                         animation-delay: 100ms;
                     " id="card-daily">
@@ -260,8 +260,8 @@ export class FootballLeagueHome {
                     ${contextualCardsHtml}
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
-                    <div class="fade-in-up ethio-home-card interactive" style="padding: 24px 20px; margin-bottom: 24px; border: 1px solid rgba(0, 200, 83, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 200, 83, 0.05);" id="performance-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div class="fade-in-up ethio-home-card interactive" style="padding: 16px; margin-bottom: 16px; border: 1px solid rgba(0, 200, 83, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 200, 83, 0.05);" id="performance-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <div style="font-size: var(--fds-font-md); font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 12px;">
                                 <span style="color: #00C853; text-shadow: 0 0 12px rgba(0,200,83,0.5); font-size: 24px;">📊</span> ${t('home.performance')}
                             </div>
