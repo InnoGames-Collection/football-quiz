@@ -8,6 +8,7 @@ import { i18n } from '../../localization/i18n';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
 import { EthioProfileUI } from '../components/EthioProfileUI';
+import { AuthManager } from '../../core/auth/AuthManager';
 
 
 export interface ProfileCallbacks {
@@ -287,15 +288,58 @@ export class ProfileScreen {
 
                     case 'logout':
                         showModal(`
-                            <div style="font-size: 40px; margin-bottom: 12px;">🚪</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-red-live); margin-bottom: 8px;">LOG OUT</div>
-                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 16px;">Are you sure you want to log out?</div>
-                            ${EthioProfileUI.renderButton('btn-confirm-logout', 'CONFIRM LOGOUT', 'destructive')}
+                            <div style="font-size: 40px; margin-bottom: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">🚪</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-red-live); margin-bottom: 8px;">Log Out?</div>
+                            <div style="font-size: 15px; color: var(--fds-text-muted); margin-bottom: 24px; line-height: 1.5;">Are you sure you want to log out of EthioFantasy?</div>
+                            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                                <div id="btn-cancel-logout" style="flex: 1; padding: 14px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; cursor: pointer;">Cancel</div>
+                                <div id="btn-confirm-logout" style="flex: 1; padding: 14px; text-align: center; background: var(--fds-red-live); border-radius: 12px; font-weight: 800; cursor: pointer; color: white;">Log Out</div>
+                            </div>
                         `);
-                        document.getElementById('btn-confirm-logout')?.addEventListener('click', () => {
+
+                        document.getElementById('btn-cancel-logout')?.addEventListener('click', () => {
                             this._audioManager.playClick();
-                            localStorage.removeItem('ETHIO_FOOTBALL_AUTH_V2');
-                            window.location.reload();
+                            if (modal) modal.style.display = 'none';
+                        });
+
+                        document.getElementById('btn-confirm-logout')?.addEventListener('click', async (e) => {
+                            const btn = e.currentTarget as HTMLElement;
+                            if (btn.style.opacity === '0.5') return; // disabled state
+                            
+                            this._audioManager.playClick();
+                            btn.style.opacity = '0.5';
+                            btn.style.pointerEvents = 'none';
+                            btn.innerHTML = 'Logging out...';
+                            
+                            try {
+                                await AuthManager.getInstance().signOut();
+                                localStorage.removeItem('ETHIO_FOOTBALL_AUTH_V2');
+                                localStorage.removeItem('ETHIO_FOOTBALL_SAVE_V1');
+                                // Using replace to clear history stack on Android so Back doesn't reopen profile
+                                window.location.replace(window.location.origin + window.location.pathname);
+                            } catch (err) {
+                                console.error('Logout error:', err);
+                                showModal(`
+                                    <div style="font-size: 40px; margin-bottom: 12px;">⚠️</div>
+                                    <div style="font-size: 18px; font-weight: 900; color: var(--fds-red-live); margin-bottom: 8px;">Error</div>
+                                    <div style="font-size: 15px; color: var(--fds-text-muted); margin-bottom: 24px;">Unable to log out. Please try again.</div>
+                                    <div style="display: flex; gap: 12px;">
+                                        <div id="btn-cancel-error" style="flex: 1; padding: 14px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; cursor: pointer;">Cancel</div>
+                                        <div id="btn-retry-logout" style="flex: 1; padding: 14px; text-align: center; background: var(--tv-gold-primary); border-radius: 12px; font-weight: 800; cursor: pointer; color: white;">Retry</div>
+                                    </div>
+                                `);
+                                
+                                document.getElementById('btn-cancel-error')?.addEventListener('click', () => {
+                                    this._audioManager.playClick();
+                                    if (modal) modal.style.display = 'none';
+                                });
+                                
+                                document.getElementById('btn-retry-logout')?.addEventListener('click', () => {
+                                    this._audioManager.playClick();
+                                    const logoutTile = root.querySelector('[data-action="logout"]') as HTMLElement;
+                                    if (logoutTile) logoutTile.click();
+                                });
+                            }
                         });
                         break;
                 }

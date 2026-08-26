@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { AwardsService, AwardRecord } from '../../networking/services/AwardsService';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 import { DesignSystem } from '../theme/DesignSystem';
+import { AuthManager } from '../../core/auth/AuthManager';
 
 type AwardTab = 'daily' | 'weekly' | 'monthly';
 
@@ -14,9 +15,6 @@ export class AwardsScreen {
     private _awards: AwardRecord[] = [];
     private _loading: boolean = true;
     private _error: string | null = null;
-    
-    // Simulate logged-in user phone
-    private readonly CURRENT_USER_MSISDN = '+251911223344';
 
     constructor(uiManager: UIManager, audioManager: AudioManager, onBack: () => void) {
         this._uiManager = uiManager;
@@ -130,7 +128,8 @@ export class AwardsScreen {
         }
 
         // Filter for ONLY the current user's awards
-        const userAwards = this._awards.filter(a => a.userMsisdn === this.CURRENT_USER_MSISDN);
+        const currentPhone = AuthManager.getInstance().currentUser?.phone || '';
+        const userAwards = this._awards.filter(a => a.userMsisdn === currentPhone);
         
         if (userAwards.length === 0) {
             return `
