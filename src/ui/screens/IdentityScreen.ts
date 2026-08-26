@@ -72,7 +72,7 @@ export class IdentityScreen {
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
                     <!-- PLAYER IDENTITY CARD -->
-                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 32px 24px; text-align: center; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 32px 24px; text-align: center; border: 1px solid rgba(255,255,255,0.08); background: rgba(7, 27, 45, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         
                         <div style="
                             width: 100px; height: 100px; 
@@ -102,7 +102,7 @@ export class IdentityScreen {
                         ${i18n.currentLocale === 'am' ? 'የተጫዋች ሁኔታ' : (i18n.currentLocale === 'om' ? 'SADARKAA TAPHATAA' : 'PLAYER STATUS')}
                     </div>
 
-                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(7, 27, 45, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
                             <div style="font-size: 14px; color: var(--fds-text-dim);">${i18n.currentLocale === 'am' ? 'ሊግ' : (i18n.currentLocale === 'om' ? 'Liigii' : 'League')}</div>

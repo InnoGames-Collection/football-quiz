@@ -56,12 +56,12 @@ export class AwardsScreen {
                     transition: all 0.2s;
                     text-align: center;
                     text-transform: uppercase;
-                    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.4);
                 `;
             } else {
                 return `
                     flex: 1;
-                    background: rgba(15, 23, 42, 0.7);
+                    background: rgba(7, 27, 45, 0.7);
                     backdrop-filter: blur(8px);
                     -webkit-backdrop-filter: blur(8px);
                     border: 1px solid rgba(255,255,255,0.08);
@@ -167,7 +167,7 @@ export class AwardsScreen {
             <div class="glass-card" style="
                 padding: 16px;
                 border: 1px solid rgba(255, 255, 255, 0.08);
-                background: rgba(15, 23, 42, 0.7);
+                background: rgba(7, 27, 45, 0.7);
                 backdrop-filter: blur(12px);
                 -webkit-backdrop-filter: blur(12px);
                 border-radius: 16px;
@@ -179,7 +179,7 @@ export class AwardsScreen {
                     <div style="font-size: 15px; font-weight: 800; color: white;">
                         ${this._capitalize(award.tournamentType)} Tournament
                     </div>
-                    <div style="background: rgba(34, 197, 94, 0.2); color: #4ADE80; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; text-transform: uppercase;">
+                    <div style="background: rgba(0, 200, 83, 0.2); color: #4ADE80; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; text-transform: uppercase;">
                         ${status}
                     </div>
                 </div>

@@ -42,7 +42,7 @@ export class LanguageSwitcher {
                     transition: all 0.2s;
                 }
                 .lang-btn.active-lang {
-                    background: var(--gold-gradient, #FFD700);
+                    background: var(--gold-gradient, #FFD54F);
                     color: #0F172A;
                     font-weight: 900;
                 }

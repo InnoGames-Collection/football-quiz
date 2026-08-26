@@ -87,8 +87,8 @@ export class MatchStatsScreen {
                     max-width: 380px; 
                     padding: 32px 24px; 
                     border-color: var(--tv-gold-primary); 
-                    background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, rgba(15,23,42,0.95) 100%);
-                    box-shadow: 0 24px 60px rgba(0,0,0,0.6), inset 0 0 32px rgba(255,215,0,0.05);
+                    background: linear-gradient(135deg, rgba(255,213,79,0.1) 0%, rgba(7,27,45,0.95) 100%);
+                    box-shadow: 0 24px 60px rgba(0,0,0,0.6), inset 0 0 32px rgba(255,213,79,0.05);
                     border-radius: 24px;
                     display: flex;
                     flex-direction: column;
@@ -112,7 +112,7 @@ export class MatchStatsScreen {
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">
                             ${i18n.currentLocale === 'am' ? 'አጠቃላይ እይታ' : (i18n.currentLocale === 'om' ? 'Waliigala' : 'Overview')}
                         </div>
-                        <div style="font-size: 56px; font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 4px 16px rgba(255,215,0,0.4); line-height: 1;">
+                        <div style="font-size: 56px; font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 4px 16px rgba(255,213,79,0.4); line-height: 1;">
                             <span id="final-score-rolling">${this._hasAnimated ? this._finalScore : '0'}</span>
                         </div>
                     </div>
@@ -194,7 +194,7 @@ export class MatchStatsScreen {
                 left: 0; 
                 width: 100%; 
                 height: 100%; 
-                background: rgba(15,23,42,0.98); 
+                background: rgba(7,27,45,0.98); 
                 z-index: 10000; 
                 flex-direction: column;
                 pointer-events: auto;
@@ -379,8 +379,8 @@ export class MatchStatsScreen {
                     ${i18n.currentLocale === 'am' ? '⏱ ጊዜ አልቋል' : (i18n.currentLocale === 'om' ? '⏱ Yeroon Dhumate' : '⏱ Timeout')}
                 </span>`;
             } else if (isCorrect) {
-                chosenColor = '#22C55E'; // Green
-                badgeHtml = `<span style="font-size: var(--fds-font-xs); font-weight: 900; color: ${chosenColor}; background: rgba(34,197,94,0.15); padding: 2px 8px; border-radius: 4px;">
+                chosenColor = '#00C853'; // Green
+                badgeHtml = `<span style="font-size: var(--fds-font-xs); font-weight: 900; color: ${chosenColor}; background: rgba(0,200,83,0.15); padding: 2px 8px; border-radius: 4px;">
                     ${i18n.currentLocale === 'am' ? '✓ ትክክል' : (i18n.currentLocale === 'om' ? '✓ Sirrii' : '✓ Correct')}
                 </span>`;
             } else {
@@ -401,15 +401,15 @@ export class MatchStatsScreen {
                 let labelHtml = '';
 
                 if (isThisCorrect && isThisSelected) {
-                    bgColor = 'rgba(34,197,94,0.15)';
-                    borderColor = '#22C55E';
-                    iconHtml = '<span style="color: #22C55E; font-weight: bold; margin-right: 8px;">✓</span>';
-                    labelHtml = `<div style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Your Answer</div>`;
+                    bgColor = 'rgba(0,200,83,0.15)';
+                    borderColor = '#00C853';
+                    iconHtml = '<span style="color: #00C853; font-weight: bold; margin-right: 8px;">✓</span>';
+                    labelHtml = `<div style="background: rgba(0,200,83,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Your Answer</div>`;
                 } else if (isThisCorrect) {
-                    bgColor = 'rgba(34,197,94,0.15)';
-                    borderColor = '#22C55E';
-                    iconHtml = '<span style="color: #22C55E; font-weight: bold; margin-right: 8px;">✓</span>';
-                    labelHtml = `<div style="background: rgba(34,197,94,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Correct Answer</div>`;
+                    bgColor = 'rgba(0,200,83,0.15)';
+                    borderColor = '#00C853';
+                    iconHtml = '<span style="color: #00C853; font-weight: bold; margin-right: 8px;">✓</span>';
+                    labelHtml = `<div style="background: rgba(0,200,83,0.2); color: #4ADE80; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;">Correct Answer</div>`;
                 } else if (isThisSelected) {
                     bgColor = 'rgba(239,68,68,0.15)';
                     borderColor = '#EF4444';
@@ -436,7 +436,7 @@ export class MatchStatsScreen {
             let explanationHtml = '';
             if (q.explanation) {
                 explanationHtml = `
-                    <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(56,189,248,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="background: rgba(7,27,45,0.6); border: 1px solid rgba(56,189,248,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
                         <div style="color: #38BDF8; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">💡 ${i18n.currentLocale === 'am' ? 'ይህ ለምን ትክክል ነው' : (i18n.currentLocale === 'om' ? 'Maaliif Sirrii Dha' : 'Why this is correct')}</div>
                         <div style="font-size: var(--fds-font-xs); color: var(--fds-text-main); line-height: 1.4;">${q.explanation}</div>
                     </div>
@@ -446,7 +446,7 @@ export class MatchStatsScreen {
             let factHtml = '';
             if (q.fact) {
                 factHtml = `
-                    <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="background: rgba(7,27,45,0.6); border: 1px solid rgba(192,132,252,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
                         <div style="color: #C084FC; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">🧠 ${i18n.currentLocale === 'am' ? 'ያውቁ ኖሯል?' : (i18n.currentLocale === 'om' ? 'Beektuu Laata?' : 'Did You Know?')}</div>
                         <div style="font-size: var(--fds-font-xs); color: var(--fds-text-main); line-height: 1.4;">${q.fact}</div>
                     </div>
@@ -456,7 +456,7 @@ export class MatchStatsScreen {
             let tipHtml = '';
             if (q.learningTip) {
                 tipHtml = `
-                    <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(250,204,21,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="background: rgba(7,27,45,0.6); border: 1px solid rgba(250,204,21,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
                         <div style="color: #FACC15; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">🎯 ${i18n.currentLocale === 'am' ? 'የመማሪያ ጠቃሚ ምክር' : (i18n.currentLocale === 'om' ? 'Gorsa Barumsaa' : 'Learning Tip')}</div>
                         <div style="font-size: var(--fds-font-xs); color: var(--fds-text-main); line-height: 1.4;">${q.learningTip}</div>
                     </div>
@@ -505,7 +505,7 @@ export class MatchStatsScreen {
                         </div>
                         <div style="display: flex; gap: 6px;">
                             <input type="text" id="comment-input-${idx}" placeholder="${i18n.currentLocale === 'am' ? 'አስተያየት ይፃፉ...' : (i18n.currentLocale === 'om' ? 'Yaada barreessi...' : 'Write a comment...')}" style="flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; color: var(--fds-text-main); font-size: var(--fds-font-xs);" />
-                            <button class="btn-send-comment" data-q-idx="${idx}" style="background: #009A44; border: none; color: var(--fds-text-main); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: var(--fds-font-xs); cursor: pointer;">${i18n.currentLocale === 'am' ? 'ለጥፍ' : (i18n.currentLocale === 'om' ? 'Maxxansi' : 'Post')}</button>
+                            <button class="btn-send-comment" data-q-idx="${idx}" style="background: var(--tv-pitch-green); border: none; color: var(--fds-text-main); padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: var(--fds-font-xs); cursor: pointer;">${i18n.currentLocale === 'am' ? 'ለጥፍ' : (i18n.currentLocale === 'om' ? 'Maxxansi' : 'Post')}</button>
                         </div>
                     </div>
                 </div>

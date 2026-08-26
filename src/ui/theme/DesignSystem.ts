@@ -114,7 +114,7 @@ export class DesignSystem {
         }
 
         return `
-            <span class="fds-badge" style="background: rgba(255, 215, 0, 0.12); border: 1px solid var(--fds-gold-primary); color: var(--fds-gold-primary); padding: 4px 10px; border-radius: var(--radius-sm); font-size: var(--fds-font-xs); font-weight: 800;">
+            <span class="fds-badge" style="background: rgba(255, 213, 79, 0.12); border: 1px solid var(--fds-gold-primary); color: var(--fds-gold-primary); padding: 4px 10px; border-radius: var(--radius-sm); font-size: var(--fds-font-xs); font-weight: 800;">
                 ${props.icon ? `${props.icon} ` : ''}${props.text}
             </span>
         `;

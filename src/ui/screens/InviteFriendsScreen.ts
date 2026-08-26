@@ -52,13 +52,13 @@ export class InviteFriendsScreen {
                     
                     <!-- HERO -->
                     <div style="text-align: center; margin-bottom: 24px;">
-                        <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 12px rgba(255,215,0,0.3));">👥</div>
+                        <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 12px rgba(255,213,79,0.3));">👥</div>
                         <h1 style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : (i18n.currentLocale === 'om' ? 'Hiriyoota Affeeri' : 'Invite Friends')}</h1>
                         <p style="font-size: 15px; color: var(--fds-text-dim); line-height: 1.5; font-weight: 600;">${i18n.currentLocale === 'am' ? 'ጓደኞችዎን ወደ ውድድሩ ያምጡ።' : (i18n.currentLocale === 'om' ? 'Hiriyoota keessan dorgommiitti fidaa.' : 'Bring your friends into the competition.')}</p>
                     </div>
 
                     <!-- REFERRAL INFO -->
-                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(7, 27, 45, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         
                         <div style="margin-bottom: 20px;">
                             <label style="display: block; font-size: 12px; color: var(--tv-gold-primary); margin-bottom: 8px; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የግብዣ ኮድ' : (i18n.currentLocale === 'om' ? 'Koodii Affeerichaa' : 'REFERRAL CODE')}</label>
@@ -87,7 +87,7 @@ export class InviteFriendsScreen {
                     </div>
 
                     <!-- CTA -->
-                    <div id="btn-share" style="background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%); padding: 16px; text-align: center; border-radius: 12px; font-weight: 900; font-size: 16px; color: white; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); margin-bottom: 24px;">
+                    <div id="btn-share" style="background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%); padding: 16px; text-align: center; border-radius: 12px; font-weight: 900; font-size: 16px; color: white; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3); margin-bottom: 24px;">
                         ${i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : (i18n.currentLocale === 'om' ? 'HIRIYOOTA AFFEERI' : 'INVITE FRIENDS')}
                     </div>
 

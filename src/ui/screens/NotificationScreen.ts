@@ -70,7 +70,7 @@ export class NotificationScreen {
                     padding: 8px 14px;
                     border-radius: 20px;
                     border: 1px solid ${isActive ? 'var(--tv-gold-primary)' : 'rgba(255,255,255,0.08)'};
-                    background: ${isActive ? 'rgba(255, 215, 0, 0.12)' : 'rgba(15, 23, 42, 0.6)'};
+                    background: ${isActive ? 'rgba(255, 213, 79, 0.12)' : 'rgba(7, 27, 45, 0.6)'};
                     color: ${isActive ? 'var(--tv-gold-primary)' : '#94A3B8'};
                     font-size: var(--fds-font-sm);
                     font-weight: 700;
@@ -108,8 +108,8 @@ export class NotificationScreen {
                     cursor: pointer;
                     position: relative;
                     transition: transform 0.2s, background-color 0.2s;
-                    border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(255, 215, 0, 0.3)'};
-                    background: ${item.read ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 215, 0, 0.03)'};
+                    border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(255, 213, 79, 0.3)'};
+                    background: ${item.read ? 'rgba(7, 27, 45, 0.6)' : 'rgba(255, 213, 79, 0.03)'};
                 ">
                     <!-- Status Indicator Dot -->
                     ${!item.read ? `
@@ -276,8 +276,8 @@ export class NotificationScreen {
                         cursor: pointer;
                         position: relative;
                         transition: transform 0.2s, background-color 0.2s;
-                        border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(255, 215, 0, 0.3)'};
-                        background: ${item.read ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 215, 0, 0.03)'};
+                        border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(255, 213, 79, 0.3)'};
+                        background: ${item.read ? 'rgba(7, 27, 45, 0.6)' : 'rgba(255, 213, 79, 0.03)'};
                     ">
                         <!-- Status Indicator Dot -->
                         ${!item.read ? `

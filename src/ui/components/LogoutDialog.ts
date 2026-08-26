@@ -10,7 +10,7 @@ export class LogoutDialog {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(15, 23, 42, 0.85); /* Dark slate background */
+                background: rgba(7, 27, 45, 0.85); /* Dark slate background */
                 backdrop-filter: blur(8px);
                 z-index: 10000;
                 display: flex;

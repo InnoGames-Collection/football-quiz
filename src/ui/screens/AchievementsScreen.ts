@@ -52,7 +52,7 @@ export class AchievementsScreen {
 
                 <!-- Detail Modal -->
                 <div id="ach-detail-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2,6,23,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 24px;">
-                    <div style="background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 400px; position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 24px 48px rgba(0,0,0,0.5);">
+                    <div style="background: rgba(7,27,45,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 400px; position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 24px 48px rgba(0,0,0,0.5);">
                         <button id="btn-close-ach-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--fds-text-muted); font-size: 24px; cursor: pointer; padding: 8px;">✕</button>
                         <div id="ach-modal-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;"></div>
                     </div>
@@ -79,11 +79,11 @@ export class AchievementsScreen {
                     background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%);
                     color: white;
                     border-color: rgba(74, 222, 128, 0.4);
-                    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.4);
                 }
                 
                 .ach-card {
-                    background: rgba(15, 23, 42, 0.85);
+                    background: rgba(7, 27, 45, 0.85);
                     backdrop-filter: blur(12px);
                     border: 1px solid rgba(255,255,255,0.08);
                     border-radius: 16px;
@@ -96,7 +96,7 @@ export class AchievementsScreen {
                     transition: transform 0.2s, box-shadow 0.2s;
                 }
                 .ach-card.unlocked {
-                    border-color: rgba(34, 197, 94, 0.4);
+                    border-color: rgba(0, 200, 83, 0.4);
                     box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
                 }
                 .ach-card.locked {
@@ -109,8 +109,8 @@ export class AchievementsScreen {
                     top: 0; left: 0;
                     width: 4px;
                     height: 100%;
-                    background: var(--tv-pitch-green, #22C55E);
-                    box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+                    background: var(--tv-pitch-green, #00C853);
+                    box-shadow: 0 0 12px rgba(0, 200, 83, 0.8);
                 }
                 
                 .ach-icon-box {
@@ -125,7 +125,7 @@ export class AchievementsScreen {
                     border: 1px solid rgba(255,255,255,0.1);
                 }
                 .ach-card.unlocked .ach-icon-box {
-                    background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(34, 197, 94, 0.2));
+                    background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(0, 200, 83, 0.2));
                     border-color: rgba(234, 179, 8, 0.5);
                     box-shadow: 0 0 16px rgba(234, 179, 8, 0.3);
                 }
@@ -144,7 +144,7 @@ export class AchievementsScreen {
                     transition: width 0.5s ease-out;
                 }
                 .ach-card.unlocked .ach-progress-fill {
-                    background: linear-gradient(90deg, #4ADE80, #22C55E);
+                    background: linear-gradient(90deg, #4ADE80, #00C853);
                 }
                 
                 .ach-reward-badge {
@@ -160,7 +160,7 @@ export class AchievementsScreen {
                     margin-top: 8px;
                 }
                 .ach-card.unlocked .ach-reward-badge {
-                    background: rgba(34, 197, 94, 0.2);
+                    background: rgba(0, 200, 83, 0.2);
                     color: #4ADE80;
                 }
                 
@@ -218,7 +218,7 @@ export class AchievementsScreen {
         // 1. Summary Header
         html += `
             <div style="padding: 24px 16px 16px 16px;">
-                <div class="glass-card" style="padding: 16px; border-radius: 16px; text-align: center; background: rgba(15,23,42,0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+                <div class="glass-card" style="padding: 16px; border-radius: 16px; text-align: center; background: rgba(7,27,45,0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                         <div style="text-align: left;">
@@ -232,7 +232,7 @@ export class AchievementsScreen {
                     </div>
 
                     <div class="ach-progress-bg" style="height: 6px; margin-bottom: 12px; background: rgba(0,0,0,0.4);">
-                        <div class="ach-progress-fill" style="width: ${percent}%; background: linear-gradient(90deg, #FBBF24, #22C55E);"></div>
+                        <div class="ach-progress-fill" style="width: ${percent}%; background: linear-gradient(90deg, #FBBF24, #00C853);"></div>
                     </div>
                     
                     <div style="font-size: 13px; font-weight: 700; color: var(--fds-text-muted);">
@@ -349,7 +349,7 @@ export class AchievementsScreen {
                     const desc = i18n.currentLocale === 'am' ? ach.descriptionAm : (i18n.currentLocale === 'om' ? ach.descriptionOm : ach.descriptionEn);
                     const percent = Math.min(100, Math.round((ach.progress / ach.maxProgress) * 100));
                     
-                    const progressColor = ach.isUnlocked ? 'linear-gradient(90deg, #4ADE80, #22C55E)' : 'linear-gradient(90deg, #FBBF24, #F59E0B)';
+                    const progressColor = ach.isUnlocked ? 'linear-gradient(90deg, #4ADE80, #00C853)' : 'linear-gradient(90deg, #FBBF24, #F59E0B)';
 
                     modalContent.innerHTML = `
                         <div style="font-size: 64px; margin-bottom: 16px; text-shadow: 0 4px 12px rgba(0,0,0,0.5);">${ach.icon}</div>

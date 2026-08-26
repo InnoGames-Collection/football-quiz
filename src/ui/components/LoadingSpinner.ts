@@ -72,7 +72,7 @@ export class LoadingSpinner {
                 <div style="
                     font-size: 13px;
                     font-weight: 900;
-                    color: var(--tv-gold-primary, #FFD700);
+                    color: var(--tv-gold-primary, #FFD54F);
                     letter-spacing: 2.5px;
                     text-transform: uppercase;
                     margin-bottom: 24px;
@@ -85,7 +85,7 @@ export class LoadingSpinner {
                 <div class="glass-card" style="
                     padding: 18px 22px;
                     background: rgba(2, 6, 23, 0.85);
-                    border: 1px solid rgba(255, 215, 0, 0.3);
+                    border: 1px solid rgba(255, 213, 79, 0.3);
                     border-radius: 16px;
                     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
                     text-align: left;
@@ -119,7 +119,7 @@ export class LoadingSpinner {
 
                 .tv-spinner-ball {
                     animation: spinTvBall 1.1s infinite linear;
-                    filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.6));
+                    filter: drop-shadow(0 0 16px rgba(255, 213, 79, 0.6));
                 }
                 @keyframes spinTvBall {
                     0% { transform: rotate(0deg) scale(1); }

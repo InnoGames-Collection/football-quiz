@@ -89,7 +89,7 @@ export class DailyChallengeScreen {
                     <!-- Today's Match Card -->
                     <div class="glass-card" style="
                         border-color: ${isCompleted ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)'}; 
-                        background: linear-gradient(135deg, ${isCompleted ? 'rgba(34,197,94,0.1)' : 'rgba(255,215,0,0.1)'} 0%, rgba(15,23,42,0.92) 100%); 
+                        background: linear-gradient(135deg, ${isCompleted ? 'rgba(0,200,83,0.1)' : 'rgba(255,213,79,0.1)'} 0%, rgba(7,27,45,0.92) 100%); 
                         padding: 24px; 
                         text-align: center;
                         margin-bottom: 24px;
@@ -105,7 +105,7 @@ export class DailyChallengeScreen {
                             letter-spacing: 0.5px;
                             padding: 4px 10px;
                             border-radius: 12px;
-                            background: ${isCompleted ? 'rgba(34,197,94,0.2)' : 'rgba(255,215,0,0.2)'};
+                            background: ${isCompleted ? 'rgba(0,200,83,0.2)' : 'rgba(255,213,79,0.2)'};
                             color: ${isCompleted ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)'};
                             border: 1px solid ${isCompleted ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)'};
                         ">

@@ -30,7 +30,7 @@ export class MainMenuScreen {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: radial-gradient(circle at center, rgba(15, 23, 42, 0.85) 0%, rgba(2, 6, 23, 0.98) 100%);
+                background: radial-gradient(circle at center, rgba(7, 27, 45, 0.85) 0%, rgba(2, 6, 23, 0.98) 100%);
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -80,10 +80,10 @@ export class MainMenuScreen {
                         font-weight: 900;
                         margin: 0;
                         letter-spacing: 2px;
-                        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                        background: linear-gradient(135deg, #FFD54F 0%, #FFA500 100%);
                         -webkit-background-clip: text;
                         -webkit-text-fill-color: transparent;
-                        text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+                        text-shadow: 0 4px 20px rgba(255, 213, 79, 0.3);
                     ">${i18n.currentLocale === 'am' ? 'የእግር ኳስ ጥያቄዎች ሊግ' : (i18n.currentLocale === 'om' ? 'LIIGII GAAFFII KUPPAA MIILAA' : 'FOOTBALL QUIZ LEAGUE')}</h1>
                     <p style="color: var(--fds-text-dim); margin-top: 8px; font-size: var(--fds-font-md);">${i18n.currentLocale === 'am' ? 'የኢትዮ ቴሌኮም VAS ፕላትፎርም' : (i18n.currentLocale === 'om' ? 'PLAATFOORMI VAS ETHIO TELECOM' : 'ETHIO TELECOM VAS PLATFORM')}</p>
                 </div>
@@ -160,7 +160,7 @@ export class MainMenuScreen {
         homeBtn.style.top = '20px';
         homeBtn.style.right = '20px';
         homeBtn.style.padding = '8px 16px';
-        homeBtn.style.background = 'rgba(15, 23, 42, 0.8)';
+        homeBtn.style.background = 'rgba(7, 27, 45, 0.8)';
         homeBtn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
         homeBtn.style.borderRadius = '20px';
         homeBtn.style.color = 'white';

@@ -72,7 +72,7 @@ export class SubscriptionScreen {
                     <div style="padding: 24px 16px;">
                         ${this._statusMessage ? `
                             <div style="
-                                background: rgba(15, 23, 42, 0.85);
+                                background: rgba(7, 27, 45, 0.85);
                                 backdrop-filter: blur(12px);
                                 -webkit-backdrop-filter: blur(12px);
                                 border: 1px solid rgba(255,255,255,0.1);
@@ -93,13 +93,13 @@ export class SubscriptionScreen {
                             padding: 32px 24px; 
                             text-align: center; 
                             border-radius: 24px;
-                            background: rgba(15, 23, 42, 0.85);
+                            background: rgba(7, 27, 45, 0.85);
                             backdrop-filter: blur(12px);
                             -webkit-backdrop-filter: blur(12px);
                             border: 1px solid var(--tv-pitch-green);
-                            box-shadow: 0 16px 48px rgba(34, 197, 94, 0.15), inset 0 1px 1px rgba(255,255,255,0.1);
+                            box-shadow: 0 16px 48px rgba(0, 200, 83, 0.15), inset 0 1px 1px rgba(255,255,255,0.1);
                         ">
-                            <div style="font-size: 48px; margin-bottom: 12px; filter: drop-shadow(0 4px 12px rgba(34,197,94,0.4));">⚡</div>
+                            <div style="font-size: 48px; margin-bottom: 12px; filter: drop-shadow(0 4px 12px rgba(0,200,83,0.4));">⚡</div>
                             <h3 style="margin: 0; color: white; font-size: 24px; font-weight: 900; letter-spacing: 1px;">ETHIOFANTASY DAILY</h3>
                             <div style="font-size: 32px; font-weight: 900; color: var(--tv-pitch-green); margin: 16px 0 24px 0;">2 Birr <span style="font-size: 16px; color: var(--fds-text-dim);">/ Day</span></div>
                             
@@ -120,7 +120,7 @@ export class SubscriptionScreen {
                                 border: none;
                                 padding: 18px 24px;
                                 border-radius: 16px;
-                                box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+                                box-shadow: 0 8px 24px rgba(0, 200, 83, 0.4), inset 0 2px 4px rgba(255,255,255,0.2);
                                 text-shadow: 0 2px 4px rgba(0,0,0,0.3);
                                 text-transform: uppercase;
                                 letter-spacing: 1px;
@@ -147,7 +147,7 @@ export class SubscriptionScreen {
             <style>
                 #btn-subscribe:active {
                     transform: scale(0.97);
-                    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                    box-shadow: 0 4px 12px rgba(0, 200, 83, 0.4);
                 }
             </style>
         `;

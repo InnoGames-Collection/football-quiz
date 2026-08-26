@@ -90,7 +90,7 @@ export class LiveMatchScreen {
                     justify-content: space-between; 
                     align-items: center; 
                     padding: 16px 20px; 
-                    background: rgba(15,23,42,0.95);
+                    background: rgba(7,27,45,0.95);
                     backdrop-filter: blur(10px);
                     border-bottom: 1px solid rgba(255,255,255,0.05);
                 ">
@@ -192,7 +192,7 @@ export class LiveMatchScreen {
                     z-index: 100;
                     width: 90%;
                     max-width: 400px;
-                    background: rgba(15,23,42,0.95);
+                    background: rgba(7,27,45,0.95);
                     border: 2px solid;
                     border-radius: 20px;
                     padding: 16px;
@@ -232,7 +232,7 @@ export class LiveMatchScreen {
                     opacity: 0;
                 }
                 .live-option-btn:active:not(:disabled) { transform: scale(0.97); }
-                .live-option-btn.correct { background: rgba(34,197,94,0.15) !important; border-color: var(--fds-green-pitch) !important; }
+                .live-option-btn.correct { background: rgba(0,200,83,0.15) !important; border-color: var(--fds-green-pitch) !important; }
                 .live-option-btn.wrong { background: rgba(239,68,68,0.15) !important; border-color: var(--fds-red-live) !important; }
                 .live-option-btn.correct .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-green-pitch); }
                 .live-option-btn.wrong .feedback-icon { opacity: 1 !important; transform: scale(1) !important; color: var(--fds-red-live); }
@@ -370,7 +370,7 @@ export class LiveMatchScreen {
         const text = document.getElementById('live-feedback-text');
         if (overlay && icon && text) {
             overlay.style.borderColor = isGoal ? 'var(--tv-pitch-green)' : '#EF4444';
-            overlay.style.boxShadow = isGoal ? '0 10px 40px rgba(34,197,94,0.3)' : '0 10px 40px rgba(239,68,68,0.3)';
+            overlay.style.boxShadow = isGoal ? '0 10px 40px rgba(0,200,83,0.3)' : '0 10px 40px rgba(239,68,68,0.3)';
             overlay.style.color = isGoal ? 'var(--tv-pitch-green)' : '#EF4444';
             
             icon.innerText = isGoal ? '⚽' : '🧤';

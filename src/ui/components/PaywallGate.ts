@@ -32,7 +32,7 @@ export class PaywallGate {
             <div class="stadium-container" style="pointer-events: auto; overflow-y: auto; padding: 40px 20px;">
                     <div style="
                         position: relative;
-                        background: rgba(15, 23, 42, 0.95);
+                        background: rgba(7, 27, 45, 0.95);
                         backdrop-filter: blur(20px);
                         border: 1px solid rgba(255, 255, 255, 0.1);
                         border-radius: 20px;
@@ -42,7 +42,7 @@ export class PaywallGate {
                     ">
                         <button id="pw-close-btn" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: var(--fds-text-main); font-weight: bold; cursor: pointer; font-size: 24px;">✕</button>
                         <div style="font-size: 54px; margin-bottom: 12px;">🔒</div>
-                        <span style="font-size: 11px; font-weight: 800; color: #FFD700; letter-spacing: 2px;">
+                        <span style="font-size: 11px; font-weight: 800; color: #FFD54F; letter-spacing: 2px;">
                             VIP FEATURE GATE
                         </span>
                         <h2 style="margin: 8px 0 16px 0; font-size: 26px; font-weight: 900; color: white;">

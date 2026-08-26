@@ -212,7 +212,7 @@ export class SettingsScreen {
                     
                     <!-- Account Group -->
                     <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'መለያ እና መገለጫ' : (i18n.currentLocale === 'om' ? 'HERREGA & PROFILE' : 'ACCOUNT & PROFILE')}</div>
-                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(7, 27, 45, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         ${listTile('🌍', i18n.currentLocale === 'am' ? 'ቋንቋ' : (i18n.currentLocale === 'om' ? 'Afaan' : 'Language'), currentLangLabel, chevron, 'tile-language')}
                         ${listTile('🔔', i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), '', renderToggle(areNotificationsEnabled), 'tile-notifications')}
                         <div style="border-bottom: none;">
@@ -222,7 +222,7 @@ export class SettingsScreen {
 
                     <!-- Legal Group -->
                     <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'እገዛ እና ህጋዊ' : (i18n.currentLocale === 'om' ? 'GARGAARSA & SEERA' : 'SUPPORT & LEGAL')}</div>
-                    <div class="glass-card" style="margin-bottom: 32px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="glass-card" style="margin-bottom: 32px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(7, 27, 45, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         ${listTile('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'Gargaarsa & Deeggarsa' : 'Help & Support'), '', chevron, 'tile-help')}
                         ${listTile('📜', i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'Waliigaltee & Haalawwan' : 'Terms & Conditions'), '', chevron, 'tile-terms')}
                         <div style="border-bottom: none;">
@@ -659,7 +659,7 @@ export class SettingsScreen {
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                         
-                        <div class="glass-card" style="border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); text-align: left;" id="support-form-container">
+                        <div class="glass-card" style="border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(7, 27, 45, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); text-align: left;" id="support-form-container">
                             <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 8px; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? '✉️ ሪፖርት ያድርጉ' : (i18n.currentLocale === 'om' ? '✉️ Gabaasi' : '✉️ Report an Issue')}</div>
                             <div style="font-size: 14px; color: var(--fds-text-dim); margin-bottom: 20px;">Contact support to resolve bugs, connection drops, or game errors.</div>
 
@@ -685,7 +685,7 @@ export class SettingsScreen {
                                 </div>
                             </div>
                             
-                            <div id="btn-submit-support" style="background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%); padding: 14px; text-align: center; border-radius: 12px; font-weight: 900; color: white; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);">
+                            <div id="btn-submit-support" style="background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%); padding: 14px; text-align: center; border-radius: 12px; font-weight: 900; color: white; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);">
                                 ${i18n.currentLocale === 'am' ? 'መልእክት ላክ' : (i18n.currentLocale === 'om' ? 'ERGAA ERGI' : 'SUBMIT SUPPORT TICKET')}
                             </div>
                         </div>
@@ -875,7 +875,7 @@ export class SettingsScreen {
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
-                    <div class="glass-card" style="border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="glass-card" style="border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(7, 27, 45, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         ${categoriesHtml}
                     </div>
 
@@ -989,7 +989,7 @@ export class SettingsScreen {
                 ${header(i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'WALIIGALTEE' : 'TERMS & CONDITIONS'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
-                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: var(--fds-text-muted);">
+                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(7,27,45,0.85); color: var(--fds-text-muted);">
                         ${body}
                     </div>
                 </div>
@@ -1046,7 +1046,7 @@ export class SettingsScreen {
                 ${header(i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'IMAAMMATA DHUUNFAA' : 'PRIVACY POLICY'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
-                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(15,23,42,0.85); color: var(--fds-text-muted);">
+                    <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); background: rgba(7,27,45,0.85); color: var(--fds-text-muted);">
                         ${body}
                     </div>
                 </div>

@@ -34,7 +34,7 @@ export class ProgressionManager {
         { name: 'Division 3 (National 1)', tier: 3, minXp: 2500, badge: '🥈', color: '#60A5FA', weeklyPromotionZone: 'Top 20% Promoted to Div 2' },
         { name: 'Division 2 (Premier League)', tier: 2, minXp: 5000, badge: '🥇', color: '#F59E0B', weeklyPromotionZone: 'Top 15% Promoted to Div 1' },
         { name: 'Division 1 (CAF Champions)', tier: 1, minXp: 10000, badge: '💎', color: '#C084FC', weeklyPromotionZone: 'Top 10% Promoted to Premier' },
-        { name: 'Premier Division (World Legends)', tier: 0, minXp: 20000, badge: '👑', color: '#FFD700', weeklyPromotionZone: 'Pinnacle Division - World Top 100' }
+        { name: 'Premier Division (World Legends)', tier: 0, minXp: 20000, badge: '👑', color: '#FFD54F', weeklyPromotionZone: 'Pinnacle Division - World Top 100' }
     ];
 
     public static getRank(xp: number): RankInfo {

@@ -7,7 +7,7 @@ export class ConfettiCanvas {
     private static _particles: Particle[] = [];
     private static _animId: number | null = null;
 
-    public static burst(x?: number, y?: number, count: number = 60, colors: string[] = ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF', '#FF4500']): void {
+    public static burst(x?: number, y?: number, count: number = 60, colors: string[] = ['#FFD54F', '#00C853', '#3B82F6', '#FFFFFF', '#FF4500']): void {
         this._init();
 
         const canvasX = x ?? (window.innerWidth / 2);

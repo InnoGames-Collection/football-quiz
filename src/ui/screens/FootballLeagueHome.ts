@@ -55,7 +55,7 @@ export class FootballLeagueHome {
         let contextualCardsHtml = '';
         if (activeSession && activeSession.matchType === 'daily') {
             contextualCardsHtml += `
-                <div class="glass-card fade-in-up" style="padding: clamp(12px, 2vh, 16px); border-color: rgba(34,197,94,0.3); border-radius: 16px; display: flex; align-items: center; justify-content: space-between;">
+                <div class="glass-card fade-in-up" style="padding: clamp(12px, 2vh, 16px); border-color: rgba(0,200,83,0.3); border-radius: 16px; display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #4ADE80; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Continue Challenge</div>
                         <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">Daily Challenge</div>
@@ -79,7 +79,7 @@ export class FootballLeagueHome {
                 <div class="tv-broadcast-header fade-in-up" style="justify-content: space-between; padding: 12px 16px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(2,6,23,0.85); backdrop-filter: blur(12px);">
                     <!-- Left: Profile & Brand -->
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #009A44, #22C55E); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid #4ADE80;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #009624, #00C853); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid #00C853;">
                             ⚽
                         </div>
                         <div>
@@ -354,7 +354,7 @@ export class FootballLeagueHome {
                 if (isDailyCompleted) {
                     actionEl.innerHTML = `
                         <div style="display: flex; justify-content: center;">
-                            <div style="background: rgba(0,0,0,0.6); border-radius: 999px; padding: 10px 24px; text-align: center; border: 1px solid rgba(255,215,0,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: default;">
+                            <div style="background: rgba(0,0,0,0.6); border-radius: 999px; padding: 10px 24px; text-align: center; border: 1px solid rgba(255,213,79,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.4); cursor: default;">
                                 <div style="font-size: 10px; font-weight: 800; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Next Challenge In</div>
                                 <div id="next-daily-countdown" style="font-size: 20px; font-weight: 900; color: white; font-family: var(--fds-font-mono); letter-spacing: 1px;">--:--:--</div>
                             </div>
@@ -409,7 +409,7 @@ export class FootballLeagueHome {
             const previewEl = document.getElementById('home-leaderboard-preview');
             if (previewEl && lb.length > 0) {
                 const medals = ['🥇', '🥈', '🥉'];
-                const bgColors = ['rgba(255,215,0,0.08)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.02)'];
+                const bgColors = ['rgba(255,213,79,0.08)', 'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.02)'];
                 const textColors = ['white', '#E2E8F0', '#CBD5E1'];
                 
                 previewEl.innerHTML = lb.map((entry, idx) => `

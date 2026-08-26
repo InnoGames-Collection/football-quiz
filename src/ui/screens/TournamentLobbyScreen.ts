@@ -41,7 +41,7 @@ export class TournamentLobbyScreen {
                         ${this._tournaments.map(t => `
                             <div class="glass-card" style="
                                 padding: 24px;
-                                border-color: rgba(255,215,0,0.3);
+                                border-color: rgba(255,213,79,0.3);
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;

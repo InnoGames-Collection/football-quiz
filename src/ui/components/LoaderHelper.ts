@@ -185,7 +185,7 @@ export class LoaderHelper {
                     font-weight: 800;
                     font-size: 13px;
                     cursor: pointer;
-                    box-shadow: 0 4px 12px rgba(34,197,94,0.25);
+                    box-shadow: 0 4px 12px rgba(0,200,83,0.25);
                     transition: transform 0.1s;
                     text-transform: uppercase;
                 ">${btnText}</button>

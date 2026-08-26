@@ -89,7 +89,7 @@ export class ProfileScreen {
                 
                 <!-- TOP HEADER -->
                 <div style="
-                    background: linear-gradient(180deg, rgba(34,197,94,0.2) 0%, rgba(7,27,45,0) 100%);
+                    background: linear-gradient(180deg, rgba(0,200,83,0.2) 0%, rgba(7,27,45,0) 100%);
                     padding: 32px 16px 16px 16px;
                     text-align: center;
                 ">

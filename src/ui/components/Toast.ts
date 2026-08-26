@@ -22,9 +22,9 @@ export class Toast {
 
         const el = document.createElement('div');
         const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : '⚽';
-        const borderColor = type === 'success' ? '#22C55E' : type === 'warning' ? '#F59E0B' : type === 'error' ? '#EF4444' : '#FFD700';
+        const borderColor = type === 'success' ? '#00C853' : type === 'warning' ? '#F59E0B' : type === 'error' ? '#EF4444' : '#FFD54F';
 
-        el.style.background = 'rgba(15, 23, 42, 0.92)';
+        el.style.background = 'rgba(7, 27, 45, 0.92)';
         el.style.border = `1px solid ${borderColor}`;
         el.style.borderRadius = '14px';
         el.style.padding = '12px 20px';

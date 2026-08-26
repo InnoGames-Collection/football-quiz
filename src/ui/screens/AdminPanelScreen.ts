@@ -45,8 +45,8 @@ export class AdminPanelScreen {
 
                     ${this._statusMessage ? `
                         <div style="
-                            background: rgba(34, 197, 94, 0.2);
-                            border: 1px solid rgba(34, 197, 94, 0.4);
+                            background: rgba(0, 200, 83, 0.2);
+                            border: 1px solid rgba(0, 200, 83, 0.4);
                             color: #86EFAC;
                             padding: 12px 16px;
                             border-radius: 12px;
@@ -95,7 +95,7 @@ export class AdminPanelScreen {
                     transition: all 0.2s;
                 }
                 .tab-btn.active-tab {
-                    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                    background: linear-gradient(135deg, #FFD54F 0%, #FFA500 100%);
                     color: #0F172A;
                     border-color: var(--fds-gold-primary);
                     font-weight: bold;
@@ -103,7 +103,7 @@ export class AdminPanelScreen {
                 .form-input {
                     width: 100%;
                     padding: 10px 12px;
-                    background: rgba(15, 23, 42, 0.7);
+                    background: rgba(7, 27, 45, 0.7);
                     border: 1px solid rgba(255,255,255,0.15);
                     border-radius: 8px;
                     color: var(--fds-text-main);
@@ -290,14 +290,14 @@ world-cup,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,South Afric
 
         return `
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                <div class="glass-card" style="padding: 20px; border-color: rgba(34,197,94,0.3);">
+                <div class="glass-card" style="padding: 20px; border-color: rgba(0,200,83,0.3);">
                     <div style="font-size: var(--fds-font-xs); color: var(--text-muted); font-weight: bold;">TOTAL REGISTERED PLAYERS</div>
                     <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--pitch-green); margin-top: 6px;">
                         ${stats.activePlayers.toLocaleString()}
                     </div>
                 </div>
 
-                <div class="glass-card" style="padding: 20px; border-color: rgba(255,215,0,0.3);">
+                <div class="glass-card" style="padding: 20px; border-color: rgba(255,213,79,0.3);">
                     <div style="font-size: var(--fds-font-xs); color: var(--text-muted); font-weight: bold;">TOTAL MATCHES PLAYED</div>
                     <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--gold-primary); margin-top: 6px;">
                         ${stats.totalMatches.toLocaleString()}

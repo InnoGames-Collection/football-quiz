@@ -56,7 +56,7 @@ export class BottomNav {
             // Core height + safe area
             navContainer.style.height = 'calc(64px + env(safe-area-inset-bottom, 16px))';
             navContainer.style.background = 'rgba(2, 6, 23, 0.96)';
-            navContainer.style.borderTop = '2px solid var(--fds-gold-primary, #FFD700)';
+            navContainer.style.borderTop = '2px solid var(--fds-gold-primary, #FFD54F)';
             navContainer.style.boxShadow = '0 -8px 32px rgba(0, 0, 0, 0.85)';
             navContainer.style.backdropFilter = 'blur(16px)';
             navContainer.style.zIndex = '9000';
@@ -76,7 +76,7 @@ export class BottomNav {
                 <button class="nav-tab-item ${isActive ? 'nav-tab-active' : ''}" data-tab-id="${t.id}" style="
                     background: none;
                     border: none;
-                    color: ${isActive ? 'var(--fds-gold-primary, #FFD700)' : '#94A3B8'};
+                    color: ${isActive ? 'var(--fds-gold-primary, #FFD54F)' : '#94A3B8'};
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -88,7 +88,7 @@ export class BottomNav {
                     min-height: 48px; /* Strict 48px touch target */
                     outline: none;
                     transform: ${isActive ? 'scale(1.1)' : 'scale(1)'};
-                    filter: ${isActive ? 'drop-shadow(0 2px 8px rgba(255,215,0,0.4))' : 'none'};
+                    filter: ${isActive ? 'drop-shadow(0 2px 8px rgba(255,213,79,0.4))' : 'none'};
                 ">
                     <div style="position: relative; display: inline-block;">
                         <span style="font-size: 20px; margin-bottom: 2px;">${t.icon}</span>
@@ -96,7 +96,7 @@ export class BottomNav {
                             display: none;
                             position: absolute;
                             top: -4px; right: -8px;
-                            background: var(--tv-pitch-green, #22C55E);
+                            background: var(--tv-pitch-green, #00C853);
                             color: white; font-size: 10px; font-weight: 900;
                             border-radius: 10px; padding: 2px 6px;
                             box-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -152,9 +152,9 @@ export class BottomNav {
             const tabId = btn.getAttribute('data-tab-id');
             const isActive = tabId === BottomNav._activeTab;
             const element = btn as HTMLElement;
-            element.style.color = isActive ? 'var(--fds-gold-primary, #FFD700)' : '#94A3B8';
+            element.style.color = isActive ? 'var(--fds-gold-primary, #FFD54F)' : '#94A3B8';
             element.style.transform = isActive ? 'scale(1.1)' : 'scale(1)';
-            element.style.filter = isActive ? 'drop-shadow(0 2px 8px rgba(255,215,0,0.4))' : 'none';
+            element.style.filter = isActive ? 'drop-shadow(0 2px 8px rgba(255,213,79,0.4))' : 'none';
             const labelSpan = element.querySelector('.tab-text') as HTMLElement;
             if (labelSpan) {
                 labelSpan.style.fontWeight = isActive ? '800' : '600';

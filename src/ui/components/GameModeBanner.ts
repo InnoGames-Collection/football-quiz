@@ -20,7 +20,7 @@ export class GameModeBanner {
     public static render(props: GameModeBannerProps): string {
         return `
             <div class="glass-card fade-in-up" style="
-                border: 2px solid rgba(34, 197, 94, 0.3); 
+                border: 2px solid rgba(0, 200, 83, 0.3); 
                 padding: 0;
                 text-align: center;
                 border-radius: 20px;
@@ -35,7 +35,7 @@ export class GameModeBanner {
                 <div ${props.bgId ? `id="${props.bgId}"` : ''} style="
                     position: absolute;
                     top: 0; left: 0; right: 0; bottom: 0;
-                    background: linear-gradient(to bottom, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.4) 100%), url('${props.bannerUrl}') center/cover no-repeat;
+                    background: linear-gradient(to bottom, rgba(7,27,45,0.1) 0%, rgba(7,27,45,0.4) 100%), url('${props.bannerUrl}') center/cover no-repeat;
                     opacity: 1;
                     z-index: 0;
                 "></div>
@@ -67,7 +67,7 @@ export class GameModeBanner {
                 <!-- Content Container -->
                 <div style="position: relative; z-index: 1; padding: 32px 20px 24px 20px; height: 100%;">
                     <!-- Icon -->
-                    <div ${props.iconId ? `id="${props.iconId}"` : ''} style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(34,197,94,0.5)); transform: scale(1.05);">${props.icon}</div>
+                    <div ${props.iconId ? `id="${props.iconId}"` : ''} style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(0,200,83,0.5)); transform: scale(1.05);">${props.icon}</div>
                     
                     <!-- Title -->
                     <div ${props.titleId ? `id="${props.titleId}"` : ''} style="font-size: 24px; font-weight: 900; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.8); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">
@@ -81,7 +81,7 @@ export class GameModeBanner {
                     </div>
                     ` : ''}
                     
-                    <button id="${props.buttonId}" class="ethio-btn ethio-btn-primary btn-kickoff-action" style="width: 100%; box-shadow: 0 8px 24px rgba(34,197,94,0.4); font-size: var(--fds-font-md); padding: 16px; border-radius: 14px;">
+                    <button id="${props.buttonId}" class="ethio-btn ethio-btn-primary btn-kickoff-action" style="width: 100%; box-shadow: 0 8px 24px rgba(0,200,83,0.4); font-size: var(--fds-font-md); padding: 16px; border-radius: 14px;">
                         ${props.buttonText} ⚽
                     </button>
                 </div>

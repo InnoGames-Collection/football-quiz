@@ -121,7 +121,7 @@ export class AuthScreen {
                 position: absolute; top: 0; left: 0; width: 100%; height: 100%;
                 background-color: #020617;
                 background-image: 
-                    radial-gradient(circle at center, rgba(15, 23, 42, 0.8) 0%, rgba(2, 6, 23, 0.98) 100%),
+                    radial-gradient(circle at center, rgba(7, 27, 45, 0.8) 0%, rgba(2, 6, 23, 0.98) 100%),
                     repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.02) 40px, rgba(255, 255, 255, 0.02) 80px);
                 display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
                 font-family: system-ui, -apple-system, sans-serif; pointer-events: auto; padding: max(16px, env(safe-area-inset-top)) 16px 16px 16px; box-sizing: border-box; overflow-y: auto; overflow-x: hidden;
@@ -239,11 +239,11 @@ export class AuthScreen {
                 </div>
 
                 <button id="auth-subscribe-btn" style="
-                    background: rgba(15, 23, 42, 0.6); color: #00C853;
+                    background: rgba(7, 27, 45, 0.6); color: #00C853;
                     border: 2px solid #00C853; border-radius: 12px; height: 56px; font-size: 16px;
                     font-weight: 800; width: 100%; max-width: 400px; cursor: pointer;
                     flex-shrink: 0; margin-bottom: clamp(16px, 4vh, 40px); transition: background 0.2s;
-                " onmouseover="this.style.background='rgba(0,200,83,0.1)'" onmouseout="this.style.background='rgba(15, 23, 42, 0.6)'">
+                " onmouseover="this.style.background='rgba(0,200,83,0.1)'" onmouseout="this.style.background='rgba(7, 27, 45, 0.6)'">
                     ${i18n.currentLocale === 'am' ? 'ሰብስክራይብ' : (i18n.currentLocale === 'om' ? 'Galmoofadhu' : 'Subscribe')}
                 </button>
             </div>

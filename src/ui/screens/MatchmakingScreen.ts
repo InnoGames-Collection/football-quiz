@@ -103,14 +103,14 @@ export class MatchmakingScreen {
                         </div>
 
                         <!-- Live Players Count -->
-                        <div style="margin-bottom: 24px; font-size: var(--fds-font-sm); font-weight: 700; color: #4ADE80; background: rgba(34, 197, 94, 0.1); padding: 8px 16px; border-radius: 20px; display: inline-block;">
+                        <div style="margin-bottom: 24px; font-size: var(--fds-font-sm); font-weight: 700; color: #4ADE80; background: rgba(0, 200, 83, 0.1); padding: 8px 16px; border-radius: 20px; display: inline-block;">
                             <span style="display: inline-block; width: 8px; height: 8px; background: #4ADE80; border-radius: 50%; margin-right: 8px; animation: pulse 1.5s infinite;"></span>
                             <span id="live-players-count">142 Players in Queue</span>
                         </div>
 
                         <!-- Player Info Card -->
                         <div style="
-                            background: rgba(15, 23, 42, 0.6);
+                            background: rgba(7, 27, 45, 0.6);
                             border: 1px solid rgba(255,255,255,0.1);
                             border-radius: 14px;
                             padding: 16px;

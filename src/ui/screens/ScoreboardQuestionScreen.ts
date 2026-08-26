@@ -246,7 +246,7 @@ export class ScoreboardQuestionScreen {
                 <div style="
                     display: flex; 
                     flex-direction: column;
-                    background: rgba(15,23,42,0.95);
+                    background: rgba(7,27,45,0.95);
                     backdrop-filter: blur(12px);
                     border-bottom: 1px solid rgba(255,255,255,0.08);
                     position: relative;
@@ -295,7 +295,7 @@ export class ScoreboardQuestionScreen {
                         <div style="
                             height: 100%; 
                             width: ${((this._currentIndex + 1) / this._questions.length) * 100}%; 
-                            background: linear-gradient(90deg, #009A44 0%, #22C55E 100%); 
+                            background: linear-gradient(90deg, #009624 0%, #00C853 100%); 
                             transition: width 350ms cubic-bezier(0.16, 1, 0.3, 1);
                         "></div>
                     </div>
@@ -399,14 +399,14 @@ export class ScoreboardQuestionScreen {
                         width: 100%; max-width: 320px; 
                         padding: 24px; text-align: center; 
                         border-radius: 20px;
-                        background: rgba(15, 23, 42, 0.95);
+                        background: rgba(7, 27, 45, 0.95);
                         border: 1px solid rgba(255,255,255,0.1);
                         box-shadow: 0 16px 40px rgba(0,0,0,0.5);
                     ">
                         <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">Leave Quiz?</div>
                         <div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-bottom: 24px; line-height: 1.4;">Your current progress will be lost.</div>
                         <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <button id="btn-pause-resume" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #22c55e, #15803d); color: white; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(34,197,94,0.3);">Stay</button>
+                            <button id="btn-pause-resume" style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(135deg, #00C853, #009624); color: white; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,200,83,0.3);">Stay</button>
                             <button id="btn-pause-leave" style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.1); color: #EF4444; font-weight: bold; font-size: 16px; cursor: pointer;">Leave Quiz</button>
                         </div>
                     </div>
@@ -418,7 +418,7 @@ export class ScoreboardQuestionScreen {
                     position: fixed; 
                     top: 0; left: 0; 
                     width: 100%; height: 100%; 
-                    background: rgba(15, 23, 42, 0.95); 
+                    background: rgba(7, 27, 45, 0.95); 
                     z-index: 10001; 
                     align-items: center; justify-content: center;
                     padding: 20px; box-sizing: border-box;
@@ -428,7 +428,7 @@ export class ScoreboardQuestionScreen {
                         <div style="font-size: 64px; margin-bottom: 24px;">⏸️</div>
                         <div style="font-size: 28px; font-weight: 900; color: white; margin-bottom: 12px; letter-spacing: 1px;">Match Paused</div>
                         <div style="font-size: 16px; color: #94A3B8; margin-bottom: 40px;">Tap Continue to resume.</div>
-                        <button id="btn-resume-paused" style="width: 100%; max-width: 240px; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #22c55e, #15803d); color: white; font-weight: 900; font-size: 18px; cursor: pointer; box-shadow: 0 8px 24px rgba(34,197,94,0.4); text-transform: uppercase;">Continue</button>
+                        <button id="btn-resume-paused" style="width: 100%; max-width: 240px; padding: 18px; border-radius: 16px; border: none; background: linear-gradient(135deg, #00C853, #009624); color: white; font-weight: 900; font-size: 18px; cursor: pointer; box-shadow: 0 8px 24px rgba(0,200,83,0.4); text-transform: uppercase;">Continue</button>
                     </div>
                 </div>
             </div>
@@ -557,7 +557,7 @@ export class ScoreboardQuestionScreen {
                     box-shadow: 0 0 20px rgba(255, 213, 79, 0.4), inset 0 2px 4px rgba(255,255,255,0.2) !important;
                 }
                 .option-btn.correct { 
-                    background: linear-gradient(180deg, #22C55E 0%, #15803D 100%) !important; 
+                    background: linear-gradient(180deg, #00C853 0%, #009624 100%) !important; 
                     border-color: #4ADE80 !important; 
                     box-shadow: 0 0 24px rgba(74, 222, 128, 0.5), inset 0 2px 4px rgba(255,255,255,0.3) !important;
                     animation: correctPulse 400ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -607,7 +607,7 @@ export class ScoreboardQuestionScreen {
 
                 @keyframes goal-bounce {
                     0% { transform: translateY(0) scale(1); }
-                    50% { transform: translateY(-20px) scale(1.2); text-shadow: 0 10px 20px rgba(34,197,94,0.5); }
+                    50% { transform: translateY(-20px) scale(1.2); text-shadow: 0 10px 20px rgba(0,200,83,0.5); }
                     100% { transform: translateY(0) scale(1); }
                 }
                 @keyframes save-shake {
@@ -848,7 +848,7 @@ export class ScoreboardQuestionScreen {
         if (isCorrect) {
             targetBtn.classList.add('correct');
             this._audioManager.playCorrectAnswerGoal(isFinalQuestion ? 400 : undefined);
-            ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD700', '#22C55E', '#3B82F6', '#FFFFFF']);
+            ConfettiCanvas.burst(window.innerWidth / 2, window.innerHeight / 3, 50, ['#FFD54F', '#00C853', '#3B82F6', '#FFFFFF']);
             this._showFeedbackOverlay(true);
             
             // Rolling Scoreboard Score Counter
@@ -889,8 +889,8 @@ export class ScoreboardQuestionScreen {
         if (overlay && anim && text && sub) {
             overlay.style.borderColor = isGoal ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)';
             overlay.style.background = isGoal 
-                ? 'linear-gradient(135deg, rgba(34,197,94,0.25) 0%, rgba(15,23,42,0.96) 100%)' 
-                : 'linear-gradient(135deg, rgba(255,215,0,0.18) 0%, rgba(15,23,42,0.96) 100%)';
+                ? 'linear-gradient(135deg, rgba(0,200,83,0.25) 0%, rgba(7,27,45,0.96) 100%)' 
+                : 'linear-gradient(135deg, rgba(255,213,79,0.18) 0%, rgba(7,27,45,0.96) 100%)';
             overlay.style.color = isGoal ? 'var(--tv-pitch-green)' : 'var(--tv-gold-primary)';
             
             anim.innerText = isGoal ? '⚽🥅' : '🧤⚽';

@@ -59,7 +59,7 @@ export class MessageCenterScreen {
                             padding: 12px 16px; 
                             border-radius: 12px; 
                             border: 1px solid rgba(255,255,255,0.1); 
-                            background: rgba(15, 23, 42, 0.7); 
+                            background: rgba(7, 27, 45, 0.7); 
                             color: white; 
                             font-size: var(--fds-font-sm);
                             box-sizing: border-box;
@@ -124,7 +124,7 @@ export class MessageCenterScreen {
                         display: flex;
                         align-items: center;
                         gap: 8px;
-                        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                        box-shadow: 0 4px 12px rgba(0, 200, 83, 0.4);
                     ">
                         ${tab.label[locale] || tab.label['en']}
                         ${showBadge ? `<span style="background: white; color: var(--fds-green-dark); font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 10px;">${count > 99 ? '99+' : count}</span>` : ''}
@@ -137,7 +137,7 @@ export class MessageCenterScreen {
                         padding: 8px 16px;
                         border-radius: 12px;
                         border: 1px solid rgba(255,255,255,0.08);
-                        background: rgba(15, 23, 42, 0.7);
+                        background: rgba(7, 27, 45, 0.7);
                         backdrop-filter: blur(8px);
                         -webkit-backdrop-filter: blur(8px);
                         color: var(--fds-text-dim);
@@ -281,11 +281,11 @@ export class MessageCenterScreen {
                     cursor: pointer;
                     position: relative;
                     transition: transform 0.2s, background-color 0.2s;
-                    border: 1px solid ${item.read ? 'rgba(255,255,255,0.08)' : 'rgba(34, 197, 94, 0.4)'};
-                    background: rgba(15, 23, 42, 0.7);
+                    border: 1px solid ${item.read ? 'rgba(255,255,255,0.08)' : 'rgba(0, 200, 83, 0.4)'};
+                    background: rgba(7, 27, 45, 0.7);
                     backdrop-filter: blur(12px);
                     -webkit-backdrop-filter: blur(12px);
-                    box-shadow: ${item.read ? 'none' : '0 4px 16px rgba(34, 197, 94, 0.1)'};
+                    box-shadow: ${item.read ? 'none' : '0 4px 16px rgba(0, 200, 83, 0.1)'};
                     align-items: center;
                 ">
                     <!-- Category Icon -->
@@ -293,8 +293,8 @@ export class MessageCenterScreen {
                         width: 48px;
                         height: 48px;
                         border-radius: 12px;
-                        background: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(34, 197, 94, 0.1)'};
-                        border: 1px solid ${item.read ? 'rgba(255,255,255,0.1)' : 'rgba(34, 197, 94, 0.3)'};
+                        background: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(0, 200, 83, 0.1)'};
+                        border: 1px solid ${item.read ? 'rgba(255,255,255,0.1)' : 'rgba(0, 200, 83, 0.3)'};
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -312,7 +312,7 @@ export class MessageCenterScreen {
                                 height: 12px;
                                 border-radius: 50%;
                                 background-color: var(--tv-pitch-green);
-                                border: 2px solid rgba(15, 23, 42, 1);
+                                border: 2px solid rgba(7, 27, 45, 1);
                                 box-shadow: 0 0 8px var(--tv-pitch-glow);
                             "></div>
                         ` : ''}
@@ -398,7 +398,7 @@ export class MessageCenterScreen {
         overlay.innerHTML = `
             <div style="
                 width: 100%; max-width: 600px; 
-                background: rgba(15,23,42,0.95);
+                background: rgba(7,27,45,0.95);
                 backdrop-filter: blur(12px);
                 border-radius: 24px 24px 0 0;
                 border-top: 1px solid rgba(255,255,255,0.1);

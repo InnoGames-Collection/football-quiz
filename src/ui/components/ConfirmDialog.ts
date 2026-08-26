@@ -24,7 +24,7 @@ export class ConfirmDialog {
             overlay.innerHTML = `
                 <div style="
                     background: rgba(30, 41, 59, 0.95);
-                    border: 1px solid rgba(255, 215, 0, 0.3);
+                    border: 1px solid rgba(255, 213, 79, 0.3);
                     border-radius: 20px;
                     padding: 28px;
                     width: 100%;
@@ -34,7 +34,7 @@ export class ConfirmDialog {
                     color: white;
                     font-family: system-ui, -apple-system, sans-serif;
                 ">
-                    <h3 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 800; color: #FFD700;">${title}</h3>
+                    <h3 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 800; color: #FFD54F;">${title}</h3>
                     <p style="margin: 0 0 24px 0; font-size: 14px; color: #94A3B8; line-height: 1.5;">${message}</p>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -50,7 +50,7 @@ export class ConfirmDialog {
                         
                         <button id="dlg-confirm-btn" style="
                             padding: 12px;
-                            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+                            background: linear-gradient(135deg, #FFD54F 0%, #FFA500 100%);
                             border: none;
                             border-radius: 10px;
                             color: #0F172A;
