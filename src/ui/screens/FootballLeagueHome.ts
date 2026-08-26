@@ -140,19 +140,31 @@ export class FootballLeagueHome {
                     
                     /* HUD Module */
                     .hud-module {
-                        background: rgba(0, 0, 0, 0.3);
-                        border: 1px solid rgba(255, 255, 255, 0.05);
-                        border-radius: 12px;
-                        padding: 12px 8px;
+                        background: linear-gradient(135deg, rgba(7, 27, 45, 0.85) 0%, rgba(7, 27, 45, 0.6) 100%);
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        border-radius: 14px;
+                        padding: 12px 6px;
                         display: flex;
                         flex-direction: column;
                         align-items: center;
                         justify-content: center;
+                        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    /* HUD Light Reflection */
+                    .hud-module::before {
+                        content: '';
+                        position: absolute;
+                        top: 0; left: -100%; width: 50%; height: 100%;
+                        background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+                        transform: skewX(-20deg);
+                        pointer-events: none;
                     }
                     .hud-module-icon {
                         font-size: 16px;
                         margin-bottom: 4px;
-                        opacity: 0.9;
+                        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
                     }
                     .hud-module-label {
                         font-size: 9px;
@@ -161,31 +173,35 @@ export class FootballLeagueHome {
                         text-transform: uppercase;
                         letter-spacing: 0.5px;
                         margin-bottom: 4px;
+                        text-align: center;
                     }
                     .hud-module-value {
-                        font-size: var(--fds-font-sm);
+                        font-size: 20px;
                         font-weight: 900;
-                        color: var(--fds-text-main);
+                        color: white;
+                        font-family: var(--fds-font-mono);
+                        transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
                     }
                     .hud-value-gold { color: #FFD54F; text-shadow: 0 0 12px rgba(255, 213, 79, 0.4); }
                     .hud-value-green { color: #00C853; text-shadow: 0 0 12px rgba(0, 200, 83, 0.4); }
+                    .hud-value-red { color: #EF4444; text-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
                 </style>
 
                 <!-- COMPACT TELEMETRY ROW -->
                 <div style="max-width: 900px; margin: 0 auto; padding: 0 16px;">
-                    <div id="home-daily-stats-row" class="fade-in-up ethio-home-card" style="padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px;">
+                    <div id="home-daily-stats-row" class="fade-in-up" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px;">
                         <div class="hud-module">
                             <div class="hud-module-icon">🔥</div>
                             <div class="hud-module-label">Daily Streak</div>
-                            <div class="hud-module-value" style="color: #EF4444;">${dailyStreak}</div>
+                            <div class="hud-module-value hud-value-red">${dailyStreak}</div>
                         </div>
                         <div class="hud-module">
-                            <div class="hud-module-icon">🏆</div>
+                            <div class="hud-module-icon" style="color: #FFD54F;">🏆</div>
                             <div class="hud-module-label">Daily Rank</div>
                             <div id="home-daily-rank" class="hud-module-value hud-value-gold">--</div>
                         </div>
                         <div class="hud-module">
-                            <div class="hud-module-icon">⭐</div>
+                            <div class="hud-module-icon" style="color: #FFD54F;">★</div>
                             <div class="hud-module-label">Daily Score</div>
                             <div id="home-daily-score" class="hud-module-value hud-value-gold">--</div>
                         </div>
@@ -238,33 +254,19 @@ export class FootballLeagueHome {
 
                         <!-- Hero Primary Action Button — replaced by server data in _fetchDynamicData -->
                         <div id="home-daily-action">
-                            ${DesignSystem.SkeletonList(1)}
                         </div>
                     </div>
 
-                    <div class="fade-in-up ethio-home-card interactive" id="btn-action-referral" style="padding: clamp(12px, 2vh, 16px); display: flex; align-items: center; justify-content: space-between;">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="font-size: var(--fds-font-xl); filter: drop-shadow(0 2px 4px rgba(255,213,79,0.4));">🎁</div>
-                            <div style="text-align: left;">
-                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; letter-spacing: 0.5px; text-transform: uppercase;">${t('home.invite')}</div>
-                                <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; margin-top: 2px;">${t('home.inviteDesc')}</div>
-                            </div>
-                        </div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FFD54F; background: rgba(255,213,79,0.15); border: 1px solid rgba(255,213,79,0.3); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
-                            ${t('home.copyLink')}
-                        </div>
-                    </div>
-                    
                     <!-- NEW CONTEXTUAL UI -->
                     ${contextualCardsHtml}
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
-                    <div class="fade-in-up ethio-home-card interactive" style="padding: 20px 16px; margin-bottom: 24px;" id="performance-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
-                                <span style="color: #00C853; text-shadow: 0 0 12px rgba(0,200,83,0.5);">📊</span> ${t('home.performance')}
+                    <div class="fade-in-up ethio-home-card interactive" style="padding: 24px 20px; margin-bottom: 24px; border: 1px solid rgba(0, 200, 83, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 200, 83, 0.05);" id="performance-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div style="font-size: var(--fds-font-md); font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 12px;">
+                                <span style="color: #00C853; text-shadow: 0 0 12px rgba(0,200,83,0.5); font-size: 24px;">📊</span> ${t('home.performance')}
                             </div>
-                            <button id="btn-view-all-stats" style="background: rgba(0, 200, 83, 0.15); border: 1px solid rgba(0,200,83,0.3); color: #00C853; font-size: var(--fds-font-xs); font-weight: 900; cursor: pointer; padding: 6px 14px; border-radius: 20px; letter-spacing: 0.5px; transition: all 0.2s; z-index: 10; position: relative;">${t('home.details')}</button>
+                            <button id="btn-view-all-stats" style="background: rgba(0, 200, 83, 0.2); border: 1px solid rgba(0,200,83,0.4); color: #00C853; font-size: var(--fds-font-sm); font-weight: 900; cursor: pointer; padding: 8px 18px; border-radius: 24px; letter-spacing: 0.5px; transition: all 0.2s; z-index: 10; position: relative; box-shadow: 0 4px 12px rgba(0, 200, 83, 0.2);">${t('home.details')}</button>
                         </div>
                         
                         ${gamesPlayed === 0 ? `
@@ -286,7 +288,7 @@ export class FootballLeagueHome {
                                 <div class="hud-module-value hud-value-green">${winRate}%</div>
                             </div>
                             <div class="hud-module">
-                                <div class="hud-module-icon">⭐</div>
+                                <div class="hud-module-icon" style="color: #FFD54F;">★</div>
                                 <div class="hud-module-label">${t('home.points')}</div>
                                 <div class="hud-module-value hud-value-gold">${profile.xp}</div>
                             </div>
@@ -520,11 +522,6 @@ export class FootballLeagueHome {
             this._callbacks.onLeaderboard();
         });
 
-        root.querySelector('#btn-action-referral')?.addEventListener('click', (e) => {
-            this._addRipple(e);
-            this._audioManager.playClick();
-            Toast.show('Invitation link copied! Share with friends to earn 200 XP bonus.', 'success');
-        });
 
         root.querySelector('#btn-view-all-stats')?.addEventListener('click', () => {
             this._audioManager.playClick();
