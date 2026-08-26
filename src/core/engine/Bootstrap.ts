@@ -29,6 +29,11 @@ import { EventBus } from '../events/EventBus';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';
 import { AchievementsScreen } from '../../ui/screens/AchievementsScreen';
 import { AwardsScreen } from '../../ui/screens/AwardsScreen';
+import { InviteFriendsScreen } from '../../ui/screens/InviteFriendsScreen';
+import { IdentityScreen } from '../../ui/screens/IdentityScreen';
+import { FAQScreen } from '../../ui/screens/FAQScreen';
+import { AboutScreen } from '../../ui/screens/AboutScreen';
+import { TermsScreen } from '../../ui/screens/TermsScreen';
 
 // --- Global Touch Interceptor ---
 // Prevents rapid-tapping (double-taps) on all buttons by locking async handlers.
@@ -91,7 +96,7 @@ export async function bootstrapFootballLeague(): Promise<Game> {
     winAny.ethioEvents = eventBus;
 
     // Navigation Stack Management
-    type RouteName = 'home' | 'play' | 'standings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats' | 'achievements' | 'awards' | 'play_single_path';
+    type RouteName = 'home' | 'play' | 'standings' | 'profile' | 'settings' | 'matchmaking' | 'live_match' | 'admin' | 'notifications' | 'stats' | 'messages' | 'subscription' | 'help' | 'faq' | 'about' | 'privacy' | 'terms' | 'quiz_game' | 'match_stats' | 'achievements' | 'awards' | 'invite' | 'identity' | 'play_single_path';
 
     let tabStacks: Record<TabId, RouteName[]> = {
         home: ['home'],
@@ -239,7 +244,10 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                         onAbout: () => renderRoute('about'),
                         onPrivacy: () => renderRoute('privacy'),
                         onTerms: () => renderRoute('terms'),
-                        onAwards: () => renderRoute('awards')
+                        onAwards: () => renderRoute('awards'),
+                        onInvite: () => renderRoute('invite'),
+                        onIdentity: () => renderRoute('identity'),
+                        onFaq: () => renderRoute('faq')
                     }
                 );
                 activeScreen = profScreen;
@@ -290,11 +298,40 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 awards.render();
                 break;
 
+            case 'invite':
+                cacheManager.setQuizActive(false);
+                const invite = new InviteFriendsScreen(
+                    game.uiManager, game.saveManager, game.audioManager, handleBack
+                );
+                activeScreen = invite;
+                invite.render();
+                break;
+
+            case 'identity':
+                cacheManager.setQuizActive(false);
+                const identityScreen = new IdentityScreen(
+                    game.uiManager, game.saveManager, game.audioManager, handleBack
+                );
+                activeScreen = identityScreen;
+                identityScreen.render();
+                break;
+
+            case 'faq':
+                cacheManager.setQuizActive(false);
+                const faqScreen = new FAQScreen(
+                    game.uiManager, game.saveManager, game.audioManager, handleBack
+                );
+                activeScreen = faqScreen;
+                faqScreen.render();
+                break;
+
             case 'about':
                 cacheManager.setQuizActive(false);
-                const about = new SettingsScreen(game.uiManager, game.saveManager, game.audioManager, handleBack, 'about');
-                activeScreen = about;
-                about.render();
+                const aboutScreen = new AboutScreen(
+                    game.uiManager, game.saveManager, game.audioManager, handleBack
+                );
+                activeScreen = aboutScreen;
+                aboutScreen.render();
                 break;
 
             case 'privacy':
@@ -306,9 +343,11 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
             case 'terms':
                 cacheManager.setQuizActive(false);
-                const terms = new SettingsScreen(game.uiManager, game.saveManager, game.audioManager, handleBack, 'terms');
-                activeScreen = terms;
-                terms.render();
+                const termsScreen = new TermsScreen(
+                    game.uiManager, game.saveManager, game.audioManager, handleBack
+                );
+                activeScreen = termsScreen;
+                termsScreen.render();
                 break;
 
             case 'notifications':

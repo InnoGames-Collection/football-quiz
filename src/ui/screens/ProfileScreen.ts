@@ -22,6 +22,9 @@ export interface ProfileCallbacks {
     onPrivacy: () => void;
     onTerms: () => void;
     onAwards: () => void;
+    onInvite: () => void;
+    onIdentity: () => void;
+    onFaq: () => void;
 }
 
 export class ProfileScreen {
@@ -263,20 +266,7 @@ export class ProfileScreen {
                         break;
                     
                     case 'invite':
-                        showModal(`
-                            <div style="font-size: 40px; margin-bottom: 12px;">👥</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : (i18n.currentLocale === 'om' ? 'Hiriyoota Affeeri' : 'Invite Friends')}</div>
-                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 16px;">${i18n.currentLocale === 'am' ? 'ጓደኞች ሲጫወቱ ሳንቲሞችን ያግኙ።' : (i18n.currentLocale === 'om' ? 'Yoo hiriyoonni taphatan saantima argadhu.' : 'Earn coins when friends play.')}</div>
-                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); font-size: var(--fds-font-xs); color: var(--tv-gold-primary); font-family: monospace; margin-bottom: 16px; word-break: break-all;">https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}</div>
-                            ${DesignSystem.Button({ id: 'btn-copy-ref', text: i18n.currentLocale === 'am' ? 'ሊንክ ቅዳ' : (i18n.currentLocale === 'om' ? 'LIINKII WARAABBI' : 'COPY LINK'), variant: 'primary', fullWidth: true })}
-                        `);
-
-                        document.getElementById('btn-copy-ref')?.addEventListener('click', () => {
-                            this._audioManager.playClick();
-                            navigator.clipboard.writeText(`https://ethiofantasy.com/join?ref=${this._saveManager.profile.phone || 'guest'}`);
-                            const btn = document.getElementById('btn-copy-ref');
-                            if (btn) btn.innerText = i18n.currentLocale === 'am' ? 'ተቀድቷል ✅' : (i18n.currentLocale === 'om' ? 'WARAABAMEERA ✅' : 'COPIED ✅');
-                        });
+                        this._callbacks.onInvite();
                         break;
 
                     case 'achievements':
@@ -288,17 +278,11 @@ export class ProfileScreen {
                         break;
 
                     case 'identity':
-                        showModal(`
-                            <div style="font-size: 40px; margin-bottom: 12px;">👤</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">IDENTITY</div>
-                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 4px;">Phone: ${this._saveManager.profile.phone || 'Guest'}</div>
-                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted);">Username: ${this._saveManager.profile.username || 'N/A'}</div>
-                        `);
+                        this._callbacks.onIdentity();
                         break;
 
                     case 'faq':
-                        // Frequently asked questions might be managed in Help or Settings
-                        this._callbacks.onHelp();
+                        this._callbacks.onFaq();
                         break;
 
                     case 'logout':
