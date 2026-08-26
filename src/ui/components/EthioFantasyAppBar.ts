@@ -1,3 +1,5 @@
+import { t } from '../../localization/i18n';
+
 export class EthioFantasyAppBar {
     /**
      * Generates the standard app bar HTML
@@ -26,20 +28,26 @@ export class EthioFantasyAppBar {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    width: 44px;
-                    height: 44px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 14px;
+                    gap: 12px;
+                    width: 160px;
+                    height: 56px;
+                    background: linear-gradient(135deg, rgba(7, 27, 45, 0.95) 0%, rgba(7, 27, 45, 0.7) 100%);
+                    border: 1px solid rgba(0, 200, 83, 0.3);
+                    border-radius: 16px;
                     color: white;
-                    font-size: 20px;
-                    font-weight: bold;
                     cursor: pointer;
                     margin-left: 16px;
                     margin-right: 12px;
-                    padding: 0;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                " aria-label="Back">❮</button>` : ''}
+                    padding: 0 16px;
+                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(0, 200, 83, 0.15);
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                " aria-label="Back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    <span style="font-size: 18px; font-weight: 700; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${t('common.back') || 'BACK'}</span>
+                </button>` : ''}
                 <div class="app-bar-title" style="
                     flex: 1;
                     color: white;
