@@ -3,6 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { AuthManager } from '../../core/auth/AuthManager';
 import { supabase } from '../../networking/supabase/SupabaseClient';
 import { i18n } from '../../localization/i18n';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class AuthScreen {
     private _uiManager: UIManager;
@@ -148,12 +149,11 @@ export class AuthScreen {
                 
                 ${this._showSettings ? `
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0F172A; z-index: 1000; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;">
-                    <div style="display: flex; align-items: center; height: 72px; padding: env(safe-area-inset-top) 0 0 0; background: #020617; border-bottom: 1px solid rgba(255,255,255,0.1); box-sizing: content-box;">
-                        <button id="auth-settings-back" style="width: 48px; height: 48px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; margin-left: 16px; display: flex; align-items: center; justify-content: center;">❮</button>
-                        <div style="flex: 1; color: white; font-weight: 700; font-size: 18px; text-transform: uppercase;">
-                            ${this._settingsTab === 'main' ? (i18n.currentLocale === 'am' ? 'ቅንብሮች' : i18n.currentLocale === 'om' ? 'Qindaa\'inoota' : 'Settings') : this._settingsTab === 'language' ? (i18n.currentLocale === 'am' ? 'ቋንቋ ይምረጡ' : i18n.currentLocale === 'om' ? 'Afaan Filadhu' : 'Select Language') : this._settingsTab === 'tc' ? 'Terms & Conditions' : 'FAQ'}
-                        </div>
-                    </div>
+                    ${EthioFantasyAppBar.render(
+                        this._settingsTab === 'main' ? (i18n.currentLocale === 'am' ? 'ቅንብሮች' : i18n.currentLocale === 'om' ? 'Qindaa\'inoota' : 'Settings') : 
+                        this._settingsTab === 'language' ? (i18n.currentLocale === 'am' ? 'ቋንቋ ይምረጡ' : i18n.currentLocale === 'om' ? 'Afaan Filadhu' : 'Select Language') : 
+                        this._settingsTab === 'tc' ? 'Terms & Conditions' : 'FAQ'
+                    )}
                     <div style="padding: 20px; color: white; flex: 1; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box;">
                         ${this._renderSettingsContent()}
                     </div>
@@ -455,16 +455,18 @@ export class AuthScreen {
             });
         }
 
-        const settingsBackBtn = root.querySelector('#auth-settings-back');
+        const settingsBackBtn = root.querySelector('.app-bar-back-btn');
         if (settingsBackBtn) {
-            settingsBackBtn.addEventListener('click', () => {
+            settingsBackBtn.addEventListener('click', (e) => {
+                this._addRipple(e);
                 this._audioManager.playClick();
                 if (this._settingsTab !== 'main') {
                     this._settingsTab = 'main';
+                    this.render();
                 } else {
                     this._showSettings = false;
+                    this.render();
                 }
-                this.render();
             });
         }
 
