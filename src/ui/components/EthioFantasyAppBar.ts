@@ -11,7 +11,10 @@ export class EthioFantasyAppBar {
                 display: flex;
                 align-items: center;
                 height: 72px;
-                background-color: #071B2D;
+                background-color: rgba(15, 23, 42, 0.75);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
                 padding: env(safe-area-inset-top) 0 0 0;
                 box-sizing: content-box;
                 width: 100%;
@@ -23,29 +26,32 @@ export class EthioFantasyAppBar {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    width: 48px;
-                    height: 48px;
-                    background: none;
-                    border: none;
+                    width: 44px;
+                    height: 44px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border-radius: 14px;
                     color: white;
-                    font-size: 24px;
+                    font-size: 20px;
                     font-weight: bold;
                     cursor: pointer;
-                    margin-left: 24px;
-                    margin-right: 16px;
+                    margin-left: 16px;
+                    margin-right: 12px;
                     padding: 0;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    transition: transform 0.2s, background-color 0.2s;
                 " aria-label="Back">❮</button>` : ''}
                 <div class="app-bar-title" style="
                     flex: 1;
                     color: white;
-                    font-weight: 700;
+                    font-weight: 800;
                     font-size: var(--fds-font-md, 18px);
                     letter-spacing: 0.5px;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     text-transform: uppercase;
-                    ${!showBackButton ? 'text-align: center;' : ''}
+                    ${!showBackButton ? 'text-align: center; padding-left: 16px;' : ''}
                 ">${title}</div>
                 ${actionsHtml ? `
                 <div class="app-bar-actions" style="

@@ -3,7 +3,7 @@ import { AudioManager } from '../../core/managers/AudioManager';
 import { i18n } from '../../localization/i18n';
 import { MessageCenterService, MessageCenterItem } from '../../networking/services/MessageCenterService';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
-import { DesignSystem } from '../theme/DesignSystem';
+
 
 export type MessageTab = 'all' | 'unread' | 'global' | 'direct' | 'system';
 
@@ -46,10 +46,7 @@ export class MessageCenterScreen {
                 
                 <!-- App Bar -->
                 ${EthioFantasyAppBar.render(
-                    locale === 'am' ? 'መልዕክቶች' : (locale === 'om' ? 'ERGAWWAAN' : 'MESSAGES'),
-                    `<button id="mc-back-btn" style="background: none; border: none; color: white; cursor: pointer; padding: 4px;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-                    </button>`
+                    locale === 'am' ? 'መልዕክቶች' : (locale === 'om' ? 'ERGAWWAAN' : 'Messages')
                 )}
 
                 <!-- Main Content Wrapper -->
@@ -82,13 +79,10 @@ export class MessageCenterScreen {
             </div>
         `;
         
-        const backBtn = root.querySelector('#mc-back-btn');
-        if (backBtn) {
-            backBtn.addEventListener('click', () => {
-                this._audioManager.playClick();
-                this._onBack();
-            });
-        }
+        EthioFantasyAppBar.bind(root, () => {
+            this._audioManager.playClick();
+            this._onBack();
+        });
         
         this._updateTabUI();
     }
@@ -113,27 +107,54 @@ export class MessageCenterScreen {
                 : 0; 
             const showBadge = (tab.id === 'unread' || tab.id === 'direct') && count > 0;
             
-            return `
-                <button class="mc-pill-tab ${isActive ? 'active-mc-tab' : ''}" data-tab-id="${tab.id}" style="
-                    flex: 0 0 auto;
-                    padding: 8px 14px;
-                    border-radius: 20px;
-                    border: 1px solid ${isActive ? 'var(--tv-gold-primary)' : 'rgba(255,255,255,0.08)'};
-                    background: ${isActive ? 'rgba(255, 215, 0, 0.12)' : 'rgba(15, 23, 42, 0.6)'};
-                    color: ${isActive ? 'var(--tv-gold-primary)' : '#94A3B8'};
-                    font-size: var(--fds-font-sm);
-                    font-weight: 700;
-                    cursor: pointer;
-                    white-space: nowrap;
-                    transition: all 0.2s;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                ">
-                    ${tab.label[locale] || tab.label['en']}
-                    ${showBadge ? `<span style="background: var(--tv-pitch-green); color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 10px;">${count > 99 ? '99+' : count}</span>` : ''}
-                </button>
-            `;
+            if (isActive) {
+                return `
+                    <button class="mc-pill-tab ${isActive ? 'active-mc-tab' : ''}" data-tab-id="${tab.id}" style="
+                        flex: 0 0 auto;
+                        padding: 8px 16px;
+                        border-radius: 12px;
+                        border: 1px solid rgba(74, 222, 128, 0.4);
+                        background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%);
+                        color: white;
+                        font-size: var(--fds-font-sm);
+                        font-weight: 900;
+                        cursor: pointer;
+                        white-space: nowrap;
+                        transition: all 0.2s;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                    ">
+                        ${tab.label[locale] || tab.label['en']}
+                        ${showBadge ? `<span style="background: white; color: var(--fds-green-dark); font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 10px;">${count > 99 ? '99+' : count}</span>` : ''}
+                    </button>
+                `;
+            } else {
+                return `
+                    <button class="mc-pill-tab" data-tab-id="${tab.id}" style="
+                        flex: 0 0 auto;
+                        padding: 8px 16px;
+                        border-radius: 12px;
+                        border: 1px solid rgba(255,255,255,0.08);
+                        background: rgba(15, 23, 42, 0.7);
+                        backdrop-filter: blur(8px);
+                        -webkit-backdrop-filter: blur(8px);
+                        color: var(--fds-text-dim);
+                        font-size: var(--fds-font-sm);
+                        font-weight: 700;
+                        cursor: pointer;
+                        white-space: nowrap;
+                        transition: all 0.2s;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                        ${tab.label[locale] || tab.label['en']}
+                        ${showBadge ? `<span style="background: rgba(255,255,255,0.1); color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 10px;">${count > 99 ? '99+' : count}</span>` : ''}
+                    </button>
+                `;
+            }
         }).join('');
 
         const tabBtns = tabBar.querySelectorAll('.mc-pill-tab');
@@ -179,7 +200,17 @@ export class MessageCenterScreen {
         } catch (e) {
             console.error('Failed to fetch messages', e);
             if (this._currentRequestId === requestId && container) {
-                container.innerHTML = DesignSystem.EmptyState('⚠️', 'Failed to load messages');
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 16px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                        <div style="font-size: 16px; font-weight: 800; color: white; margin-bottom: 8px;">Unable to load messages.</div>
+                        <button id="mc-btn-retry" class="ethio-profile-btn ethio-profile-btn-primary" style="max-width: 160px;">Retry</button>
+                    </div>
+                `;
+                document.getElementById('mc-btn-retry')?.addEventListener('click', () => {
+                    this._audioManager.playClick();
+                    this._updateContent();
+                });
             }
             return;
         }
@@ -211,7 +242,22 @@ export class MessageCenterScreen {
         }
 
         if (filtered.length === 0) {
-            container.innerHTML = DesignSystem.EmptyState('📭', 'No Messages Found');
+            if (query) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 16px; display: flex; flex-direction: column; align-items: center;">
+                        <div style="font-size: 64px; margin-bottom: 16px; opacity: 0.5;">🔍</div>
+                        <div style="font-size: 18px; font-weight: 900; color: white;">No messages match your search.</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 16px; display: flex; flex-direction: column; align-items: center;">
+                        <div style="font-size: 80px; margin-bottom: 24px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">📬</div>
+                        <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px;">No messages found</div>
+                        <div style="color: var(--fds-text-dim); font-size: 14px;">You have no messages in this category.</div>
+                    </div>
+                `;
+            }
             return;
         }
 
@@ -231,53 +277,60 @@ export class MessageCenterScreen {
                     gap: 16px;
                     padding: 16px;
                     margin-bottom: 12px;
-                    border-radius: 14px;
+                    border-radius: 16px;
                     cursor: pointer;
                     position: relative;
                     transition: transform 0.2s, background-color 0.2s;
-                    border-color: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(255, 215, 0, 0.3)'};
-                    background: ${item.read ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 215, 0, 0.03)'};
+                    border: 1px solid ${item.read ? 'rgba(255,255,255,0.08)' : 'rgba(34, 197, 94, 0.4)'};
+                    background: rgba(15, 23, 42, 0.7);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    box-shadow: ${item.read ? 'none' : '0 4px 16px rgba(34, 197, 94, 0.1)'};
+                    align-items: center;
                 ">
-                    <!-- Status Indicator Dot -->
-                    ${!item.read ? `
-                        <div style="
-                            position: absolute;
-                            top: 16px;
-                            right: 16px;
-                            width: 8px;
-                            height: 8px;
-                            border-radius: 50%;
-                            background-color: var(--tv-pitch-green);
-                            box-shadow: 0 0 8px var(--tv-pitch-glow);
-                        "></div>
-                    ` : ''}
-
                     <!-- Category Icon -->
                     <div style="
-                        width: 44px;
-                        height: 44px;
-                        border-radius: 10px;
-                        background: rgba(255,255,255,0.05);
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 12px;
+                        background: ${item.read ? 'rgba(255,255,255,0.05)' : 'rgba(34, 197, 94, 0.1)'};
+                        border: 1px solid ${item.read ? 'rgba(255,255,255,0.1)' : 'rgba(34, 197, 94, 0.3)'};
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: var(--fds-font-lg);
+                        font-size: 24px;
                         flex-shrink: 0;
-                    ">${icon}</div>
+                        position: relative;
+                    ">
+                        ${icon}
+                        ${!item.read ? `
+                            <div style="
+                                position: absolute;
+                                top: -4px;
+                                right: -4px;
+                                width: 12px;
+                                height: 12px;
+                                border-radius: 50%;
+                                background-color: var(--tv-pitch-green);
+                                border: 2px solid rgba(15, 23, 42, 1);
+                                box-shadow: 0 0 8px var(--tv-pitch-glow);
+                            "></div>
+                        ` : ''}
+                    </div>
 
                     <!-- Texts -->
-                    <div style="flex: 1; padding-right: 12px; min-width: 0;">
+                    <div style="flex: 1; padding-right: 8px; min-width: 0;">
                         <div style="
-                            font-size: var(--fds-font-md); 
-                            font-weight: 800; 
-                            color: ${item.read ? '#CBD5E1' : '#FFFFFF'};
+                            font-size: 15px; 
+                            font-weight: 900; 
+                            color: white;
                             margin-bottom: 4px;
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;
                         ">${item.title}</div>
                         <div style="
-                            font-size: var(--fds-font-sm); 
+                            font-size: 13px; 
                             color: var(--fds-text-dim); 
                             line-height: 1.4;
                             margin-bottom: 6px;
@@ -286,10 +339,18 @@ export class MessageCenterScreen {
                             text-overflow: ellipsis;
                         ">${item.content}</div>
                         <div style="
-                            font-size: var(--fds-font-xs); 
-                            color: var(--fds-text-dim); 
-                            font-weight: 600;
-                        ">⏱️ ${timeString}</div>
+                            font-size: 11px; 
+                            color: var(--fds-text-muted); 
+                            font-weight: 700;
+                            text-transform: uppercase;
+                        ">${timeString}</div>
+                    </div>
+
+                    <!-- Chevron -->
+                    <div style="color: rgba(255,255,255,0.2); flex-shrink: 0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
                     </div>
                 </div>
             `;
@@ -337,7 +398,8 @@ export class MessageCenterScreen {
         overlay.innerHTML = `
             <div style="
                 width: 100%; max-width: 600px; 
-                background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+                background: rgba(15,23,42,0.95);
+                backdrop-filter: blur(12px);
                 border-radius: 24px 24px 0 0;
                 border-top: 1px solid rgba(255,255,255,0.1);
                 padding: 24px;
@@ -346,26 +408,27 @@ export class MessageCenterScreen {
                 max-height: 90vh;
                 display: flex;
                 flex-direction: column;
+                box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
             ">
-                <div style="width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px auto;"></div>
+                <div style="width: 48px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; margin: 0 auto 24px auto;"></div>
                 
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                    <div>
-                        <div style="font-size: var(--fds-font-xl); font-weight: 900; color: white; margin-bottom: 8px;">${msg.title}</div>
-                        <div style="font-size: var(--fds-font-xs); color: var(--tv-gold-primary); font-weight: 700; text-transform: uppercase;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                    <div style="flex: 1; padding-right: 16px;">
+                        <div style="font-size: 24px; font-weight: 900; color: white; margin-bottom: 8px; line-height: 1.2;">${msg.title}</div>
+                        <div style="font-size: 12px; color: var(--tv-gold-primary); font-weight: 800; text-transform: uppercase;">
                             ${msg.category} • ${dateString} ${timeString}
                         </div>
                     </div>
                     <button id="btn-close-msg" style="
-                        background: rgba(255,255,255,0.1); border: none; width: 36px; height: 36px;
-                        border-radius: 18px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-                    ">✖</button>
+                        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); width: 36px; height: 36px;
+                        border-radius: 18px; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+                    ">✕</button>
                 </div>
 
                 <div style="
                     flex: 1; overflow-y: auto; 
-                    font-size: var(--fds-font-md); color: #CBD5E1; line-height: 1.6;
-                    padding-right: 8px;
+                    font-size: 15px; color: #CBD5E1; line-height: 1.6;
+                    padding-right: 8px; margin-bottom: 24px;
                 " class="hide-scrollbar">
                     ${msg.content.replace(/\n/g, '<br>')}
                 </div>

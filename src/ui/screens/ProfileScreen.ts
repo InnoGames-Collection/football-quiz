@@ -7,6 +7,7 @@ import { PullToRefresh } from '../components/PullToRefresh';
 import { i18n } from '../../localization/i18n';
 import { MessageCenterService } from '../../networking/services/MessageCenterService';
 import { LeaderboardService } from '../../core/leaderboard/LeaderboardService';
+import { EthioProfileUI } from '../components/EthioProfileUI';
 
 
 export interface ProfileCallbacks {
@@ -72,45 +73,15 @@ export class ProfileScreen {
         const root = this._uiManager.container;
         const profile = this._saveManager.profile;
         const division = ProgressionManager.getDivision(profile.xp);
-        const msisdn = profile.phone ? this._maskPhone(profile.phone) : `${i18n.currentLocale === 'am' ? 'እንግዳ ተጫዋች' : (i18n.currentLocale === 'om' ? 'Tapaataa Keessummaa' : 'Guest Player')}`;
 
-        const listTile = (icon: string, title: string, action: string, hasArrow: boolean = true, badgeId: string = '') => `
-            <div class="list-tile profile-menu-tile" data-action="${action}" style="
-                display: flex; 
-                justify-content: space-between; 
-                align-items: center; 
-                padding: 16px; 
-                border-bottom: 1px solid rgba(255,255,255,0.05); 
-                cursor: pointer;
-                transition: background-color 0.2s;
-            ">
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: var(--fds-font-lg);">${icon}</span>
-                    <span style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${title}</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    ${badgeId ? `
-                        <span id="${badgeId}" style="
-                            display: none;
-                            background: var(--tv-pitch-green, #22C55E);
-                            color: white; font-size: 10px; font-weight: 900;
-                            border-radius: 10px; padding: 2px 6px;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-                        "></span>
-                    ` : ''}
-                    ${hasArrow ? `<span style="color: var(--fds-text-dim);">❯</span>` : ''}
-                </div>
-            </div>
-        `;
+
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="pointer-events: auto; overflow-y: auto; padding-bottom: 120px;">
-
                 <!-- Layers -->
                 <div class="ethio-layer ethio-layer-pitch"></div>
                 <div class="ethio-layer ethio-layer-overlay"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
-
                 
                 <!-- TOP HEADER -->
                 <div style="
@@ -128,11 +99,15 @@ export class ProfileScreen {
                         box-shadow: 0 4px 15px rgba(0,0,0,0.5);
                         border: 3px solid white;
                     ">👤</div>
-                    <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 4px;">${profile.username}</div>
-                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 16px; font-family: var(--tv-mono);">${msisdn}</div>
+                    <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin-bottom: 4px;">
+                        ${profile.username}
+                    </div>
+                    <div style="font-size: var(--fds-font-sm); font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 16px; font-family: var(--tv-mono);">
+                        ${profile.phone ? this._maskPhone(profile.phone) : 'GUEST_PLAYER'}
+                    </div>
                 </div>
 
-                <!-- TELEMETRY BANNER -->
+                <!-- PLAYER PERFORMANCE -->
                 <div style="
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
@@ -152,35 +127,42 @@ export class ProfileScreen {
                         <div id="profile-daily-rank" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">--</div>
                     </div>
                     <div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ነጥቦች' : (i18n.currentLocale === 'om' ? 'QABXII' : 'POINTS')}</div>
-                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--tv-gold-primary);">${profile.xp} XP</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 4px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">${i18n.currentLocale === 'am' ? 'ነጥቦች' : (i18n.currentLocale === 'om' ? 'QABXII' : 'POINTS')}</div>
+                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">${profile.xp} XP</div>
                     </div>
                 </div>
 
-                <!-- GROUPED MENUS -->
+                <!-- PROFILE ACTIONS -->
                 <div style="max-width: 600px; margin: 0 auto; padding: 0 16px;">
                     
-                    <!-- Group 1: Stats & Achievements -->
-                    <div class="glass-card" style="border-radius: 12px; margin-bottom: 20px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('📊', i18n.currentLocale === 'am' ? 'ስታቲስቲክስ' : (i18n.currentLocale === 'om' ? 'Istaatistiiksii' : 'Statistics'), 'stats')}
-                        ${listTile('🏆', i18n.currentLocale === 'am' ? 'ስኬቶች' : (i18n.currentLocale === 'om' ? 'Milkaa\'ina' : 'Achievements'), 'achievements')}
-                        ${listTile('🏅', i18n.currentLocale === 'am' ? 'የእኔ ሽልማቶች' : (i18n.currentLocale === 'om' ? 'Badhaasa Koo' : 'My Awards'), 'awards')}
-                        <div style="border-bottom: none;">${listTile('📈', i18n.currentLocale === 'am' ? 'የመሪዎች ሰሌዳ' : (i18n.currentLocale === 'om' ? 'Gabatee Geggeessitootaa' : 'Leaderboard'), 'leaderboard')}</div>
-                    </div>
+                    ${EthioProfileUI.renderCard(`
+                        ${EthioProfileUI.renderNavRow('📊', i18n.currentLocale === 'am' ? 'ስታቲስቲክስ' : 'Statistics', 'stats')}
+                        ${EthioProfileUI.renderNavRow('🏆', i18n.currentLocale === 'am' ? 'ስኬቶች' : 'Achievements', 'achievements')}
+                        ${EthioProfileUI.renderNavRow('🏅', i18n.currentLocale === 'am' ? 'የእኔ ሽልማቶች' : 'My Awards', 'awards')}
+                        ${EthioProfileUI.renderNavRow('📈', i18n.currentLocale === 'am' ? 'የመሪዎች ሰሌዳ' : 'Leaderboard', 'leaderboard', '', true, '', true)}
+                    `, 'PERFORMANCE')}
 
-                    <!-- Group 2: Invite & Subs -->
-                    <div class="glass-card" style="border-radius: 12px; margin-bottom: 20px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('👥', i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : (i18n.currentLocale === 'om' ? 'Hiriyoota Affeeri' : 'Invite Friends'), 'invite')}
-                        ${listTile('⭐', i18n.currentLocale === 'am' ? 'ምዝገባ' : (i18n.currentLocale === 'om' ? 'Galmee' : 'Subscription'), 'subscription')}
-                        <div style="border-bottom: none;">${listTile('💬', i18n.currentLocale === 'am' ? 'መልዕክቶች' : (i18n.currentLocale === 'om' ? 'Ergaawwan' : 'Messages'), 'messages', true, 'profile-msg-badge')}</div>
-                    </div>
+                    ${EthioProfileUI.renderCard(`
+                        ${EthioProfileUI.renderNavRow('👤', i18n.currentLocale === 'am' ? 'ማንነት' : 'Identity', 'identity')}
+                        ${EthioProfileUI.renderNavRow('👥', i18n.currentLocale === 'am' ? 'ጓደኞችን ይጋብዙ' : 'Invite Friends', 'invite')}
+                        ${EthioProfileUI.renderNavRow('💬', i18n.currentLocale === 'am' ? 'መልዕክቶች' : 'Messages', 'messages', '', true, 'profile-msg-badge', true)}
+                    `, 'ACCOUNT')}
 
-                    <!-- Group 3: Utility -->
-                    <div class="glass-card" style="border-radius: 12px; margin-bottom: 20px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('⚙️', i18n.currentLocale === 'am' ? 'ቅንብሮች' : (i18n.currentLocale === 'om' ? 'Qindaa\'inoota' : 'Settings'), 'settings')}
-                        ${listTile('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'Gargaarsa & Deeggarsa' : 'Help & Support'), 'help')}
-                        <div style="border-bottom: none;">${listTile('ℹ️', i18n.currentLocale === 'am' ? 'ስለ እኛ' : (i18n.currentLocale === 'om' ? 'Waa\'ee' : 'About'), 'about')}</div>
-                    </div>
+                    ${EthioProfileUI.renderCard(`
+                        ${EthioProfileUI.renderNavRow('⭐', i18n.currentLocale === 'am' ? 'ምዝገባ' : 'Subscription', 'subscription')}
+                        ${EthioProfileUI.renderNavRow('⚙️', i18n.currentLocale === 'am' ? 'ቅንብሮች' : 'Settings', 'settings')}
+                        ${EthioProfileUI.renderNavRow('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : 'Help & Support', 'help', '', true, '', true)}
+                    `, 'SERVICE')}
+
+                    ${EthioProfileUI.renderCard(`
+                        ${EthioProfileUI.renderNavRow('ℹ️', i18n.currentLocale === 'am' ? 'ስለ እኛ' : 'About', 'about')}
+                        ${EthioProfileUI.renderNavRow('📝', i18n.currentLocale === 'am' ? 'አዘውትረው የሚጠየቁ ጥያቄዎች' : 'FAQ', 'faq')}
+                        ${EthioProfileUI.renderNavRow('📜', i18n.currentLocale === 'am' ? 'ደንቦች እና ሁኔታዎች' : 'Terms & Conditions', 'terms', '', true, '', true)}
+                    `, 'INFORMATION')}
+                    
+                    ${EthioProfileUI.renderCard(`
+                        ${EthioProfileUI.renderNavRow('🚪', i18n.currentLocale === 'am' ? 'ውጣ' : 'Log Out', 'logout', '', false, '', true)}
+                    `, 'SESSION')}
 
                 </div>
             </div>
@@ -302,8 +284,35 @@ export class ProfileScreen {
                         break;
 
                     case 'awards':
-                        this._audioManager.playClick();
                         this._callbacks.onAwards();
+                        break;
+
+                    case 'identity':
+                        showModal(`
+                            <div style="font-size: 40px; margin-bottom: 12px;">👤</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-text-main); margin-bottom: 8px;">IDENTITY</div>
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 4px;">Phone: ${this._saveManager.profile.phone || 'Guest'}</div>
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted);">Username: ${this._saveManager.profile.username || 'N/A'}</div>
+                        `);
+                        break;
+
+                    case 'faq':
+                        // Frequently asked questions might be managed in Help or Settings
+                        this._callbacks.onHelp();
+                        break;
+
+                    case 'logout':
+                        showModal(`
+                            <div style="font-size: 40px; margin-bottom: 12px;">🚪</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--fds-red-live); margin-bottom: 8px;">LOG OUT</div>
+                            <div style="font-size: var(--fds-font-sm); color: var(--fds-text-muted); margin-bottom: 16px;">Are you sure you want to log out?</div>
+                            ${EthioProfileUI.renderButton('btn-confirm-logout', 'CONFIRM LOGOUT', 'destructive')}
+                        `);
+                        document.getElementById('btn-confirm-logout')?.addEventListener('click', () => {
+                            this._audioManager.playClick();
+                            localStorage.removeItem('ETHIO_FOOTBALL_AUTH_V2');
+                            window.location.reload();
+                        });
                         break;
                 }
             });

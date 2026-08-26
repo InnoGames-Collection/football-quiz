@@ -49,6 +49,14 @@ export class AchievementsScreen {
                         </div>
                     </div>
                 </div>
+
+                <!-- Detail Modal -->
+                <div id="ach-detail-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2,6,23,0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; align-items: center; justify-content: center; padding: 24px;">
+                    <div style="background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 400px; position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 24px 48px rgba(0,0,0,0.5);">
+                        <button id="btn-close-ach-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--fds-text-muted); font-size: 24px; cursor: pointer; padding: 8px;">✕</button>
+                        <div id="ach-modal-content" style="display: flex; flex-direction: column; align-items: center; width: 100%;"></div>
+                    </div>
+                </div>
             </div>
             <style>
                 .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -68,10 +76,10 @@ export class AchievementsScreen {
                     flex-shrink: 0;
                 }
                 .ach-tab.active {
-                    background: var(--tv-gold-primary);
-                    color: black;
-                    border-color: #FBBF24;
-                    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.4);
+                    background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%);
+                    color: white;
+                    border-color: rgba(74, 222, 128, 0.4);
+                    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
                 }
                 
                 .ach-card {
@@ -210,24 +218,25 @@ export class AchievementsScreen {
         // 1. Summary Header
         html += `
             <div style="padding: 24px 16px 16px 16px;">
-                <div class="glass-card" style="padding: 20px; border-radius: 20px; text-align: center; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
-                    <div style="font-size: 14px; font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">OVERALL COMPLETION</div>
-                    <div style="font-size: 48px; font-weight: 900; color: white; line-height: 1; margin-bottom: 16px; font-family: var(--fds-font-mono); text-shadow: 0 4px 12px rgba(0,0,0,0.5);">${percent}%</div>
+                <div class="glass-card" style="padding: 16px; border-radius: 16px; text-align: center; background: rgba(15,23,42,0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
                     
-                    <div class="ach-progress-bg" style="height: 8px; margin-bottom: 20px; background: rgba(255,255,255,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="text-align: left;">
+                            <div style="font-size: 11px; font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase; letter-spacing: 0.5px;">OVERALL COMPLETION</div>
+                            <div style="font-size: 24px; font-weight: 900; color: white;">${percent}%</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; font-weight: 800; color: var(--fds-text-dim); text-transform: uppercase; letter-spacing: 0.5px;">TOTAL XP</div>
+                            <div style="font-size: 18px; font-weight: 900; color: var(--tv-gold-primary);">${profile.xp} XP</div>
+                        </div>
+                    </div>
+
+                    <div class="ach-progress-bg" style="height: 6px; margin-bottom: 12px; background: rgba(0,0,0,0.4);">
                         <div class="ach-progress-fill" style="width: ${percent}%; background: linear-gradient(90deg, #FBBF24, #22C55E);"></div>
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px;">
-                        <div>
-                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 700;">UNLOCKED</div>
-                            <div style="font-size: 18px; font-weight: 900; color: white;">${totalUnlocked} <span style="color: rgba(255,255,255,0.3); font-size: 14px;">/ ${total}</span></div>
-                        </div>
-                        <div style="width: 1px; background: rgba(255,255,255,0.1);"></div>
-                        <div>
-                            <div style="font-size: 12px; color: var(--fds-text-dim); font-weight: 700;">TOTAL XP</div>
-                            <div style="font-size: 18px; font-weight: 900; color: var(--tv-gold-primary);">${profile.xp}</div>
-                        </div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--fds-text-muted);">
+                        UNLOCKED: <span style="color: white;">${totalUnlocked}</span> / ${total}
                     </div>
                 </div>
             </div>
@@ -286,7 +295,7 @@ export class AchievementsScreen {
         }
 
         return `
-            <div class="ach-card ${statusClass}">
+            <div class="ach-card ${statusClass}" data-id="${ach.id}" style="cursor: pointer;">
                 ${rewardTag}
                 <div class="ach-icon-box">${ach.icon}</div>
                 <div style="flex: 1;">
@@ -302,7 +311,7 @@ export class AchievementsScreen {
                     </div>
                     
                     <div class="ach-reward-badge">
-                        <span>⭐</span> ${ach.xpReward} XP
+                        <span>⭐</span> +${ach.xpReward} XP
                     </div>
                 </div>
             </div>
@@ -321,6 +330,63 @@ export class AchievementsScreen {
                     this._renderContent();
                 }
             });
+        });
+
+        // Detail Modal Binding
+        const achCards = document.querySelectorAll('.ach-card');
+        const modal = document.getElementById('ach-detail-modal');
+        const modalContent = document.getElementById('ach-modal-content');
+        const closeBtn = document.getElementById('btn-close-ach-modal');
+
+        achCards.forEach(card => {
+            card.addEventListener('click', (e) => {
+                const target = e.currentTarget as HTMLElement;
+                const achId = target.getAttribute('data-id');
+                const ach = this._achievements.find(a => a.id === achId);
+                if (ach && modal && modalContent) {
+                    this._audioManager.playClick();
+                    const title = i18n.currentLocale === 'am' ? ach.titleAm : (i18n.currentLocale === 'om' ? ach.titleOm : ach.titleEn);
+                    const desc = i18n.currentLocale === 'am' ? ach.descriptionAm : (i18n.currentLocale === 'om' ? ach.descriptionOm : ach.descriptionEn);
+                    const percent = Math.min(100, Math.round((ach.progress / ach.maxProgress) * 100));
+                    
+                    const progressColor = ach.isUnlocked ? 'linear-gradient(90deg, #4ADE80, #22C55E)' : 'linear-gradient(90deg, #FBBF24, #F59E0B)';
+
+                    modalContent.innerHTML = `
+                        <div style="font-size: 64px; margin-bottom: 16px; text-shadow: 0 4px 12px rgba(0,0,0,0.5);">${ach.icon}</div>
+                        <div style="font-size: 22px; font-weight: 900; color: white; margin-bottom: 8px;">${title}</div>
+                        <div style="font-size: 14px; color: var(--fds-text-muted); margin-bottom: 24px; max-width: 80%; line-height: 1.5;">${desc}</div>
+                        
+                        <div style="width: 100%; max-width: 300px; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 16px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.05);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 800; color: white; margin-bottom: 8px;">
+                                <span>PROGRESS</span>
+                                <span>${ach.progress} / ${ach.maxProgress}</span>
+                            </div>
+                            <div class="ach-progress-bg" style="height: 8px; background: rgba(255,255,255,0.1); margin-bottom: 16px; margin-top: 0;">
+                                <div class="ach-progress-fill" style="width: ${percent}%; background: ${progressColor};"></div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 800; color: white;">
+                                <span>REWARD</span>
+                                <span style="color: var(--tv-gold-primary);">+${ach.xpReward} XP</span>
+                            </div>
+                        </div>
+                        
+                        <button id="btn-close-ach-modal-inner" class="ethio-profile-btn ethio-profile-btn-primary" style="max-width: 300px;">OK</button>
+                    `;
+
+                    modal.style.display = 'flex';
+
+                    document.getElementById('btn-close-ach-modal-inner')?.addEventListener('click', () => {
+                        this._audioManager.playClick();
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+        });
+
+        closeBtn?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            if (modal) modal.style.display = 'none';
         });
     }
 }

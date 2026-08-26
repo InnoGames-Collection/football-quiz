@@ -1,11 +1,12 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { SaveManager } from '../../core/managers/SaveManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-import { ProgressionManager } from '../../core/managers/ProgressionManager';
+
 import { DesignSystem } from '../theme/DesignSystem';
 import { GameSessionService } from '../../networking/services/GameSessionService';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
+import { EthioProfileUI } from '../components/EthioProfileUI';
 
 
 export class DetailedStatsScreen {
@@ -26,7 +27,6 @@ export class DetailedStatsScreen {
         root.innerHTML = DesignSystem.LoadingState('Loading stats...');
 
         const profile = this._saveManager.profile;
-        const division = ProgressionManager.getDivision(profile.xp);
 
         // Fetch history for detailed stats
         const sessionHistory = await GameSessionService.getInstance().getHistory(50);
@@ -72,68 +72,83 @@ export class DetailedStatsScreen {
         const points = profile.xp;
         const highestScore = profile.highScores['football-quiz'] || 0;
 
-        const cardStyle = `
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            border-color: rgba(255,255,255,0.08);
-        `;
-
-        const row = (label: string, value: string) => `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
-                <div style="font-size: var(--fds-font-sm); font-weight: 700; color: var(--fds-text-dim);">${label}</div>
-                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">${value}</div>
+        const barChart = (label: string, percentage: number, color: string) => `
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <div style="font-size: var(--fds-font-xs); font-weight: 700; color: var(--fds-text-dim); text-transform: uppercase;">${label}</div>
+                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-main);">${percentage}%</div>
+                </div>
+                <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="width: ${percentage}%; height: 100%; background: ${color}; border-radius: 4px; box-shadow: 0 0 8px ${color}; transition: width 1s ease-out;"></div>
+                </div>
             </div>
         `;
 
-        root.innerHTML = `
-            <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
+        const row = (label: string, value: string) => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-size: 14px; font-weight: 600; color: var(--fds-text-dim);">${label}</div>
+                <div style="font-size: 15px; font-weight: 800; color: var(--fds-text-main);">${value}</div>
+            </div>
+        `;
 
+        const renderStatGroup = (title: string, rowsHtml: string) => {
+            return EthioProfileUI.renderCard(
+                `<div style="display: flex; flex-direction: column;">${rowsHtml}</div>`,
+                title
+            );
+        };
+
+        const renderChartGroup = (title: string, chartsHtml: string) => {
+            return EthioProfileUI.renderCard(
+                `<div style="padding: 20px 16px 8px 16px;">${chartsHtml}</div>`,
+                title
+            );
+        };
+
+        let visualAnalyticsHtml = '';
+        if (totalGames > 0) {
+            visualAnalyticsHtml = renderChartGroup('VISUAL ANALYTICS', `
+                ${barChart('Win Rate', winRate, 'var(--fds-gold-primary)')}
+                ${barChart('Overall Accuracy', totalAccuracy, 'var(--fds-green-pitch)')}
+            `);
+        } else {
+            visualAnalyticsHtml = renderChartGroup('VISUAL ANALYTICS', `
+                <div style="text-align: center; padding: 24px 0; color: var(--fds-text-dim);">
+                    <div style="font-size: 32px; margin-bottom: 12px; opacity: 0.5;">📉</div>
+                    <div style="font-size: 14px; font-weight: 600;">No match data available yet</div>
+                    <div style="font-size: 12px; margin-top: 4px;">Play your first match to see analytics.</div>
+                </div>
+            `);
+        }
+
+        root.innerHTML = `
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; overflow-y: auto; padding-bottom: 120px;">
                 <!-- Layers -->
                 <div class="ethio-layer ethio-layer-pitch"></div>
                 <div class="ethio-layer ethio-layer-overlay"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
 
-                
                 <!-- App Bar -->
-                ${EthioFantasyAppBar.render('Detailed Statistics')}
+                ${EthioFantasyAppBar.render('Statistics')}
 
-                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
                     
-                    <!-- 1. Game Overview -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-blue-accent); margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📊 Game Overview</div>
-                    <div class="glass-card" style="${cardStyle}">
+                    ${renderStatGroup('OVERVIEW', `
                         ${row('Games Played', String(totalGames))}
                         ${row('Matches Won', String(totalWins))}
-                        ${row('Overall Accuracy', `${totalAccuracy}%`)}
-                        <div style="border-bottom: none;">
-                            ${row('Points', `${points} XP`)}
-                        </div>
-                    </div>
+                        ${row('Accuracy', `${totalAccuracy}%`)}
+                        <div style="border-bottom: none;">${row('Points / Rank Point', `${points} XP`)}</div>
+                    `)}
 
-                    <!-- 2. Performance -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">⚡ Performance</div>
-                    <div class="glass-card" style="${cardStyle}">
-                        ${row('Highest Score (Match)', highestScore.toLocaleString())}
+                    ${renderStatGroup('PERFORMANCE', `
+                        ${row('Highest Score', highestScore.toLocaleString())}
                         ${row('Average Response Time', avgTimeStr)}
-                    </div>
-
-                    <!-- 3. Questions Details -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">❓ Questions Telemetry</div>
-                    <div class="glass-card" style="${cardStyle}">
                         ${row('Correct Answers', String(totalCorrect))}
                         ${row('Wrong Answers', String(totalWrong))}
-                        <div style="border-bottom: none;">
-                            ${row('Skipped Questions', String(totalSkipped))}
-                        </div>
-                    </div>
+                        <div style="border-bottom: none;">${row('Skipped Questions', String(totalSkipped))}</div>
+                    `)}
 
-                    <!-- 4. Competition & Achievements -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #A78BFA; margin-bottom: 8px; margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🏆 Competition Status</div>
-                    <div class="glass-card" style="${cardStyle}">
-                        ${row('League', division.name)}
-                        ${row('Win Rate', `${winRate}%`)}
-                    </div>
+                    ${visualAnalyticsHtml}
 
                 </div>
             </div>

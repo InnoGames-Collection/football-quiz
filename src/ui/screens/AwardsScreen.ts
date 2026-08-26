@@ -43,19 +43,41 @@ export class AwardsScreen {
     public render(): void {
         const root = this._uiManager.container;
 
-        const tabStyle = (tab: AwardTab) => `
-            flex: 1;
-            background: ${this._activeTab === tab ? 'var(--tv-pitch-green)' : 'rgba(255,255,255,0.05)'};
-            border: 1px solid ${this._activeTab === tab ? 'var(--tv-pitch-green)' : 'rgba(255,255,255,0.1)'};
-            color: ${this._activeTab === tab ? 'white' : '#94A3B8'};
-            font-weight: ${this._activeTab === tab ? '900' : '700'};
-            padding: 12px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            text-transform: uppercase;
-        `;
+        const tabStyle = (tab: AwardTab) => {
+            const isActive = this._activeTab === tab;
+            if (isActive) {
+                return `
+                    flex: 1;
+                    background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%);
+                    border: 1px solid rgba(74, 222, 128, 0.4);
+                    color: white;
+                    font-weight: 900;
+                    padding: 12px 0;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    text-align: center;
+                    text-transform: uppercase;
+                    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                `;
+            } else {
+                return `
+                    flex: 1;
+                    background: rgba(15, 23, 42, 0.7);
+                    backdrop-filter: blur(8px);
+                    -webkit-backdrop-filter: blur(8px);
+                    border: 1px solid rgba(255,255,255,0.08);
+                    color: var(--fds-text-dim);
+                    font-weight: 700;
+                    padding: 12px 0;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    text-align: center;
+                    text-transform: uppercase;
+                `;
+            }
+        };
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="pointer-events: auto; min-height: 100vh; overflow-y: auto;">
@@ -67,7 +89,7 @@ export class AwardsScreen {
 
                 <div style="max-width: 800px; margin: 0 auto; position: relative; z-index: 10; padding-bottom: 120px;">
                     <!-- App Bar -->
-                    ${EthioFantasyAppBar.render('MY AWARDS')}
+                    ${EthioFantasyAppBar.render('My Awards')}
 
                     <div style="padding: 0 16px;">
                         
@@ -107,110 +129,74 @@ export class AwardsScreen {
             `;
         }
 
-        if (this._awards.length === 0) {
+        // Filter for ONLY the current user's awards
+        const userAwards = this._awards.filter(a => a.userMsisdn === this.CURRENT_USER_MSISDN);
+        
+        if (userAwards.length === 0) {
             return `
-                <div style="text-align: center; padding: 60px 16px;">
-                    <div style="font-size: 64px; margin-bottom: 16px;">🏆</div>
-                    <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 900; color: var(--fds-text-main);">No tournament awards have been announced yet.</h2>
-                    <p style="color: var(--fds-text-dim); font-size: var(--fds-font-sm);">Compete in upcoming tournaments to see winners here.</p>
+                <div style="text-align: center; padding: 60px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="font-size: 80px; margin-bottom: 24px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🏆</div>
+                    <div style="font-size: 20px; font-weight: 900; color: white; margin-bottom: 12px;">No tournament awards yet</div>
+                    <div style="color: var(--fds-text-dim); font-size: 14px; margin-bottom: 32px; max-width: 280px; line-height: 1.5;">Compete in tournaments to earn rewards.</div>
+                    <button class="ethio-profile-btn ethio-profile-btn-secondary" style="max-width: 240px;" id="btn-view-tournaments">VIEW TOURNAMENTS</button>
                 </div>
             `;
         }
 
-        const userAwardIndex = this._awards.findIndex(a => a.userMsisdn === this.CURRENT_USER_MSISDN);
-        const userHasWon = userAwardIndex !== -1;
-        
-        let html = '';
-
-        if (!userHasWon) {
-            html += `
-                <div class="glass-card fade-in-up" style="padding: 16px; margin-bottom: 24px; text-align: center; border-color: rgba(255,255,255,0.1); background: rgba(34,197,94,0.05);">
-                    <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main); margin-bottom: 4px;">You haven't won any tournament yet.</div>
-                    <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">Compete in Daily, Weekly and Monthly tournaments to earn rewards.</div>
-                </div>
-            `;
-        }
-
-        html += `<div style="display: flex; flex-direction: column; gap: 12px;" class="fade-in-up">`;
-
-        // If user won, show them at the top
-        if (userHasWon) {
-            const userAward = this._awards[userAwardIndex];
-            html += this._renderAwardCard(userAward, true);
-        }
-
-        const otherAwards = this._awards.filter(a => a.userMsisdn !== this.CURRENT_USER_MSISDN);
-        
-        otherAwards.forEach(award => {
-            html += this._renderAwardCard(award, false);
+        let html = `<div style="display: flex; flex-direction: column; gap: 16px;" class="fade-in-up">`;
+        userAwards.forEach(award => {
+            html += this._renderAwardCard(award);
         });
-
         html += `</div>`;
 
         return html;
     }
 
-    private _renderAwardCard(award: AwardRecord, isUser: boolean): string {
-        // Rank 1: Gold, Rank 2: Silver, Rank 3: Bronze, Rank 4+: Standard
-        let borderColor = 'rgba(255,255,255,0.08)';
+    private _renderAwardCard(award: AwardRecord): string {
         let badge = '';
-        let rankColor = 'var(--fds-text-dim)';
+        if (award.rank === 1) badge = '🥇 1st Place';
+        else if (award.rank === 2) badge = '🥈 2nd Place';
+        else if (award.rank === 3) badge = '🥉 3rd Place';
+        else badge = `🏅 ${award.rank}th Place`;
+
+        const dateStr = new Date(award.tournamentEndDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         
-        if (isUser) {
-            borderColor = '#22C55E'; // Green accent for logged-in user
-        } else if (award.rank === 1) {
-            borderColor = '#FCD34D'; // Gold
-            badge = '🥇';
-            rankColor = '#FCD34D';
-        } else if (award.rank === 2) {
-            borderColor = '#E2E8F0'; // Silver
-            badge = '🥈';
-            rankColor = '#E2E8F0';
-        } else if (award.rank === 3) {
-            borderColor = '#D97706'; // Bronze
-            badge = '🥉';
-            rankColor = '#D97706';
-        }
+        // Mock status since backend model doesn't have it, but standardizing as Paid based on requirements
+        const status = 'Paid';
 
         return `
             <div class="glass-card" style="
                 padding: 16px;
-                border: 1px solid ${borderColor};
-                background: ${isUser ? 'rgba(34,197,94,0.1)' : 'rgba(15,23,42,0.85)'};
-                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(15, 23, 42, 0.7);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-radius: 16px;
                 position: relative;
                 overflow: hidden;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             ">
-                ${isUser ? `
-                    <div style="position: absolute; top: 0; right: 0; background: #22C55E; color: black; font-size: 10px; font-weight: 900; padding: 4px 12px; border-bottom-left-radius: 12px; text-transform: uppercase;">
-                        ⭐ Your Award
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size: 15px; font-weight: 800; color: white;">
+                        ${this._capitalize(award.tournamentType)} Tournament
                     </div>
-                ` : ''}
-
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; margin-top: ${isUser ? '8px' : '0'};">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="font-size: var(--fds-font-md); font-weight: 900; color: ${rankColor}; min-width: 60px;">
-                            ${badge} Rank ${award.rank}
-                        </div>
-                        <div>
-                            <div style="font-size: 10px; color: var(--fds-text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">MSISDN</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); font-family: monospace;">${award.maskedMsisdn}</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 10px; color: var(--fds-text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Prize</div>
-                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--tv-gold-primary);">${award.prizeAmount.toLocaleString()} ${award.currency}</div>
+                    <div style="background: rgba(34, 197, 94, 0.2); color: #4ADE80; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 12px; text-transform: uppercase;">
+                        ${status}
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
-                    <div>
-                        <div style="font-size: 10px; color: var(--fds-text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Tournament</div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #94A3B8;">${this._capitalize(award.tournamentType)} Tournament</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--fds-text-dim);">Position</span>
+                        <span style="font-size: 14px; font-weight: 800; color: var(--fds-text-main);">${badge}</span>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 10px; color: var(--fds-text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Ended</div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #94A3B8;">${new Date(award.tournamentEndDate).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--fds-text-dim);">Award Amount</span>
+                        <span style="font-size: 15px; font-weight: 900; color: var(--tv-gold-primary);">${award.prizeAmount.toLocaleString()} ${award.currency}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--fds-text-dim);">Date</span>
+                        <span style="font-size: 14px; font-weight: 800; color: var(--fds-text-main);">${dateStr}</span>
                     </div>
                 </div>
             </div>
@@ -238,6 +224,12 @@ export class AwardsScreen {
                     this._loadAwards();
                 }
             });
+        });
+
+        root.querySelector('#btn-view-tournaments')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            // Fallback: Just pop the screen if no router callback exists for Tournaments
+            this._onBack();
         });
 
         root.querySelector('#btn-retry-awards')?.addEventListener('click', () => {

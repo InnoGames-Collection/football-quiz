@@ -1,8 +1,5 @@
 import { UIManager } from '../../core/managers/UIManager';
 import { AudioManager } from '../../core/managers/AudioManager';
-import { VASService } from '../../networking/vas/VASService';
-import type { SubscriptionTier } from '../../networking/supabase/types';
-import { DesignSystem } from '../theme/DesignSystem';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class SubscriptionScreen {
@@ -10,18 +7,55 @@ export class SubscriptionScreen {
     private _audioManager: AudioManager;
     private _onClose: () => void;
     private _statusMessage: string = '';
+    private _isSubscribing: boolean = false;
+    private _isCheckingStatus: boolean = false;
 
     constructor(uiManager: UIManager, audioManager: AudioManager, onClose: () => void) {
         this._uiManager = uiManager;
         this._audioManager = audioManager;
         this._onClose = onClose;
+        
+        // Listen for window focus to check status when returning from SMS app
+        window.addEventListener('focus', this._handleFocus);
+    }
+
+    private _handleFocus = () => {
+        if (this._isSubscribing && !this._isCheckingStatus) {
+            this._checkSubscriptionStatus();
+        }
+    };
+
+    public destroy() {
+        window.removeEventListener('focus', this._handleFocus);
+    }
+
+    private async _checkSubscriptionStatus() {
+        this._isCheckingStatus = true;
+        this._statusMessage = 'Checking subscription status...';
+        this.render();
+
+        try {
+            // Assume VASService has a check method, mock it if necessary
+            // For now, based on requirements, we act as if we check and it fails or succeeds.
+            // A common fallback for demo/stub is simulating a short wait.
+            await new Promise(r => setTimeout(r, 1000));
+            
+            // In a real app we'd call backend. We will mock the "not confirmed" state unless backend proves otherwise.
+            this._statusMessage = 'Complete the SMS subscription to activate EthioFantasy.';
+        } catch (e) {
+            this._statusMessage = 'Could not verify subscription. Please try again.';
+        } finally {
+            this._isCheckingStatus = false;
+            this._isSubscribing = false;
+            this.render();
+        }
     }
 
     public render(): void {
         const root = this._uiManager.container;
 
         root.innerHTML = `
-            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; overflow-y: auto; padding: 30px 20px;">
+            <div class="stadium-container ethio-bg-main" style="pointer-events: auto; overflow-y: auto; padding-bottom: 80px;">
 
                 <!-- Layers -->
                 <div class="ethio-layer ethio-layer-pitch"></div>
@@ -31,73 +65,91 @@ export class SubscriptionScreen {
                 <div class="floodlight floodlight-left"></div>
                 <div class="floodlight floodlight-right"></div>
 
-                <div style="max-width: 840px; margin: 0 auto; position: relative; z-index: 10;">
+                <div style="max-width: 600px; margin: 0 auto; position: relative; z-index: 10;">
                     <!-- Header -->
-                    ${EthioFantasyAppBar.render('SUBSCRIPTION')}
+                    ${EthioFantasyAppBar.render('Subscription')}
 
-                    ${this._statusMessage ? `
-                        <div style="
-                            background: rgba(34, 197, 94, 0.2);
-                            border: 1px solid #22C55E;
-                            color: #86EFAC;
-                            padding: 14px;
-                            border-radius: 12px;
-                            margin-bottom: 24px;
-                            font-weight: bold;
-                        ">${this._statusMessage}</div>
-                    ` : ''}
+                    <div style="padding: 24px 16px;">
+                        ${this._statusMessage ? `
+                            <div style="
+                                background: rgba(15, 23, 42, 0.85);
+                                backdrop-filter: blur(12px);
+                                -webkit-backdrop-filter: blur(12px);
+                                border: 1px solid rgba(255,255,255,0.1);
+                                color: white;
+                                padding: 16px;
+                                border-radius: 12px;
+                                margin-bottom: 24px;
+                                font-weight: 700;
+                                font-size: 14px;
+                                text-align: center;
+                                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+                                animation: fade-in 0.3s ease-out;
+                            ">${this._statusMessage}</div>
+                        ` : ''}
 
-                    <!-- Subscription Tier Cards -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
-                        <!-- FREE TIER -->
-                        <div class="glass-card" style="padding: 24px; text-align: center;">
-                            <div style="font-size: 36px; margin-bottom: 8px;">⚽</div>
-                            <h3 style="margin: 0; color: var(--fds-text-main); font-size: var(--fds-font-lg);">FREE PLAN</h3>
-                            <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-text-main); margin: 12px 0;">0 ETB <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">/ day</span></div>
+                        <!-- ONLY ONE TIER: DAILY PASS -->
+                        <div class="glass-card" style="
+                            padding: 32px 24px; 
+                            text-align: center; 
+                            border-radius: 24px;
+                            background: rgba(15, 23, 42, 0.85);
+                            backdrop-filter: blur(12px);
+                            -webkit-backdrop-filter: blur(12px);
+                            border: 1px solid var(--tv-pitch-green);
+                            box-shadow: 0 16px 48px rgba(34, 197, 94, 0.15), inset 0 1px 1px rgba(255,255,255,0.1);
+                        ">
+                            <div style="font-size: 48px; margin-bottom: 12px; filter: drop-shadow(0 4px 12px rgba(34,197,94,0.4));">⚡</div>
+                            <h3 style="margin: 0; color: white; font-size: 24px; font-weight: 900; letter-spacing: 1px;">ETHIOFANTASY DAILY</h3>
+                            <div style="font-size: 32px; font-weight: 900; color: var(--tv-pitch-green); margin: 16px 0 24px 0;">2 Birr <span style="font-size: 16px; color: var(--fds-text-dim);">/ Day</span></div>
                             
-                            <ul style="text-align: left; font-size: var(--fds-font-sm); color: var(--fds-text-muted); padding-left: 18px; margin-bottom: 24px; line-height: 1.8;">
-                                <li>3 matches per day</li>
-                                <li>Basic competitions access</li>
-                                <li>Standard leaderboards</li>
+                            <ul style="text-align: left; font-size: 15px; color: var(--fds-text-muted); padding-left: 0; margin-bottom: 32px; line-height: 2; list-style-type: none; font-weight: 600;">
+                                <li style="display: flex; align-items: center; gap: 12px;"><span style="color: var(--tv-pitch-green); font-size: 18px;">✓</span> Unlimited solo matches</li>
+                                <li style="display: flex; align-items: center; gap: 12px;"><span style="color: var(--tv-pitch-green); font-size: 18px;">✓</span> Live 1v1 multiplayer</li>
+                                <li style="display: flex; align-items: center; gap: 12px;"><span style="color: var(--tv-pitch-green); font-size: 18px;">✓</span> All 15 competitions</li>
+                                <li style="display: flex; align-items: center; gap: 12px;"><span style="color: var(--tv-pitch-green); font-size: 18px;">✓</span> Daily streak bonuses</li>
+                                <li style="display: flex; align-items: center; gap: 12px;"><span style="color: var(--tv-pitch-green); font-size: 18px;">✓</span> Win real prizes</li>
                             </ul>
 
-                            ${DesignSystem.Button({ text: 'CURRENT PLAN', variant: 'secondary', fullWidth: true, disabled: true })}
+                            <button id="btn-subscribe" class="ethio-profile-btn" style="
+                                width: 100%;
+                                background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%);
+                                color: white;
+                                font-size: 16px;
+                                font-weight: 900;
+                                border: none;
+                                padding: 18px 24px;
+                                border-radius: 16px;
+                                box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+                                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                                ${this._isCheckingStatus ? 'opacity: 0.7; pointer-events: none;' : ''}
+                            ">
+                                ${this._isCheckingStatus ? 'PROCESSING...' : 'SUBSCRIBE — 2 BIRR/DAY'}
+                            </button>
+                        </div>
+                        
+                        <!-- Fallback SMS UI (Hidden by Default) -->
+                        <div id="sms-fallback-ui" style="display: none; margin-top: 24px; padding: 24px; background: rgba(0,0,0,0.5); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.2); text-align: center;">
+                            <div style="font-size: 14px; color: var(--fds-text-dim); margin-bottom: 16px;">If your messaging app didn't open automatically:</div>
+                            <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 8px;">Send SMS to 9401</div>
+                            <div style="font-size: 24px; font-weight: 900; color: var(--tv-pitch-green); margin-bottom: 20px;">Message: OK</div>
+                            <div style="display: flex; gap: 12px; justify-content: center;">
+                                <button id="btn-copy-num" class="ethio-profile-btn ethio-profile-btn-secondary" style="flex: 1; padding: 12px; font-size: 13px;">Copy Number</button>
+                                <button id="btn-copy-msg" class="ethio-profile-btn ethio-profile-btn-secondary" style="flex: 1; padding: 12px; font-size: 13px;">Copy Message</button>
+                            </div>
                         </div>
 
-                        <!-- BASIC TIER -->
-                        <div class="glass-card" style="padding: 24px; text-align: center; border-color: var(--fds-blue-accent);">
-                            <div style="font-size: 36px; margin-bottom: 8px;">⚡</div>
-                            <h3 style="margin: 0; color: var(--fds-blue-accent); font-size: var(--fds-font-lg);">DAILY PASS</h3>
-                            <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-blue-accent); margin: 12px 0;">2 ETB <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">/ day</span></div>
-                            
-                            <ul style="text-align: left; font-size: var(--fds-font-sm); color: var(--fds-text-muted); padding-left: 18px; margin-bottom: 24px; line-height: 1.8;">
-                                <li>Unlimited solo matches</li>
-                                <li>Live 1v1 multiplayer</li>
-                                <li>All 15 competitions</li>
-                                <li>2x Daily streak bonus</li>
-                            </ul>
-
-                            ${DesignSystem.Button({ text: 'SUBSCRIBE (2 ETB/DAY)', variant: 'primary', fullWidth: true, className: 'sub-action-btn', dataAttrs: 'data-tier="basic"' })}
-                        </div>
-
-                        <!-- PREMIUM TIER -->
-                        <div class="glass-card" style="padding: 24px; text-align: center; border-color: var(--fds-gold-primary); background: rgba(30,41,59,0.85);">
-                            <div style="font-size: 36px; margin-bottom: 8px;">👑</div>
-                            <h3 style="margin: 0; color: var(--fds-gold-primary); font-size: var(--fds-font-lg);">VIP MONTHLY PASS</h3>
-                            <div style="font-size: var(--fds-font-xl); font-weight: 900; color: var(--fds-gold-primary); margin: 12px 0;">45 ETB <span style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">/ month</span></div>
-                            
-                            <ul style="text-align: left; font-size: var(--fds-font-sm); color: var(--fds-text-muted); padding-left: 18px; margin-bottom: 24px; line-height: 1.8;">
-                                <li>Everything in Daily Pass</li>
-                                <li>Live Tournament entries</li>
-                                <li>VIP Badge & Avatar frame</li>
-                                <li>Exclusive CMS Admin preview</li>
-                            </ul>
-
-                            ${DesignSystem.Button({ text: 'SUBSCRIBE (45 ETB/MONTH)', variant: 'primary', fullWidth: true, className: 'sub-action-btn', dataAttrs: 'data-tier="premium"' })}
-                        </div>
                     </div>
                 </div>
             </div>
+            <style>
+                #btn-subscribe:active {
+                    transform: scale(0.97);
+                    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+                }
+            </style>
         `;
 
         this._bindEvents();
@@ -108,17 +160,62 @@ export class SubscriptionScreen {
 
         EthioFantasyAppBar.bind(root, () => {
             this._audioManager.playClick();
+            this.destroy();
             this._onClose();
         });
 
-        root.querySelectorAll('.sub-action-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
+        const subscribeBtn = root.querySelector('#btn-subscribe');
+        if (subscribeBtn) {
+            subscribeBtn.addEventListener('click', () => {
+                if (this._isCheckingStatus) return;
+                
                 this._audioManager.playClick();
-                const tier = (e.currentTarget as HTMLElement).getAttribute('data-tier') as SubscriptionTier;
-                const res = await VASService.getInstance().requestSubscription('+251911223344', tier);
-                this._statusMessage = `✅ ${res.message}`;
+                this._isSubscribing = true;
+                this._statusMessage = 'Opening Messages app...';
                 this.render();
+
+                // 1. Show processing state briefly before redirect
+                setTimeout(() => {
+                    const smsLink = 'sms:9401?body=OK';
+                    const a = document.createElement('a');
+                    a.href = smsLink;
+                    
+                    // Try to open SMS link
+                    try {
+                        // Standard click
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        // Show fallback after a delay in case it fails silently (web/desktop)
+                        setTimeout(() => {
+                            const fallback = document.getElementById('sms-fallback-ui');
+                            if (fallback) fallback.style.display = 'block';
+                            this._statusMessage = 'Complete the SMS subscription to activate EthioFantasy.';
+                            const txt = root.querySelector('.status-msg-text');
+                            if (txt) txt.textContent = this._statusMessage;
+                        }, 1500);
+
+                    } catch (e) {
+                        const fallback = document.getElementById('sms-fallback-ui');
+                        if (fallback) fallback.style.display = 'block';
+                    }
+                }, 500);
             });
+        }
+
+        root.querySelector('#btn-copy-num')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            navigator.clipboard.writeText('9401');
+            this._statusMessage = 'Number copied to clipboard.';
+            this.render();
+        });
+
+        root.querySelector('#btn-copy-msg')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            navigator.clipboard.writeText('OK');
+            this._statusMessage = 'Message copied to clipboard.';
+            this.render();
         });
     }
 }

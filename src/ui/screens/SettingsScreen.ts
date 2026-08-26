@@ -11,6 +11,7 @@ import { SupportService } from '../../networking/services/SupportService';
 import { DesignSystem } from '../theme/DesignSystem';
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 import { LogoutDialog } from '../components/LogoutDialog';
+import pkg from '../../../package.json';
 
 export interface AppSettings {
     soundEffects: boolean;
@@ -168,24 +169,37 @@ export class SettingsScreen {
         const profile = this._saveManager.profile;
         const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : `${i18n.currentLocale === 'am' ? 'እንግዳ ተጫዋች' : (i18n.currentLocale === 'om' ? 'Taphataa Keessummaa' : 'Guest Player')}`;
 
-        const listTile = (icon: string, title: string, subtitle: string, hasChevron: boolean = true, id: string) => `
+        const listTile = (icon: string, title: string, subtitle: string, rightContent: string, id: string) => `
             <div id="${id}" class="settings-tile" style="
                 display: flex; align-items: center; justify-content: space-between; 
-                padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+                padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
                 transition: background-color 0.2s;
             ">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: var(--fds-font-lg);">${icon}</span>
+                    <span style="font-size: 24px; width: 28px; text-align: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${icon}</span>
                     <div>
-                        <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${title}</div>
-                        ${subtitle ? `<div style="font-size: var(--fds-font-sm); color: var(--fds-text-dim); margin-top: 2px;">${subtitle}</div>` : ''}
+                        <div style="font-size: 15px; font-weight: 800; color: white; letter-spacing: 0.3px;">${title}</div>
+                        ${subtitle ? `<div style="font-size: 13px; color: var(--fds-text-dim); margin-top: 2px; font-weight: 600;">${subtitle}</div>` : ''}
                     </div>
                 </div>
-                ${hasChevron ? `<span style="color: var(--fds-text-dim);">❯</span>` : ''}
+                <div style="display: flex; align-items: center;">
+                    ${rightContent}
+                </div>
             </div>
         `;
 
+        const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+
+        const renderToggle = (checked: boolean) => `
+            <label class="switch-container" style="pointer-events: none;">
+                <input type="checkbox" class="switch-input" ${checked ? 'checked' : ''}>
+                <span class="switch-slider"></span>
+            </label>
+        `;
+
         const currentLangLabel = i18n.currentLocale === 'am' ? 'አማርኛ' : (i18n.currentLocale === 'om' ? 'Afan Oromo' : 'English');
+
+        const areNotificationsEnabled = Object.values(this._settings.notifications).some(v => v);
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
@@ -195,31 +209,36 @@ export class SettingsScreen {
                 <div class="ethio-layer ethio-layer-overlay"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
 
-                ${EthioFantasyAppBar.render(i18n.currentLocale === 'am' ? 'ቅንብሮች' : (i18n.currentLocale === 'om' ? 'QINDAA\'INOOTA' : 'SETTINGS'))}
+                ${EthioFantasyAppBar.render(i18n.currentLocale === 'am' ? 'ቅንብሮች' : (i18n.currentLocale === 'om' ? 'QINDAA\'INOOTA' : 'Settings'))}
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
                     <!-- Account Group -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'መለያ እና መገለጫ' : (i18n.currentLocale === 'om' ? 'HERREGA & PROFILE' : 'ACCOUNT & PROFILE')}</div>
-                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('👤', i18n.currentLocale === 'am' ? 'የእኔ መገለጫ' : (i18n.currentLocale === 'om' ? 'Profile Koo' : 'My Profile'), maskedMsisdn, true, 'tile-profile')}
-                        ${listTile('🌍', i18n.currentLocale === 'am' ? 'ቋንቋ' : (i18n.currentLocale === 'om' ? 'Afaan' : 'Language'), currentLangLabel, true, 'tile-language')}
-                        ${listTile('🔔', i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), '', true, 'tile-notifications')}
-                        ${listTile('🔊', i18n.currentLocale === 'am' ? 'የድምፅ ውጤቶች' : (i18n.currentLocale === 'om' ? 'Sagalee' : 'Sound Effects'), this._settings.soundEffects ? (i18n.currentLocale === 'am' ? 'የበራ' : (i18n.currentLocale === 'om' ? 'Kan Baname' : 'Enabled')) : (i18n.currentLocale === 'am' ? 'የጠፋ' : (i18n.currentLocale === 'om' ? 'Kan Cufame' : 'Muted')), true, 'tile-sound')}
+                    <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'መለያ እና መገለጫ' : (i18n.currentLocale === 'om' ? 'HERREGA & PROFILE' : 'ACCOUNT & PROFILE')}</div>
+                    <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                        ${listTile('👤', i18n.currentLocale === 'am' ? 'የእኔ መገለጫ' : (i18n.currentLocale === 'om' ? 'Profile Koo' : 'My Profile'), maskedMsisdn, chevron, 'tile-profile')}
+                        ${listTile('🌍', i18n.currentLocale === 'am' ? 'ቋንቋ' : (i18n.currentLocale === 'om' ? 'Afaan' : 'Language'), currentLangLabel, chevron, 'tile-language')}
+                        ${listTile('🔔', i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), '', renderToggle(areNotificationsEnabled), 'tile-notifications')}
+                        <div style="border-bottom: none;">
+                            ${listTile('🔊', i18n.currentLocale === 'am' ? 'የድምፅ ውጤቶች' : (i18n.currentLocale === 'om' ? 'Sagalee' : 'Sound Effects'), this._settings.soundEffects ? (i18n.currentLocale === 'am' ? 'የበራ' : (i18n.currentLocale === 'om' ? 'Kan Baname' : 'Enabled')) : (i18n.currentLocale === 'am' ? 'የጠፋ' : (i18n.currentLocale === 'om' ? 'Kan Cufame' : 'Muted')), renderToggle(this._settings.soundEffects), 'tile-sound')}
+                        </div>
                     </div>
 
                     <!-- Legal Group -->
-                    <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 8px; margin-left: 16px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'እገዛ እና ህጋዊ' : (i18n.currentLocale === 'om' ? 'GARGAARSA & SEERA' : 'SUPPORT & LEGAL')}</div>
-                    <div class="glass-card" style="margin-bottom: 32px; border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08);">
-                        ${listTile('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'Gargaarsa & Deeggarsa' : 'Help & Support'), '', true, 'tile-help')}
-                        ${listTile('📜', i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'Waliigaltee & Haalawwan' : 'Terms & Conditions'), '', true, 'tile-terms')}
-                        ${listTile('🔒', i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'Imaammata Dhuunfaa' : 'Privacy Policy'), '', true, 'tile-privacy')}
-                        ${listTile('ℹ️', i18n.currentLocale === 'am' ? 'ስለ ኢትዮ ፋንታሲ' : (i18n.currentLocale === 'om' ? 'Waa\'ee Ethio Fantasy' : 'About Ethio Fantasy'), 'v1.1.0', true, 'tile-about')}
+                    <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'እገዛ እና ህጋዊ' : (i18n.currentLocale === 'om' ? 'GARGAARSA & SEERA' : 'SUPPORT & LEGAL')}</div>
+                    <div class="glass-card" style="margin-bottom: 32px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                        ${listTile('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'Gargaarsa & Deeggarsa' : 'Help & Support'), '', chevron, 'tile-help')}
+                        ${listTile('📜', i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'Waliigaltee & Haalawwan' : 'Terms & Conditions'), '', chevron, 'tile-terms')}
+                        ${listTile('🔒', i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'Imaammata Dhuunfaa' : 'Privacy Policy'), '', chevron, 'tile-privacy')}
+                        <div style="border-bottom: none;">
+                            ${listTile('ℹ️', i18n.currentLocale === 'am' ? 'ስለ ኢትዮ ፋንታሲ' : (i18n.currentLocale === 'om' ? 'Waa\'ee Ethio Fantasy' : 'About EthioFantasy'), `v${pkg.version}`, chevron, 'tile-about')}
+                        </div>
                     </div>
 
                     <!-- Logout -->
-                    <div class="glass-card settings-tile" id="btn-logout" style="margin-bottom: 16px; border-radius: 12px; padding: 0; text-align: center; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); overflow: hidden;">
-                        <div style="padding: 16px; font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-red-live); cursor: pointer; letter-spacing: 0.5px;">
+                    <div class="glass-card settings-tile" id="btn-logout" style="margin-bottom: 16px; border-radius: 16px; padding: 0; text-align: center; border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); overflow: hidden; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1);">
+                        <div style="padding: 16px; font-size: 15px; font-weight: 900; color: #FCA5A5; cursor: pointer; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                             ${i18n.currentLocale === 'am' ? 'ውጣ' : (i18n.currentLocale === 'om' ? 'BA\'I' : 'LOG OUT')}
                         </div>
                     </div>
@@ -227,7 +246,44 @@ export class SettingsScreen {
                 </div>
             </div>
             <style>
-                .settings-tile:active { background: rgba(255,255,255,0.08); }
+                .settings-tile:active { background: rgba(255,255,255,0.08) !important; }
+                
+                .switch-container {
+                    position: relative;
+                    display: inline-block;
+                    width: 44px;
+                    height: 24px;
+                }
+                .switch-input {
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+                .switch-slider {
+                    position: absolute;
+                    cursor: pointer;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background-color: rgba(255,255,255,0.15);
+                    transition: .3s;
+                    border-radius: 24px;
+                    border: 1px solid rgba(255,255,255,0.1);
+                }
+                .switch-slider:before {
+                    position: absolute;
+                    content: "";
+                    height: 16px; width: 16px;
+                    left: 3px; bottom: 3px;
+                    background-color: white;
+                    transition: .3s;
+                    border-radius: 50%;
+                }
+                .switch-input:checked + .switch-slider {
+                    background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%);
+                    border-color: var(--tv-pitch-green);
+                }
+                .switch-input:checked + .switch-slider:before {
+                    transform: translateX(20px);
+                }
             </style>
         `;
 
@@ -239,8 +295,6 @@ export class SettingsScreen {
         const binds = [
             { id: 'tile-profile', sub: 'profile' },
             { id: 'tile-language', sub: 'language' },
-            { id: 'tile-notifications', sub: 'notifications' },
-            { id: 'tile-sound', sub: 'sound' },
             { id: 'tile-help', sub: 'help' },
             { id: 'tile-terms', sub: 'terms' },
             { id: 'tile-privacy', sub: 'privacy' },
@@ -253,6 +307,23 @@ export class SettingsScreen {
                 this._subScreen = b.sub as any;
                 this.render();
             });
+        });
+
+        document.getElementById('tile-notifications')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            const newVal = !Object.values(this._settings.notifications).some(v => v);
+            Object.keys(this._settings.notifications).forEach(k => {
+                this._settings.notifications[k as keyof AppSettings['notifications']] = newVal;
+            });
+            this._saveSettings();
+            this.render();
+        });
+
+        document.getElementById('tile-sound')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._settings.soundEffects = !this._settings.soundEffects;
+            this._saveSettings();
+            this.render();
         });
 
         document.getElementById('btn-logout')?.addEventListener('click', async () => {
