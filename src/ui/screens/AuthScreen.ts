@@ -16,6 +16,8 @@ export class AuthScreen {
     private _showSettings: boolean = false;
     private _settingsTab: 'main' | 'language' | 'tc' | 'faq' = 'main';
     private _faqExpandedIndex: number = -1;
+    private _bannerInterval: any = null;
+    private _currentBanner: number = 1;
 
     constructor(
         uiManager: UIManager,
@@ -117,9 +119,12 @@ export class AuthScreen {
         root.innerHTML = `
             <div style="
                 position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                background: radial-gradient(circle at center, rgba(15, 23, 42, 0.95) 0%, rgba(2, 6, 23, 0.98) 100%);
+                background-color: #020617;
+                background-image: 
+                    radial-gradient(circle at center, rgba(15, 23, 42, 0.8) 0%, rgba(2, 6, 23, 0.98) 100%),
+                    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255, 255, 255, 0.02) 40px, rgba(255, 255, 255, 0.02) 80px);
                 display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-                font-family: system-ui, -apple-system, sans-serif; pointer-events: auto; padding: 20px; box-sizing: border-box; overflow-y: auto;
+                font-family: system-ui, -apple-system, sans-serif; pointer-events: auto; padding: max(16px, env(safe-area-inset-top)) 16px 16px 16px; box-sizing: border-box; overflow-y: auto; overflow-x: hidden;
             ">
                 <!-- Top-Right Settings -->
                 <div style="width: 100%; max-width: 400px; display: flex; justify-content: flex-end; margin-bottom: 16px; flex-shrink: 0;">
@@ -129,7 +134,7 @@ export class AuthScreen {
                 </div>
 
                 <!-- 10-Banner Carousel -->
-                <div style="width: 100%; max-width: 400px; margin-bottom: 20px; flex-shrink: 0; position: relative; height: 160px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #0F172A;">
+                <div style="width: 100%; max-width: 400px; margin-bottom: clamp(12px, 2.5vh, 20px); flex-shrink: 0; position: relative; height: clamp(110px, 22vh, 160px); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #0F172A;">
                     <img id="auth-banner-bg" src="/assets/banners/${this._currentBanner}.png" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 1; transition: opacity 0.8s ease-in-out;" />
                     <img id="auth-banner-fg" src="/assets/banners/${this._currentBanner === 10 ? 1 : this._currentBanner + 1}.png" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.8s ease-in-out;" />
                 </div>
@@ -150,94 +155,90 @@ export class AuthScreen {
 
                 <!-- Compact Sign In Card -->
                 <div style="
-                    background: #FFFFFF; border-radius: 20px; padding: 20px;
+                    background: #FFFFFF; border-radius: 16px; padding: 16px;
                     width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-                    text-align: center; margin-bottom: 20px; flex-shrink: 0;
+                    text-align: center; margin-bottom: 16px; flex-shrink: 0;
                 ">
-                    <h1 style="font-size: 24px; font-weight: 800; color: #111827; margin: 0 0 16px 0;">
+                    <h1 style="font-size: 20px; font-weight: 800; color: #111827; margin: 0 0 12px 0;">
                         ${i18n.currentLocale === 'am' ? 'ይግቡ' : (i18n.currentLocale === 'om' ? 'Seenaa' : 'Sign In')}
                     </h1>
 
                     ${this._statusMessage ? `
-                        <div style="color: #EF4444; font-size: 13px; margin-bottom: 12px; text-align: left;">
+                        <div style="color: #EF4444; font-size: 12px; margin-bottom: 8px; text-align: left;">
                             ${this._statusMessage}
                         </div>
                     ` : ''}
 
                     ${this._devOtpCode ? `
                         <div style="
-                            background: #F0FDF4; border: 2px solid #16A34A; border-radius: 10px;
-                            padding: 10px 14px; margin-bottom: 12px; text-align: left;
+                            background: #F0FDF4; border: 2px solid #16A34A; border-radius: 8px;
+                            padding: 8px 12px; margin-bottom: 8px; text-align: left;
                         ">
-                            <div style="font-size: 11px; font-weight: 700; color: #15803D; text-transform: uppercase; margin-bottom: 4px;">
+                            <div style="font-size: 10px; font-weight: 700; color: #15803D; text-transform: uppercase; margin-bottom: 2px;">
                                 🔑 Your OTP Code (Dev Mode)
                             </div>
-                            <div style="font-size: 24px; font-weight: 900; color: #111827; letter-spacing: 4px;">
+                            <div style="font-size: 20px; font-weight: 900; color: #111827; letter-spacing: 4px;">
                                 ${this._devOtpCode}
                             </div>
                         </div>
                     ` : ''}
 
-                    <div style="text-align: left; margin-bottom: 12px;">
-                        <label style="display: block; font-size: 13px; color: #4B5563; font-weight: 600; margin-bottom: 6px;">
+                    <div style="text-align: left; margin-bottom: 10px;">
+                        <label style="display: block; font-size: 12px; color: #4B5563; font-weight: 600; margin-bottom: 4px;">
                             ${i18n.currentLocale === 'am' ? 'የስልክ ቁጥር' : (i18n.currentLocale === 'om' ? 'Lakkoofsa bilbilaa' : 'Phone number')}
                         </label>
                         <input type="tel" id="phone-input" placeholder="2519XXXXXXXX / 2518XXXXXXXX" value="${defaultVal}" ${isOtpStep ? 'disabled' : ''} style="
-                            width: 100%; background: #FFFFFF; border: 1px solid #D1D5DB; border-radius: 10px;
-                            padding: 12px 14px; color: #111827; font-size: 15px; outline: none; box-sizing: border-box;
+                            width: 100%; background: #FFFFFF; border: 1px solid #D1D5DB; border-radius: 8px;
+                            padding: 10px 12px; color: #111827; font-size: 14px; outline: none; box-sizing: border-box;
                             opacity: ${isOtpStep ? '0.6' : '1'};
                         " />
                     </div>
 
-                    <div style="display: flex; align-items: stretch; margin-bottom: ${isOtpStep ? '12px' : '20px'}; border: 1px solid #D1D5DB; border-radius: 10px; overflow: hidden; background: #FFFFFF; opacity: ${isOtpStep ? '1' : '0.6'};">
+                    <div style="display: flex; align-items: stretch; margin-bottom: 12px; border: 1px solid #D1D5DB; border-radius: 8px; overflow: hidden; background: #FFFFFF; opacity: ${isOtpStep ? '1' : '0.6'};">
                         <input type="text" id="otp-input" maxlength="6"
                             placeholder="${i18n.currentLocale === 'am' ? 'የ 6-አሃዝ ኮድ' : (i18n.currentLocale === 'om' ? 'Koodii dijiitii 6' : '6-digit code')}"
                             ${isOtpStep ? '' : 'disabled'}
                             style="
-                            flex: 1; background: transparent; border: none; padding: 12px 14px;
-                            color: #111827; font-size: 15px; outline: none; width: 100%;
+                            flex: 1; background: transparent; border: none; padding: 10px 12px;
+                            color: #111827; font-size: 14px; outline: none; width: 100%;
                             letter-spacing: 2px; font-weight: 700;
                         " />
                         <button id="send-otp-btn" style="
-                            background: #2563EB; color: white; border: none; padding: 0 16px;
-                            font-size: 14px; font-weight: 600; cursor: ${isOtpStep ? 'default' : 'pointer'}; outline: none;
+                            background: #2563EB; color: white; border: none; padding: 0 14px;
+                            font-size: 13px; font-weight: 600; cursor: ${isOtpStep ? 'default' : 'pointer'}; outline: none;
                             opacity: ${isOtpStep ? '0.7' : '1'}; white-space: nowrap;
                         " ${isOtpStep ? 'disabled' : ''}>
                             ${i18n.currentLocale === 'am' ? 'ኮድ ያግኙ' : (i18n.currentLocale === 'om' ? 'Koodii fudhadhu' : 'Get code')}
                         </button>
                     </div>
 
-                    <div id="sign-in-container" style="display: ${isOtpStep ? 'block' : 'none'}; margin-bottom: 16px;">
-                        <button id="verify-otp-btn" style="
-                            width: 100%; background: #16A34A; color: white; border: none; border-radius: 10px;
-                            padding: 12px; font-size: 15px; font-weight: bold; cursor: pointer;
+                    <div id="sign-in-container" style="margin-bottom: 12px;">
+                        <button id="verify-otp-btn" disabled style="
+                            width: 100%; background: #2563EB; color: white; border: none; border-radius: 8px;
+                            padding: 10px; font-size: 14px; font-weight: bold; cursor: not-allowed; opacity: 0.5; transition: all 0.2s;
                         ">${i18n.currentLocale === 'am' ? 'ይግቡ' : (i18n.currentLocale === 'om' ? 'Seenaa' : 'Sign In')}</button>
                     </div>
 
-                    <div style="margin-top: 12px;">
-                        <a href="#" style="color: #16A34A; text-decoration: underline; font-size: 13px; font-weight: 600;">
+                    <div style="margin-top: 8px; display: flex; justify-content: center; gap: 16px;">
+                        <a href="#" style="color: #64748B; text-decoration: underline; font-size: 12px; font-weight: 600;">
                             ${i18n.currentLocale === 'am' ? 'ደንቦች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'Waliigaltee & Haalawwan' : 'Terms & Conditions')}
                         </a>
+                        ${isOtpStep ? `
+                        <button id="change-phone-btn" style="background: none; border: none; color: #2563EB; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0;">
+                            ${i18n.currentLocale === 'am' ? 'ቁጥር ይቀይሩ' : (i18n.currentLocale === 'om' ? 'Lakkoofsa jijjiiri' : 'Change number')}
+                        </button>
+                        ` : ''}
                     </div>
-
-                    ${isOtpStep ? `
-                        <div style="margin-top: 8px;">
-                            <button id="change-phone-btn" style="background: none; border: none; color: #2563EB; font-size: 13px; cursor: pointer;">
-                                ${i18n.currentLocale === 'am' ? 'ቁጥር ይቀይሩ' : (i18n.currentLocale === 'om' ? 'Lakkoofsa jijjiiri' : 'Change number')}
-                            </button>
-                        </div>
-                    ` : ''}
                 </div>
 
                 <!-- Subscribe Button -->
                 <button id="auth-subscribe-btn" style="
-                    background: linear-gradient(135deg, #F59E0B, #EA580C); color: white;
-                    border: none; border-radius: 20px; padding: 14px 24px; font-size: 16px;
-                    font-weight: 800; width: 100%; max-width: 400px; cursor: pointer;
-                    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4); text-transform: uppercase;
-                    letter-spacing: 0.5px; flex-shrink: 0; margin-bottom: 40px;
+                    background: #FFFFFF; color: #16A34A;
+                    border: 2px solid #16A34A; border-radius: 12px; padding: 10px 24px; font-size: 15px;
+                    font-weight: 700; width: 100%; max-width: 400px; cursor: pointer;
+                    flex-shrink: 0; margin-bottom: clamp(16px, 4vh, 40px);
                 ">
-                    ${i18n.currentLocale === 'am' ? 'ሰብስክራይብ ያድርጉ' : (i18n.currentLocale === 'om' ? 'Galmoofadhu' : 'Subscribe Now')}
+                    ${i18n.currentLocale === 'am' ? 'ሰብስክራይብ' : (i18n.currentLocale === 'om' ? 'Galmoofadhu' : 'Subscribe')}
                 </button>
             </div>
         `;
@@ -284,6 +285,22 @@ export class AuthScreen {
             input.value = input.value.replace(/[^0-9+]/g, '');
             if (input.value.indexOf('+') > 0) {
                 input.value = input.value.replace(/\+/g, '');
+            }
+        });
+
+        root.querySelector('#otp-input')?.addEventListener('input', (e: Event) => {
+            const input = e.target as HTMLInputElement;
+            const btn = root.querySelector('#verify-otp-btn') as HTMLButtonElement;
+            if (btn) {
+                if (input.value.trim().length === 6) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                }
             }
         });
 
@@ -447,7 +464,7 @@ export class AuthScreen {
         if (subscribeBtn) {
             subscribeBtn.addEventListener('click', () => {
                 this._audioManager.playClick();
-                console.log('Subscribe clicked');
+                window.location.href = 'sms:9401?body=OK';
             });
         }
     }
@@ -468,10 +485,13 @@ export class AuthScreen {
                     .maybeSingle();
                 if (data?.code) {
                     this._devOtpCode = String(data.code);
-                    // Auto-fill the OTP input for convenience
-                    const otpInput = this._uiManager.container.querySelector('#otp-input') as HTMLInputElement;
-                    if (otpInput) otpInput.value = this._devOtpCode;
                     this.render();
+                    
+                    const otpInput = this._uiManager.container.querySelector('#otp-input') as HTMLInputElement;
+                    if (otpInput) {
+                        otpInput.value = this._devOtpCode;
+                        otpInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                     return;
                 }
             } catch {
