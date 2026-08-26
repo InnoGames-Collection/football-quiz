@@ -129,19 +129,10 @@ export class AuthScreen {
                 </div>
 
                 <!-- 10-Banner Carousel -->
-                <div style="width: 100%; max-width: 400px; margin-bottom: 20px; overflow-x: auto; scroll-snap-type: x mandatory; display: flex; gap: 12px; padding-bottom: 8px; scrollbar-width: none; -ms-overflow-style: none; flex-shrink: 0;">
-                    ${Array.from({ length: 10 }).map((_, i) => `
-                        <div style="flex: 0 0 90%; scroll-snap-align: center; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #1E293B;">
-                            <img src="/assets/banners/2.png" style="width: 100%; height: 160px; object-fit: cover; display: block;" alt="Banner ${i + 1}" />
-                        </div>
-                    `).join('')}
+                <div style="width: 100%; max-width: 400px; margin-bottom: 20px; flex-shrink: 0; position: relative; height: 160px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #0F172A;">
+                    <img id="auth-banner-bg" src="/assets/banners/${this._currentBanner}.png" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 1; transition: opacity 0.8s ease-in-out;" />
+                    <img id="auth-banner-fg" src="/assets/banners/${this._currentBanner === 10 ? 1 : this._currentBanner + 1}.png" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.8s ease-in-out;" />
                 </div>
-                <style>
-                    /* Hide scrollbar for carousel but allow scrolling */
-                    div::-webkit-scrollbar {
-                        display: none;
-                    }
-                </style>
                 
                 ${this._showSettings ? `
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0F172A; z-index: 1000; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;">
@@ -256,6 +247,36 @@ export class AuthScreen {
 
     private _bindEvents(): void {
         const root = this._uiManager.container;
+
+        if (this._bannerInterval) {
+            clearInterval(this._bannerInterval);
+            this._bannerInterval = null;
+        }
+
+        if (!this._showSettings) {
+            this._bannerInterval = setInterval(() => {
+                const bgImg = root.querySelector('#auth-banner-bg') as HTMLImageElement;
+                const fgImg = root.querySelector('#auth-banner-fg') as HTMLImageElement;
+                
+                if (bgImg && fgImg) {
+                    fgImg.style.opacity = '1';
+                    
+                    setTimeout(() => {
+                        if (!bgImg || !fgImg) return;
+                        bgImg.src = fgImg.src;
+                        fgImg.style.transition = 'none';
+                        fgImg.style.opacity = '0';
+                        
+                        this._currentBanner = this._currentBanner >= 10 ? 1 : this._currentBanner + 1;
+                        const nextNextBanner = this._currentBanner >= 10 ? 1 : this._currentBanner + 1;
+                        fgImg.src = `/assets/banners/${nextNextBanner}.png`;
+                        
+                        void fgImg.offsetWidth; // force reflow
+                        fgImg.style.transition = 'opacity 0.8s ease-in-out';
+                    }, 800);
+                }
+            }, 4000);
+        }
 
         root.querySelector('#phone-input')?.addEventListener('input', (e: Event) => {
             const input = e.target as HTMLInputElement;
