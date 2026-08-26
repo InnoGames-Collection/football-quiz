@@ -13,10 +13,13 @@
   --fds-gold-gradient: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
   --fds-gold-glow: rgba(255, 215, 0, 0.4);
 
-  --fds-blue-accent: #3b82f6;
-  --fds-blue-glow: rgba(59, 130, 246, 0.4);
+  --fds-blue-main: #3B82F6;
+  --fds-blue-dark: #1E3A8A;
+  --fds-blue-accent: #60A5FA;
+  
+  --ethio-deep-navy: rgba(7, 27, 45, 0.95);
 
-  --fds-red-live: #ef4444;
+  --fds-red-live: #EF4444;
   --fds-red-glow: rgba(239, 68, 68, 0.6);
 
   --fds-bg-dark: #020617;

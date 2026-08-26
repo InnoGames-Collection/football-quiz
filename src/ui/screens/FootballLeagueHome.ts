@@ -196,7 +196,7 @@ export class FootballLeagueHome {
                 <div style="max-width: 960px; margin: 0 auto; padding: clamp(12px, 2vh, 16px); display: flex; flex-direction: column; gap: clamp(12px, 1.5vh, 16px);">
                     
                     <!-- PREMIUM AD BANNER CAROUSEL -->
-                    <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: rgba(15,23,42,0.6); aspect-ratio: 16/5; width: 100%;">
+                    <div class="fade-in-up" style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); background: linear-gradient(135deg, rgba(7, 27, 45, 0.8) 0%, rgba(7, 27, 45, 0.6) 100%); border: 1px solid rgba(255, 255, 255, 0.08); aspect-ratio: 16/5; width: 100%;">
                         <div id="ad-carousel" style="display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; width: 100%; height: 100%;">
                             <img src="/assets/banners/banner1.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: fill;" alt="Ad 1">
                             <img src="/assets/banners/banner2.jpg" style="min-width: 100%; height: 100%; flex-shrink: 0; scroll-snap-align: start; object-fit: fill;" alt="Ad 2">

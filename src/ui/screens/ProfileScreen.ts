@@ -89,7 +89,7 @@ export class ProfileScreen {
                 
                 <!-- TOP HEADER -->
                 <div style="
-                    background: linear-gradient(180deg, rgba(34,197,94,0.2) 0%, rgba(15,23,42,0) 100%);
+                    background: linear-gradient(180deg, rgba(34,197,94,0.2) 0%, rgba(7,27,45,0) 100%);
                     padding: 32px 16px 16px 16px;
                     text-align: center;
                 ">
@@ -170,7 +170,7 @@ export class ProfileScreen {
 
             <!-- Profile Interactive Modals Container -->
             <div id="profile-action-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; pointer-events: auto;">
-                <div class="glass-card" style="width: 100%; max-width: 400px; padding: 24px; border-color: var(--tv-gold-primary); text-align: center; background: rgba(15,23,42,0.95); position: relative;">
+                <div class="glass-card" style="width: 100%; max-width: 400px; padding: 24px; border-color: var(--tv-gold-primary); text-align: center; background: var(--ethio-deep-navy); position: relative;">
                     <button id="btn-close-prof-modal" style="position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--fds-text-dim); font-size: var(--fds-font-md); cursor: pointer;">✖</button>
                     <div id="prof-modal-content" style="max-height: 70vh; overflow-y: auto;" class="hide-scrollbar"></div>
                 </div>
