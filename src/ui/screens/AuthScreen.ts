@@ -13,6 +13,9 @@ export class AuthScreen {
     private _pendingPhone: string = '';
     private _statusMessage: string = '';
     private _devOtpCode: string = '';
+    private _showSettings: boolean = false;
+    private _settingsTab: 'main' | 'language' | 'tc' | 'faq' = 'main';
+    private _faqExpandedIndex: number = -1;
 
     constructor(
         uiManager: UIManager,
@@ -24,6 +27,84 @@ export class AuthScreen {
         this._audioManager = audioManager;
         this._authManager = authManager;
         this._onSuccess = onSuccess;
+
+        (window as any).ethioOnBackPress = () => {
+            if (this._showSettings) {
+                if (this._settingsTab !== 'main') {
+                    this._settingsTab = 'main';
+                } else {
+                    this._showSettings = false;
+                }
+                this.render();
+                return true;
+            }
+            return false;
+        };
+    }
+
+    private _renderSettingsContent(): string {
+        if (this._settingsTab === 'main') {
+            return `
+                <div class="settings-tile" data-tab="language" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; background: rgba(255,255,255,0.05); border-radius: 12px 12px 0 0;">
+                    <div style="font-weight: 700; font-size: 16px;">${i18n.currentLocale === 'am' ? 'ቋንቋ' : i18n.currentLocale === 'om' ? 'Afaan' : 'Language'}</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #94A3B8;">${i18n.currentLocale === 'am' ? 'አማርኛ' : i18n.currentLocale === 'om' ? 'Afan Oromo' : 'English'}</span>
+                        <span>❯</span>
+                    </div>
+                </div>
+                <div class="settings-tile sound-toggle" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; background: rgba(255,255,255,0.05);">
+                    <div style="font-weight: 700; font-size: 16px;">${i18n.currentLocale === 'am' ? 'የድምፅ ውጤቶች' : i18n.currentLocale === 'om' ? 'Sagalee' : 'Sound Effects'}</div>
+                    <div style="color: ${!this._audioManager.isMuted ? '#4ADE80' : '#F87171'}; font-weight: 700;">${!this._audioManager.isMuted ? 'ON' : 'OFF'}</div>
+                </div>
+                <div class="settings-tile" data-tab="tc" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; background: rgba(255,255,255,0.05);">
+                    <div style="font-weight: 700; font-size: 16px;">${i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : i18n.currentLocale === 'om' ? 'Waliigaltee & Haalawwan' : 'Terms & Conditions'}</div>
+                    <span>❯</span>
+                </div>
+                <div class="settings-tile" data-tab="faq" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; cursor: pointer; background: rgba(255,255,255,0.05); border-radius: 0 0 12px 12px;">
+                    <div style="font-weight: 700; font-size: 16px;">FAQ</div>
+                    <span>❯</span>
+                </div>
+            `;
+        } else if (this._settingsTab === 'language') {
+            return `
+                <div class="settings-tile lang-item" data-lang="en" style="padding: 16px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between;">
+                    <span>English</span>
+                    ${i18n.currentLocale === 'en' ? '<span>✓</span>' : ''}
+                </div>
+                <div class="settings-tile lang-item" data-lang="am" style="padding: 16px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; justify-content: space-between;">
+                    <span>አማርኛ (Amharic)</span>
+                    ${i18n.currentLocale === 'am' ? '<span>✓</span>' : ''}
+                </div>
+                <div class="settings-tile lang-item" data-lang="om" style="padding: 16px; background: rgba(255,255,255,0.05); cursor: pointer; border-radius: 0 0 12px 12px; display: flex; justify-content: space-between;">
+                    <span>Afan Oromo</span>
+                    ${i18n.currentLocale === 'om' ? '<span>✓</span>' : ''}
+                </div>
+            `;
+        } else if (this._settingsTab === 'tc') {
+            return `
+                <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px;">
+                    <h2 style="margin-top: 0; font-size: 20px;">Terms & Conditions</h2>
+                    <p style="color: #CBD5E1; line-height: 1.6;">Welcome to EthioFantasy. By logging in, you agree to our Terms & Conditions. You must be 18 years or older and an active subscriber to participate. Your data is handled securely and in compliance with local regulations. Subscription fees are deducted automatically from your airtime.</p>
+                </div>
+            `;
+        } else if (this._settingsTab === 'faq') {
+            const faqs = [
+                { q: "How do I play?", a: "Answer questions quickly to score goals. Each fast correct answer increases your chance to win!" },
+                { q: "Is it free?", a: "There is a daily subscription fee for premium access. It will be deducted from your airtime balance." },
+                { q: "How are prizes awarded?", a: "Prizes are distributed based on weekly leaderboard standings and sent directly to your mobile account." },
+                { q: "How do I unsubscribe?", a: "You can unsubscribe anytime by sending 'STOP' to 8282 or visiting your profile settings." }
+            ];
+            return faqs.map((f, i) => `
+                <div class="faq-item" data-idx="${i}" style="background: rgba(255,255,255,0.05); margin-bottom: 10px; border-radius: 12px; overflow: hidden; cursor: pointer;">
+                    <div style="padding: 16px; font-weight: bold; border-bottom: ${this._faqExpandedIndex === i ? '1px solid rgba(255,255,255,0.1)' : 'none'}; display: flex; justify-content: space-between;">
+                        <span>${f.q}</span>
+                        <span style="color: #F59E0B;">${this._faqExpandedIndex === i ? '−' : '+'}</span>
+                    </div>
+                    ${this._faqExpandedIndex === i ? `<div style="padding: 16px; color: #CBD5E1; line-height: 1.5;">${f.a}</div>` : ''}
+                </div>
+            `).join('');
+        }
+        return '';
     }
 
     public render(): void {
@@ -43,7 +124,7 @@ export class AuthScreen {
                 <!-- Top-Right Settings -->
                 <div style="width: 100%; max-width: 400px; display: flex; justify-content: flex-end; margin-bottom: 16px; flex-shrink: 0;">
                     <button id="auth-settings-btn" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 40px; height: 40px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <span style="font-size: 20px; line-height: 1;">⚙️</span>
                     </button>
                 </div>
 
@@ -51,7 +132,7 @@ export class AuthScreen {
                 <div style="width: 100%; max-width: 400px; margin-bottom: 20px; overflow-x: auto; scroll-snap-type: x mandatory; display: flex; gap: 12px; padding-bottom: 8px; scrollbar-width: none; -ms-overflow-style: none; flex-shrink: 0;">
                     ${Array.from({ length: 10 }).map((_, i) => `
                         <div style="flex: 0 0 90%; scroll-snap-align: center; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #1E293B;">
-                            <img src="/assets/banners/1.png" style="width: 100%; height: 160px; object-fit: cover; display: block;" alt="Banner ${i + 1}" />
+                            <img src="/assets/banners/2.png" style="width: 100%; height: 160px; object-fit: cover; display: block;" alt="Banner ${i + 1}" />
                         </div>
                     `).join('')}
                 </div>
@@ -61,6 +142,20 @@ export class AuthScreen {
                         display: none;
                     }
                 </style>
+                
+                ${this._showSettings ? `
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #0F172A; z-index: 1000; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;">
+                    <div style="display: flex; align-items: center; height: 72px; padding: env(safe-area-inset-top) 0 0 0; background: #020617; border-bottom: 1px solid rgba(255,255,255,0.1); box-sizing: content-box;">
+                        <button id="auth-settings-back" style="width: 48px; height: 48px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; margin-left: 16px; display: flex; align-items: center; justify-content: center;">❮</button>
+                        <div style="flex: 1; color: white; font-weight: 700; font-size: 18px; text-transform: uppercase;">
+                            ${this._settingsTab === 'main' ? (i18n.currentLocale === 'am' ? 'ቅንብሮች' : i18n.currentLocale === 'om' ? 'Qindaa\'inoota' : 'Settings') : this._settingsTab === 'language' ? (i18n.currentLocale === 'am' ? 'ቋንቋ ይምረጡ' : i18n.currentLocale === 'om' ? 'Afaan Filadhu' : 'Select Language') : this._settingsTab === 'tc' ? 'Terms & Conditions' : 'FAQ'}
+                        </div>
+                    </div>
+                    <div style="padding: 20px; color: white; flex: 1; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box;">
+                        ${this._renderSettingsContent()}
+                    </div>
+                </div>
+                ` : ''}
 
                 <!-- Compact Sign In Card -->
                 <div style="
@@ -263,9 +358,69 @@ export class AuthScreen {
         if (settingsBtn) {
             settingsBtn.addEventListener('click', () => {
                 this._audioManager.playClick();
-                console.log('Settings clicked');
+                this._showSettings = true;
+                this._settingsTab = 'main';
+                this.render();
             });
         }
+
+        const settingsBackBtn = root.querySelector('#auth-settings-back');
+        if (settingsBackBtn) {
+            settingsBackBtn.addEventListener('click', () => {
+                this._audioManager.playClick();
+                if (this._settingsTab !== 'main') {
+                    this._settingsTab = 'main';
+                } else {
+                    this._showSettings = false;
+                }
+                this.render();
+            });
+        }
+
+        root.querySelectorAll('.settings-tile[data-tab]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                this._settingsTab = (e.currentTarget as HTMLElement).getAttribute('data-tab') as any;
+                this.render();
+            });
+        });
+
+        root.querySelector('.sound-toggle')?.addEventListener('click', () => {
+            this._audioManager.toggleMute();
+            this._audioManager.playClick();
+            
+            const isMuted = this._audioManager.isMuted;
+            localStorage.setItem('ETHIO_FOOTBALL_MUTED', String(isMuted));
+            
+            const saved = localStorage.getItem('ETHIO_FOOTBALL_SETTINGS_V2');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    parsed.soundEffects = !isMuted;
+                    localStorage.setItem('ETHIO_FOOTBALL_SETTINGS_V2', JSON.stringify(parsed));
+                } catch(e) {}
+            }
+            this.render();
+        });
+
+        root.querySelectorAll('.lang-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const lang = (e.currentTarget as HTMLElement).getAttribute('data-lang') as 'en' | 'am' | 'om';
+                i18n.setLocale(lang);
+                this._audioManager.playClick();
+                this._settingsTab = 'main';
+                this.render();
+            });
+        });
+
+        root.querySelectorAll('.faq-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const idx = parseInt((e.currentTarget as HTMLElement).getAttribute('data-idx') || '-1', 10);
+                this._faqExpandedIndex = this._faqExpandedIndex === idx ? -1 : idx;
+                this._audioManager.playClick();
+                this.render();
+            });
+        });
 
         const subscribeBtn = root.querySelector('#auth-subscribe-btn');
         if (subscribeBtn) {
