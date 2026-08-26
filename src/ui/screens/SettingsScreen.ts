@@ -11,7 +11,7 @@ import { SupportService } from '../../networking/services/SupportService';
 
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 import { LogoutDialog } from '../components/LogoutDialog';
-import pkg from '../../../package.json';
+
 
 export interface AppSettings {
     soundEffects: boolean;
@@ -166,9 +166,6 @@ export class SettingsScreen {
     }
 
     private _renderMainScreen(root: HTMLElement): void {
-        const profile = this._saveManager.profile;
-        const maskedMsisdn = profile.phone ? this._maskPhone(profile.phone) : `${i18n.currentLocale === 'am' ? 'እንግዳ ተጫዋች' : (i18n.currentLocale === 'om' ? 'Taphataa Keessummaa' : 'Guest Player')}`;
-
         const listTile = (icon: string, title: string, subtitle: string, rightContent: string, id: string) => `
             <div id="${id}" class="settings-tile" style="
                 display: flex; align-items: center; justify-content: space-between; 
@@ -216,7 +213,6 @@ export class SettingsScreen {
                     <!-- Account Group -->
                     <div style="font-size: 12px; font-weight: 900; color: var(--tv-gold-primary); margin-bottom: 8px; margin-left: 20px; text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'መለያ እና መገለጫ' : (i18n.currentLocale === 'om' ? 'HERREGA & PROFILE' : 'ACCOUNT & PROFILE')}</div>
                     <div class="glass-card" style="margin-bottom: 24px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-                        ${listTile('👤', i18n.currentLocale === 'am' ? 'የእኔ መገለጫ' : (i18n.currentLocale === 'om' ? 'Profile Koo' : 'My Profile'), maskedMsisdn, chevron, 'tile-profile')}
                         ${listTile('🌍', i18n.currentLocale === 'am' ? 'ቋንቋ' : (i18n.currentLocale === 'om' ? 'Afaan' : 'Language'), currentLangLabel, chevron, 'tile-language')}
                         ${listTile('🔔', i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), '', renderToggle(areNotificationsEnabled), 'tile-notifications')}
                         <div style="border-bottom: none;">
@@ -229,9 +225,8 @@ export class SettingsScreen {
                     <div class="glass-card" style="margin-bottom: 32px; border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         ${listTile('❓', i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'Gargaarsa & Deeggarsa' : 'Help & Support'), '', chevron, 'tile-help')}
                         ${listTile('📜', i18n.currentLocale === 'am' ? 'ውሎች እና ሁኔታዎች' : (i18n.currentLocale === 'om' ? 'Waliigaltee & Haalawwan' : 'Terms & Conditions'), '', chevron, 'tile-terms')}
-                        ${listTile('🔒', i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'Imaammata Dhuunfaa' : 'Privacy Policy'), '', chevron, 'tile-privacy')}
                         <div style="border-bottom: none;">
-                            ${listTile('ℹ️', i18n.currentLocale === 'am' ? 'ስለ ኢትዮ ፋንታሲ' : (i18n.currentLocale === 'om' ? 'Waa\'ee Ethio Fantasy' : 'About EthioFantasy'), `v${pkg.version}`, chevron, 'tile-about')}
+                            ${listTile('🔒', i18n.currentLocale === 'am' ? 'የግላዊነት ፖሊሲ' : (i18n.currentLocale === 'om' ? 'Imaammata Dhuunfaa' : 'Privacy Policy'), '', chevron, 'tile-privacy')}
                         </div>
                     </div>
 
@@ -293,12 +288,10 @@ export class SettingsScreen {
         });
 
         const binds = [
-            { id: 'tile-profile', sub: 'profile' },
             { id: 'tile-language', sub: 'language' },
             { id: 'tile-help', sub: 'help' },
             { id: 'tile-terms', sub: 'terms' },
-            { id: 'tile-privacy', sub: 'privacy' },
-            { id: 'tile-about', sub: 'about' }
+            { id: 'tile-privacy', sub: 'privacy' }
         ];
 
         binds.forEach(b => {
