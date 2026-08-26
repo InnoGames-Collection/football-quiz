@@ -82,9 +82,9 @@ export class LeaderboardScreen {
                 flex: 1;
                 padding: 10px 4px;
                 border-radius: 8px;
-                border: 1px solid ${active ? 'var(--fds-gold-primary)' : 'rgba(255,255,255,0.1)'};
-                background: ${active ? 'rgba(255,215,0,0.15)' : 'rgba(15,23,42,0.6)'};
-                color: ${active ? 'var(--fds-gold-primary)' : '#94A3B8'};
+                border: 1px solid ${active ? '#FFD54F' : 'rgba(255,255,255,0.1)'};
+                background: ${active ? 'rgba(255,213,79,0.15)' : 'linear-gradient(135deg, rgba(7, 27, 45, 0.8) 0%, rgba(7, 27, 45, 0.6) 100%)'};
+                color: ${active ? '#FFD54F' : '#94A3B8'};
                 font-weight: 800;
                 font-size: var(--fds-font-xs);
                 cursor: pointer;
@@ -139,7 +139,7 @@ export class LeaderboardScreen {
                         
                         <!-- 2ND PLACE PODIUM (SILVER) -->
                         ${secondPlace ? `
-                        <div class="glass-card" style="padding: 16px 8px; border-color: #C0C0C0; background: linear-gradient(180deg, rgba(192,192,192,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
+                        <div class="ethio-profile-card" style="padding: 16px 8px; border-color: #C0C0C0;">
                             <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥈</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #E2E8F0; text-transform: uppercase;">${i18n.currentLocale === 'am' ? '2ኛ' : (i18n.currentLocale === 'om' ? '2FFAA' : '2ND')}</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main); margin-top: 4px;">${secondPlace.msisdn}</div>
@@ -150,18 +150,18 @@ export class LeaderboardScreen {
 
                         <!-- 1ST PLACE PODIUM (GOLD CHAMPION) -->
                         ${firstPlace ? `
-                        <div class="glass-card" style="padding: 20px 8px; border-color: var(--fds-gold-primary); background: linear-gradient(180deg, rgba(255,215,0,0.25) 0%, rgba(15,23,42,0.95) 100%); border-radius: 20px; box-shadow: 0 10px 30px var(--fds-gold-glow); transform: translateY(-8px);">
-                            <div style="font-size: 36px; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));">🥇</div>
-                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: var(--fds-gold-primary); text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'ሻምፒዮን' : (i18n.currentLocale === 'om' ? 'CHAAMPIYOONA' : 'CHAMPION')}</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${firstPlace.msisdn}</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary); margin-top: 2px;">${firstPlace.score} PTS</div>
+                        <div class="ethio-profile-card" style="padding: 20px 8px; border-color: #FFD54F; box-shadow: 0 10px 30px rgba(255, 213, 79, 0.3); transform: translateY(-8px);">
+                            <div style="font-size: 36px; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(255,213,79,0.6));">🥇</div>
+                            <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FFD54F; text-transform: uppercase; letter-spacing: 1px;">${i18n.currentLocale === 'am' ? 'ሻምፒዮን' : (i18n.currentLocale === 'om' ? 'CHAAMPIYOONA' : 'CHAMPION')}</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; margin-top: 4px;">${firstPlace.msisdn}</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #FFD54F; margin-top: 2px;">${firstPlace.score} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: #FEF08A; margin-top: 2px;">🏆 ${firstPlace.points} XP</div>
                         </div>
                         ` : `<div style="visibility: hidden;"></div>`}
 
                         <!-- 3RD PLACE PODIUM (BRONZE) -->
                         ${thirdPlace ? `
-                        <div class="glass-card" style="padding: 16px 8px; border-color: #CD7F32; background: linear-gradient(180deg, rgba(205,127,50,0.15) 0%, rgba(15,23,42,0.9) 100%); border-radius: 16px;">
+                        <div class="ethio-profile-card" style="padding: 16px 8px; border-color: #CD7F32;">
                             <div style="font-size: var(--fds-font-xl); margin-bottom: 4px;">🥉</div>
                             <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FDBA74; text-transform: uppercase;">${i18n.currentLocale === 'am' ? '3ኛ' : (i18n.currentLocale === 'om' ? '3FFAA' : '3RD')}</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 800; color: var(--fds-text-main); margin-top: 4px;">${thirdPlace.msisdn}</div>
@@ -173,18 +173,18 @@ export class LeaderboardScreen {
                     `}
 
                     <!-- 2. CURRENT USER STATS BANNER -->
-                    <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: var(--fds-green-pitch); background: rgba(34,197,94,0.12); margin-bottom: 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="ethio-profile-card fade-in-up" style="padding: 14px 16px; border-color: #00C853; box-shadow: 0 0 20px rgba(0, 200, 83, 0.15); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 24px;">⚽</span>
                             <div>
-                                <div style="font-size: var(--fds-font-xs); color: #4ADE80; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የእርስዎ የደረጃ ቦታ' : (i18n.currentLocale === 'om' ? 'SADARKAA KEE' : 'YOUR RANK POSITION')}</div>
+                                <div style="font-size: var(--fds-font-xs); color: #00C853; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የእርስዎ የደረጃ ቦታ' : (i18n.currentLocale === 'om' ? 'SADARKAA KEE' : 'YOUR RANK POSITION')}</div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     ${myRank === '--' ? `
                                         <div style="font-size: var(--fds-font-xs); color: rgba(255,255,255,0.7); font-weight: 500; margin-top: 2px;">
                                             Play matches to earn points and secure your rank.
                                         </div>
                                     ` : `
-                                        <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main);">
+                                        <div style="font-size: var(--fds-font-md); font-weight: 900; color: white;">
                                             ${i18n.currentLocale === 'am' ? `#${myRank} በ ${division.name} ሊግ` : (i18n.currentLocale === 'om' ? `#${myRank} Liigii ${division.name} Keessatti` : `#${myRank} In ${division.name} League`)}
                                         </div>
                                     `}
@@ -193,7 +193,7 @@ export class LeaderboardScreen {
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${profile.xp || 0} PTS</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #FFD54F;">${profile.xp || 0} PTS</div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-muted);">${profile.totalMatches || 0} Matches</div>
                         </div>
                     </div>
@@ -204,27 +204,25 @@ export class LeaderboardScreen {
                             const rank = idx + 4;
                             const isMe = entry.isMe;
                             return `
-                                <div class="glass-card" style="
+                                <div class="ethio-profile-card interactive" style="
                                     display: flex; 
                                     justify-content: space-between; 
                                     align-items: center; 
                                     padding: 12px 16px; 
-                                    background: ${isMe ? 'rgba(34,197,94,0.15)' : 'rgba(15,23,42,0.7)'}; 
-                                    border: 1px solid ${isMe ? '#22C55E' : 'rgba(255,255,255,0.08)'}; 
-                                    border-radius: 12px;
+                                    border-color: ${isMe ? '#00C853' : 'rgba(255,255,255,0.08)'}; 
                                 ">
                                     <div style="display: flex; align-items: center; gap: 12px;">
                                         <span style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-dim); min-width: 24px;">#${rank}</span>
                                         <div>
-                                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${isMe ? '#4ADE80' : 'white'};">
-                                                ${entry.msisdn} ${isMe ? `<span style="background: #22C55E; color: black; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 6px;">${i18n.currentLocale === 'am' ? 'እርስዎ' : (i18n.currentLocale === 'om' ? 'ATI' : 'YOU')}</span>` : ''}
+                                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${isMe ? '#00C853' : 'white'};">
+                                                ${entry.msisdn} ${isMe ? `<span style="background: #00C853; color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; margin-left: 6px;">${i18n.currentLocale === 'am' ? 'እርስዎ' : (i18n.currentLocale === 'om' ? 'ATI' : 'YOU')}</span>` : ''}
                                             </div>
                                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">${i18n.currentLocale === 'am' ? `${entry.league} ሊግ` : (i18n.currentLocale === 'om' ? `Liigii ${entry.league}` : `${entry.league} League`)}</div>
                                         </div>
                                     </div>
                                     <div style="text-align: right;">
-                                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">${entry.score} PTS</div>
-                                        <div style="font-size: var(--fds-font-xs); color: var(--fds-blue-accent);">${entry.points} XP</div>
+                                        <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #FFD54F;">${entry.score} PTS</div>
+                                        <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim);">${entry.points} XP</div>
                                     </div>
                                 </div>
                             `;

@@ -100,22 +100,94 @@ export class FootballLeagueHome {
                         </button>
                     </div>
                 </div>
-                           <!-- COMPACT TELEMETRY ROW -->
+                
+                <style>
+                    .ethio-home-card {
+                        background: linear-gradient(135deg, rgba(7, 27, 45, 0.85) 0%, rgba(7, 27, 45, 0.7) 100%);
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255,255,255,0.05);
+                        border-radius: 16px;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    /* Light Reflection */
+                    .ethio-home-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0; left: -100%; width: 50%; height: 100%;
+                        background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+                        transform: skewX(-20deg);
+                        pointer-events: none;
+                    }
+                    
+                    /* Interactive Cards */
+                    .ethio-home-card.interactive {
+                        cursor: pointer;
+                        transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+                    }
+                    .ethio-home-card.interactive:hover {
+                        background: linear-gradient(135deg, rgba(15, 35, 55, 0.9) 0%, rgba(7, 27, 45, 0.8) 100%);
+                        border-color: rgba(0, 200, 83, 0.3);
+                        box-shadow: 0 12px 32px rgba(0, 200, 83, 0.15);
+                        transform: translateY(-2px);
+                    }
+                    .ethio-home-card.interactive:active {
+                        transform: scale(0.97);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                        background: linear-gradient(135deg, rgba(20, 45, 70, 0.9) 0%, rgba(7, 27, 45, 0.8) 100%);
+                    }
+                    
+                    /* HUD Module */
+                    .hud-module {
+                        background: rgba(0, 0, 0, 0.3);
+                        border: 1px solid rgba(255, 255, 255, 0.05);
+                        border-radius: 12px;
+                        padding: 12px 8px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .hud-module-icon {
+                        font-size: 16px;
+                        margin-bottom: 4px;
+                        opacity: 0.9;
+                    }
+                    .hud-module-label {
+                        font-size: 9px;
+                        color: var(--fds-text-dim);
+                        font-weight: 800;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 4px;
+                    }
+                    .hud-module-value {
+                        font-size: var(--fds-font-sm);
+                        font-weight: 900;
+                        color: var(--fds-text-main);
+                    }
+                    .hud-value-gold { color: #FFD54F; text-shadow: 0 0 12px rgba(255, 213, 79, 0.4); }
+                    .hud-value-green { color: #00C853; text-shadow: 0 0 12px rgba(0, 200, 83, 0.4); }
+                </style>
+
+                <!-- COMPACT TELEMETRY ROW -->
                 <div style="max-width: 900px; margin: 0 auto; padding: 0 16px;">
-                    <div id="home-daily-stats-row" class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; margin-bottom: 24px;">
-                        <div>
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Streak</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: #EF4444; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                                <span>🔥</span>${dailyStreak}
-                            </div>
+                    <div id="home-daily-stats-row" class="fade-in-up ethio-home-card" style="padding: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px;">
+                        <div class="hud-module">
+                            <div class="hud-module-icon">🔥</div>
+                            <div class="hud-module-label">Daily Streak</div>
+                            <div class="hud-module-value" style="color: #EF4444;">${dailyStreak}</div>
                         </div>
-                        <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Rank</div>
-                            <div id="home-daily-rank" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">--</div>
+                        <div class="hud-module">
+                            <div class="hud-module-icon">🏆</div>
+                            <div class="hud-module-label">Daily Rank</div>
+                            <div id="home-daily-rank" class="hud-module-value hud-value-gold">--</div>
                         </div>
-                        <div>
-                            <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Daily Score</div>
-                            <div id="home-daily-score" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary);">--</div>
+                        <div class="hud-module">
+                            <div class="hud-module-icon">⭐</div>
+                            <div class="hud-module-label">Daily Score</div>
+                            <div id="home-daily-score" class="hud-module-value hud-value-gold">--</div>
                         </div>
                     </div>
                 </div>
@@ -140,30 +212,26 @@ export class FootballLeagueHome {
                     </style>
 
                     <!-- 1. HERO SECTION: DAILY CHAMPIONSHIP TOURNAMENT -->
-                    <div class="glass-card fade-in-up" style="
-                        border: 2px solid var(--fds-gold-primary);
-                        background: linear-gradient(135deg, rgba(0, 154, 68, 0.75) 0%, rgba(15, 23, 42, 0.95) 70%, rgba(255, 215, 0, 0.5) 100%), url('/assets/images/hero_banner.png') center/cover no-repeat;
+                    <div class="fade-in-up ethio-home-card interactive" style="
+                        background: linear-gradient(135deg, rgba(0, 200, 83, 0.4) 0%, rgba(7, 27, 45, 0.95) 70%, rgba(255, 213, 79, 0.4) 100%), url('/assets/images/hero_banner.png') center/cover no-repeat;
                         background-blend-mode: overlay;
                         padding: clamp(16px, 2.5vh, 24px) 20px;
-                        border-radius: 20px;
-                        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.1);
-                        position: relative;
-                        overflow: hidden;
+                        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 213, 79, 0.15);
                         animation-delay: 100ms;
                     " id="card-daily">
                         <!-- Background Glow Accent -->
-                        <div style="position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, transparent 70%); pointer-events: none;"></div>
+                        <div style="position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(255,213,79,0.3) 0%, transparent 70%); pointer-events: none;"></div>
 
                         <!-- Badge Row -->
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <span id="daily-players-count" class="fds-badge" style="background: rgba(34,197,94,0.2); border: 1px solid #22C55E; color: #4ADE80;">
+                            <span id="daily-players-count" class="fds-badge" style="background: rgba(0,200,83,0.2); border: 1px solid #00C853; color: #00C853; font-weight: 800;">
                                 ${t('home.liveMatch')}
                             </span>
                         </div>
 
                         <!-- Title & Description -->
                         <div style="text-align: center; margin-bottom: 16px;">
-                            <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--fds-text-main); margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <h2 style="font-size: var(--fds-font-lg); font-weight: 900; color: white; margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
                                 ETHIO FANTASY
                             </h2>
                         </div>
@@ -174,16 +242,15 @@ export class FootballLeagueHome {
                         </div>
                     </div>
 
-
-                    <div class="fade-in-up" id="btn-action-referral" style="padding: clamp(12px, 2vh, 16px); border-radius: 16px; background: rgba(15,23,42,0.6); border: 1px solid rgba(192,132,252,0.3); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <div class="fade-in-up ethio-home-card interactive" id="btn-action-referral" style="padding: clamp(12px, 2vh, 16px); display: flex; align-items: center; justify-content: space-between;">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="font-size: var(--fds-font-xl); filter: drop-shadow(0 2px 4px rgba(192,132,252,0.4));">🎁</div>
+                            <div style="font-size: var(--fds-font-xl); filter: drop-shadow(0 2px 4px rgba(255,213,79,0.4));">🎁</div>
                             <div style="text-align: left;">
-                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); letter-spacing: 0.5px; text-transform: uppercase;">${t('home.invite')}</div>
+                                <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; letter-spacing: 0.5px; text-transform: uppercase;">${t('home.invite')}</div>
                                 <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600; margin-top: 2px;">${t('home.inviteDesc')}</div>
                             </div>
                         </div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #C084FC; background: rgba(192,132,252,0.15); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <div style="font-size: var(--fds-font-xs); font-weight: 900; color: #FFD54F; background: rgba(255,213,79,0.15); border: 1px solid rgba(255,213,79,0.3); padding: 8px 14px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
                             ${t('home.copyLink')}
                         </div>
                     </div>
@@ -192,49 +259,58 @@ export class FootballLeagueHome {
                     ${contextualCardsHtml}
 
                     <!-- 3. STATISTICS DASHBOARD CARD -->
-                    <div class="glass-card fade-in-up" style="padding: 14px 16px; border-color: rgba(255,255,255,0.1); margin-bottom: 24px; border-radius: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <div style="font-size: var(--fds-font-xs); font-weight: 800; color: #F472B6; text-transform: uppercase; letter-spacing: 0.5px;">${t('home.performance')}</div>
-                            <button id="btn-view-all-stats" style="background: rgba(244, 114, 182, 0.15); border: none; color: #F472B6; font-size: var(--fds-font-xs); font-weight: 900; cursor: pointer; padding: 6px 12px; border-radius: 20px; letter-spacing: 0.5px; z-index: 10; position: relative;">${t('home.details')}</button>
+                    <div class="fade-in-up ethio-home-card interactive" style="padding: 20px 16px; margin-bottom: 24px;" id="performance-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+                                <span style="color: #00C853; text-shadow: 0 0 12px rgba(0,200,83,0.5);">📊</span> ${t('home.performance')}
+                            </div>
+                            <button id="btn-view-all-stats" style="background: rgba(0, 200, 83, 0.15); border: 1px solid rgba(0,200,83,0.3); color: #00C853; font-size: var(--fds-font-xs); font-weight: 900; cursor: pointer; padding: 6px 14px; border-radius: 20px; letter-spacing: 0.5px; transition: all 0.2s; z-index: 10; position: relative;">${t('home.details')}</button>
                         </div>
                         
                         ${gamesPlayed === 0 ? `
-                        <div style="text-align: center; padding: 24px 0; background: rgba(0,0,0,0.2); border-radius: 12px;">
+                        <div style="text-align: center; padding: 24px 0; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;">
                             <div style="font-size: 32px; margin-bottom: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">📊</div>
                             <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; margin-bottom: 4px;">No History Yet</div>
                             <div style="font-size: var(--fds-font-xs); color: var(--fds-text-dim); font-weight: 600;">Your completed matches and stats will appear here.</div>
                         </div>
                         ` : `
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px;">
-                            <div>
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.matches')}</div>
-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${gamesPlayed}</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                            <div class="hud-module">
+                                <div class="hud-module-icon">🎯</div>
+                                <div class="hud-module-label">${t('home.matches')}</div>
+                                <div class="hud-module-value">${gamesPlayed}</div>
                             </div>
-                            <div style="border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);">
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('match.accuracy')}</div>
-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: #4ADE80; margin-top: 4px;">${winRate}%</div>
+                            <div class="hud-module">
+                                <div class="hud-module-icon">⚡</div>
+                                <div class="hud-module-label">${t('match.accuracy')}</div>
+                                <div class="hud-module-value hud-value-green">${winRate}%</div>
                             </div>
-                            <div>
-                                <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.points')}</div>
-                                <div style="font-size: var(--fds-font-md); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${profile.xp}</div>
+                            <div class="hud-module">
+                                <div class="hud-module-icon">⭐</div>
+                                <div class="hud-module-label">${t('home.points')}</div>
+                                <div class="hud-module-value hud-value-gold">${profile.xp}</div>
                             </div>
-                            <div style="grid-column: span 3; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; margin-top: 4px; display: flex; justify-content: space-around;">
-                                <div>
-                                    <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">${t('home.score')}</div>
-                                    <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main); margin-top: 4px;">${profile.highScores && profile.highScores['football-quiz'] ? profile.highScores['football-quiz'] : 0}</div>
-                                </div>
-                                <div>
-                                    <div style="font-size: 9px; color: var(--fds-text-dim); font-weight: 800; text-transform: uppercase;">Divisions</div>
-                                    <div style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-gold-primary); margin-top: 4px;">1st</div>
-                                </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+                            <div class="hud-module" style="flex-direction: row; justify-content: space-between; padding: 14px 16px;">
+                                <div class="hud-module-label" style="margin-bottom: 0;">${t('home.score')}</div>
+                                <div class="hud-module-value">${profile.highScores && profile.highScores['football-quiz'] ? profile.highScores['football-quiz'] : 0}</div>
+                            </div>
+                            <div class="hud-module" style="flex-direction: row; justify-content: space-between; padding: 14px 16px;">
+                                <div class="hud-module-label" style="margin-bottom: 0;">Divisions</div>
+                                <div class="hud-module-value hud-value-gold">1st</div>
                             </div>
                         </div>
                         `}
                     </div>
 
                     <!-- 4. LIVE CHAMPIONSHIP LEADERBOARD HIGHLIGHT -->
-                    <div class="glass-card fade-in-up" style="padding: 20px 16px; border-color: rgba(255,215,0,0.2); border-radius: 16px;">
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-gold-primary); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;">${t('home.rankingsTitle')}</div>
+                    <div class="fade-in-up ethio-home-card interactive" style="padding: 20px 16px;" id="btn-view-leaderboard-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div style="font-size: var(--fds-font-sm); font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+                                <span style="color: #FFD54F; text-shadow: 0 0 12px rgba(255,213,79,0.5);">🏆</span> ${t('home.rankingsTitle')}
+                            </div>
+                        </div>
                         <div id="home-leaderboard-preview" style="display: flex; flex-direction: column;">
                             ${DesignSystem.SkeletonList(3)}
                         </div>

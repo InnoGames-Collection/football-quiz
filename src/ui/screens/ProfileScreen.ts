@@ -112,27 +112,24 @@ export class ProfileScreen {
                 </div>
 
                 <!-- PLAYER PERFORMANCE -->
-                <div style="
+                <div class="ethio-profile-card" style="
                     display: grid;
                     grid-template-columns: repeat(3, 1fr);
-                    background: rgba(0,0,0,0.35);
-                    border-top: 1px solid rgba(255,255,255,0.1);
-                    border-bottom: 1px solid rgba(255,255,255,0.1);
                     padding: 16px 0;
-                    margin-bottom: 24px;
+                    margin: 0 16px 24px 16px;
                     text-align: center;
                 ">
                     <div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ሊግ' : (i18n.currentLocale === 'om' ? 'LIIGII' : 'LEAGUE')}</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? 'ሊግ' : (i18n.currentLocale === 'om' ? 'LIIGII' : 'LEAGUE')}</div>
                         <div style="font-size: var(--fds-font-sm); font-weight: 900; color: ${division.color};">${division.name}</div>
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08);">
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px;">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK')}</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--fds-text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? 'ደረጃ' : (i18n.currentLocale === 'om' ? 'SADARKAA' : 'RANK')}</div>
                         <div id="profile-daily-rank" style="font-size: var(--fds-font-sm); font-weight: 900; color: var(--fds-text-main);">--</div>
                     </div>
                     <div>
-                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 4px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">${i18n.currentLocale === 'am' ? 'ነጥቦች' : (i18n.currentLocale === 'om' ? 'QABXII' : 'POINTS')}</div>
-                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: var(--tv-gold-primary); text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);">${profile.xp} XP</div>
+                        <div style="font-size: var(--fds-font-xs); font-weight: 800; color: var(--tv-gold-primary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? 'ነጥቦች' : (i18n.currentLocale === 'om' ? 'QABXII' : 'POINTS')}</div>
+                        <div style="font-size: var(--fds-font-lg); font-weight: 900; color: #FFD54F; text-shadow: 0 0 12px rgba(255, 213, 79, 0.4);">${profile.xp} XP</div>
                     </div>
                 </div>
 

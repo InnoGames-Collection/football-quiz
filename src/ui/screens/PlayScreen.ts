@@ -33,9 +33,69 @@ export class PlayScreen {
                 
                 ${EthioFantasyAppBar.render('PLAY', '', false)}
 
+                <style>
+                    .category-btn {
+                        padding: 20px 12px;
+                        border-radius: 20px;
+                        background: linear-gradient(135deg, rgba(7, 27, 45, 0.9) 0%, rgba(7, 27, 45, 0.7) 100%);
+                        border: 1px solid rgba(255, 255, 255, 0.08);
+                        cursor: pointer;
+                        text-align: center;
+                        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+                        transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    /* Subtle green accent at the bottom */
+                    .category-btn::after {
+                        content: '';
+                        position: absolute;
+                        bottom: 0;
+                        left: 15%;
+                        right: 15%;
+                        height: 3px;
+                        background: #00C853;
+                        border-radius: 4px 4px 0 0;
+                        opacity: 0.5;
+                        transition: all 0.2s;
+                    }
+                    
+                    /* Selected/Hover State */
+                    .category-btn:hover {
+                        background: linear-gradient(135deg, rgba(15, 35, 55, 0.95) 0%, rgba(7, 27, 45, 0.8) 100%);
+                        border-color: rgba(0, 200, 83, 0.4);
+                        box-shadow: 0 12px 32px rgba(0, 200, 83, 0.15), inset 0 0 20px rgba(0, 200, 83, 0.05);
+                        transform: translateY(-2px);
+                    }
+                    .category-btn:hover::after {
+                        opacity: 1;
+                        left: 0;
+                        right: 0;
+                        box-shadow: 0 -2px 12px rgba(0, 200, 83, 0.4);
+                    }
+                    
+                    /* Press Interaction (Scale & Brighten) */
+                    .category-btn:active {
+                        transform: scale(0.97);
+                        background: linear-gradient(135deg, rgba(20, 45, 70, 0.95) 0%, rgba(7, 27, 45, 0.85) 100%);
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                        border-color: rgba(255, 255, 255, 0.15);
+                    }
+                    
+                    .category-icon-wrapper {
+                        font-size: 36px;
+                        margin-bottom: 12px;
+                        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+                        transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+                    }
+                    .category-btn:hover .category-icon-wrapper {
+                        transform: scale(1.1);
+                    }
+                </style>
                 <div style="max-width: 960px; margin: 0 auto; padding: 24px 16px 100px 16px;">
                     
-                    <h2 style="font-size: var(--fds-font-xl); font-weight: 900; margin-bottom: 24px; text-transform: uppercase; color: white;">Game Modes</h2>
+                    <h2 style="font-size: var(--fds-font-xl); font-weight: 900; margin-bottom: 24px; text-transform: uppercase; color: white; letter-spacing: 0.5px;">Game Modes</h2>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 24px;">
                         
@@ -57,9 +117,9 @@ export class PlayScreen {
                             { id: 'stadiums', icon: '🏟️', name: 'Stadiums' },
                             { id: 'football-history', icon: '📜', name: 'History' }
                         ].map((cat, i) => `
-                        <div class="glass-card fade-in-up category-btn" data-category="${cat.id}" style="padding: 16px; border-radius: 16px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.2s, border-color 0.2s; animation-delay: ${i * 30}ms;">
-                            <div style="font-size: 32px; margin-bottom: 8px;">${cat.icon}</div>
-                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase;">${cat.name}</div>
+                        <div class="glass-card fade-in-up category-btn" data-category="${cat.id}" style="animation-delay: ${i * 30}ms;">
+                            <div class="category-icon-wrapper">${cat.icon}</div>
+                            <div style="font-size: var(--fds-font-sm); font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 0.5px;">${cat.name}</div>
                         </div>
                         `).join('')}
 
