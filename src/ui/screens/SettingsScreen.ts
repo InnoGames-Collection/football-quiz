@@ -8,7 +8,7 @@ import { ProfileService } from '../../networking/services/ProfileService';
 import { FAQService } from '../../networking/services/FAQService';
 import { Toast } from '../components/Toast';
 import { SupportService } from '../../networking/services/SupportService';
-import { DesignSystem } from '../theme/DesignSystem';
+
 import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 import { LogoutDialog } from '../components/LogoutDialog';
 import pkg from '../../../package.json';
@@ -588,20 +588,20 @@ export class SettingsScreen {
     }
 
     private _renderHelpScreen(root: HTMLElement, header: Function): void {
-        const helpCategories: { id: string; name: string; icon: string }[] = [
-            { id: 'account', name: i18n.currentLocale === 'am' ? 'መለያ' : (i18n.currentLocale === 'om' ? 'Herrega' : 'Account'), icon: '👤' },
-            { id: 'subscription', name: i18n.currentLocale === 'am' ? 'ምዝገባ' : (i18n.currentLocale === 'om' ? 'Kaffaltii' : 'Subscription'), icon: '💳' },
-            { id: 'unsubscription', name: i18n.currentLocale === 'am' ? 'ምዝገባ መሰረዝ' : (i18n.currentLocale === 'om' ? 'Haquu' : 'Unsubscription'), icon: '🛑' },
-            { id: 'dailyChallenge', name: i18n.currentLocale === 'am' ? 'የዕለት ተግዳሮት' : (i18n.currentLocale === 'om' ? 'Qormaata Guyyaa' : 'Daily Challenge'), icon: '📅' },
-            { id: 'tournament', name: i18n.currentLocale === 'am' ? 'ውድድር' : (i18n.currentLocale === 'om' ? 'Dorgommii' : 'Tournament'), icon: '🏆' },
-            { id: 'rewards', name: i18n.currentLocale === 'am' ? 'ሽልማቶች' : (i18n.currentLocale === 'om' ? 'Badhaasa' : 'Rewards'), icon: '🎁' },
-            { id: 'gameplay', name: i18n.currentLocale === 'am' ? 'የጨዋታ ሁኔታ' : (i18n.currentLocale === 'om' ? 'Tapha' : 'Gameplay'), icon: '⚽' },
-            { id: 'leaderboard', name: i18n.currentLocale === 'am' ? 'ደረጃ ሰሌዳ' : (i18n.currentLocale === 'om' ? 'Sadarkaa' : 'Leaderboard'), icon: '📊' },
-            { id: 'profile', name: i18n.currentLocale === 'am' ? 'መገለጫ' : (i18n.currentLocale === 'om' ? 'Profile' : 'Profile'), icon: '👤' },
-            { id: 'notifications', name: i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), icon: '🔔' },
-            { id: 'technicalIssues', name: i18n.currentLocale === 'am' ? 'ቴክኒካዊ ጉዳዮች' : (i18n.currentLocale === 'om' ? 'Rakkina Sirnaa' : 'Technical Issues'), icon: '🔧' },
-            { id: 'privacy', name: i18n.currentLocale === 'am' ? 'ምስጢራዊነት' : (i18n.currentLocale === 'om' ? 'Dhuunfaa' : 'Privacy'), icon: '🔒' },
-            { id: 'terms', name: i18n.currentLocale === 'am' ? 'ውሎች' : (i18n.currentLocale === 'om' ? 'Haalawwan' : 'Terms'), icon: '📜' }
+        const chevron = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+
+        const helpCategories: { id: string; name: string; desc: string; icon: string }[] = [
+            { id: 'account', name: i18n.currentLocale === 'am' ? 'መለያ' : (i18n.currentLocale === 'om' ? 'Herrega' : 'Account'), desc: 'Account creation, recovery and security', icon: '👤' },
+            { id: 'subscription', name: i18n.currentLocale === 'am' ? 'ምዝገባ' : (i18n.currentLocale === 'om' ? 'Kaffaltii' : 'Subscription'), desc: 'Premium access and daily billing', icon: '💳' },
+            { id: 'unsubscription', name: i18n.currentLocale === 'am' ? 'ምዝገባ መሰረዝ' : (i18n.currentLocale === 'om' ? 'Haquu' : 'Unsubscription'), desc: 'How to opt out or cancel service', icon: '🛑' },
+            { id: 'dailyChallenge', name: i18n.currentLocale === 'am' ? 'የዕለት ተግዳሮት' : (i18n.currentLocale === 'om' ? 'Qormaata Guyyaa' : 'Daily Challenge'), desc: 'Rules and bonuses for daily plays', icon: '📅' },
+            { id: 'tournament', name: i18n.currentLocale === 'am' ? 'ውድድር' : (i18n.currentLocale === 'om' ? 'Dorgommii' : 'Tournament'), desc: 'Joining and competing in live events', icon: '🏆' },
+            { id: 'rewards', name: i18n.currentLocale === 'am' ? 'ሽልማቶች' : (i18n.currentLocale === 'om' ? 'Badhaasa' : 'Rewards'), desc: 'Claiming cash prizes and coins', icon: '🎁' },
+            { id: 'gameplay', name: i18n.currentLocale === 'am' ? 'የጨዋታ ሁኔታ' : (i18n.currentLocale === 'om' ? 'Tapha' : 'Gameplay'), desc: 'How to answer questions and score', icon: '⚽' },
+            { id: 'leaderboard', name: i18n.currentLocale === 'am' ? 'ደረጃ ሰሌዳ' : (i18n.currentLocale === 'om' ? 'Sadarkaa' : 'Leaderboard'), desc: 'ELO rating and division climbing', icon: '📊' },
+            { id: 'profile', name: i18n.currentLocale === 'am' ? 'መገለጫ' : (i18n.currentLocale === 'om' ? 'Profile' : 'Profile'), desc: 'Managing your player identity', icon: '👤' },
+            { id: 'notifications', name: i18n.currentLocale === 'am' ? 'ማሳወቂያዎች' : (i18n.currentLocale === 'om' ? 'Beeksisa' : 'Notifications'), desc: 'SMS alerts and system updates', icon: '🔔' },
+            { id: 'technicalIssues', name: i18n.currentLocale === 'am' ? 'ቴክኒካዊ ጉዳዮች' : (i18n.currentLocale === 'om' ? 'Rakkina Sirnaa' : 'Technical Issues'), desc: 'Report bugs or connection problems', icon: '🔧' }
         ];
 
         const HELP_FAQS: Record<string, { q: string; a: string }[]> = {
@@ -662,29 +662,39 @@ export class SettingsScreen {
                 <div class="ethio-layer ethio-layer-overlay"></div>
                 <div class="ethio-layer ethio-layer-lights"></div>
 
-                    ${header(i18n.currentLocale === 'am' ? 'እገዛ እና ድጋፍ' : (i18n.currentLocale === 'om' ? 'GARGAARSA' : 'HELP & SUPPORT'))}
+                    ${header(i18n.currentLocale === 'am' ? 'ቴክኒካዊ ጉዳዮች' : (i18n.currentLocale === 'om' ? 'RAKKINA SIRNAA' : 'TECHNICAL ISSUES'))}
 
                     <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--fds-text-main); padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
-                            ${i18n.currentLocale === 'am' ? '⬅️ የእገዛ ማውጫ' : (i18n.currentLocale === 'om' ? '⬅️ AALAMA GARGAARSAA' : '⬅️ HELP DIRECTORY')}
-                        </button>
                         
-                        <div class="glass-card" style="border-radius: 12px; padding: 20px; border-color: rgba(255,255,255,0.08); text-align: left;" id="support-form-container">
-                            <div style="font-size: var(--fds-font-md); font-weight: 800; color: var(--fds-text-main); margin-bottom: 12px; text-transform: uppercase;">${i18n.currentLocale === 'am' ? '✉️ እገዛን ያግኙ' : (i18n.currentLocale === 'om' ? '✉️ Deeggarsa Argaadhu' : '✉️ Contact Support')}</div>
-                            <div style="margin-bottom: 12px;">
-                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">${i18n.currentLocale === 'am' ? 'የጉዳዩ ዓይነት' : (i18n.currentLocale === 'om' ? 'GOSA RAKKINA' : 'ISSUE TYPE')}</label>
-                                <select id="support-category" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--fds-text-main); outline: none;">
+                        <div class="glass-card" style="border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); text-align: left;" id="support-form-container">
+                            <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 8px; letter-spacing: 0.5px;">${i18n.currentLocale === 'am' ? '✉️ ሪፖርት ያድርጉ' : (i18n.currentLocale === 'om' ? '✉️ Gabaasi' : '✉️ Report an Issue')}</div>
+                            <div style="font-size: 14px; color: var(--fds-text-dim); margin-bottom: 20px;">Contact support to resolve bugs, connection drops, or game errors.</div>
+
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 12px; color: var(--tv-gold-primary); margin-bottom: 8px; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'የጉዳዩ ዓይነት' : (i18n.currentLocale === 'om' ? 'GOSA RAKKINA' : 'PROBLEM CATEGORY')}</label>
+                                <select id="support-category" style="width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: white; outline: none; font-size: 15px; appearance: none; -webkit-appearance: none;">
                                     <option value="Billing & Subscription">${i18n.currentLocale === 'am' ? 'ክፍያ እና ምዝገባ' : (i18n.currentLocale === 'om' ? 'Kaffaltii & Galmee' : 'Billing & Subscription')}</option>
                                     <option value="Technical Issues">${i18n.currentLocale === 'am' ? 'ቴክኒካዊ ጉዳዮች' : (i18n.currentLocale === 'om' ? 'Rakkina Sirnaa' : 'Technical Issues')}</option>
                                     <option value="Rewards & Points">${i18n.currentLocale === 'am' ? 'ሽልማቶች እና ነጥቦች' : (i18n.currentLocale === 'om' ? 'Badhaasa & Qabxii' : 'Rewards & Points')}</option>
                                     <option value="General Feedback">${i18n.currentLocale === 'am' ? 'አጠቃላይ አስተያየት' : (i18n.currentLocale === 'om' ? 'Yaada Waligalaa' : 'General Feedback')}</option>
                                 </select>
                             </div>
+                            
                             <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: var(--fds-font-xs); color: var(--fds-text-dim); margin-bottom: 6px; font-weight: 600;">${i18n.currentLocale === 'am' ? 'መልእክት' : (i18n.currentLocale === 'om' ? 'ERGAA' : 'MESSAGE')}</label>
-                                <textarea id="support-message" placeholder="${i18n.currentLocale === 'am' ? 'ችግርዎን እዚህ ይግለጹ...' : (i18n.currentLocale === 'om' ? 'Rakkina keessan asitti ibsaa...' : 'Describe your issue here...')}" style="width: 100%; height: 80px; padding: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--fds-text-main); outline: none; resize: none; font-family: sans-serif; box-sizing: border-box;"></textarea>
+                                <label style="display: block; font-size: 12px; color: var(--tv-gold-primary); margin-bottom: 8px; font-weight: 800; text-transform: uppercase;">${i18n.currentLocale === 'am' ? 'መልእክት' : (i18n.currentLocale === 'om' ? 'ERGAA' : 'DESCRIPTION')}</label>
+                                <textarea id="support-message" placeholder="${i18n.currentLocale === 'am' ? 'ችግርዎን እዚህ ይግለጹ...' : (i18n.currentLocale === 'om' ? 'Rakkina keessan asitti ibsaa...' : 'Provide details about the issue...')}" style="width: 100%; height: 100px; padding: 14px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: white; outline: none; resize: none; font-family: inherit; font-size: 15px; box-sizing: border-box;"></textarea>
                             </div>
-                            ${DesignSystem.Button({ id: 'btn-submit-support', text: i18n.currentLocale === 'am' ? 'መልእክት ላክ' : (i18n.currentLocale === 'om' ? 'ERGAA ERGI' : 'SUBMIT TICKET'), variant: 'primary', fullWidth: true })}
+                            
+                            <div style="margin-bottom: 24px;">
+                                <label style="display: block; font-size: 12px; color: var(--tv-gold-primary); margin-bottom: 8px; font-weight: 800; text-transform: uppercase;">OPTIONAL SCREENSHOT</label>
+                                <div style="width: 100%; padding: 14px; background: rgba(0,0,0,0.3); border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; color: var(--fds-text-dim); text-align: center; font-size: 14px; cursor: pointer;">
+                                    📷 Tap to upload screenshot
+                                </div>
+                            </div>
+                            
+                            <div id="btn-submit-support" style="background: linear-gradient(135deg, var(--fds-green-pitch) 0%, var(--fds-green-dark) 100%); padding: 14px; text-align: center; border-radius: 12px; font-weight: 900; color: white; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);">
+                                ${i18n.currentLocale === 'am' ? 'መልእክት ላክ' : (i18n.currentLocale === 'om' ? 'ERGAA ERGI' : 'SUBMIT SUPPORT TICKET')}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -747,6 +757,14 @@ export class SettingsScreen {
             const catItem = helpCategories.find(c => c.id === this._helpCategory);
             const categoryName = catItem ? catItem.name : this._helpCategory;
 
+            const emptyState = `
+                <div style="text-align: center; padding: 40px 16px;">
+                    <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">📋</div>
+                    <div style="font-size: 16px; font-weight: 800; color: white; margin-bottom: 8px;">No FAQs Available</div>
+                    <div style="font-size: 14px; color: var(--fds-text-dim);">There are no common questions listed for this category yet.</div>
+                </div>
+            `;
+
             root.innerHTML = `
                 <div class="stadium-container ethio-bg-main" style="pointer-events: auto;">
 
@@ -757,26 +775,31 @@ export class SettingsScreen {
 
                     ${header(`${categoryName.toUpperCase()}`)}
 
-                    <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px;">
-                        <button id="btn-back-help" style="margin-bottom: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--fds-text-main); padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;">
-                            ${i18n.currentLocale === 'am' ? '⬅️ የእገዛ ማውጫ' : (i18n.currentLocale === 'om' ? '⬅️ AALAMA GARGAARSAA' : '⬅️ HELP DIRECTORY')}
-                        </button>
+                    <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
+                        
+                        <div style="margin-bottom: 24px; padding-left: 12px; border-left: 4px solid var(--tv-gold-primary);">
+                            <div style="font-size: 18px; font-weight: 900; color: white; margin-bottom: 4px; letter-spacing: 0.5px;">Common Questions</div>
+                            <div style="font-size: 14px; color: var(--fds-text-dim);">Solutions and relevant instructions</div>
+                        </div>
                         
                         <!-- Search FAQs -->
-                        <input type="text" id="faq-search-input" placeholder="${i18n.currentLocale === 'am' ? '🔍 ጥያቄዎችን ይፈልጉ...' : (i18n.currentLocale === 'om' ? '🔍 Gaaffiiwwan Barbaadi...' : '🔍 Search FAQs...')}" style="
-                            width: 100%; 
-                            padding: 10px 14px; 
-                            background: rgba(0,0,0,0.2); 
-                            border: 1px solid rgba(255,255,255,0.1); 
-                            border-radius: 8px; 
-                            color: var(--fds-text-main); 
-                            font-size: var(--fds-font-sm); 
-                            margin-bottom: 16px; 
-                            box-sizing: border-box;
-                        ">
+                        <div style="position: relative; margin-bottom: 24px;">
+                            <span style="position: absolute; left: 14px; top: 12px; opacity: 0.6;">🔍</span>
+                            <input type="text" id="faq-search-input" placeholder="${i18n.currentLocale === 'am' ? 'ጥያቄዎችን ይፈልጉ...' : (i18n.currentLocale === 'om' ? 'Gaaffiiwwan Barbaadi...' : 'Search FAQs...')}" style="
+                                width: 100%; 
+                                padding: 12px 14px 12px 42px; 
+                                background: rgba(0,0,0,0.4); 
+                                border: 1px solid rgba(255,255,255,0.15); 
+                                border-radius: 12px; 
+                                color: white; 
+                                font-size: 15px; 
+                                box-sizing: border-box;
+                                outline: none;
+                            ">
+                        </div>
 
                         <div id="faq-list-wrapper">
-                            ${faqHtml}
+                            ${activeFaqs.length > 0 ? faqHtml : emptyState}
                         </div>
                     </div>
                 </div>
@@ -831,13 +854,19 @@ export class SettingsScreen {
         const categoriesHtml = helpCategories.map(c => `
             <div class="settings-tile help-category-tile" data-cat-id="${c.id}" style="
                 display: flex; align-items: center; justify-content: space-between; 
-                padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+                padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
+                transition: background-color 0.2s;
             ">
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: var(--fds-font-lg);">${c.icon}</span>
-                    <div style="font-size: var(--fds-font-md); font-weight: 700; color: var(--fds-text-main);">${c.name}</div>
+                    <span style="font-size: 24px; width: 28px; text-align: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${c.icon}</span>
+                    <div>
+                        <div style="font-size: 15px; font-weight: 800; color: white; letter-spacing: 0.3px;">${c.name}</div>
+                        <div style="font-size: 13px; color: var(--fds-text-dim); margin-top: 2px; font-weight: 600;">${c.desc}</div>
+                    </div>
                 </div>
-                <span style="color: var(--fds-text-dim);">❯</span>
+                <div style="display: flex; align-items: center;">
+                    ${chevron}
+                </div>
             </div>
         `).join('');
 
@@ -853,11 +882,10 @@ export class SettingsScreen {
 
                 <div style="max-width: 600px; margin: 0 auto; padding: 24px 16px 120px 16px;">
                     
-                    <div class="glass-card" style="border-radius: 12px; padding: 0; overflow: hidden; border-color: rgba(255,255,255,0.08); margin-bottom: 24px;">
+                    <div class="glass-card" style="border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
                         ${categoriesHtml}
                     </div>
 
-                    ${DesignSystem.Button({ id: 'btn-contact-support', text: i18n.currentLocale === 'am' ? 'እገዛን ያግኙ' : (i18n.currentLocale === 'om' ? 'DEEGGARSA ARGAADHU' : 'CONTACT SUPPORT'), variant: 'primary', fullWidth: true, icon: '✉️' })}
                 </div>
             </div>
         `;
@@ -877,6 +905,13 @@ export class SettingsScreen {
                 const catId = target.getAttribute('data-cat-id');
                 if (catId) {
                     this._audioManager.playClick();
+                    
+                    if (catId === 'technicalIssues') {
+                        this._showContactSupportForm = true;
+                        this.render();
+                        return;
+                    }
+                    
                     this._helpCategory = catId;
                     
                     // Show a quick loader while fetching
