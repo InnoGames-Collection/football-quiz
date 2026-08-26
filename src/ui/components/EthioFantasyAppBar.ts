@@ -1,4 +1,4 @@
-import { t } from '../../localization/i18n';
+
 
 export class EthioFantasyAppBar {
     /**
