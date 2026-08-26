@@ -4,6 +4,7 @@ import { DesignSystem } from '../theme/DesignSystem';
 import { i18n } from '../../localization/i18n';
 import { TournamentService, TournamentLeaderboardEntry } from '../../core/competition/TournamentService';
 import { DailyChallengeManager } from '../../core/competition/DailyChallengeManager';
+import { EthioFantasyAppBar } from '../components/EthioFantasyAppBar';
 
 export class TournamentScreen {
     private _currentTab: 'weekly' | 'monthly' | 'yearly' = 'weekly';
@@ -36,20 +37,7 @@ export class TournamentScreen {
 
         root.innerHTML = `
             <div class="stadium-container ethio-bg-main" style="display: flex; flex-direction: column;">
-                <!-- Header -->
-                <div style="padding: 24px 20px; display: flex; align-items: center; background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 10;">
-                    <button id="tourney-back-btn" style="
-                        background: rgba(255,255,255,0.1); border: none; width: 40px; height: 40px; 
-                        border-radius: 20px; color: white; font-size: 20px; cursor: pointer;
-                        display: flex; align-items: center; justify-content: center;
-                    ">←</button>
-                    <div style="flex: 1; text-align: center;">
-                        <h1 style="font-size: var(--fds-font-lg); font-weight: 900; margin: 0; color: var(--tv-gold-primary); text-transform: uppercase; letter-spacing: 1px;">
-                            ${i18n.currentLocale === 'am' ? 'ውድድሮች' : (i18n.currentLocale === 'om' ? 'DOORGOMMII' : 'TOURNAMENTS')}
-                        </h1>
-                    </div>
-                    <div style="width: 40px;"></div>
-                </div>
+                ${EthioFantasyAppBar.render(i18n.currentLocale === 'am' ? 'ውድድሮች' : (i18n.currentLocale === 'om' ? 'DOORGOMMII' : 'TOURNAMENTS'))}
 
                 <!-- Next Challenge Countdown -->
                 <div style="padding: 24px 20px; text-align: center; background: linear-gradient(180deg, rgba(234,179,8,0.1) 0%, transparent 100%);">
@@ -197,7 +185,7 @@ export class TournamentScreen {
     }
 
     private _bindEvents(): void {
-        document.getElementById('tourney-back-btn')?.addEventListener('click', () => {
+        EthioFantasyAppBar.bind(this._uiManager.container, () => {
             this._audioManager.playClick();
             this._stopCountdown();
             this._onBack();

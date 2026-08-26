@@ -11,7 +11,7 @@ export class EthioFantasyAppBar {
                 display: flex;
                 align-items: center;
                 height: 72px;
-                background-color: rgba(15, 23, 42, 0.75);
+                background-color: rgba(7, 27, 45, 0.85);
                 backdrop-filter: blur(16px);
                 -webkit-backdrop-filter: blur(16px);
                 border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -22,7 +22,7 @@ export class EthioFantasyAppBar {
                 position: relative;
             ">
                 ${showBackButton ? `
-                <button class="app-bar-back-btn" style="
+                <button class="app-bar-back-btn ethio-profile-btn" style="
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -39,7 +39,6 @@ export class EthioFantasyAppBar {
                     margin-right: 12px;
                     padding: 0;
                     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    transition: transform 0.2s, background-color 0.2s;
                 " aria-label="Back">❮</button>` : ''}
                 <div class="app-bar-title" style="
                     flex: 1;

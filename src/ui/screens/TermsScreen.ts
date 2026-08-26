@@ -86,7 +86,7 @@ export class TermsScreen {
                         <div style="font-size: 14px; color: var(--fds-text-dim);">Please read these terms carefully</div>
                     </div>
 
-                    <div class="glass-card" style="border-radius: 12px; padding: 24px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="ethio-profile-card" style="padding: 24px;">
                         ${body}
                     </div>
                 </div>

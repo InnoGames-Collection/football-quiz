@@ -83,7 +83,7 @@ export class FAQScreen {
             const activeFaqs = this._faqsCache.length > 0 ? this._faqsCache : (HELP_FAQS[this._activeCategory] || []);
             
             const faqHtml = activeFaqs.map((faq, idx) => `
-                <div class="glass-card faq-card" style="border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); overflow: hidden;">
+                <div class="ethio-profile-card faq-card interactive" style="margin-bottom: 12px;">
                     <div class="faq-header" data-idx="${idx}" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; background: rgba(255,255,255,0.02);">
                         <div style="font-size: 15px; font-weight: 800; color: white; letter-spacing: 0.2px; padding-right: 16px;">${faq.q}</div>
                         <span class="faq-icon" style="color: var(--tv-gold-primary); font-size: 18px; transition: transform 0.2s;">➕</span>
@@ -233,7 +233,7 @@ export class FAQScreen {
                         <div style="font-size: 14px; color: var(--fds-text-dim);">Select a topic for help</div>
                     </div>
 
-                    <div class="glass-card" style="border-radius: 16px; padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                    <div class="ethio-profile-card" style="padding: 0;">
                         ${categoriesHtml}
                     </div>
 

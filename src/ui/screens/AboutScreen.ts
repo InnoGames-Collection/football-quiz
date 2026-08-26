@@ -57,7 +57,7 @@ export class AboutScreen {
         ];
 
         const cardsHtml = aboutCards.map(card => `
-            <div class="glass-card" style="border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); margin-bottom: 16px;">
+            <div class="ethio-profile-card" style="padding: 20px; margin-bottom: 16px;">
                 <div style="font-size: 16px; font-weight: 800; color: white; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
                     ${card.title}
                 </div>
