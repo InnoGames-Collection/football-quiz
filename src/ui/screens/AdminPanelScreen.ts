@@ -15,6 +15,7 @@ export class AdminPanelScreen {
     private _activeTab: AdminTab = 'CONFIGURATIONS';
     private _statusMessage: string = '';
     private _statusType: 'success' | 'error' | 'info' = 'info';
+    private _isMobileSidebarOpen: boolean = false;
 
     // Data Cache State
     private _analyticsData: PlatformAnalytics | null = null;
@@ -59,13 +60,15 @@ export class AdminPanelScreen {
         const root = this._uiManager.container;
         root.innerHTML = `
             <div class="admin-portal-root">
+                <div class="admin-stadium-overlay"></div>
+
                 <!-- Sidebar Drawer Navigation -->
-                <aside class="admin-sidebar">
+                <aside class="admin-sidebar ${this._isMobileSidebarOpen ? 'mobile-open' : ''}">
                     <div class="admin-sidebar-header">
-                        <span style="font-size: 24px;">⚽</span>
+                        <div class="admin-sidebar-logo">⚽</div>
                         <div>
                             <div class="admin-sidebar-title">ETHIO QUIZ LEAGUE</div>
-                            <div style="font-size: 11px; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">STANDALONE SUPER ADMIN</div>
+                            <div class="admin-sidebar-subtitle">STANDALONE SUPER ADMIN</div>
                         </div>
                     </div>
 
@@ -90,7 +93,7 @@ export class AdminPanelScreen {
                         </button>
                     </nav>
 
-                    <div style="padding: 16px; border-top: 1px solid rgba(255,255,255,0.08);">
+                    <div style="padding: 16px; border-top: 1px solid var(--adm-glass-border);">
                         <button id="admin-close-btn" class="admin-btn admin-btn-secondary" style="width: 100%;">
                             🚪 Exit Admin Portal
                         </button>
@@ -101,17 +104,23 @@ export class AdminPanelScreen {
                 <div class="admin-main-container">
                     <!-- Executive Top Bar -->
                     <header class="admin-top-bar">
-                        <div style="font-weight: 800; font-size: 16px; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
-                            ${this._getTabTitleIcon()} ${this._getTabTitleText()}
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <button id="admin-mobile-toggle-btn" class="admin-mobile-toggle" aria-label="Toggle navigation drawer">
+                                ☰
+                            </button>
+                            <div class="admin-page-header-title">
+                                <span>${this._getTabTitleIcon()}</span>
+                                <span>${this._getTabTitleText()}</span>
+                            </div>
                         </div>
 
                         <div class="admin-top-status">
                             ${ConfigurationManager.getInstance().isMaintenanceMode ? `
-                                <span class="admin-badge admin-badge-warning">⚠️ MAINTENANCE MODE ACTIVE</span>
+                                <span class="admin-badge admin-badge-warning">⚠️ MAINTENANCE MODE</span>
                             ` : `
                                 <span class="admin-badge admin-badge-success">🟢 SYSTEM OPERATIONAL</span>
                             `}
-                            <span class="admin-badge admin-badge-success">⚡ DB Latency: ${this._analyticsData?.avgLatencyMs || 12}ms</span>
+                            <span class="admin-badge admin-badge-blue">⚡ DB Latency: ${this._analyticsData?.avgLatencyMs || 12}ms</span>
                             <span class="admin-badge admin-badge-warning">👑 SUPER ADMIN</span>
                         </div>
                     </header>
@@ -120,11 +129,12 @@ export class AdminPanelScreen {
                     <main class="admin-content-area">
                         ${this._statusMessage ? `
                             <div class="admin-card" style="
-                                border-color: ${this._statusType === 'success' ? 'rgba(16, 185, 129, 0.4)' : this._statusType === 'error' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(59, 130, 246, 0.4)'};
-                                background: ${this._statusType === 'success' ? 'rgba(16, 185, 129, 0.1)' : this._statusType === 'error' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)'};
-                                color: ${this._statusType === 'success' ? '#34d399' : this._statusType === 'error' ? '#f87171' : '#60a5fa'};
+                                border-color: ${this._statusType === 'success' ? 'rgba(0, 200, 83, 0.4)' : this._statusType === 'error' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(59, 130, 246, 0.4)'};
+                                background: ${this._statusType === 'success' ? 'rgba(0, 200, 83, 0.12)' : this._statusType === 'error' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(59, 130, 246, 0.12)'};
+                                color: ${this._statusType === 'success' ? '#00C853' : this._statusType === 'error' ? '#F87171' : '#60A5FA'};
                                 margin-bottom: 20px;
                                 padding: 14px 20px;
+                                font-weight: 700;
                             ">
                                 ${this._statusMessage}
                             </div>
@@ -154,12 +164,12 @@ export class AdminPanelScreen {
 
     private _getTabTitleText(): string {
         switch (this._activeTab) {
-            case 'CONFIGURATIONS': return 'System Configurations & Dynamic Game Parameters';
-            case 'QUESTIONS': return 'Trilingual Question Bank CMS';
+            case 'CONFIGURATIONS': return 'System Configurations & Game Parameters';
+            case 'QUESTIONS': return 'Trilingual Question CMS';
             case 'DASHBOARD': return 'Executive Platform Analytics';
-            case 'USERS': return 'Player Support & Customer Operations';
-            case 'TELCO_REWARDS': return 'Ethio Telecom Rewards & Payout Queue';
-            case 'AUDIT_LOGS': return 'Broadcast Notifications & System Audit Trail';
+            case 'USERS': return 'Player Support & User Operations';
+            case 'TELCO_REWARDS': return 'Ethio Telecom Rewards Queue';
+            case 'AUDIT_LOGS': return 'Broadcast Notifications & Audit Logs';
         }
     }
 
@@ -190,26 +200,26 @@ export class AdminPanelScreen {
                     <div class="admin-card-title">
                         ⚙️ DYNAMIC GAME & SYSTEM PARAMETERS
                     </div>
-                    <span style="font-size: 13px; color: #94a3b8;">No code editing required. Direct database updates.</span>
+                    <span style="font-size: 13px; color: var(--adm-text-dim);">Direct database updates without code editing.</span>
                 </div>
 
-                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
-                    Configure gameplay rules, match timers, reward multipliers, ELO rating formulas, subscription pricing, and maintenance mode controls dynamically across the entire Football Quiz platform.
+                <p style="color: var(--adm-text-dim); font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
+                    Configure gameplay timers, match rules, economy rewards, ELO rating multipliers, subscription pricing, and global maintenance mode controls dynamically across the platform.
                 </p>
 
                 ${Object.entries(configsByCategory).map(([category, items]) => `
-                    <div style="margin-bottom: 28px; background: rgba(0,0,0,0.2); padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                        <h4 style="margin: 0 0 14px 0; text-transform: uppercase; color: #FFD54F; font-size: 13px; letter-spacing: 1px;">
+                    <div style="margin-bottom: 28px; background: rgba(0,0,0,0.25); padding: 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06);">
+                        <h4 style="margin: 0 0 16px 0; text-transform: uppercase; color: var(--adm-gold-primary); font-size: 13px; letter-spacing: 1px; font-weight: 800;">
                             ${category} CONFIGURATIONS (${items.length})
                         </h4>
 
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
                             ${items.map(item => `
-                                <div style="background: rgba(15, 23, 42, 0.8); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
-                                    <div style="font-weight: 700; font-size: 14px; color: #f8fafc; margin-bottom: 4px;">
+                                <div style="background: rgba(2, 6, 23, 0.7); padding: 16px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
+                                    <div style="font-weight: 800; font-size: 14px; color: var(--adm-text-main); margin-bottom: 4px;">
                                         <code>${item.key}</code>
                                     </div>
-                                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 10px;">${item.description || 'System setting'}</div>
+                                    <div style="font-size: 12px; color: var(--adm-text-dim); margin-bottom: 12px;">${item.description || 'System setting'}</div>
                                     
                                     <div style="display: flex; gap: 8px;">
                                         ${typeof item.value === 'boolean' ? `
@@ -286,7 +296,7 @@ export class AdminPanelScreen {
                         <tbody>
                             ${this._questionsList.length === 0 ? `
                                 <tr>
-                                    <td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">
+                                    <td colspan="7" style="text-align: center; color: var(--adm-text-dim); padding: 24px;">
                                         No questions found in cloud database. Click 'Add Question' or import CSV below.
                                     </td>
                                 </tr>
@@ -294,14 +304,14 @@ export class AdminPanelScreen {
                                 <tr>
                                     <td><span class="admin-badge admin-badge-warning">${q.category}</span></td>
                                     <td>Level ${q.difficulty}</td>
-                                    <td style="font-weight: 600; max-width: 250px;">${q.prompt_en}</td>
-                                    <td style="color: #94a3b8; max-width: 200px;">${q.prompt_am || '—'}</td>
-                                    <td style="color: #94a3b8; max-width: 200px;">${q.prompt_om || '—'}</td>
+                                    <td style="font-weight: 700; color: #fff; max-width: 250px;">${q.prompt_en}</td>
+                                    <td style="color: var(--adm-text-dim); max-width: 200px;">${q.prompt_am || '—'}</td>
+                                    <td style="color: var(--adm-text-dim); max-width: 200px;">${q.prompt_om || '—'}</td>
                                     <td><span class="admin-badge admin-badge-success">Option ${q.correct_index + 1}</span></td>
                                     <td>
                                         <div style="display: flex; gap: 6px;">
-                                            <button class="admin-btn admin-btn-secondary edit-q-btn" data-id="${q.id}" style="padding: 4px 8px; font-size: 12px;">✏️</button>
-                                            <button class="admin-btn admin-btn-danger delete-q-btn" data-id="${q.id}" style="padding: 4px 8px; font-size: 12px;">🗑️</button>
+                                            <button class="admin-btn admin-btn-secondary edit-q-btn" data-id="${q.id}" style="padding: 6px 10px; font-size: 12px;">✏️</button>
+                                            <button class="admin-btn admin-btn-danger delete-q-btn" data-id="${q.id}" style="padding: 6px 10px; font-size: 12px;">🗑️</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -311,14 +321,14 @@ export class AdminPanelScreen {
                 </div>
 
                 <!-- Bulk CSV Import Card -->
-                <div style="margin-top: 24px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
-                    <h4 style="margin: 0 0 8px 0; color: #FFD54F;">📂 BULK CSV QUESTION IMPORT</h4>
-                    <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">
+                <div style="margin-top: 24px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 14px; border: 1px solid var(--adm-glass-border);">
+                    <h4 style="margin: 0 0 8px 0; color: var(--adm-gold-primary); font-weight: 800;">📂 BULK CSV QUESTION IMPORT</h4>
+                    <p style="font-size: 12px; color: var(--adm-text-dim); margin-bottom: 12px;">
                         Paste CSV lines formatted as:<br/>
                         <code>category, difficulty, prompt_en, opt0_en, opt1_en, opt2_en, opt3_en, correct_index, prompt_am, prompt_om</code>
                     </p>
                     <textarea id="bulk-csv-text" class="admin-textarea" rows="4" placeholder="walia-ibex,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,Spain,0"></textarea>
-                    <div style="margin-top: 10px; text-align: right;">
+                    <div style="margin-top: 12px; text-align: right;">
                         <button id="import-csv-submit-btn" class="admin-btn admin-btn-primary">
                             🚀 Process & Import Questions
                         </button>
@@ -341,29 +351,29 @@ export class AdminPanelScreen {
 
         return `
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
-                <div class="admin-card" style="border-color: rgba(16, 185, 129, 0.3);">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 700;">TOTAL REGISTERED PLAYERS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: #34d399; margin-top: 6px;">
+                <div class="admin-card" style="border-color: rgba(0, 200, 83, 0.4);">
+                    <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">TOTAL REGISTERED PLAYERS</div>
+                    <div style="font-size: 28px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 6px;">
                         ${stats.activePlayers.toLocaleString()}
                     </div>
                 </div>
 
-                <div class="admin-card" style="border-color: rgba(255, 213, 79, 0.3);">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 700;">TOTAL MATCHES PLAYED</div>
-                    <div style="font-size: 28px; font-weight: 900; color: #FFD54F; margin-top: 6px;">
+                <div class="admin-card" style="border-color: rgba(255, 213, 79, 0.4);">
+                    <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">TOTAL MATCHES PLAYED</div>
+                    <div style="font-size: 28px; font-weight: 900; color: var(--adm-gold-primary); margin-top: 6px;">
                         ${stats.totalMatches.toLocaleString()}
                     </div>
                 </div>
 
-                <div class="admin-card" style="border-color: rgba(59, 130, 246, 0.3);">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 700;">ACTIVE LEAGUES & COMPS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: #60a5fa; margin-top: 6px;">
+                <div class="admin-card" style="border-color: rgba(59, 130, 246, 0.4);">
+                    <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">ACTIVE LEAGUES & COMPS</div>
+                    <div style="font-size: 28px; font-weight: 900; color: #60A5FA; margin-top: 6px;">
                         ${stats.activeCompetitions}
                     </div>
                 </div>
 
-                <div class="admin-card" style="border-color: rgba(192, 132, 252, 0.3);">
-                    <div style="font-size: 12px; color: #94a3b8; font-weight: 700;">ETHIO TELECOM SUBSCRIBERS</div>
+                <div class="admin-card" style="border-color: rgba(192, 132, 252, 0.4);">
+                    <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">ETHIO TELECOM SUBSCRIBERS</div>
                     <div style="font-size: 28px; font-weight: 900; color: #C084FC; margin-top: 6px;">
                         ${stats.subscribedUsers.toLocaleString()}
                     </div>
@@ -372,18 +382,18 @@ export class AdminPanelScreen {
 
             <div class="admin-card">
                 <div class="admin-card-title">📡 ETHIO TELECOM VAS PLATFORM HEALTH</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px;">
-                    <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px;">
-                        <div style="font-size: 12px; color: #94a3b8;">SMS OTP GATEWAY</div>
-                        <div style="font-size: 20px; font-weight: 800; color: #34d399; margin-top: 4px;">${stats.smsOtpSuccessRate} Success</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 16px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
+                        <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">SMS OTP GATEWAY</div>
+                        <div style="font-size: 20px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 4px;">${stats.smsOtpSuccessRate} Success</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px;">
-                        <div style="font-size: 12px; color: #94a3b8;">DATABASE RESPONSE LATENCY</div>
-                        <div style="font-size: 20px; font-weight: 800; color: #34d399; margin-top: 4px;">${stats.avgLatencyMs} ms</div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
+                        <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">DATABASE RESPONSE LATENCY</div>
+                        <div style="font-size: 20px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 4px;">${stats.avgLatencyMs} ms</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px;">
-                        <div style="font-size: 12px; color: #94a3b8;">DAILY VAS PRICE</div>
-                        <div style="font-size: 20px; font-weight: 800; color: #FFD54F; margin-top: 4px;">${ConfigurationManager.getInstance().dailySubPriceEtb} ETB / day</div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
+                        <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">DAILY VAS PRICE</div>
+                        <div style="font-size: 20px; font-weight: 900; color: var(--adm-gold-primary); margin-top: 4px;">${ConfigurationManager.getInstance().dailySubPriceEtb} ETB / day</div>
                     </div>
                 </div>
             </div>
@@ -420,21 +430,21 @@ export class AdminPanelScreen {
                         <tbody>
                             ${this._usersList.length === 0 ? `
                                 <tr>
-                                    <td colspan="8" style="text-align: center; color: #94a3b8; padding: 24px;">
+                                    <td colspan="8" style="text-align: center; color: var(--adm-text-dim); padding: 24px;">
                                         Enter username or phone number above to inspect player profiles.
                                     </td>
                                 </tr>
                             ` : this._usersList.map(u => `
                                 <tr>
-                                    <td style="font-weight: 700;">${u.username}</td>
+                                    <td style="font-weight: 800; color: #fff;">${u.username}</td>
                                     <td>${u.phone || '—'}</td>
                                     <td><span class="admin-badge ${u.role === 'super_admin' ? 'admin-badge-warning' : 'admin-badge-success'}">${u.role}</span></td>
-                                    <td style="color: #FFD54F; font-weight: 700;">${u.elo_rating}</td>
+                                    <td style="color: var(--adm-gold-primary); font-weight: 800;">${u.elo_rating}</td>
                                     <td>🪙 ${u.coins}</td>
                                     <td>⭐ ${u.xp}</td>
                                     <td><span class="admin-badge admin-badge-success">${u.subscription_tier || 'free'}</span></td>
                                     <td>
-                                        <button class="admin-btn admin-btn-secondary adjust-user-btn" data-id="${u.id}" style="padding: 4px 8px; font-size: 12px;">
+                                        <button class="admin-btn admin-btn-secondary adjust-user-btn" data-id="${u.id}" style="padding: 6px 10px; font-size: 12px;">
                                             ⚙️ Adjust Balance
                                         </button>
                                     </td>
@@ -455,7 +465,7 @@ export class AdminPanelScreen {
                     <div class="admin-card-title">📡 TELCO REWARDS PAYOUT QUEUE (${this._telcoRewards.length})</div>
                 </div>
 
-                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">
+                <p style="color: var(--adm-text-dim); font-size: 14px; margin-bottom: 20px;">
                     Monitor weekly/monthly airtime disbursements queued for top leaderboard players.
                 </p>
 
@@ -475,25 +485,25 @@ export class AdminPanelScreen {
                         <tbody>
                             ${this._telcoRewards.length === 0 ? `
                                 <tr>
-                                    <td colspan="7" style="text-align: center; color: #94a3b8; padding: 24px;">
+                                    <td colspan="7" style="text-align: center; color: var(--adm-text-dim); padding: 24px;">
                                         No pending telco reward disbursements.
                                     </td>
                                 </tr>
                             ` : this._telcoRewards.map(r => `
                                 <tr>
-                                    <td style="font-weight: 700;">${r.msisdn}</td>
+                                    <td style="font-weight: 800; color: #fff;">${r.msisdn}</td>
                                     <td>${r.reward_type}</td>
-                                    <td style="color: #34d399; font-weight: 800;">${r.reward_amount} ETB</td>
+                                    <td style="color: var(--adm-pitch-green); font-weight: 900;">${r.reward_amount} ETB</td>
                                     <td>Rank #${r.rank_position}</td>
                                     <td>
                                         <span class="admin-badge ${r.status === 'completed' ? 'admin-badge-success' : r.status === 'failed' ? 'admin-badge-danger' : 'admin-badge-warning'}">
                                             ${r.status.toUpperCase()}
                                         </span>
                                     </td>
-                                    <td style="font-size: 12px; color: #94a3b8;">${new Date(r.created_at).toLocaleString()}</td>
+                                    <td style="font-size: 12px; color: var(--adm-text-dim);">${new Date(r.created_at).toLocaleString()}</td>
                                     <td>
                                         ${r.status === 'failed' || r.status === 'pending' ? `
-                                            <button class="admin-btn admin-btn-secondary retry-telco-btn" data-id="${r.id}" style="padding: 4px 8px; font-size: 12px;">
+                                            <button class="admin-btn admin-btn-secondary retry-telco-btn" data-id="${r.id}" style="padding: 6px 10px; font-size: 12px;">
                                                 🔄 Retry Payout
                                             </button>
                                         ` : '—'}
@@ -516,12 +526,12 @@ export class AdminPanelScreen {
                     <div class="admin-card-title">📣 BROADCAST PUSH NOTIFICATION</div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
                     <input id="bc-title-en" class="admin-input" placeholder="Title (English) *" />
                     <input id="bc-title-am" class="admin-input" placeholder="Title (Amharic - አማርኛ)" />
                     <input id="bc-title-om" class="admin-input" placeholder="Title (Afan Oromo)" />
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
                     <textarea id="bc-body-en" class="admin-textarea" rows="2" placeholder="Message body (English) *"></textarea>
                     <textarea id="bc-body-am" class="admin-textarea" rows="2" placeholder="Message body (Amharic)"></textarea>
                     <textarea id="bc-body-om" class="admin-textarea" rows="2" placeholder="Message body (Afan Oromo)"></textarea>
@@ -551,17 +561,17 @@ export class AdminPanelScreen {
                         <tbody>
                             ${this._auditLogs.length === 0 ? `
                                 <tr>
-                                    <td colspan="5" style="text-align: center; color: #94a3b8; padding: 24px;">
+                                    <td colspan="5" style="text-align: center; color: var(--adm-text-dim); padding: 24px;">
                                         No audit entries recorded yet.
                                     </td>
                                 </tr>
                             ` : this._auditLogs.map(l => `
                                 <tr>
-                                    <td style="font-size: 12px; color: #94a3b8;">${new Date(l.created_at).toLocaleString()}</td>
+                                    <td style="font-size: 12px; color: var(--adm-text-dim);">${new Date(l.created_at).toLocaleString()}</td>
                                     <td><span class="admin-badge admin-badge-warning">${l.action}</span></td>
                                     <td><code>${l.target_entity}</code></td>
                                     <td>${l.target_id || '—'}</td>
-                                    <td style="font-family: monospace; font-size: 11px; color: #94a3b8; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    <td style="font-family: monospace; font-size: 11px; color: var(--adm-text-dim); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                         ${JSON.stringify(l.details || {})}
                                     </td>
                                 </tr>
@@ -585,7 +595,7 @@ export class AdminPanelScreen {
             return `
                 <div class="admin-modal-overlay">
                     <div class="admin-modal-container">
-                        <h3 style="margin: 0 0 16px 0; color: #FFD54F;">
+                        <h3 style="margin: 0 0 16px 0; color: var(--adm-gold-primary); font-weight: 900;">
                             ${isNew ? '➕ ADD NEW TRILINGUAL QUESTION' : '✏️ EDIT TRILINGUAL QUESTION'}
                         </h3>
 
@@ -660,8 +670,8 @@ export class AdminPanelScreen {
             return `
                 <div class="admin-modal-overlay">
                     <div class="admin-modal-container">
-                        <h3 style="margin: 0 0 16px 0; color: #FFD54F;">⚙️ ADJUST BALANCE — ${u.username}</h3>
-                        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">
+                        <h3 style="margin: 0 0 16px 0; color: var(--adm-gold-primary); font-weight: 900;">⚙️ ADJUST BALANCE — ${u.username}</h3>
+                        <p style="color: var(--adm-text-dim); font-size: 13px; margin-bottom: 16px;">
                             Current Balance: 🪙 ${u.coins} Coins | ⭐ ${u.xp} XP
                         </p>
 
@@ -710,6 +720,16 @@ export class AdminPanelScreen {
     private _bindEvents(): void {
         const root = this._uiManager.container;
 
+        // Mobile Sidebar Drawer Toggle
+        root.querySelector('#admin-mobile-toggle-btn')?.addEventListener('click', () => {
+            this._audioManager.playClick();
+            this._isMobileSidebarOpen = !this._isMobileSidebarOpen;
+            const sidebar = root.querySelector('.admin-sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('mobile-open', this._isMobileSidebarOpen);
+            }
+        });
+
         // Close Admin Portal
         root.querySelector('#admin-close-btn')?.addEventListener('click', () => {
             this._audioManager.playClick();
@@ -724,6 +744,7 @@ export class AdminPanelScreen {
                 if (tab) {
                     this._activeTab = tab;
                     this._statusMessage = '';
+                    this._isMobileSidebarOpen = false;
                     this.render();
                 }
             });
