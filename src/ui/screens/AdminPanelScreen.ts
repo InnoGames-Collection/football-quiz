@@ -93,8 +93,8 @@ export class AdminPanelScreen {
                         </button>
                     </nav>
 
-                    <div style="padding: 16px; border-top: 1px solid var(--adm-glass-border);">
-                        <button id="admin-close-btn" class="admin-btn admin-btn-secondary" style="width: 100%;">
+                    <div style="padding: 18px; border-top: 1px solid var(--adm-glass-border);">
+                        <button id="admin-close-btn" class="ethio-btn admin-btn-secondary" style="width: 100%;">
                             🚪 Exit Admin Portal
                         </button>
                     </div>
@@ -104,7 +104,7 @@ export class AdminPanelScreen {
                 <div class="admin-main-container">
                     <!-- Executive Top Bar -->
                     <header class="admin-top-bar">
-                        <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 14px;">
                             <button id="admin-mobile-toggle-btn" class="admin-mobile-toggle" aria-label="Toggle navigation drawer">
                                 ☰
                             </button>
@@ -130,11 +130,11 @@ export class AdminPanelScreen {
                         ${this._statusMessage ? `
                             <div class="admin-card" style="
                                 border-color: ${this._statusType === 'success' ? 'rgba(0, 200, 83, 0.4)' : this._statusType === 'error' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(59, 130, 246, 0.4)'};
-                                background: ${this._statusType === 'success' ? 'rgba(0, 200, 83, 0.12)' : this._statusType === 'error' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(59, 130, 246, 0.12)'};
+                                background: ${this._statusType === 'success' ? 'rgba(0, 200, 83, 0.15)' : this._statusType === 'error' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(59, 130, 246, 0.15)'};
                                 color: ${this._statusType === 'success' ? '#00C853' : this._statusType === 'error' ? '#F87171' : '#60A5FA'};
                                 margin-bottom: 20px;
-                                padding: 14px 20px;
-                                font-weight: 700;
+                                padding: 16px 22px;
+                                font-weight: 800;
                             ">
                                 ${this._statusMessage}
                             </div>
@@ -164,7 +164,7 @@ export class AdminPanelScreen {
 
     private _getTabTitleText(): string {
         switch (this._activeTab) {
-            case 'CONFIGURATIONS': return 'System Configurations & Game Parameters';
+            case 'CONFIGURATIONS': return 'System Configurations & Dynamic Game Parameters';
             case 'QUESTIONS': return 'Trilingual Question CMS';
             case 'DASHBOARD': return 'Executive Platform Analytics';
             case 'USERS': return 'Player Support & User Operations';
@@ -184,7 +184,7 @@ export class AdminPanelScreen {
         }
     }
 
-    // --- TAB 1: SYSTEM CONFIGURATIONS ---
+    // --- TAB 1: GAMIFIED SYSTEM CONFIGURATIONS ---
     private _renderConfigurationsTab(): string {
         const configsByCategory = {
             gameplay: this._configsList.filter(c => c.category === 'gameplay'),
@@ -194,48 +194,99 @@ export class AdminPanelScreen {
             telco: this._configsList.filter(c => c.category === 'telco')
         };
 
+        const presetsMap: Record<string, number[]> = {
+            quiz_timer_sec: [10, 15, 20, 30],
+            questions_per_match: [5, 10, 15, 20],
+            max_lifelines_per_match: [0, 1, 2, 3],
+            daily_login_coins: [50, 100, 250, 500],
+            win_coin_reward: [20, 50, 100, 200],
+            win_xp_reward: [10, 20, 50, 100],
+            elo_base_gain: [10, 15, 25, 50],
+            elo_base_loss: [5, 10, 15, 25],
+            queue_timeout_sec: [15, 30, 45, 60],
+            daily_sub_price_etb: [1, 2, 3, 5],
+            weekly_airtime_reward_1st: [250, 500, 1000],
+            weekly_airtime_reward_2nd: [100, 250, 500],
+            weekly_airtime_reward_3rd: [50, 100, 250]
+        };
+
         return `
             <div class="admin-card">
                 <div class="admin-card-header">
                     <div class="admin-card-title">
                         ⚙️ DYNAMIC GAME & SYSTEM PARAMETERS
                     </div>
-                    <span style="font-size: 13px; color: var(--adm-text-dim);">Direct database updates without code editing.</span>
+                    <span style="font-size: 13px; color: var(--adm-text-dim);">Live controls. Updates persist directly to cloud DB.</span>
                 </div>
 
-                <p style="color: var(--adm-text-dim); font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
-                    Configure gameplay timers, match rules, economy rewards, ELO rating multipliers, subscription pricing, and global maintenance mode controls dynamically across the platform.
+                <p style="color: var(--adm-text-dim); font-size: 14px; margin-bottom: 22px; line-height: 1.6;">
+                    Adjust live match timers, question counts, reward multipliers, ELO rating gains, subscription pricing, and global maintenance mode controls dynamically using interactive steppers and toggle switches.
                 </p>
 
                 ${Object.entries(configsByCategory).map(([category, items]) => `
-                    <div style="margin-bottom: 28px; background: rgba(0,0,0,0.25); padding: 20px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06);">
-                        <h4 style="margin: 0 0 16px 0; text-transform: uppercase; color: var(--adm-gold-primary); font-size: 13px; letter-spacing: 1px; font-weight: 800;">
+                    <div style="margin-bottom: 30px; background: rgba(0,0,0,0.3); padding: 22px; border-radius: 16px; border: 1px solid var(--adm-glass-border);">
+                        <h4 style="margin: 0 0 18px 0; text-transform: uppercase; color: var(--adm-gold-primary); font-size: 14px; letter-spacing: 1.2px; font-weight: 900;">
                             ${category} CONFIGURATIONS (${items.length})
                         </h4>
 
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
-                            ${items.map(item => `
-                                <div style="background: rgba(2, 6, 23, 0.7); padding: 16px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
-                                    <div style="font-weight: 800; font-size: 14px; color: var(--adm-text-main); margin-bottom: 4px;">
-                                        <code>${item.key}</code>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+                            ${items.map(item => {
+                                const presets = presetsMap[item.key] || [];
+                                const isBoolean = typeof item.value === 'boolean';
+                                const isNumber = typeof item.value === 'number';
+
+                                return `
+                                    <div style="background: rgba(2, 6, 23, 0.85); padding: 18px; border-radius: 16px; border: 1px solid var(--adm-glass-border); display: flex; flex-direction: column; justify-content: space-between;">
+                                        <div>
+                                            <div style="font-weight: 900; font-size: 15px; color: #FFF; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;">
+                                                <code>${item.key}</code>
+                                                <span class="admin-badge admin-badge-blue">${item.category}</span>
+                                            </div>
+                                            <div style="font-size: 12px; color: var(--adm-text-dim); margin-bottom: 14px; line-height: 1.4;">${item.description || 'System configuration'}</div>
+                                        </div>
+
+                                        <div>
+                                            ${isBoolean ? `
+                                                <!-- LED TOGGLE SWITCH FOR BOOLEANS -->
+                                                <div class="admin-toggle-group" style="margin-bottom: 12px;">
+                                                    <button class="admin-toggle-btn toggle-btn-on ${item.value ? 'active-on' : ''}" data-key="${item.key}">
+                                                        🟢 ENABLED (ON)
+                                                    </button>
+                                                    <button class="admin-toggle-btn toggle-btn-off ${!item.value ? 'active-off' : ''}" data-key="${item.key}">
+                                                        🔴 DISABLED (OFF)
+                                                    </button>
+                                                </div>
+                                            ` : isNumber ? `
+                                                <!-- INTERACTIVE STEPPER CONTROL FOR NUMBERS -->
+                                                <div class="admin-stepper-container" style="margin-bottom: 10px;">
+                                                    <button class="admin-btn-stepper step-down-btn" data-key="${item.key}">-</button>
+                                                    <input type="number" class="admin-input config-input num-stepper-input" data-key="${item.key}" value="${item.value}" style="text-align: center; font-weight: 900; font-size: 18px; color: var(--adm-gold-primary); font-family: monospace;" />
+                                                    <button class="admin-btn-stepper step-up-btn" data-key="${item.key}">+</button>
+                                                </div>
+
+                                                ${presets.length > 0 ? `
+                                                    <!-- QUICK PRESET PILLS -->
+                                                    <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                                                        <span style="font-size: 10px; color: var(--adm-text-dim); font-weight: bold; align-self: center;">PRESETS:</span>
+                                                        ${presets.map(p => `
+                                                            <button class="admin-preset-pill preset-btn" data-key="${item.key}" data-val="${p}">
+                                                                ${p}
+                                                            </button>
+                                                        `).join('')}
+                                                    </div>
+                                                ` : ''}
+                                            ` : `
+                                                <!-- TEXT AREA FOR STRINGS -->
+                                                <input type="text" class="admin-input config-input" data-key="${item.key}" value="${item.value}" style="margin-bottom: 12px;" />
+                                            `}
+
+                                            <button class="ethio-btn ethio-btn-gold save-config-btn" data-key="${item.key}" style="width: 100%;">
+                                                💾 Save Configuration
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div style="font-size: 12px; color: var(--adm-text-dim); margin-bottom: 12px;">${item.description || 'System setting'}</div>
-                                    
-                                    <div style="display: flex; gap: 8px;">
-                                        ${typeof item.value === 'boolean' ? `
-                                            <select class="admin-select config-input" data-key="${item.key}">
-                                                <option value="true" ${item.value ? 'selected' : ''}>Enabled (true)</option>
-                                                <option value="false" ${!item.value ? 'selected' : ''}>Disabled (false)</option>
-                                            </select>
-                                        ` : `
-                                            <input type="${typeof item.value === 'number' ? 'number' : 'text'}" class="admin-input config-input" data-key="${item.key}" value="${item.value}" />
-                                        `}
-                                        <button class="admin-btn admin-btn-primary save-config-btn" data-key="${item.key}">
-                                            💾 Save
-                                        </button>
-                                    </div>
-                                </div>
-                            `).join('')}
+                                `;
+                            }).join('')}
                         </div>
                     </div>
                 `).join('')}
@@ -253,8 +304,8 @@ export class AdminPanelScreen {
                     <div class="admin-card-title">
                         ❓ TRILINGUAL QUESTION CMS (${this._questionsTotal} TOTAL)
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button id="add-new-question-btn" class="admin-btn admin-btn-primary">
+                    <div style="display: flex; gap: 12px;">
+                        <button id="add-new-question-btn" class="ethio-btn ethio-btn-gold">
                             ➕ Add Question
                         </button>
                         <button id="export-csv-btn" class="admin-btn admin-btn-secondary">
@@ -310,8 +361,8 @@ export class AdminPanelScreen {
                                     <td><span class="admin-badge admin-badge-success">Option ${q.correct_index + 1}</span></td>
                                     <td>
                                         <div style="display: flex; gap: 6px;">
-                                            <button class="admin-btn admin-btn-secondary edit-q-btn" data-id="${q.id}" style="padding: 6px 10px; font-size: 12px;">✏️</button>
-                                            <button class="admin-btn admin-btn-danger delete-q-btn" data-id="${q.id}" style="padding: 6px 10px; font-size: 12px;">🗑️</button>
+                                            <button class="admin-btn admin-btn-secondary edit-q-btn" data-id="${q.id}" style="padding: 6px 12px; font-size: 12px;">✏️ Edit</button>
+                                            <button class="admin-btn admin-btn-danger delete-q-btn" data-id="${q.id}" style="padding: 6px 12px; font-size: 12px;">🗑️ Delete</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -321,15 +372,15 @@ export class AdminPanelScreen {
                 </div>
 
                 <!-- Bulk CSV Import Card -->
-                <div style="margin-top: 24px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 14px; border: 1px solid var(--adm-glass-border);">
-                    <h4 style="margin: 0 0 8px 0; color: var(--adm-gold-primary); font-weight: 800;">📂 BULK CSV QUESTION IMPORT</h4>
-                    <p style="font-size: 12px; color: var(--adm-text-dim); margin-bottom: 12px;">
+                <div style="margin-top: 24px; background: rgba(0,0,0,0.3); padding: 22px; border-radius: 16px; border: 1px solid var(--adm-glass-border);">
+                    <h4 style="margin: 0 0 8px 0; color: var(--adm-gold-primary); font-weight: 900;">📂 BULK CSV QUESTION IMPORT</h4>
+                    <p style="font-size: 12px; color: var(--adm-text-dim); margin-bottom: 14px;">
                         Paste CSV lines formatted as:<br/>
                         <code>category, difficulty, prompt_en, opt0_en, opt1_en, opt2_en, opt3_en, correct_index, prompt_am, prompt_om</code>
                     </p>
                     <textarea id="bulk-csv-text" class="admin-textarea" rows="4" placeholder="walia-ibex,1,Which country hosted 2022 World Cup?,Qatar,Brazil,Russia,Spain,0"></textarea>
-                    <div style="margin-top: 12px; text-align: right;">
-                        <button id="import-csv-submit-btn" class="admin-btn admin-btn-primary">
+                    <div style="margin-top: 14px; text-align: right;">
+                        <button id="import-csv-submit-btn" class="ethio-btn ethio-btn-gold">
                             🚀 Process & Import Questions
                         </button>
                     </div>
@@ -350,31 +401,31 @@ export class AdminPanelScreen {
         };
 
         return `
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 24px;">
                 <div class="admin-card" style="border-color: rgba(0, 200, 83, 0.4);">
                     <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">TOTAL REGISTERED PLAYERS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 6px;">
+                    <div style="font-size: 32px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 6px;">
                         ${stats.activePlayers.toLocaleString()}
                     </div>
                 </div>
 
                 <div class="admin-card" style="border-color: rgba(255, 213, 79, 0.4);">
                     <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">TOTAL MATCHES PLAYED</div>
-                    <div style="font-size: 28px; font-weight: 900; color: var(--adm-gold-primary); margin-top: 6px;">
+                    <div style="font-size: 32px; font-weight: 900; color: var(--adm-gold-primary); margin-top: 6px;">
                         ${stats.totalMatches.toLocaleString()}
                     </div>
                 </div>
 
                 <div class="admin-card" style="border-color: rgba(59, 130, 246, 0.4);">
                     <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">ACTIVE LEAGUES & COMPS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: #60A5FA; margin-top: 6px;">
+                    <div style="font-size: 32px; font-weight: 900; color: #60A5FA; margin-top: 6px;">
                         ${stats.activeCompetitions}
                     </div>
                 </div>
 
                 <div class="admin-card" style="border-color: rgba(192, 132, 252, 0.4);">
                     <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">ETHIO TELECOM SUBSCRIBERS</div>
-                    <div style="font-size: 28px; font-weight: 900; color: #C084FC; margin-top: 6px;">
+                    <div style="font-size: 32px; font-weight: 900; color: #C084FC; margin-top: 6px;">
                         ${stats.subscribedUsers.toLocaleString()}
                     </div>
                 </div>
@@ -382,18 +433,18 @@ export class AdminPanelScreen {
 
             <div class="admin-card">
                 <div class="admin-card-title">📡 ETHIO TELECOM VAS PLATFORM HEALTH</div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 16px;">
-                    <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 18px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 14px; border: 1px solid var(--adm-glass-border);">
                         <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">SMS OTP GATEWAY</div>
-                        <div style="font-size: 20px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 4px;">${stats.smsOtpSuccessRate} Success</div>
+                        <div style="font-size: 22px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 6px;">${stats.smsOtpSuccessRate} Success</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
+                    <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 14px; border: 1px solid var(--adm-glass-border);">
                         <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">DATABASE RESPONSE LATENCY</div>
-                        <div style="font-size: 20px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 4px;">${stats.avgLatencyMs} ms</div>
+                        <div style="font-size: 22px; font-weight: 900; color: var(--adm-pitch-green); margin-top: 6px;">${stats.avgLatencyMs} ms</div>
                     </div>
-                    <div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 12px; border: 1px solid var(--adm-glass-border);">
+                    <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 14px; border: 1px solid var(--adm-glass-border);">
                         <div style="font-size: 12px; color: var(--adm-text-dim); font-weight: 800;">DAILY VAS PRICE</div>
-                        <div style="font-size: 20px; font-weight: 900; color: var(--adm-gold-primary); margin-top: 4px;">${ConfigurationManager.getInstance().dailySubPriceEtb} ETB / day</div>
+                        <div style="font-size: 22px; font-weight: 900; color: var(--adm-gold-primary); margin-top: 6px;">${ConfigurationManager.getInstance().dailySubPriceEtb} ETB / day</div>
                     </div>
                 </div>
             </div>
@@ -410,7 +461,7 @@ export class AdminPanelScreen {
 
                 <div style="display: flex; gap: 12px; margin-bottom: 20px;">
                     <input id="user-search-input" class="admin-input" type="text" placeholder="🔍 Search player by phone / MSISDN / username..." value="${this._userSearchQuery}" />
-                    <button id="user-search-btn" class="admin-btn admin-btn-primary">Search Players</button>
+                    <button id="user-search-btn" class="ethio-btn ethio-btn-gold">Search Players</button>
                 </div>
 
                 <div class="admin-table-wrapper">
@@ -444,7 +495,7 @@ export class AdminPanelScreen {
                                     <td>⭐ ${u.xp}</td>
                                     <td><span class="admin-badge admin-badge-success">${u.subscription_tier || 'free'}</span></td>
                                     <td>
-                                        <button class="admin-btn admin-btn-secondary adjust-user-btn" data-id="${u.id}" style="padding: 6px 10px; font-size: 12px;">
+                                        <button class="admin-btn admin-btn-secondary adjust-user-btn" data-id="${u.id}" style="padding: 6px 12px; font-size: 12px;">
                                             ⚙️ Adjust Balance
                                         </button>
                                     </td>
@@ -503,7 +554,7 @@ export class AdminPanelScreen {
                                     <td style="font-size: 12px; color: var(--adm-text-dim);">${new Date(r.created_at).toLocaleString()}</td>
                                     <td>
                                         ${r.status === 'failed' || r.status === 'pending' ? `
-                                            <button class="admin-btn admin-btn-secondary retry-telco-btn" data-id="${r.id}" style="padding: 6px 10px; font-size: 12px;">
+                                            <button class="admin-btn admin-btn-secondary retry-telco-btn" data-id="${r.id}" style="padding: 6px 12px; font-size: 12px;">
                                                 🔄 Retry Payout
                                             </button>
                                         ` : '—'}
@@ -536,7 +587,7 @@ export class AdminPanelScreen {
                     <textarea id="bc-body-am" class="admin-textarea" rows="2" placeholder="Message body (Amharic)"></textarea>
                     <textarea id="bc-body-om" class="admin-textarea" rows="2" placeholder="Message body (Afan Oromo)"></textarea>
                 </div>
-                <button id="send-broadcast-btn" class="admin-btn admin-btn-primary" style="width: 100%;">
+                <button id="send-broadcast-btn" class="ethio-btn ethio-btn-gold" style="width: 100%;">
                     🚀 Send Broadcast to All Players
                 </button>
             </div>
@@ -656,7 +707,7 @@ export class AdminPanelScreen {
 
                         <div style="display: flex; gap: 12px; justify-content: flex-end;">
                             <button id="modal-cancel-btn" class="admin-btn admin-btn-secondary">Cancel</button>
-                            <button id="modal-save-q-btn" class="admin-btn admin-btn-primary">Save Question</button>
+                            <button id="modal-save-q-btn" class="ethio-btn ethio-btn-gold">Save Question</button>
                         </div>
                     </div>
                 </div>
@@ -690,7 +741,7 @@ export class AdminPanelScreen {
 
                         <div style="display: flex; gap: 12px; justify-content: flex-end;">
                             <button id="modal-cancel-btn" class="admin-btn admin-btn-secondary">Cancel</button>
-                            <button id="save-user-adjust-btn" class="admin-btn admin-btn-primary">Apply Adjustment</button>
+                            <button id="save-user-adjust-btn" class="ethio-btn ethio-btn-gold">Apply Adjustment</button>
                         </div>
                     </div>
                 </div>
@@ -716,7 +767,7 @@ export class AdminPanelScreen {
         this._usersList = await AdminService.getInstance().searchUsers(this._userSearchQuery);
     }
 
-    // --- EVENT BINDINGS ---
+    // --- EVENT BINDINGS FOR INTERACTIVE CONTROLS ---
     private _bindEvents(): void {
         const root = this._uiManager.container;
 
@@ -750,6 +801,76 @@ export class AdminPanelScreen {
             });
         });
 
+        // Stepper Decrement (-)
+        root.querySelectorAll('.step-down-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                const key = (e.currentTarget as HTMLElement).getAttribute('data-key');
+                if (!key) return;
+                const inputEl = root.querySelector(`.num-stepper-input[data-key="${key}"]`) as HTMLInputElement;
+                if (inputEl) {
+                    let val = Number(inputEl.value) || 0;
+                    val = Math.max(0, val - 1);
+                    inputEl.value = String(val);
+                }
+            });
+        });
+
+        // Stepper Increment (+)
+        root.querySelectorAll('.step-up-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                const key = (e.currentTarget as HTMLElement).getAttribute('data-key');
+                if (!key) return;
+                const inputEl = root.querySelector(`.num-stepper-input[data-key="${key}"]`) as HTMLInputElement;
+                if (inputEl) {
+                    let val = Number(inputEl.value) || 0;
+                    val = val + 1;
+                    inputEl.value = String(val);
+                }
+            });
+        });
+
+        // Preset Quick Selection Buttons
+        root.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                const key = (e.currentTarget as HTMLElement).getAttribute('data-key');
+                const val = (e.currentTarget as HTMLElement).getAttribute('data-val');
+                if (!key || !val) return;
+                const inputEl = root.querySelector(`.num-stepper-input[data-key="${key}"]`) as HTMLInputElement;
+                if (inputEl) {
+                    inputEl.value = val;
+                }
+            });
+        });
+
+        // LED Toggle ON Button
+        root.querySelectorAll('.toggle-btn-on').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                const key = (e.currentTarget as HTMLElement).getAttribute('data-key');
+                if (!key) return;
+                const offBtn = (e.currentTarget as HTMLElement).nextElementSibling;
+                (e.currentTarget as HTMLElement).classList.add('active-on');
+                offBtn?.classList.remove('active-off');
+                (e.currentTarget as HTMLElement).setAttribute('data-state', 'true');
+            });
+        });
+
+        // LED Toggle OFF Button
+        root.querySelectorAll('.toggle-btn-off').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this._audioManager.playClick();
+                const key = (e.currentTarget as HTMLElement).getAttribute('data-key');
+                if (!key) return;
+                const onBtn = (e.currentTarget as HTMLElement).previousElementSibling;
+                (e.currentTarget as HTMLElement).classList.add('active-off');
+                onBtn?.classList.remove('active-on');
+                onBtn?.removeAttribute('data-state');
+            });
+        });
+
         // Save System Configuration Parameter
         root.querySelectorAll('.save-config-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
@@ -757,13 +878,19 @@ export class AdminPanelScreen {
                 const key = (e.currentTarget as HTMLElement).getAttribute('data-key');
                 if (!key) return;
 
-                const inputEl = root.querySelector(`.config-input[data-key="${key}"]`) as HTMLInputElement | HTMLSelectElement;
-                if (!inputEl) return;
+                let val: any;
+                const toggleOnBtn = root.querySelector(`.toggle-btn-on[data-key="${key}"]`);
+                if (toggleOnBtn) {
+                    val = toggleOnBtn.classList.contains('active-on');
+                } else {
+                    const inputEl = root.querySelector(`.config-input[data-key="${key}"]`) as HTMLInputElement;
+                    if (inputEl) {
+                        val = inputEl.value;
+                        if (!isNaN(Number(val)) && val.trim() !== '') val = Number(val);
+                    }
+                }
 
-                let val: any = inputEl.value;
-                if (val === 'true') val = true;
-                else if (val === 'false') val = false;
-                else if (!isNaN(Number(val)) && val.trim() !== '') val = Number(val);
+                if (val === undefined) return;
 
                 const res = await ConfigurationManager.getInstance().updateConfig(key, val);
                 this._statusMessage = res.message;
