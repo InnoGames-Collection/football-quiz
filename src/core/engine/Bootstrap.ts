@@ -362,9 +362,10 @@ export async function bootstrapFootballLeague(): Promise<Game> {
 
             case 'admin':
                 cacheManager.setQuizActive(false);
+                BottomNav.hide();
                 const admin = new AdminPanelScreen(game.uiManager, game.audioManager, handleBack);
                 activeScreen = admin;
-                admin.render();
+                await admin.render();
                 break;
 
             case 'matchmaking':
@@ -723,8 +724,12 @@ export async function bootstrapFootballLeague(): Promise<Game> {
                 };
                 currentTab = 'home';
                 
-                // Force the UI to replace AuthScreen with HomeScreen
-                renderRoute('home', false);
+                // Check if admin portal was directly requested via URL
+                if (window.location.search.includes('admin=true') || window.location.hash.includes('admin')) {
+                    renderRoute('admin', false);
+                } else {
+                    renderRoute('home', false);
+                }
                 
                 // Clear any leftover history to prevent back-button returning to Login
                 try {
